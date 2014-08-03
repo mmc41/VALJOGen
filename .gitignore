@@ -3,6 +3,7 @@
 .classpath
 .project
 .settings/
+.*.md.html
 target/
 *.iml
 .idea/
