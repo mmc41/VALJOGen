@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="VALJOGen : Generate your VALue Java Objects with the VALJOGen Annotation Processor">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>VALJOGen</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/41concepts/VALJOGen">View on GitHub</a>
+
+          <h1 id="project_title">VALJOGen</h1>
+          <h2 id="project_tagline">Generate your VALue Java Objects with the VALJOGen Annotation Processor</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/41concepts/VALJOGen/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/41concepts/VALJOGen/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="value-java-objects-generator-valjogen" class="anchor" href="#value-java-objects-generator-valjogen"><span class="octicon octicon-link"></span></a>VALue Java Objects Generator (VALJOGen)</h1>
+
+<h1>
+<a name="0-about-valjogen" class="anchor" href="#0-about-valjogen"><span class="octicon octicon-link"></span></a>0. About VALJOGen</h1>
+
+<p>The VALJOGen project can be used to generate Java 8+ style value classes from annotated Java interfaces.</p>
+
+<p>The project consist of 3 modules:</p>
+
+<ul>
+<li>Annotations (all source-level, with no dependencies). It's jar file is not normally used by 3rd party projects unless one want to compile code using the annotations without the annotation processor.</li>
+<li>The annotation processor and related tests. It's jar file embeds all annotations along with a few dependencies.</li>
+<li>Integration tests.</li>
+</ul><h1>
+<a name="1-how-to-use-valjogen-in-your-projects" class="anchor" href="#1-how-to-use-valjogen-in-your-projects"><span class="octicon octicon-link"></span></a>1. HOW TO USE VALJOGen IN YOUR PROJECTS:</h1>
+
+<p>VALJOGen annotations are source-level and needed by compiler only. There are no-runtime dependencies and no libraries that you need to add to your
+classpath at runtime (unless you explicitly add references yourself to 3rd party code). You do need to add the VALJOGen annotationprocessor jar
+to your compile path though.</p>
+
+<p>VALJOGen uses standard Java annotation processors (<code>JSR 269</code>) and should work any Java tool running <code>JDK 1.8+</code>. Below are listed some ways of using VALJOGen with porpular
+tools (do replace <em>XXX</em> with latest version):</p>
+
+<h2>
+<a name="adding-valjogen-annotationprocessor-to-javac-compiler" class="anchor" href="#adding-valjogen-annotationprocessor-to-javac-compiler"><span class="octicon octicon-link"></span></a>Adding VALJOGen annotationprocessor to JavaC compiler:</h2>
+
+<blockquote>
+<p>javac -cp valjogen-annotationprocessor-<em>XXX</em>.jar -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java</p>
+</blockquote>
+
+<h2>
+<a name="adding-valjogen-annotationprocessor-to-maven" class="anchor" href="#adding-valjogen-annotationprocessor-to-maven"><span class="octicon octicon-link"></span></a>Adding VALJOGen annotationprocessor to Maven:</h2>
+
+<p>Use <code>Maven 3.2.0</code> or latet and add the dependency:</p>
+
+<blockquote>
+<pre><code>   &lt;dependency&gt;
+       &lt;groupId&gt;com.fortyoneconcepts.valjogen.annotationprocessor&lt;/groupId&gt;
+       &lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;
+       &lt;version&gt;*XXX*&lt;/version&gt;
+   &lt;/dependency&gt;
+</code></pre>
+</blockquote>
+
+<h2>
+<a name="adding-valjogen-annotationprocessor-to-eclipse" class="anchor" href="#adding-valjogen-annotationprocessor-to-eclipse"><span class="octicon octicon-link"></span></a>Adding VALJOGen annotationprocessor to Eclipse:</h2>
+
+<blockquote>
+<p>Open Window &gt; Preferences &gt; Maven &gt; Annotation processing or right-click on your project &gt; Properties &gt; Maven &gt; Annotation processing to select the Annotation Processing strategy of your choice.</p>
+</blockquote>
+
+<h2>
+<a name="adding-valjogen-annotationprocessor-to-eclipse-using-maven-currently-untested" class="anchor" href="#adding-valjogen-annotationprocessor-to-eclipse-using-maven-currently-untested"><span class="octicon octicon-link"></span></a>Adding VALJOGen annotationprocessor to Eclipse using Maven <em>(CURRENTLY UNTESTED)</em>:</h2>
+
+<ol>
+<li>Install Eclipse Luna 4.4+</li>
+<li>Install Eclipse plugin m2e (from eclipses build-in "Luna" update site)</li>
+<li>Install jbosstools's m2e-apt plugin from (from update site "<a href="http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt%22">http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt"</a>)</li>
+</ol><h1>
+<a name="3-how-to-extendmodifymaintain-valjogen" class="anchor" href="#3-how-to-extendmodifymaintain-valjogen"><span class="octicon octicon-link"></span></a>3. HOW TO EXTEND/MODIFY/MAINTAIN VALJOGen:</h1>
+
+<p>See readme in annotaton processor project for implementation details.</p>
+
+<p>In addition, to update readme pages in GitHub Flavored Markdown (<code>.md</code>) format use these 2 eclipse plugins:</p>
+
+<ul>
+<li>GitHub Flavored Markdown viewer: <a href="https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/">https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/</a>
+</li>
+<li>Markdown editor: <a href="http://www.winterwell.com/software/updatesite/">http://www.winterwell.com/software/updatesite/</a>
+</li>
+</ul><h1>
+<a name="4-known-issues" class="anchor" href="#4-known-issues"><span class="octicon octicon-link"></span></a>4. KNOWN ISSUES:</h1>
+
+<ul>
+<li>Maven does not always detect correctly when to rebuild after changes in templates. Do a <code>"mvn clean"</code> if this happens.</li>
+<li>Some configuration options are not yet finished. See javadocs for details.</li>
+</ul><h1>
+<a name="5-relevant-litterature-about-java-value-objects" class="anchor" href="#5-relevant-litterature-about-java-value-objects"><span class="octicon octicon-link"></span></a>5. RELEVANT LITTERATURE ABOUT JAVA VALUE OBJECTS:</h1>
+
+<ul>
+<li><a href="http://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html">http://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html</a></li>
+<li><a href="http://blog.joda.org/2014/03/valjos-value-java-objects.html">http://blog.joda.org/2014/03/valjos-value-java-objects.html</a></li>
+<li><a href="https://blogs.oracle.com/jrose/entry/value_types_in_the_vm">https://blogs.oracle.com/jrose/entry/value_types_in_the_vm</a></li>
+<li><a href="http://martinfowler.com/bliki/ValueObject.html">http://martinfowler.com/bliki/ValueObject.html</a></li>
+</ul><h1>
+<a name="6-license" class="anchor" href="#6-license"><span class="octicon octicon-link"></span></a>6. LICENSE</h1>
+
+<ul>
+<li>See <a href="./LICENSE">LICENSE file</a>.</li>
+</ul><h1>
+<a name="author-and-contact-info" class="anchor" href="#author-and-contact-info"><span class="octicon octicon-link"></span></a>Author and contact info</h1>
+
+<p><strong>Morten M. Christensen, <a href="www.41concepts.com">mmc (AT) 41concepts |dot| com</a></strong></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">VALJOGen maintained by <a href="https://github.com/41concepts">41concepts</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
