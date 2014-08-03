@@ -17,18 +17,25 @@
 	<groupId>com.fortyoneconcepts.valjogen</groupId>
 	<artifactId>valjogen-projectsmaster</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.5</version>
 	<name>Master Parent Project for VALue Java Objects Generator (VALJOGen)</name>
 	<description>Master Parent Project for VALue Java Objects Generator (VALJOGen)</description>
-	<url>http://todo</url>
+	<url>http://41concepts.github.io/VALJOGen</url>
 	<inceptionYear>2014</inceptionYear>
+	<organization>
+        <name>41concepts</name>
+        <url>www.41concepts.com</url>
+    </organization>
 	<licenses>
 		<license>
-			<name>MIT-style</name>
-			<url>license.txt</url>
+			<name>VALJOGen BSD-style license</name>
+			<url>https://github.com/41concepts/VALJOGen/blob/master/LICENSE</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<scm>
+        <url>scm:git:git@github.com:41concepts/VALJOGen.git</url>
+    </scm>
 	<modules>
 		<module>valjogen-annotations</module>
 		<module>valjogen-integrationtests</module>
@@ -38,7 +45,7 @@
 	    <developer>
 	      <id>mmc</id>
 	      <name>Morten</name>
- 	      <email>mmc@41concepts.com</email>
+ 	      <email>mmc (AT) 41concepts |DOT| com</email>
 	      <url>http://www.41concepts.com</url>
 	      <organization>41concepts</organization>
 	      <organizationUrl>http://www.41concepts.com</organizationUrl>

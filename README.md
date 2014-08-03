@@ -27,7 +27,7 @@ tools (do replace *XXX* with latest version):
 
 ##Adding VALJOGen annotationprocessor to Maven:
 
-Use `Maven 3.2.0` or latet and add the dependency:
+Use `Maven 3.2.0` or later and add the dependency:
 >        <dependency>
 >            <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
 >            <artifactId>valjogen-annotationprocessor</artifactId>
