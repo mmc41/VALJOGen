@@ -6,4 +6,4 @@ This moddule only contains source-level annotations for VALJOGen. It has NO depe
 unless one want to compile code using the annotations without the annotation processor.
 
 #Author and contact info
-**Morten M. Christensen, [mmc (AT) 41concepts |dot| com](www.41concepts.com)**
+**Morten M. Christensen, [mmc (AT) 41concepts |dot| com](http://www.41concepts.com)**

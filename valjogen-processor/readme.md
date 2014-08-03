@@ -29,7 +29,7 @@ Then execute a `"mvn package" ` on command line to compile project and run tests
 
 #Useful links
 - [com.google.testing.compile library](https://github.com/google/compile-testing) - For Testing of annotations processors and access to javax.lang.model.*
-- [StringTemplate](https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation) - For maintaining template group files.
+- [StringTemplate](http://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation) - For maintaining template group files.
 
 #Author and contact info
-**Morten M. Christensen, [mmc (AT) 41concepts |dot| com](www.41concepts.com)**
+**Morten M. Christensen, [mmc (AT) 41concepts |dot| com](http://http://www.41concepts.com)**
