@@ -1,0 +1,132 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.fortyoneconcepts.valjogen</groupId>
+		<artifactId>valjogen-projectsmaster</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
+	<artifactId>valjogen-annotationprocessor</artifactId>
+	<packaging>jar</packaging>
+
+	<name>ValjoGen-AnnotationProcessor</name>
+	<url>todo</url>
+	<description>Annotation processor for generating java value objects</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.fortyoneconcepts.valjogen.annotations</groupId>
+			<artifactId>valjogen-annotations</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>ST4</artifactId>
+			<version>4.0.8</version>
+		</dependency>
+		<dependency>
+		 <groupId>com.google.testing.compile</groupId>
+		  <artifactId>compile-testing</artifactId>
+		  <version>0.5</version>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>com.google.truth</groupId>
+		  <artifactId>truth</artifactId>
+		  <version>0.21</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<!-- Avoid compiler calling our annotation processor to compile itself
+					 See http://jira.codehaus.org/browse/MCOMPILER-97 for details -->
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<compilerArgument>-proc:none</compilerArgument>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-testCompile</id>
+						<configuration>
+							<compilerArgument>-proc:none</compilerArgument>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			 <plugin>
+		      <artifactId>maven-resources-plugin</artifactId>
+		      <version>2.6</version>
+		      <executions>
+		        <execution>
+		          <id>process-resources</id>
+		          <!-- here the phase you need -->
+		          <phase>validate</phase>
+		          <goals>
+		            <goal>copy-resources</goal>
+		          </goals>
+		          <configuration>
+		            <outputDirectory>target/test-classes/source</outputDirectory>
+		            <resources>
+		              <resource>
+		                <directory>src/test/java</directory>
+		                <filtering>false</filtering>
+		              </resource>
+		            </resources>
+		          </configuration>
+		        </execution>
+		      </executions>
+		    </plugin>
+		    <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <version>2.17</version>
+		        <configuration>
+		          <excludes>
+		            <exclude>source/**</exclude>
+		          </excludes>
+		        </configuration>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+						<manifestEntries>
+							<Built-By>mmc / 41concepts</Built-By>
+							<url>${project.url}</url>
+						</manifestEntries>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<finalName>${project.artifactId}-${project.version}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<attach>false</attach>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<finalName>${project.artifactId}-${project.version}-without-dependencies</finalName>
+	</build>
+</project>

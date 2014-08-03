@@ -1,0 +1,38 @@
+toString(clazz) ::= <<
+@Override
+public String toString()
+{
+  final StringBuilder <uniqueVariableName(clazz,"sb")> = new StringBuilder();
+
+  <uniqueVariableName(clazz,"sb")>.append("<clazz.name> [");
+
+  <clazz.members:{m | <toStringMember(m)> }; separator=memberSeparator()>
+
+  <uniqueVariableName(clazz,"sb")>.append(']');
+
+  return <uniqueVariableName(clazz,"sb")>.toString();
+}
+>>
+
+memberSeparator() ::= <<
+<\n><uniqueVariableName(clazz,"sb")>.append(", ");<\n>
+>>
+
+toStringMember(member) ::= <<
+<uniqueVariableName(clazz,"sb")>.append("<member.name>=");
+<uniqueVariableName(clazz,"sb")>.append(<(toStringTemplateNamesByTypeCategory.(member.type.typeCategory))(member.name, member.type)>);
+>>
+
+toStringTemplateNamesByTypeCategory ::= [ "PRIMITIVE": "toString_primitive", "ARRAY": "toString_array", default: "toString_object"]
+
+toString_primitive(var,type) ::= <<
+<var>
+>>
+
+toString_array(var, type) ::= <<
+Arrays.toString(<var>)
+>>
+
+toString_object(var, type) ::= <<
+<var>
+>>

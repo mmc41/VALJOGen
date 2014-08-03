@@ -1,0 +1,40 @@
+equals(clazz) ::= <<
+@Override
+public boolean equals(final Object obj)
+{
+  if (this == obj)
+    return true;
+  if (obj == null)
+    return false;
+  if (getClass() != obj.getClass())
+    return false;
+
+  <clazz.prototypicalName> <uniqueVariableName(clazz,"other")> = (<clazz.prototypicalName>) obj;
+
+  return (<clazz.members:{m | <(equalsTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, m.name, m.type)>}; wrap, anchor, separator=" && ">);
+}
+>>
+
+equalsTemplateNamesByTypeCategory ::= [ "PRIMITIVE": "equals_primitive", "ARRAY": "equals_array", default: "equals_object"]
+
+equals_primitive(clazz, var, type) ::= <%
+<if(type.primitiveFloat)>
+(Float.floatToIntBits(<var>) == Float.floatToIntBits(<uniqueVariableName(clazz,"other")>.<var>))
+<elseif(type.primitiveDouble)>
+(Double.doubleToLongBits(<var>) == Double.doubleToLongBits(<uniqueVariableName(clazz,"other")>.<var>))
+<else>
+(<var> == <uniqueVariableName(clazz,"other")>.<var>)
+<endif>
+%>
+
+equals_array(clazz, var, type) ::= <%
+<if(type.multiDimensionalArray)>
+Arrays.deepEquals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
+<else>
+Arrays.equals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
+<endif>
+%>
+
+equals_object(clazz, var, type) ::= <%
+Objects.equals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
+%>

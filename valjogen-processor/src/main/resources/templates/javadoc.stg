@@ -1,0 +1,23 @@
+classJavaDoc(clazz) ::= <<
+<if(clazz.configuration.javadDocEnabled)>
+/**
+ * {@inheritDoc}
+ */<\\>
+<endif>
+>>
+
+constructorJavaDoc(clazz) ::= <<
+<if(clazz.configuration.javadDocEnabled)>
+/**
+ * Constructs an instance of <clazz.name>
+ */<\\>
+<endif>
+>>
+
+propertyJavaDoc(property) ::= <<
+<if(property.configuration.javadDocEnabled)>
+/**
+ * {@inheritDoc}
+ */<\\>
+<endif>
+>>

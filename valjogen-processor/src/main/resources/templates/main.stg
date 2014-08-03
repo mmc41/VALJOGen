@@ -1,0 +1,82 @@
+import "common.stg"
+import "hash.stg"
+import "equals.stg"
+import "tostring.stg"
+import "javadoc.stg"
+
+class(clazz) ::= <<
+<if(!clazz.inDefaultPackage)>
+package <clazz.packageName>;
+
+import java.util.Arrays;
+import java.util.Objects;
+
+<endif>
+<classJavaDoc(clazz)>
+
+<optScope(clazz)><optFinal(clazz)><optAbstract(clazz)>class <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceType.name>
+{
+  <clazz.members:declareMember(); separator="\n">
+
+  <if(!clazz.abstract)>
+  <factoryMethod(clazz)>
+  <endif>
+
+  <constructor(clazz)>
+
+  <clazz.propertyMethods:property(); separator="\n">
+
+  <if(clazz.configuration.hashEnabled)>
+  <hashCode(clazz)>
+  <endif>
+
+  <if(clazz.configuration.equalsEnabled)>
+  <equals(clazz)>
+  <endif>
+
+  <if(clazz.configuration.toStringEnabled)>
+  <toString(clazz)>
+  <endif>
+}
+>>
+
+declareMember(member) ::= <<
+<internalLevel(member.clazz)><optFinal(member)><member.type.name> <member.name>;
+>>
+
+constructor(clazz) ::= <<
+<constructorJavaDoc(clazz)>
+<internalLevel(clazz)><clazz.name>(<clazz.members:formalParameter(); wrap, anchor, separator=", ">)
+{
+  <if(!clazz.baseClazzType.rootObject)>super();<endif>
+  <clazz.members:{p | this.<p.name>=<p.name>;}; wrap, anchor, separator="\n">
+}
+>>
+
+factoryMethod(clazz) ::= <<
+public static <optGenericQualifier(clazz)><clazz.prototypicalName> valueOf(<clazz.members:formalParameter(); wrap, anchor, separator=", ">)
+{
+  return new <clazz.name>(<clazz.members:{m | <m.name>}; wrap, anchor, separator=", ">);
+}
+>>
+
+formalParameter(member) ::= <<
+final <member.type.name> <member.name>
+>>
+
+property(property) ::= <<
+<propertyJavaDoc(property)>
+@Override
+public <optFinal(property)><optSynchronized(property)><property.returnType.name> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+{
+<if(property.getter)>
+  return <property.member.name>;
+<elseif(property.setter)>
+  <if(property.selfReturnType)>
+  return new <clazz.name>(<[property.member.otherMembersBeforeThis:{m | this.<m.name>}, property.parameter.name , property.member.otherMembersAfterThis:{m | this.<m.name>}]; wrap, anchor, separator=", ">);
+  <else>
+  this.<property.member.name>=<property.parameter.name>;
+  <endif>
+<endif>
+}
+>>

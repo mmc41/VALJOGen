@@ -1,0 +1,32 @@
+hashCode(clazz) ::= <<
+@Override
+public int hashCode()
+{
+  <if(clazz.primitiveMembers || clazz.arrayMembers)>
+  final int <uniqueVariableName(clazz,"prime")> = 31;
+  int <uniqueVariableName(clazz,"result")> = 1;
+  <clazz.members:{m | <uniqueVariableName(clazz,"result")> = <uniqueVariableName(clazz,"prime")> * <uniqueVariableName(clazz,"result")> + <(hashTemplateNamesByTypeCategory.(m.type.typeCategory))(m.name, m.type)> }; separator="\n">
+  return <uniqueVariableName(clazz,"result")>;
+  <else>
+  return Objects.hash(<clazz.members:{p | <p.name>}; separator=",">);
+  <endif>
+}
+>>
+
+hashTemplateNamesByTypeCategory ::= [ "PRIMITIVE": "hash_primitive", "ARRAY": "hash_array", default: "hash_object"]
+
+hash_primitive(var,type) ::= <<
+<type.wrapperName>.hashCode(<var>);
+>>
+
+hash_array(var, type) ::= <%
+<if(type.multiDimensionalArray)>
+Arrays.deepHashCode(<var>);
+<else>
+Arrays.hashCode(<var>);
+<endif>
+%>
+
+hash_object(var, type) ::= <<
+Objects.hashCode(<var>);
+>>

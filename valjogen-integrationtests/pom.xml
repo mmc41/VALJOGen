@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+     <groupId>com.fortyoneconcepts.valjogen</groupId>
+     <artifactId>valjogen-projectsmaster</artifactId>
+     <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.fortyoneconcepts.valjogen.integrationtests</groupId>
+  <artifactId>valjogen-integrationtests</artifactId>
+  <packaging>jar</packaging>
+
+  <name>ValjoGen-IntegrationTests</name>
+  <url>todo</url>
+  <description>Integration tests of ValjoGen generator</description>
+
+  <dependencies>
+		<dependency>
+			<groupId>com.fortyoneconcepts.valjogen.annotations</groupId>
+			<artifactId>valjogen-annotations</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
+			<artifactId>valjogen-annotationprocessor</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+		    <groupId>nl.jqno.equalsverifier</groupId>
+		    <artifactId>equalsverifier</artifactId>
+		    <version>1.4.1</version>
+		    <scope>test</scope>
+        </dependency>
+  </dependencies>
+</project>

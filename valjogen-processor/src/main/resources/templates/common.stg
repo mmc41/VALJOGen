@@ -1,0 +1,35 @@
+optFinal(model) ::= <%
+<if(model.final)>final<\ ><endif>
+%>
+
+optSynchronized(property) ::= <%
+<if(property.synchronized)>synchronized<\ ><endif>
+%>
+
+optAbstract(clazz) ::= <%
+<if(clazz.abstract)>abstract<\ ><endif>
+%>
+
+optScope(clazz) ::= <%
+<if(clazz.configuration.emptyClazzScope)><clazz.configuration.clazzScope><\ ><endif>
+%>
+
+optBaseClass(clazz) ::= <%
+<if(!clazz.baseClazzType.rootObject)> extends <clazz.baseClazzType.name><endif>
+%>
+
+optGenericQualifier(clazz) ::= <%
+<if(clazz.genericQualifier)> <clazz.genericQualifierText> <endif>
+%>
+
+internalLevel(model) ::= <%
+<if(model.final)>
+private<\ >
+<else>
+protected<\ >
+<endif>
+%>
+
+uniqueVariableName(model,str) ::= <%
+<model.variablesPrefix><str>
+%>

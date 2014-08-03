@@ -1,5 +1,7 @@
-Copyright (c) 2014, 41concepts
-All rights reserved.
+VALJOGen - Copyright 2014 by 41concepts Aps (www.41concepts.com). All rights reserved.
+
+Title to copyright in this Work (software, examples and associated documentation)
+shall at all times remain with 41concepts and LICENSEE agrees to preserve same.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -11,6 +13,27 @@ modification, are permitted provided that the following conditions are met:
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
 
+* The name of 41concepts or the author(s) may not be used in advertising or
+  publicity pertaining to distribution of the Work (except from the required
+  acknowledgement detailed below below). All work derived from this software should
+  specificly acknowledge the source with the following statement as part of their
+  own documentation (in the readme if such exist):
+
+  "This work benefitted from VALJOGen software developed
+   by 41concepts (www.41concepts.com)."
+
+* If You(*) institute litigation against any entity (including a
+  cross-claim or counterclaim in a lawsuit) alleging that the Work
+  or a Contribution incorporated within the Work constitutes direct
+  or contributory patent, copyright or trademark infringement, then
+  any rights/permission granted to You under this License shall terminate
+  as of the date such litigation is filed. Any attempts by You(*) to tradmark
+  "VALJOGen" shall likewise immediately terminate your rights under this license
+
+  Where You (*) includes you, your company/organisation, sister company/organisation,
+  parent company/organisation, child company/organisation, or any company/organisation
+  that you have direct or indirect control of).
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -21,4 +44,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+------------------------------------------------------
+/ Morten M. Christensen, mmc (AT) 41concepts |dot| com
 
