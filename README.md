@@ -17,28 +17,44 @@ classpath at runtime (unless you explicitly add references yourself to 3rd party
 to your compile path though.
 
 VALJOGen uses standard Java annotation processors (`JSR 269`) and should work any Java tool running `JDK 1.8+`. Below are listed some ways of using VALJOGen with porpular
-tools (do replace *XXX* with latest version):
+tools (do replace *XXX* with latest version)
+
+Here is a simple example of how to use a VALJOGen annotation to generate source code for a Java Value Class called MySimpleImpl:
+
+```java
+import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
+
+@VALJOGenerate("MySimpleImpl")
+public interface SimpleInterface
+{
+    public Object getObject();
+    public String getString();
+}
+```
 
 ##Adding VALJOGen annotationprocessor to JavaC compiler:
 
->
->   javac -cp valjogen-annotationprocessor-*XXX*.jar -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
->
+```Bash
+javac -cp valjogen-annotationprocessor-*XXX*.jar -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+```
 
 ##Adding VALJOGen annotationprocessor to Maven:
 
-Use `Maven 3.2.0` or later and add the dependency:
->        <dependency>
->            <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
->            <artifactId>valjogen-annotationprocessor</artifactId>
->            <version>*XXX*</version>
->        </dependency>
+Use `Maven 3.2.0` or later and add the dependency (*NOTE: THIS IS FOR THE FUTURE - PROJECT ARTIFACTS ARE NOT IN MAVEN CENTRAL YET*):
+
+```Xml
+<dependency>
+    <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
+    <artifactId>valjogen-annotationprocessor</artifactId>
+    <version>*XXX*</version>
+</dependency>
+```
 
 ##Adding VALJOGen annotationprocessor to Eclipse:
 
->
-> Open Window > Preferences > Maven > Annotation processing or right-click on your project > Properties > Maven > Annotation processing to select the Annotation Processing strategy of your choice.
->
+```
+Open Window > Preferences > Maven > Annotation processing or right-click on your project > Properties > Maven > Annotation processing to select the Annotation Processing strategy of your choice.
+```
 
 ##Adding VALJOGen annotationprocessor to Eclipse using Maven *(CURRENTLY UNTESTED)*:
 
