@@ -4,12 +4,9 @@ import static org.junit.Assert.*;
 
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
-import javax.lang.model.element.*;
 import javax.lang.model.util.*;
 
 import org.junit.Assert;
@@ -21,8 +18,6 @@ import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
-import com.fortyoneconcepts.valjogen.test.input.InterfaceAllTypesWithReservedWords;
-import com.fortyoneconcepts.valjogen.test.input.SimpleAnnotatedInterface;
 import com.google.testing.compile.CompilationRule;
 
 /**
@@ -72,6 +67,7 @@ public class TemplateTest
 		/**
 		 * This is a sample getter for X.
 		 *
+		 * @return an int
 		 * @author mmc
 		 */
 		public int getX();

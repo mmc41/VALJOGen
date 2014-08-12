@@ -13,6 +13,7 @@
 
   <name>ValjoGen-IntegrationTests</name>
   <description>Integration tests of ValjoGen generator</description>
+  <url>http://valjogen.41concepts.com</url>
 
   <dependencies>
 		<dependency>

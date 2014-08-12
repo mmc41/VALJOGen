@@ -13,8 +13,6 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 /**
  * Meta-information about class that need to be generated.
  *
- * Beware that property-style methods on this class may be called from string templates so be careful with renaming!
- *
  * @author mmc
  */
 public final class Clazz implements Model
@@ -80,7 +78,9 @@ public final class Clazz implements Model
 	}
 
 	/**
-	 * Returns a class type name but without package in front. For generic types this is prototypical. I.e. ClassName<T>
+	 * Returns a class type name but without package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
+	 *
+	 * @return The prototypical class type name without any package.
 	 */
 	public String getPrototypicalName()
 	{
@@ -88,7 +88,9 @@ public final class Clazz implements Model
 	}
 
 	/**
-	 * Returns a simple lass type name without package and without any generic parts. I.e. no <T> suffix.
+	 * Returns a simple class type name without package and without any generic parts. I.e. no &lt;T&gt; suffix.
+	 *
+	 * @return The simple classs type name
 	 */
 	public String getName()
 	{
@@ -96,7 +98,9 @@ public final class Clazz implements Model
 	}
 
 	/**
-	 * Returns a full class type name with package in front. For generic types this is prototypical. I.e. ClassName<T>
+	 * Returns a full class type name with package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
+	 *
+	 * @return The fully qualifid prototypical class type name.
 	 */
 	public String getPrototypicalFullName() {
 		return qualifiedClassName;

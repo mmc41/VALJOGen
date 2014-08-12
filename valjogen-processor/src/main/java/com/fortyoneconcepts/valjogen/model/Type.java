@@ -12,6 +12,11 @@ import javax.lang.model.type.TypeMirror;
 
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 
+/**
+ * Meta-information about a type that our model use or refer to.
+ *
+ * @author mmc
+ */
 public class Type implements Model
 {
 	private Model modelUsingType;

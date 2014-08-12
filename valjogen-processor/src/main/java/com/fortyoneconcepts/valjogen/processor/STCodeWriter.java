@@ -3,7 +3,6 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -12,12 +11,22 @@ import org.stringtemplate.v4.misc.*;
 
 import com.fortyoneconcepts.valjogen.model.*;
 
+/**
+ * Controller for StringTemplate 4 templates groups. Calls into the main.stg
+ * template.
+ *
+ * @author mmc
+ */
 public final class STCodeWriter
 {
+	private static final String mainTemplateFile = "templates/main.stg";
+	private static final String mainTemplate = "class";
+	private static final String mainTemplateArg = "clazz";
+
 	private static final char delimiterStartChar = '<';
 	private static final char delimiterStopChar = '>';
 
-	private Consumer<String> errorConsumer;
+	private final Consumer<String> errorConsumer;
 
 	public STCodeWriter(Consumer<String> errorConsumer) {
 		this.errorConsumer = Objects.requireNonNull(errorConsumer);
@@ -28,19 +37,19 @@ public final class STCodeWriter
 		String result = null;
 
 		try {
-			STGroup group = new STGroupFile("templates/main.stg", delimiterStartChar, delimiterStopChar);
+			STGroup group = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
 
 			group.registerModelAdaptor(Model.class, new CustomSTModelAdaptor());
 
 			group.setListener(new ErrorListener());
 
-			ST st = group.getInstanceOf("class");
+			ST st = group.getInstanceOf(mainTemplate);
 
-			st.add("clazz", clazz);
+			st.add(mainTemplateArg, clazz);
 
 			result = st.render(cfg.getLocale(), cfg.getLineWidth());
 
-			System.out.println("Rendered "+result);
+			// System.out.println("Rendered "+result);
 
 		} catch (Throwable e) {
 			errorConsumer.accept(e.getMessage());

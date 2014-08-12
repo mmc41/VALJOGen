@@ -21,16 +21,28 @@ import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 
+/**
+ * Main class for our annotation processor using the javax annotation processor api. Instantiated and used from javac compiler.
+ *
+ * @author mmc
+ */
 public class AnnotationProcessor extends AbstractProcessor
 {
 	private Class<VALJOGenerate> annotationGenerateClass = VALJOGenerate.class;
 	private Class<VALJOConfigure> annotationConfigurationClass = VALJOConfigure.class;
 
+	/**
+	 * Constructor called automatically by javac compiler.
+	 *
+	 */
 	public AnnotationProcessor()
 	{
 		super();
 	}
 
+	/**
+	 * Entry point for javac-compiler when calling into our processor
+	 */
 	@Override
 	public boolean process(Set<? extends TypeElement> annotationElements, RoundEnvironment roundEnv)
 	{
@@ -52,8 +64,6 @@ public class AnnotationProcessor extends AbstractProcessor
 			  } else messager.printMessage(Diagnostic.Kind.ERROR, "Annotation "+annotationGenerateClass.getSimpleName()+ " may only be used with interfaces.", e);
 			}
 		}
-
-
 
 		return true;
 	}
@@ -99,20 +109,21 @@ public class AnnotationProcessor extends AbstractProcessor
 
 	/**
 	 * Looks for VALJOConfigure in interface and package of interface.
+	 *
+	 * @param annotatedInterfaceElement The interface that uses the VALJOGen annotation.
 	 * @return null if none exist, otherwise closest annotation
 	 */
-	public VALJOConfigure getClosestConfiguration(Element e)
+	private VALJOConfigure getClosestConfiguration(Element annotatedInterfaceElement)
 	{
-		VALJOConfigure configuration = e.getAnnotation(annotationConfigurationClass);
+		VALJOConfigure configuration = annotatedInterfaceElement.getAnnotation(annotationConfigurationClass);
 		if (configuration!=null)
 			return configuration;
 
-		Element enlosingElement = e.getEnclosingElement();
+		Element enlosingElement = annotatedInterfaceElement.getEnclosingElement();
 		return (enlosingElement!=null) ? getClosestConfiguration(enlosingElement) : null;
 
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public Set<String> getSupportedAnnotationTypes()
 	{

@@ -32,4 +32,4 @@ Then execute a `"mvn package" ` on command line to compile project and run tests
 - [StringTemplate](http://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation) - For maintaining template group files.
 
 #Author and contact info
-**Morten M. Christensen, [mmc (AT) 41concepts |dot| com](http://http://www.41concepts.com)**
+**Morten M. Christensen, [valjogen (AT) 41concepts |dot| com](http://http://www.41concepts.com)**

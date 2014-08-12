@@ -9,10 +9,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Low-level utilties that helps dealing with names of classes, methods/properties, members, types, packages etc.
+ *
+ * @author mmc
+ */
 public class NamesUtil
 {
 	public static final String ImplClassSuffix = "Impl";
 
+	@SuppressWarnings("serial")
 	private static final Map<String,String> primitiveToWrapperMap = new HashMap<String,String>() {{
 	            put("char", "Character");
 			    put("int", "Integer");
@@ -54,6 +60,9 @@ public class NamesUtil
 
 	/**
 	* Create a class name from an interface name by removing package, adding a implementation suffix and removing I/Interface from name while retaining any generic part.
+	*
+	* @param interfaceName The name of the interface that the class name should be generated from.
+	* @return The class name that should be used for the generated valjo object
 	*/
 	public static String createNewClassNameFromInterfaceName(String interfaceName)
 	{

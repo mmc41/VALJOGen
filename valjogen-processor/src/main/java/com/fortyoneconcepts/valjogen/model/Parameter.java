@@ -7,6 +7,11 @@ import java.util.Objects;
 
 import javax.lang.model.element.VariableElement;
 
+/**
+ * Meta-information about a formal parameter for a method/property.
+ *
+ * @author mmc
+ */
 public class Parameter implements Model
 {
 	private final Clazz clazz;

@@ -86,4 +86,4 @@ In addition, to update readme pages in GitHub Flavored Markdown (`.md`) format u
 - See [LICENSE file](./LICENSE).
 
 #Author and contact info
-**Morten M. Christensen, [mmc (AT) 41concepts |dot| com](http://www.41concepts.com)**
+**Morten M. Christensen, [valjogen (AT) 41concepts |dot| com](http://www.41concepts.com)**

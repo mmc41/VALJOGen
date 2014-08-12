@@ -42,6 +42,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Custom model adapter copied from ST4 source that allows a few more prefixes for methods.
+ *
+ * @author mmc
+ */
 public class CustomSTModelAdaptor implements ModelAdaptor {
 	protected static final Member INVALID_MEMBER;
 	static {

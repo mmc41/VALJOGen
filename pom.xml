@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<prerequisites>
 		<maven>3.2.0</maven>
 	</prerequisites>
@@ -12,7 +13,26 @@
 		<maven.compiler.verbose>false</maven.compiler.verbose>
 		<maven.compiler.debug>true</maven.compiler.debug>
 		<maven.compiler.failOnError>true</maven.compiler.failOnError>
+		<maven.build.timestamp.format>yyyy-MM-dd 'at' HH:mm</maven.build.timestamp.format>
+		<maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+		<maven.javadoc.failOnWarning>true</maven.javadoc.failOnWarning>
+		<javadoc.custom.css><![CDATA[
+         <!-- Additional custom styles for code syntax highlightning -->
+         <style type="text/css">
+            .string { color: #8A85FC; }
+            .keyword { color: #913474; }
+            .identifier { color: #101010; }
+            .free-comment { color: #7CA590; }
+            .javadoc-comment { color: #F0F3FA; }
+         </style>
+        ]]>
+		</javadoc.custom.css>
+		<javadoc.bottom><![CDATA[<br/>
+         Version ${version} generated on ${maven.build.timestamp} - (C) <a href="http://www.41concepts.com">41concepts Aps</a>. Refer to project homepage <b><a href="http://valjogen.41concepts.com">valjogen.41concepts.com</a></b> for more information.
+        ]]>
+		</javadoc.bottom>
 		<encoding>UTF-8</encoding>
+		<license.url>http://github.com/41concepts/VALJOGen/blob/master/LICENSE</license.url>
 	</properties>
 	<groupId>com.fortyoneconcepts.valjogen</groupId>
 	<artifactId>valjogen-projectsmaster</artifactId>
@@ -23,39 +43,39 @@
 	<url>http://valjogen.41concepts.com</url>
 	<inceptionYear>2014</inceptionYear>
 	<organization>
-        <name>41concepts</name>
-        <url>www.41concepts.com</url>
-    </organization>
+		<name>41concepts Aps</name>
+		<url>http://www.41concepts.com</url>
+	</organization>
 	<licenses>
 		<license>
 			<name>VALJOGen BSD-style license</name>
-			<url>https://github.com/41concepts/VALJOGen/blob/master/LICENSE</url>
+			<url>${license.url}</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
 	<scm>
-        <url>scm:git:git@github.com:41concepts/VALJOGen.git</url>
-    </scm>
+		<url>scm:git:git@github.com:41concepts/VALJOGen.git</url>
+	</scm>
 	<modules>
 		<module>valjogen-annotations</module>
 		<module>valjogen-integrationtests</module>
 		<module>valjogen-processor</module>
 	</modules>
 	<developers>
-	    <developer>
-	      <id>mmc</id>
-	      <name>Morten</name>
- 	      <email>mmc (AT) 41concepts |DOT| com</email>
-	      <url>http://www.41concepts.com</url>
-	      <organization>41concepts</organization>
-	      <organizationUrl>http://www.41concepts.com</organizationUrl>
-	      <roles>
-	        <role>architect</role>
-	        <role>developer</role>
-	      </roles>
-	      <timezone>+1</timezone>
-	    </developer>
-	  </developers>
+		<developer>
+			<id>mmc</id>
+			<name>Morten Christensen</name>
+			<email>valjogen@41concepts.com</email>
+			<url>http://www.41concepts.com</url>
+			<organization>41concepts</organization>
+			<organizationUrl>http://www.41concepts.com</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -65,7 +85,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-	    <defaultGoal>install</defaultGoal>
+		<defaultGoal>package</defaultGoal>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -73,28 +93,122 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.3</version>
+					<configuration>
+						<archive>
+							<manifestEntries>
+								<Built-By>mmc</Built-By>
+								<url>${project.url}</url>
+								<Specification-Title>VALJOGen Source</Specification-Title>
+								<Implementation-Vendor>www.41concepts.com</Implementation-Vendor>
+								<Implementation-Version>${project.version}</Implementation-Version>
+								<Licence-Url>${license.url}</Licence-Url>
+							</manifestEntries>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.17</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9.1</version>
+					<configuration>
+						<show>public</show>
+						<quiet>true</quiet>
+						<top>${javadoc.custom.css}</top>
+						<bottom>${javadoc.bottom}</bottom>
+						<author>false</author>
+						<archive>
+							<manifestEntries>
+								<Built-By>mmc</Built-By>
+								<url>${project.url}</url>
+								<Specification-Title>VALJOGen JavaDoc</Specification-Title>
+								<Implementation-Vendor>www.41concepts.com</Implementation-Vendor>
+								<Implementation-Version>${project.version}</Implementation-Version>
+								<Licence-Url>${license.url}</Licence-Url>
+							</manifestEntries>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<archive>
+							<index>true</index>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<classpathPrefix>lib/</classpathPrefix>
+							</manifest>
+							<manifestEntries>
+                                <Built-By>mmc</Built-By>
+                                <url>${project.url}</url>
+                                <Specification-Title>VALJOGen JavaDoc</Specification-Title>
+                                <Implementation-Vendor>www.41concepts.com</Implementation-Vendor>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Licence-Url>${license.url}</Licence-Url>
+							</manifestEntries>
+							<addMavenDescriptor>false</addMavenDescriptor>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<archive>
+							<index>true</index>
+							<manifest>
+								<addClasspath>true</addClasspath>
+							</manifest>
+							<manifestEntries>
+								<Built-By>mmc</Built-By>
+								<url>${project.url}</url>
+								<Specification-Title>VALJOGen</Specification-Title>
+								<Implementation-Vendor>www.41concepts.com</Implementation-Vendor>
+								<Implementation-Version>${project.version}</Implementation-Version>
+								<Licence-Url>${license.url}</Licence-Url>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
-		  <plugin>
-	        <groupId>org.apache.maven.plugins</groupId>
-	        <artifactId>maven-eclipse-plugin</artifactId>
-	        <version>2.9</version>
-	      </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.15</version>
-				<configuration>
-					<useFile>false</useFile>
-					<disableXmlReport>true</disableXmlReport>
-					<!-- If you have classpath issue like NoDefClassError,... -->
-					<!-- useManifestOnlyJar>false</useManifestOnlyJar -->
-					<includes>
-						<include>**/*Test.*</include>
-						<include>**/*Suite.*</include>
-					</includes>
-				</configuration>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
 			</plugin>
 		</plugins>
 	</build>

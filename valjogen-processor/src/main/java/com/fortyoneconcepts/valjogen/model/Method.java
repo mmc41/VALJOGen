@@ -11,7 +11,6 @@ import javax.lang.model.element.ExecutableElement;
 /***
  * Meta-information about a method that should be generated (implemented).
  *
- *
  * @author mmc
  */
 public class Method implements Model

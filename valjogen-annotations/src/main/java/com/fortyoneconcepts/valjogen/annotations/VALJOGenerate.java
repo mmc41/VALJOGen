@@ -9,6 +9,23 @@ import java.lang.annotation.*;
 * Use this annotation on Java interface to request a Value Object Class to be generated that implements the
 * interface. See also {@link VALJOConfigure} for how to configure the details of the generated class.
 *
+* <p><b>Usage example (SimpleInterface.java):</b></p>
+* <pre>
+* <code>
+* <span class="keyword">import</span> <span class="identifier">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
+*
+*{@literal @}VALJOGenerate(<span class="string">"MySimpleImpl"</span>)
+* <span class="keyword">public interface</span> <span class="identifier">SimpleInterface</span>
+* {
+*    <span class="keyword">public</span> <span class="identifier">Object getObjectValue</span>();
+*    <span class="keyword">public</span> <span class="identifier">String getStringValue</span>();
+* }
+* </code>
+* </pre>
+*
+* The above code will instruct the VALJOGen annotation processor to generate a value object class called MySimpleImpl with members
+* objectValue (of type Object) and stringValue (of type String).
+*
 * @author mmc
 */
 @Retention(RetentionPolicy.SOURCE)
@@ -21,6 +38,8 @@ public @interface VALJOGenerate
 	*
 	* May also (as all other annotated values) be overruled globally with equivalent annotation processor key
 	* (even though it is generally a bad idea because of name clashes when generating multiple classes).
+	*
+	* @return The short name or fully qualified name of the generated class.
 	*/
     String name() default "";
 }

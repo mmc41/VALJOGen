@@ -3,8 +3,6 @@
 */
 package com.fortyoneconcepts.valjogen.integrationtests;
 
-import java.util.Arrays;
-
 import org.junit.Ignore;
 import org.junit.Test;
 

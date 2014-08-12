@@ -18,6 +18,7 @@ import java.util.Map;
 * Use add(attribute-method-name, value) to configure values on the attribute followed by the build method to generate an annotation instance.
 *
 * @author mmc
+* @param <A> The type of the annotation that this builder should construct
 */
 public final class AnnotationProxyBuilder<A extends Annotation> implements InvocationHandler
 {
@@ -27,7 +28,7 @@ public final class AnnotationProxyBuilder<A extends Annotation> implements Invoc
 	/***
 	 * Constructs a builder for the specified annotation.
 	 *
-	 * @return
+	 * @param annotation The type of the annotation that this builder should construct.
 	 */
 	public AnnotationProxyBuilder(Class<A> annotation)
 	{
@@ -44,7 +45,7 @@ public final class AnnotationProxyBuilder<A extends Annotation> implements Invoc
 	/***
 	 * The annotation instance (a proxy).
 	 *
-	 * @return
+	 * @return Annotation with filled-in configuration.
 	 */
 	@SuppressWarnings("unchecked")
 	public A build()
