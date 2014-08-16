@@ -28,7 +28,7 @@
         ]]>
 		</javadoc.custom.css>
 		<javadoc.bottom><![CDATA[<br/>
-         Version ${version} generated on ${maven.build.timestamp} - (C) <a href="http://www.41concepts.com">41concepts Aps</a>. Refer to project homepage <b><a href="http://valjogen.41concepts.com">valjogen.41concepts.com</a></b> for more information.
+         Version ${project.version generated on ${maven.build.timestamp} - (C) <a href="http://www.41concepts.com">41concepts Aps</a>. Refer to project homepage <b><a href="http://valjogen.41concepts.com">valjogen.41concepts.com</a></b> for more information.
         ]]>
 		</javadoc.bottom>
 		<encoding>UTF-8</encoding>

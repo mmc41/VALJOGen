@@ -12,11 +12,11 @@ import org.junit.Test;
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 
+/**
+ * Everthing can be configured by annotions or by options keys. Verify that there is a 1-1 relationships and with no misspellings.
+ */
 public class ConfigurationOptionKeysValidateTest
 {
-	/**
-	 * Everthing can be configured by annotions or by options keys. Check that there is a 1-1 relationships and with no misspellings.
-	 */
 	@Test
 	public void checkConfigurationOptionKeysCorrespondToAnnotationMethods() throws NoSuchMethodException, SecurityException
 	{

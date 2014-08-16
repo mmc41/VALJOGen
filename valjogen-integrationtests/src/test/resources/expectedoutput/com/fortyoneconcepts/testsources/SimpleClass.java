@@ -7,7 +7,7 @@ import java.util.Objects;
  * {@inheritDoc}
  */
 
-final class SimpleClass implements SimpleInterface
+public final class SimpleClass implements SimpleInterface
 {
   private final Object _object;
   private final String _string;
@@ -22,8 +22,8 @@ final class SimpleClass implements SimpleInterface
    */
   private SimpleClass(final Object _object, final String _string)
   {
-    this._object=_object;
-    this._string=_string;
+    this._object=Objects.requireNonNull(_object);
+    this._string=Objects.requireNonNull(_string);
   }
 
   /**

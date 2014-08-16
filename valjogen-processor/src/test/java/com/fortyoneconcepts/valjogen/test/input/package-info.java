@@ -1,8 +1,6 @@
 /**
- * @author mmc
+ * Test interfaces for code generation. Annotations are only used by compilation-tests, other runtime tests need to add annotations at runtime.
  *
+ * @author mmc
  */
-@VALJOConfigure(synchronizedAccessEnabled=false)
 package com.fortyoneconcepts.valjogen.test.input;
-
-import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;

@@ -1,6 +1,9 @@
 package com.fortyoneconcepts.valjogen.test;
 
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,13 +16,16 @@ import org.junit.runners.Parameterized.Parameters;
 import com.fortyoneconcepts.valjogen.processor.AnnotationProcessor;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.google.testing.compile.*;
+
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
 /**
- * Checks that all test input classes and their generated classes can compile with an annotation processor.
+ * Stubbed integration tests that checks that all test input classes and their generated classes can compile with an annotation processor.
  *
  * This is done by searching the class path for all classes in our test source package and then using
  * letting Junit instantiate a new instance of this test class and run the test for all test source class files.
+ *
+ * Nb. Unlike other runtime tests, this test requires source interfaces to be annotated!
  *
  * @author mmc
  */
@@ -43,7 +49,7 @@ public class GeneratedOutputCanCompileTest
 	}
 
 	@Test // // Nb. Must be executed from test class - can not be run individually.
-	public void testInterface() throws FileNotFoundException
+	public void testInterface() throws FileNotFoundException, MalformedURLException, URISyntaxException
 	{
 		// Unfortunately, we are currenly forced to use a google's Truth
 		// framework below instead of a JUnit assert like all the other tests:

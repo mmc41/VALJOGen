@@ -45,9 +45,9 @@ public final class STCodeWriter
 
 			ST st = group.getInstanceOf(mainTemplate);
 
-			st.add(mainTemplateArg, clazz);
+			st.add(mainTemplateArg, Objects.requireNonNull(clazz));
 
-			result = st.render(cfg.getLocale(), cfg.getLineWidth());
+			result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
 
 			// System.out.println("Rendered "+result);
 

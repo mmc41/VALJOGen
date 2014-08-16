@@ -43,6 +43,11 @@ public interface ConfigurationOptionKeys
 	 public static String finalPropertiesEnabled = "finalPropertiesEnabled";
 
 	 /**
+     * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#ensureNotNullEnabled
+	 */
+	 public static String ensureNotNullEnabled = "ensureNotNullEnabled";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#synchronizedAccessEnabled
 	 */
 	 public static String synchronizedAccessEnabled = "synchronizedAccessEnabled";
@@ -92,6 +97,12 @@ public interface ConfigurationOptionKeys
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOGenerate#name
 	 */
 	 public static String name = "name";
+
+	 /**
+	 *
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#importClasses
+	 */
+	 public static String importClasses = "importClasses";
 
 	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#extraInterfaceNames

@@ -11,7 +11,7 @@ optAbstract(clazz) ::= <%
 %>
 
 optScope(clazz) ::= <%
-<if(clazz.configuration.emptyClazzScope)><clazz.configuration.clazzScope><\ ><endif>
+<if(!clazz.configuration.emptyClazzScope)><clazz.configuration.clazzScope><\ ><endif>
 %>
 
 optBaseClass(clazz) ::= <%
@@ -30,6 +30,14 @@ protected<\ >
 <endif>
 %>
 
-uniqueVariableName(model,str) ::= <%
+guard(member, param) ::= <%
+<if(member.ensureNotNullEnabled && member.type.object)>
+<clazz.helperTypes.javaUtilObjects.name>.requireNonNull(<param.name>)
+<else>
+<param.name>
+<endif>
+%>
+
+uniqueVariableName(model, str) ::= <%
 <model.variablesPrefix><str>
 %>

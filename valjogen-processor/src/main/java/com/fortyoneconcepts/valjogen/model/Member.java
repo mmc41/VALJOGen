@@ -36,6 +36,12 @@ public final class Member implements Model
 	}
 
 	@Override
+	public HelperTypes getHelperTypes()
+	{
+		return clazz.getHelperTypes();
+	}
+
+	@Override
 	public Clazz getClazz()
 	{
 		return clazz;
@@ -59,6 +65,11 @@ public final class Member implements Model
 	public boolean isFinal()
 	{
 		return properties.stream().noneMatch(p -> p.isSetter() && !p.isSelfReturnType()) && getConfiguration().isFinalMembersEnabled();
+	}
+
+	public boolean isEnsureNotNullEnabled()
+	{
+		return getConfiguration().isEnsureNotNullEnabled();
 	}
 
     public void addPropertyMethod(Property propertyMethod)

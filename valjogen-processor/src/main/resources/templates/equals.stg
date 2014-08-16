@@ -29,12 +29,12 @@ equals_primitive(clazz, var, type) ::= <%
 
 equals_array(clazz, var, type) ::= <%
 <if(type.multiDimensionalArray)>
-Arrays.deepEquals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
+<clazz.helperTypes.javaUtilArrays.name>.deepEquals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
 <else>
-Arrays.equals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
+<clazz.helperTypes.javaUtilArrays.name>.equals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
 <endif>
 %>
 
 equals_object(clazz, var, type) ::= <%
-Objects.equals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
+<clazz.helperTypes.javaUtilObjects.name>.equals(<var>, <uniqueVariableName(clazz,"other")>.<var>)
 %>

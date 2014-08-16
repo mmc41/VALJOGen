@@ -4,13 +4,16 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.Objects;
+import java.util.stream.Stream;
+
+import static java.util.stream.Stream.*;
 
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
+import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 /**
  * Meta-information about a type that our model use or refer to.
@@ -35,6 +38,12 @@ public class Type implements Model
 	}
 
 	@Override
+	public HelperTypes getHelperTypes()
+	{
+		return modelUsingType.getHelperTypes();
+	}
+
+	@Override
 	public Clazz getClazz()
 	{
 		return modelUsingType.getClazz();
@@ -43,24 +52,62 @@ public class Type implements Model
 	@Override
 	public String getPackageName()
 	{
-		return modelUsingType.getPackageName();
+		return getPackageFromQualifiedName(type.toString());
+	}
+
+	public String getQualifiedName()
+	{
+		return stripGenericQualifier(type.toString());
+	}
+
+	/**
+	 * Returns a full class type name with package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
+	 *
+	 * @return The fully qualifid prototypical class type name.
+	 */
+	public String getPrototypicalQualifiedName() {
+		return type.toString();
 	}
 
 	public String getName()
 	{
-	    return NamesUtil.removeUnnecessaryPackageFromName(type.toString(), getPackageName());
+		String qualifiedName = getQualifiedName();
+
+		if (hasPackage(qualifiedName,"java.lang") || hasPackage(qualifiedName,getClazz().getPackageName()))
+			return getUnqualifiedName(qualifiedName);
+
+		Stream<String> classesInScope = concat(getClazz().getImportTypes().stream().map(t -> t.getQualifiedName()), of(getClazz().getQualifiedName()));
+		if (classesInScope.anyMatch(name -> qualifiedName.equals(name)))
+			return getUnqualifiedName(qualifiedName);
+
+		return qualifiedName;
+	}
+
+	public String getPrototypicalName()
+	{
+		String qualifiedPrototypicalName = getPrototypicalQualifiedName();
+		String qualifiedName = stripGenericQualifier(qualifiedPrototypicalName);
+
+		if (hasPackage(qualifiedPrototypicalName,"java.lang") || hasPackage(qualifiedPrototypicalName,getClazz().getPackageName()))
+			return getUnqualifiedName(qualifiedPrototypicalName);
+
+		Stream<String> classesInScope = concat(getClazz().getImportTypes().stream().map(t -> t.getQualifiedName()), of(getClazz().getQualifiedName()));
+		if (classesInScope.anyMatch(name -> qualifiedName.equals(name)))
+			return getUnqualifiedName(qualifiedPrototypicalName);
+
+		return qualifiedPrototypicalName;
 	}
 
 	public String getWrapperName()
 	{
 	    if (isPrimitive())
-	    	return NamesUtil.getWrapperTypeName(getName());
+	    	return getWrapperTypeName(getName());
 	    else return getName();
 	}
 
 	public boolean isRootObject()
 	{
-	    return type.toString().equals("java.lang.Object");
+	    return type.toString().equals(ConfigurationDefaults.RootObject);
 	}
 
     public boolean isPrimitive()
@@ -81,6 +128,11 @@ public class Type implements Model
 	public boolean isArray()
 	{
 		return (type.getKind()==TypeKind.ARRAY);
+	}
+
+	public boolean isObject()
+	{
+		return (!isPrimitive());
 	}
 
 	public boolean isMultiDimensionalArray()

@@ -1,21 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-     <groupId>com.fortyoneconcepts.valjogen</groupId>
-     <artifactId>valjogen-projectsmaster</artifactId>
-     <version>1.0-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>com.fortyoneconcepts.valjogen</groupId>
+		<artifactId>valjogen-projectsmaster</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-  <groupId>com.fortyoneconcepts.valjogen.integrationtests</groupId>
-  <artifactId>valjogen-integrationtests</artifactId>
-  <packaging>jar</packaging>
+	<groupId>com.fortyoneconcepts.valjogen.integrationtests</groupId>
+	<artifactId>valjogen-integrationtests</artifactId>
+	<packaging>jar</packaging>
 
-  <name>ValjoGen-IntegrationTests</name>
-  <description>Integration tests of ValjoGen generator</description>
-  <url>http://valjogen.41concepts.com</url>
+	<name>ValjoGen-IntegrationTests</name>
+	<description>Integration tests of ValjoGen generator</description>
+	<url>http://valjogen.41concepts.com</url>
 
-  <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>com.fortyoneconcepts.valjogen.annotations</groupId>
 			<artifactId>valjogen-annotations</artifactId>
@@ -27,10 +28,26 @@
 			<version>0.5</version>
 		</dependency>
 		<dependency>
-		    <groupId>nl.jqno.equalsverifier</groupId>
-		    <artifactId>equalsverifier</artifactId>
-		    <version>1.4.1</version>
-		    <scope>test</scope>
-        </dependency>
-  </dependencies>
+			<groupId>nl.jqno.equalsverifier</groupId>
+			<artifactId>equalsverifier</artifactId>
+			<version>1.4.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<skipIfEmpty>true</skipIfEmpty>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -32,9 +32,11 @@ public @interface VALJOConfigure
 	/**
 	* Package name of generated class. May be overruled by a fully qualified name on VALJOGenerate or by equivalent annotation processor key.
 	*
+	* If not specified (set to N/A), the output package will be the same as the interface used to generate the class.
+	*
 	* @return Package name.
 	*/
-    String outputPackage() default "";
+    String outputPackage() default "N/A";
 
 	/**
 	* Access modifier for generated class. May be overruled by equivalent annotation processor key.
@@ -57,7 +59,7 @@ public @interface VALJOConfigure
 	*
 	* @return line width to use when generating output.
 	*/
-    int lineWidth() default 0;
+    int lineWidth() default -1;
 
 	/**
 	* Specifies if generated members should be final if possible. May be overruled by equivalent annotation processor key.
@@ -79,6 +81,15 @@ public @interface VALJOConfigure
 	* @return True if generated properties are prefered to be final
 	*/
 	boolean finalPropertiesEnabled() default true;
+
+	/**
+	* Specifies assignments to local variables should guard against null. May be overruled by equivalent annotation processor key.
+	*
+	* NB: In progress - NOT IMPLEMENTED YET!
+	*
+	* @return True if local variables should be guarded against null assignments
+	*/
+	boolean ensureNotNullEnabled() default true;
 
 	/**
 	* Specifies if generated properties/methods for mutable members should be synchronized. May be overruled by equivalent annotation processor key.
@@ -151,6 +162,14 @@ public @interface VALJOConfigure
 	boolean javadDocEnabled() default true;
 
 	/**
+	* Fully qualified extra classes to import into the generated code (in addition to implemented interfaces
+    * and baseclass which is imported as needed).
+	*
+	* @return Array of all qualified classes to import.
+	*/
+    String[] importClasses() default { "java.util.Arrays", "java.util.Objects" };
+
+	/**
 	* Specifies if additional interfaces should be implemented to the generated class. May be overruled by equivalent annotation processor key.
 	*
 	* NB: NOT IMPLEMENTED YET!
@@ -166,5 +185,5 @@ public @interface VALJOConfigure
 	*
 	* @return Name of the base class for the generated class.
 	*/
-    String baseClazzName() default "";
+    String baseClazzName() default "java.lang.Object";
 }

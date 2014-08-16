@@ -69,7 +69,7 @@ public class NamesUtil
 		int unqualifedNamePos = interfaceName.lastIndexOf('.')+1;
 
 		String unqualifedInterfaceName = interfaceName.substring(unqualifedNamePos);
-		unqualifedInterfaceName=unqualifedInterfaceName.replaceFirst("(^I(nterface)?)|(I|i)nterface", "");
+		unqualifedInterfaceName=unqualifedInterfaceName.replaceFirst("(^I(?=[A-Z])(nterface)?)|(I|i)nterface", "");
 
 		int genericQualifierPos = unqualifedInterfaceName.indexOf("<");
 		String result;
@@ -118,14 +118,6 @@ public class NamesUtil
 		if (lastSep>=0)
 			return name.substring(lastSep+1);
 		else return name;
-	}
-
-	public static String removeUnnecessaryPackageFromName(String qualifiedName, String packageContext)
-	{
-		if (hasPackage(qualifiedName, packageContext) || hasPackage(qualifiedName,"java.lang"))
-		  return getUnqualifiedName(qualifiedName);
-		else
-		  return qualifiedName;
 	}
 
 	public static String getPackageFromQualifiedName(String name)

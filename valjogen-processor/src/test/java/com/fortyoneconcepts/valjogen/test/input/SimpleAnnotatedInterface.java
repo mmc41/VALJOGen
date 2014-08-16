@@ -5,5 +5,5 @@ import com.fortyoneconcepts.valjogen.annotations.*;
 @VALJOGenerate
 public interface SimpleAnnotatedInterface
 {
-	public int getValue();
+	public Object getObjectValue();
 }

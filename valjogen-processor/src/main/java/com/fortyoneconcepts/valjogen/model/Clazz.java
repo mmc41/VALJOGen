@@ -29,9 +29,11 @@ public final class Clazz implements Model
 
 	protected final String javaDoc;
 
+	private List<Type> importTypes;
 	private List<Member> members;
 	private List<Property> properties;
 	private List<Method> methods;
+	private HelperTypes helperTypes;
 
 	public Clazz(Configuration configuration, Types types, Elements elements, String qualifiedClassName, TypeMirror interfaceType, TypeMirror baseClass, String javaDoc)
 	{
@@ -48,6 +50,8 @@ public final class Clazz implements Model
 		this.properties = new ArrayList<Property>();
 		this.methods = new ArrayList<Method>();
 		this.members = new ArrayList<Member>();
+		this.importTypes = new ArrayList<Type>();
+		this.helperTypes = null;
 	}
 
 	@Override
@@ -90,11 +94,21 @@ public final class Clazz implements Model
 	/**
 	 * Returns a simple class type name without package and without any generic parts. I.e. no &lt;T&gt; suffix.
 	 *
-	 * @return The simple classs type name
+	 * @return The simple class type name
 	 */
 	public String getName()
 	{
 		return NamesUtil.stripGenericQualifier(getPrototypicalName());
+	}
+
+	/**
+	 * Returns a class type name with package but without any generic parts. I.e. no &lt;T&gt; suffix.
+	 *
+	 * @return The qualified class type name
+	 */
+	public String getQualifiedName()
+	{
+		return NamesUtil.stripGenericQualifier(getPrototypicalFullName());
 	}
 
 	/**
@@ -177,6 +191,31 @@ public final class Clazz implements Model
 	public List<Method> getNonPropertyMethods()
 	{
 		return methods;
+	}
+
+	public void setImportTypes(List<Type> importTypes)
+    {
+        this.importTypes=Objects.requireNonNull(importTypes);
+    }
+
+	public List<Type> getImportTypes()
+	{
+		return importTypes;
+	}
+
+	public void setHelperTypes(HelperTypes helperTypes)
+	{
+		this.helperTypes=Objects.requireNonNull(helperTypes);
+	}
+/*
+	public String getHelperTypes()
+	{
+		return "bla"; // Objects.requireNonNull(helperTypes, "HelperTypes unavailable");
+	}
+*/
+	public HelperTypes getHelperTypes()
+	{
+		return Objects.requireNonNull(helperTypes, "HelperTypes unavailable");
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import java.util.Objects;
  * {@inheritDoc}
  */
 
-final class ComplexClass implements ComplexInterfaceWithAllTypes
+public final class ComplexClass implements ComplexInterfaceWithAllTypes
 {
   private final ComplexInterfaceWithAllTypes other;
   private final Object _object;
@@ -29,47 +29,21 @@ final class ComplexClass implements ComplexInterfaceWithAllTypes
   private final float[] floatArray;
   private final double[] doubleArray;
 
-  public static ComplexClass valueOf(final ComplexInterfaceWithAllTypes other, 
-                                     final Object _object, final String _string, 
-                                     final java.util.Date date, 
-                                     final Object[] objectArray, 
-                                     final byte _byte, final int _int, 
-                                     final long _long, final char _char, 
-                                     final boolean _boolean, 
-                                     final float _float, final double _double, 
-                                     final byte[] byteArray, 
-                                     final int[] intArray, final long[] longArray, 
-                                     final char[] charArray, 
-                                     final boolean[] booleanArray, 
-                                     final float[] floatArray, 
-                                     final double[] doubleArray)
+  public static ComplexClass valueOf(final ComplexInterfaceWithAllTypes other, final Object _object, final String _string, final java.util.Date date, final Object[] objectArray, final byte _byte, final int _int, final long _long, final char _char, final boolean _boolean, final float _float, final double _double, final byte[] byteArray, final int[] intArray, final long[] longArray, final char[] charArray, final boolean[] booleanArray, final float[] floatArray, final double[] doubleArray)
   {
-    return new ComplexClass(other, _object, _string, date, objectArray, 
-                            _byte, _int, _long, _char, _boolean, 
-                            _float, _double, byteArray, intArray, 
-                            longArray, charArray, booleanArray, 
-                            floatArray, doubleArray);
+    return new ComplexClass(other, _object, _string, date, objectArray, _byte, _int, _long, _char, _boolean, _float, _double, byteArray, intArray, longArray, charArray, booleanArray, floatArray, doubleArray);
   }
 
   /**
    * Constructs an instance of ComplexClass
    */
-  private ComplexClass(final ComplexInterfaceWithAllTypes other, 
-                       final Object _object, final String _string, 
-                       final java.util.Date date, final Object[] objectArray, 
-                       final byte _byte, final int _int, final long _long, 
-                       final char _char, final boolean _boolean, 
-                       final float _float, final double _double, 
-                       final byte[] byteArray, final int[] intArray, 
-                       final long[] longArray, final char[] charArray, 
-                       final boolean[] booleanArray, final float[] floatArray, 
-                       final double[] doubleArray)
+  private ComplexClass(final ComplexInterfaceWithAllTypes other, final Object _object, final String _string, final java.util.Date date, final Object[] objectArray, final byte _byte, final int _int, final long _long, final char _char, final boolean _boolean, final float _float, final double _double, final byte[] byteArray, final int[] intArray, final long[] longArray, final char[] charArray, final boolean[] booleanArray, final float[] floatArray, final double[] doubleArray)
   {
-    this.other=other;
-    this._object=_object;
-    this._string=_string;
-    this.date=date;
-    this.objectArray=objectArray;
+    this.other=Objects.requireNonNull(other);
+    this._object=Objects.requireNonNull(_object);
+    this._string=Objects.requireNonNull(_string);
+    this.date=Objects.requireNonNull(date);
+    this.objectArray=Objects.requireNonNull(objectArray);
     this._byte=_byte;
     this._int=_int;
     this._long=_long;
@@ -77,13 +51,13 @@ final class ComplexClass implements ComplexInterfaceWithAllTypes
     this._boolean=_boolean;
     this._float=_float;
     this._double=_double;
-    this.byteArray=byteArray;
-    this.intArray=intArray;
-    this.longArray=longArray;
-    this.charArray=charArray;
-    this.booleanArray=booleanArray;
-    this.floatArray=floatArray;
-    this.doubleArray=doubleArray;
+    this.byteArray=Objects.requireNonNull(byteArray);
+    this.intArray=Objects.requireNonNull(intArray);
+    this.longArray=Objects.requireNonNull(longArray);
+    this.charArray=Objects.requireNonNull(charArray);
+    this.booleanArray=Objects.requireNonNull(booleanArray);
+    this.floatArray=Objects.requireNonNull(floatArray);
+    this.doubleArray=Objects.requireNonNull(doubleArray);
   }
 
   /**
@@ -296,18 +270,7 @@ final class ComplexClass implements ComplexInterfaceWithAllTypes
 
     ComplexClass _other = (ComplexClass) obj;
 
-    return (Objects.equals(other, _other.other) && Objects.equals(_object, _other._object) && 
-            Objects.equals(_string, _other._string) && Objects.equals(date, _other.date) && 
-            Arrays.equals(objectArray, _other.objectArray) && 
-            (_byte == _other._byte) && (_int == _other._int) && 
-            (_long == _other._long) && (_char == _other._char) && 
-            (_boolean == _other._boolean) && (Float.floatToIntBits(_float) == Float.floatToIntBits(_other._float)) && 
-            (Double.doubleToLongBits(_double) == Double.doubleToLongBits(_other._double)) && 
-            Arrays.equals(byteArray, _other.byteArray) && Arrays.equals(intArray, _other.intArray) && 
-            Arrays.equals(longArray, _other.longArray) && Arrays.equals(charArray, _other.charArray) && 
-            Arrays.equals(booleanArray, _other.booleanArray) && 
-            Arrays.equals(floatArray, _other.floatArray) && 
-            Arrays.equals(doubleArray, _other.doubleArray));
+    return (Objects.equals(other, _other.other) && Objects.equals(_object, _other._object) && Objects.equals(_string, _other._string) && Objects.equals(date, _other.date) && Arrays.equals(objectArray, _other.objectArray) && (_byte == _other._byte) && (_int == _other._int) && (_long == _other._long) && (_char == _other._char) && (_boolean == _other._boolean) && (Float.floatToIntBits(_float) == Float.floatToIntBits(_other._float)) && (Double.doubleToLongBits(_double) == Double.doubleToLongBits(_other._double)) && Arrays.equals(byteArray, _other.byteArray) && Arrays.equals(intArray, _other.intArray) && Arrays.equals(longArray, _other.longArray) && Arrays.equals(charArray, _other.charArray) && Arrays.equals(booleanArray, _other.booleanArray) && Arrays.equals(floatArray, _other.floatArray) && Arrays.equals(doubleArray, _other.doubleArray));
   }
 
   @Override

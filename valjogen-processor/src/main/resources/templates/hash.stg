@@ -8,7 +8,7 @@ public int hashCode()
   <clazz.members:{m | <uniqueVariableName(clazz,"result")> = <uniqueVariableName(clazz,"prime")> * <uniqueVariableName(clazz,"result")> + <(hashTemplateNamesByTypeCategory.(m.type.typeCategory))(m.name, m.type)> }; separator="\n">
   return <uniqueVariableName(clazz,"result")>;
   <else>
-  return Objects.hash(<clazz.members:{p | <p.name>}; separator=",">);
+  return <clazz.helperTypes.javaUtilObjects.name>.hash(<clazz.members:{p | <p.name>}; separator=",">);
   <endif>
 }
 >>
@@ -21,12 +21,12 @@ hash_primitive(var,type) ::= <<
 
 hash_array(var, type) ::= <%
 <if(type.multiDimensionalArray)>
-Arrays.deepHashCode(<var>);
+<clazz.helperTypes.javaUtilArrays.name>.deepHashCode(<var>);
 <else>
-Arrays.hashCode(<var>);
+<clazz.helperTypes.javaUtilArrays.name>.hashCode(<var>);
 <endif>
 %>
 
 hash_object(var, type) ::= <<
-Objects.hashCode(<var>);
+<clazz.helperTypes.javaUtilObjects.name>.hashCode(<var>);
 >>

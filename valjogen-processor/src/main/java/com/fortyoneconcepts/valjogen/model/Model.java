@@ -18,6 +18,13 @@ public interface Model
 	public Configuration getConfiguration();
 
 	/**
+	 * Some helper types for this model.
+	 *
+	 * @return Helper types for this model.
+	 */
+	public HelperTypes getHelperTypes();
+
+	/**
 	 * The package that the output belongs to.
 	 *
 	 * @return The package name that should be used when generating code for this model.

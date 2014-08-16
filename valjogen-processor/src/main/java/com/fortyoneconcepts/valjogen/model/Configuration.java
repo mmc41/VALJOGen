@@ -24,8 +24,6 @@ public class Configuration implements ConfigurationOptionKeys
 	 private final Locale optDefaultLocale;
 	 private final Map<String,String> options;
 
-	 private static final int DEFAULT_LINEWIDTH = 60;
-
 	 public Configuration(VALJOGenerate annotation, Locale optDefaultLocale, Map<String,String> options)
 	 {
 		 this.generateAnnotation=Objects.requireNonNull(annotation);
@@ -69,7 +67,7 @@ public class Configuration implements ConfigurationOptionKeys
 
 	 public int getLineWidth()
 	 {
-		 return getValue(lineWidth, DEFAULT_LINEWIDTH);
+		 return getValue(lineWidth, configureAnnotation.lineWidth());
 	 }
 
 	 public String getClazzScope()
@@ -97,6 +95,11 @@ public class Configuration implements ConfigurationOptionKeys
 		 return getValue(finalPropertiesEnabled, configureAnnotation.finalPropertiesEnabled());
 	 }
 
+	 public boolean isEnsureNotNullEnabled()
+	 {
+		 return getValue(ensureNotNullEnabled, configureAnnotation.ensureNotNullEnabled());
+	 }
+
 	 public boolean isSynchronizedAccessEnabled()
 	 {
 		 return getValue(synchronizedAccessEnabled, configureAnnotation.synchronizedAccessEnabled());
@@ -110,6 +113,11 @@ public class Configuration implements ConfigurationOptionKeys
 	 public String getName()
 	 {
          return getValue(name, generateAnnotation.name());
+	 }
+
+	 public String[] getImportClasses()
+	 {
+		 return getValue(importClasses, configureAnnotation.importClasses());
 	 }
 
 	 public String[] getExtraInterfaces()
@@ -161,17 +169,20 @@ public class Configuration implements ConfigurationOptionKeys
 
 	 private String getValue(String optionKey, String defaultValue)
 	 {
-		 return options.getOrDefault(optionKey, defaultValue).trim();
+		 String value = options.get(optionKey);
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
+			 value=Objects.requireNonNull(defaultValue);
+		 return value.trim();
 	 }
 
 	 private String[] getValue(String optionKey, String[] defaultValue)
 	 {
 		 String value = options.get(optionKey);
 		 if (value==null)
-			 return defaultValue;
+			 return Objects.requireNonNull(defaultValue);
 
 		 value=value.trim();
-		 if (value.length() == 0 || value.trim().length() == 0)
+		 if (value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
 			 return defaultValue;
 
 		 return value.split(",");
@@ -180,7 +191,7 @@ public class Configuration implements ConfigurationOptionKeys
 	 private boolean getValue(String optionKey, boolean defaultValue)
 	 {
 		 String value = options.get(optionKey);
-		 if (value==null || value.length() == 0 || value.trim().length() == 0)
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
 		   return defaultValue;
 		 if (value.equalsIgnoreCase("false"))
 			 return false;
@@ -193,7 +204,7 @@ public class Configuration implements ConfigurationOptionKeys
 	 private int getValue(String optionKey, int defaultValue)
 	 {
 		 String value = options.get(optionKey);
-		 if (value==null || value.length() == 0 || value.trim().length() == 0)
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
 		   return defaultValue;
 
 		 try {

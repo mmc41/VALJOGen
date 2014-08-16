@@ -6,7 +6,7 @@ import org.junit.Test;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 
 /**
- * Test that names, packages are computed correctly.
+ * Low-level unit tests that names, packages etc. are computed correctly.
  *
  * TODO: Add more tests.
  *
@@ -40,6 +40,13 @@ public class NamesUtilTest
 	{
 		String actual = NamesUtil.createNewClassNameFromInterfaceName("ITest");
 		Assert.assertEquals("Class name not constructed correctly", "Test"+NamesUtil.ImplClassSuffix, actual);
+	}
+
+	@Test
+	public void testNameFromInterface_INotFilteretOut()
+	{
+		String actual = NamesUtil.createNewClassNameFromInterfaceName("ImmutableBla");
+		Assert.assertEquals("Class name not constructed correctly", "ImmutableBla"+NamesUtil.ImplClassSuffix, actual);
 	}
 
 	@Test

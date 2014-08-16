@@ -8,13 +8,12 @@ class(clazz) ::= <<
 <if(!clazz.inDefaultPackage)>
 package <clazz.packageName>;
 
-import java.util.Arrays;
-import java.util.Objects;
+<clazz.importTypes:importStatement(); separator="\n">
 
 <endif>
 <classJavaDoc(clazz)>
 
-<optScope(clazz)><optFinal(clazz)><optAbstract(clazz)>class <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceType.name>
+<optScope(clazz)><optFinal(clazz)><optAbstract(clazz)>class <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceType.prototypicalName>
 {
   <clazz.members:declareMember(); separator="\n">
 
@@ -40,6 +39,10 @@ import java.util.Objects;
 }
 >>
 
+importStatement(type) ::= <<
+import <type.qualifiedName>;
+>>
+
 declareMember(member) ::= <<
 <internalLevel(member.clazz)><optFinal(member)><member.type.name> <member.name>;
 >>
@@ -49,7 +52,7 @@ constructor(clazz) ::= <<
 <internalLevel(clazz)><clazz.name>(<clazz.members:formalParameter(); wrap, anchor, separator=", ">)
 {
   <if(!clazz.baseClazzType.rootObject)>super();<endif>
-  <clazz.members:{p | this.<p.name>=<p.name>;}; wrap, anchor, separator="\n">
+  <clazz.members:{p | this.<p.name>=<guard(p, p)>;}; wrap, anchor, separator="\n">
 }
 >>
 
@@ -60,9 +63,9 @@ public static <optGenericQualifier(clazz)><clazz.prototypicalName> valueOf(<claz
 }
 >>
 
-formalParameter(member) ::= <<
+formalParameter(member) ::= <%
 final <member.type.name> <member.name>
->>
+%>
 
 property(property) ::= <<
 <propertyJavaDoc(property)>
@@ -75,7 +78,7 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.name>
   <if(property.selfReturnType)>
   return new <clazz.name>(<[property.member.otherMembersBeforeThis:{m | this.<m.name>}, property.parameter.name , property.member.otherMembersAfterThis:{m | this.<m.name>}]; wrap, anchor, separator=", ">);
   <else>
-  this.<property.member.name>=<property.parameter.name>;
+  this.<property.member.name>=<guard(property.member, property.parameter)>;
   <endif>
 <endif>
 }

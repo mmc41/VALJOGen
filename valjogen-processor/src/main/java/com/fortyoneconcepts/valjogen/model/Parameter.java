@@ -39,6 +39,12 @@ public class Parameter implements Model
 	}
 
 	@Override
+	public HelperTypes getHelperTypes()
+	{
+		return clazz.getHelperTypes();
+	}
+
+	@Override
 	public Clazz getClazz()
 	{
 		return clazz;

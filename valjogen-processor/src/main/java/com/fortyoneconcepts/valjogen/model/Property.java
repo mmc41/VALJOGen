@@ -64,6 +64,11 @@ public final class Property extends Method
 		return NamesUtil.isSetterMethod(element.getSimpleName().toString());
 	}
 
+	public boolean isEnsureNotNullEnabled()
+	{
+		return member.isEnsureNotNullEnabled();
+	}
+
 	@Override
 	public String toString()
 	{

@@ -49,8 +49,8 @@ public final class ClazzFactory
 		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.toString();
 
 		String baseClazzName = configuration.getBaseClazzName();
-		if (baseClazzName.isEmpty())
-			baseClazzName="java.lang.Object";
+		if (baseClazzName.isEmpty() || baseClazzName.equals(ConfigurationDefaults.NotApplicable))
+			baseClazzName=ConfigurationDefaults.RootObject;
 
 		TypeElement baseClazzElement = elements.getTypeElement(baseClazzName);
 		if (baseClazzElement==null) {
@@ -72,11 +72,37 @@ public final class ClazzFactory
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
 		List<Property> propertyMethods= new ArrayList<Property>();
+		List<Type> importTypes = new ArrayList<Type>();
 
 		// Collect all members, property methods and non-property methods from interfaces:
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
 		final Stream<TypeElement> allInterfaces = getInterfacesWithDecendents(types, element);
 
+		// Define helper types
+
+		TypeElement arraysElement = elements.getTypeElement("java.util.Arrays");
+		TypeElement objectsElement = elements.getTypeElement("java.util.Objects");
+
+		Type arraysType = new Type(clazz, arraysElement.asType());
+		Type objectsType = new Type(clazz, objectsElement.asType());
+
+		HelperTypes helperTypes = new HelperTypes(arraysType, objectsType);
+
+		// Import interface, base class and specified extras:
+		importTypes.add(new Type(clazz, interfaceType));
+		importTypes.add(new Type(clazz, baseClazzType));
+		for (String importName : configuration.getImportClasses())
+		{
+			TypeElement importElement = elements.getTypeElement(importName);
+			if (importElement==null) {
+				errorConsumer.accept("Unknown type "+importName);
+			} else {
+			   Type importElementType = new Type(clazz, importElement.asType());
+			   importTypes.add(importElementType);
+			}
+		}
+
+		// Look at all methods in all reachable interfaces:
 		allInterfaces.flatMap(i -> i.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault()))
 		             .forEach(m -> {
 						Member propertyMember = createPropertyMemberIfValidProperty(clazz, m, errorConsumer);
@@ -104,23 +130,46 @@ public final class ClazzFactory
 						}
 					 });
 
+		clazz.setHelperTypes(helperTypes);
         clazz.setPropertyMethods(propertyMethods);
         clazz.setNonPropertyMethods(nonPropertyMethods);
         clazz.setMembers(new ArrayList<Member>(membersByName.values()));
+        clazz.setImportTypes(filterImportTypes(clazz, importTypes));
 
 		return clazz;
+	}
+
+	private List<Type> filterImportTypes(Clazz clazz, List<Type> importTypes)
+	{
+		List<Type> result = new ArrayList<Type>();
+
+		for (Type type : importTypes)
+		{
+			if (type.getPackageName().equals("java.lang"))
+				continue;
+
+			if (type.getPackageName().equals(clazz.getPackageName()))
+			    continue;
+
+			if (result.stream().anyMatch(existingType -> existingType.getQualifiedName().equals(type.getQualifiedName())))
+			   continue;
+
+			result.add(type);
+		}
+
+		return result;
 	}
 
 	private String createQualifiedClassName(Configuration configuration, String qualifedInterfaceName, String sourcePackageName)
 	{
 		String className = configuration.getName();
-		if (className.isEmpty())
+		if (className.isEmpty() || className.equals(ConfigurationDefaults.NotApplicable))
 			className = NamesUtil.createNewClassNameFromInterfaceName(qualifedInterfaceName);
 
 		if (!NamesUtil.isQualified(className))
 		{
 			String packageName = configuration.getPackage();
-			if (packageName.isEmpty())
+			if (packageName.equals(ConfigurationDefaults.NotApplicable))
 				packageName=sourcePackageName;
 
 			if (!packageName.isEmpty())
