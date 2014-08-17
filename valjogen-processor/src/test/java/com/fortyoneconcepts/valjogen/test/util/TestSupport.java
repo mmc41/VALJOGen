@@ -11,13 +11,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.tools.JavaFileObject;
+
 import org.junit.Assert;
 
+import com.fortyoneconcepts.valjogen.processor.AnnotationProcessor;
 import com.fortyoneconcepts.valjogen.test.GeneratedOutputCanCompileTest;
+import com.google.testing.compile.JavaFileObjects;
 
 /**
  * This class provides various helpers for test.
  *
+ * Unfortunately, we are currenly forced to use a google's Truth framework below for assertCompile methods
+ * instead of a JUnit assert like all the other tests (do not use this framework for other purposes):
  * @author mmc
  */
 public final class TestSupport
@@ -86,5 +92,34 @@ public final class TestSupport
 	public static void assertNotContains(String expectedSubstring, String string)
 	{
 		Assert.assertFalse("String '"+string+"' does contain the unexpected substring '"+expectedSubstring+"'", string.contains(expectedSubstring));
+	}
+
+	public static void assertCompileFailure(String qualifiedClassName, String source, String errorMsg)
+	{
+		JavaFileObject javaObject = JavaFileObjects.forSourceString(qualifiedClassName, source);
+
+		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
+		 .that(javaObject)
+		 .processedWith(new AnnotationProcessor())
+		 .failsToCompile()
+		 .withErrorContaining(errorMsg).in(javaObject);
+	}
+
+	public static void assertCompileSuccess(String qualifiedClassName, String source)
+	{
+		JavaFileObject javaObject = JavaFileObjects.forSourceString(qualifiedClassName, source);
+
+		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
+		 .that(javaObject)
+		 .processedWith(new AnnotationProcessor())
+		 .compilesWithoutError();
+	}
+
+	public static void assertCompileSuccess(JavaFileObject forResource) throws FileNotFoundException
+	{
+		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
+		 .that(forResource)
+		 .processedWith(new AnnotationProcessor())
+		 .compilesWithoutError();
 	}
 }

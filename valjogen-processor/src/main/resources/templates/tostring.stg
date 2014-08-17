@@ -1,16 +1,16 @@
 toString(clazz) ::= <<
 @Override
-public String toString()
+public <optSynchronized(clazz)>String toString()
 {
-  final StringBuilder <uniqueVariableName(clazz,"sb")> = new StringBuilder();
-
-  <uniqueVariableName(clazz,"sb")>.append("<clazz.name> [");
-
-  <clazz.members:{m | <toStringMember(m)> }; separator=memberSeparator()>
-
-  <uniqueVariableName(clazz,"sb")>.append(']');
-
-  return <uniqueVariableName(clazz,"sb")>.toString();
+  <if(clazz.anyMembers)>
+    final StringBuilder <uniqueVariableName(clazz,"sb")> = new StringBuilder();
+    <uniqueVariableName(clazz,"sb")>.append("<clazz.name> [");
+    <clazz.members:{m | <toStringMember(m)> }; separator=memberSeparator()>
+    <uniqueVariableName(clazz,"sb")>.append(']');
+    return <uniqueVariableName(clazz,"sb")>.toString();
+  <else>
+    return "<clazz.name>";
+  <endif>
 }
 >>
 

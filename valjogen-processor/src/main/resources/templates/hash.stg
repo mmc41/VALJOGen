@@ -1,6 +1,6 @@
 hashCode(clazz) ::= <<
 @Override
-public int hashCode()
+public <optSynchronized(clazz)>int hashCode()
 {
   <if(clazz.primitiveMembers || clazz.arrayMembers)>
   final int <uniqueVariableName(clazz,"prime")> = 31;

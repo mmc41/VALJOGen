@@ -1,14 +1,13 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.model;
+package com.fortyoneconcepts.valjogen.processor;
 
 import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,7 +19,17 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 
+import com.fortyoneconcepts.valjogen.model.Clazz;
+import com.fortyoneconcepts.valjogen.model.Configuration;
+import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
+import com.fortyoneconcepts.valjogen.model.HelperTypes;
+import com.fortyoneconcepts.valjogen.model.Member;
+import com.fortyoneconcepts.valjogen.model.Method;
+import com.fortyoneconcepts.valjogen.model.Parameter;
+import com.fortyoneconcepts.valjogen.model.Property;
+import com.fortyoneconcepts.valjogen.model.Type;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 
 /***
@@ -40,11 +49,18 @@ public final class ClazzFactory
 	    return instance;
 	}
 
+	private class StatusHolder
+	{
+		public boolean encountedSynthesisedMembers = false;
+	}
+
 	private ClazzFactory() {}
 
-	public Clazz createClazz(Types types, Elements elements,TypeElement element, Configuration configuration, Consumer<String> errorConsumer)
+
+
+	public Clazz createClazz(Types types, Elements elements, TypeElement interfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
-		PackageElement sourcePackageElement = elements.getPackageOf(element);
+		PackageElement sourcePackageElement = elements.getPackageOf(interfaceElement);
 
 		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.toString();
 
@@ -54,20 +70,20 @@ public final class ClazzFactory
 
 		TypeElement baseClazzElement = elements.getTypeElement(baseClazzName);
 		if (baseClazzElement==null) {
-			errorConsumer.accept("Could not find base class "+baseClazzName);
-			throw new RuntimeException("Unknown base class "+baseClazzName);
+			errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.BaseClassNotFound, baseClazzName));
+			return null;
 		}
 
 		TypeMirror baseClazzType = baseClazzElement.asType();
-		TypeMirror interfaceType = element.asType();
+		final TypeMirror interfaceType = interfaceElement.asType();
 
 		String className = createQualifiedClassName(configuration, interfaceType.toString(), sourceInterfacePackageName);
 
-		String classJavaDoc = elements.getDocComment(element);
+		String classJavaDoc = elements.getDocComment(interfaceElement);
 		if (classJavaDoc==null)
 			classJavaDoc="";
 
-		Clazz clazz = new Clazz(configuration, types, elements, className, element.asType(), baseClazzType, classJavaDoc);
+		Clazz clazz = new Clazz(configuration, types, elements, className, interfaceElement.asType(), baseClazzType, classJavaDoc);
 
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
@@ -76,7 +92,7 @@ public final class ClazzFactory
 
 		// Collect all members, property methods and non-property methods from interfaces:
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
-		final Stream<TypeElement> allInterfaces = getInterfacesWithDecendents(types, element);
+		final Stream<TypeElement> allInterfaces = getInterfacesWithDecendents(types, interfaceElement);
 
 		// Define helper types
 
@@ -95,40 +111,64 @@ public final class ClazzFactory
 		{
 			TypeElement importElement = elements.getTypeElement(importName);
 			if (importElement==null) {
-				errorConsumer.accept("Unknown type "+importName);
+				errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.ImportTypeNotFound, importName));
 			} else {
 			   Type importElementType = new Type(clazz, importElement.asType());
 			   importTypes.add(importElementType);
 			}
 		}
 
+		final StatusHolder statusHolder = new StatusHolder();
+
 		// Look at all methods in all reachable interfaces:
 		allInterfaces.flatMap(i -> i.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault()))
 		             .forEach(m -> {
-						Member propertyMember = createPropertyMemberIfValidProperty(clazz, m, errorConsumer);
+		            	try {
+							Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceElement, configuration, m, errorConsumer);
 
-						String javaDoc = elements.getDocComment(m);
-						if (javaDoc==null)
-							javaDoc="";
+							String javaDoc = elements.getDocComment(m);
+							if (javaDoc==null)
+								javaDoc="";
 
-						if (propertyMember!=null) {
-			                final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
-			              	if (existingMember!=null)
-			              	   propertyMember = existingMember;
+							if (propertyMember!=null) {
+				                final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
+				              	if (existingMember!=null)
+				              	   propertyMember = existingMember;
 
-			              	Property property;
-			              	List<? extends VariableElement> parameterElements = m.getParameters();
-			              	if (parameterElements.size()==0)
-			              		property=new Property(clazz, m, propertyMember, javaDoc);
-			              	else property = new Property(clazz, m, propertyMember, javaDoc, new Parameter(clazz, m.getParameters().get(0), propertyMember.getName()));
+				              	Property property;
+				              	List<? extends VariableElement> parameterElements = m.getParameters();
+				              	if (parameterElements.size()==0) {
+				              		property=new Property(clazz, m, propertyMember, javaDoc);
+				              	} else if (parameterElements.size()==1) {
+				              		VariableElement varElement = m.getParameters().get(0);
 
-			              	propertyMember.addPropertyMethod(property);
-			              	propertyMethods.add(property);
-						} else {
-							List<Parameter> parameters = m.getParameters().stream().map(p -> new Parameter(clazz, p)).collect(Collectors.toList());
-							nonPropertyMethods.add(new Method(clazz, m, parameters, javaDoc));
-						}
+				              		String varElementName = varElement.getSimpleName().toString();
+
+				              		// Parameter names may be syntesised so we may need to fall back on using member
+				              		// name as parameter name. Note if this happen so we can issue a warning later.
+				              		String usedVarElementName;
+				              		if (varElementName.startsWith("arg")) { // Synthesised check (not bullet-proof).
+				              			statusHolder.encountedSynthesisedMembers=true;
+				              			usedVarElementName=propertyMember.getName();
+				              		} else usedVarElementName=varElementName;
+
+				              		property = new Property(clazz, m, propertyMember, javaDoc, new Parameter(clazz, varElement, usedVarElementName));
+				              	} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
+
+				              	propertyMember.addPropertyMethod(property);
+				              	propertyMethods.add(property);
+							} else {
+								List<Parameter> parameters = m.getParameters().stream().map(p -> new Parameter(clazz, p)).collect(Collectors.toList());
+								nonPropertyMethods.add(new Method(clazz, m, parameters, javaDoc));
+							}
+		            	} catch (Exception e)
+		            	{
+		            		throw new RuntimeException("Failure during processing", e);
+		            	}
 					 });
+
+		if (statusHolder.encountedSynthesisedMembers)
+			errorConsumer.message(interfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, interfaceElement.toString()));
 
 		clazz.setHelperTypes(helperTypes);
         clazz.setPropertyMethods(propertyMethods);
@@ -186,25 +226,42 @@ public final class ClazzFactory
 				             .flatMap(z -> getInterfacesWithDecendents(types, z)), Stream.of(element));
 	}
 
-	private static Member createPropertyMemberIfValidProperty(Clazz clazz, ExecutableElement methodElement, Consumer<String> errorConsumer)
+	private static Member createPropertyMemberIfValidProperty(Clazz clazz, TypeElement interfaceElement, Configuration configuration, ExecutableElement methodElement, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
 		TypeMirror propertyType;
 
 		String methodName = methodElement.getSimpleName().toString();
 
-		if (NamesUtil.isGetterMethod(methodName)) {
-			// TODO: Check if correct non-void type.
-			propertyType = methodElement.getReturnType();
-		} else if (NamesUtil.isSetterMethod(methodName)) {
-			List<? extends VariableElement> setterParams = methodElement.getParameters();
+		List<? extends VariableElement> setterParams = methodElement.getParameters();
 
-			if (setterParams.size()!=1) {
-				errorConsumer.accept("Malformed setter "+methodElement.toString());
+		if (NamesUtil.isGetterMethod(methodName)) {
+			if (setterParams.size()!=0) {
+				if (!configuration.isMalformedPropertiesIgnored())
+				  errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MalFormedGetter, methodElement.toString()));
 				return null;
-			} else {
-				propertyType=setterParams.get(0).asType();
 			}
 
+			TypeMirror returnType = methodElement.getReturnType();
+
+			propertyType = methodElement.getReturnType();
+		} else if (NamesUtil.isSetterMethod(methodName)) {
+			if (setterParams.size()!=1) {
+				if (!configuration.isMalformedPropertiesIgnored())
+  				  errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MalFormedSetter, methodElement.toString()));
+				return null;
+
+			}
+
+			TypeMirror returnType = methodElement.getReturnType();
+			String returnTypeName = returnType.toString();
+
+			if (!returnTypeName.equals("void") && !returnTypeName.equals(interfaceElement.toString()) && !returnTypeName.equals(clazz.getQualifiedName())) {
+				if (!configuration.isMalformedPropertiesIgnored())
+					  errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MalFormedSetter, methodElement.toString()));
+				return null;
+			}
+
+			propertyType=setterParams.get(0).asType();
 		} else {
 			return null; // Not a proeprty.
 		}

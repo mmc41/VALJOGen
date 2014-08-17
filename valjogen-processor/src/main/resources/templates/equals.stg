@@ -1,6 +1,6 @@
 equals(clazz) ::= <<
 @Override
-public boolean equals(final Object obj)
+public <optSynchronized(clazz)>boolean equals(final Object obj)
 {
   if (this == obj)
     return true;

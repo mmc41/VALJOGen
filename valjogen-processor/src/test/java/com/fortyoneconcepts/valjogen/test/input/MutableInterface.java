@@ -6,8 +6,8 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 public interface MutableInterface
 {
 	public int getIntValue();
-	public void setIntValue(int v);
+	public void setIntValue(int intValue);
 
 	public Object getObjectValue();
-	public void setObjectValue(Object v);
+	public void setObjectValue(Object objectValue);
 }

@@ -33,7 +33,7 @@ public interface InterfaceAllTypesWithReservedWords extends BaseInterfaceWithout
 
 	public double getDouble();
 
-	public void setDouble(double d);
+	public void setDouble(double _double);
 }
 
 

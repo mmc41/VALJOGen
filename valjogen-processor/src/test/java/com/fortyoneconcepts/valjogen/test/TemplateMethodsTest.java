@@ -20,16 +20,26 @@ public class TemplateMethodsTest extends TemplateTestBase
 	public void testPublicGetter() throws Exception
 	{
 		String output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("public final int getIntValue() { return intValue; }", output);
+		assertContainsWithWildcards("public * int getIntValue() { return intValue; }", output);
 	}
 
 	@Test
 	public void testPublicImmutableSetter() throws Exception
 	{
 		String output = produceOutput(ImmutableInterface.class);
-        // System.out.println(output);
 
-		assertContainsWithWildcards("public final ImmutableInterface setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output);
+		assertContainsWithWildcards("public * ImmutableInterface setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output);
+	}
+
+	@Test
+	public void testPublicMutableSetter() throws Exception
+	{
+		configurationOptions.put(ConfigurationOptionKeys.ensureNotNullEnabled, "false");
+
+		String output = produceOutput(MutableInterface.class);
+
+		assertContainsWithWildcards("public * setObjectValue(final Object objectValue) { this.objectValue=objectValue; }", output);
+//		assertContainsWithRegEx("public .*? void setObjectValue\\(final Object (objectValue|v)\\) \\{ this.objectValue=(objectValue|v); \\}", output);
 	}
 
 	@Test

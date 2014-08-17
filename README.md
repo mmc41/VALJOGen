@@ -74,6 +74,7 @@ In addition, to update readme pages in GitHub Flavored Markdown (`.md`) format u
 
 #4. KNOWN ISSUES:
 - Maven does not always detect correctly when to rebuild after changes in templates. Do a `"mvn clean"` if this happens.
+- Generated code only get the correct method parameter names if you add the "-parameters" option to javac.
 - Some configuration options are not yet finished. See javadocs for details.
 
 #5. RELEVANT LITTERATURE ABOUT JAVA VALUE OBJECTS:

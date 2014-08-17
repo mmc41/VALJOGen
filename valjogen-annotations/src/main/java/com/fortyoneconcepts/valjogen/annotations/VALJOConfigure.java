@@ -85,8 +85,6 @@ public @interface VALJOConfigure
 	/**
 	* Specifies assignments to local variables should guard against null. May be overruled by equivalent annotation processor key.
 	*
-	* NB: In progress - NOT IMPLEMENTED YET!
-	*
 	* @return True if local variables should be guarded against null assignments
 	*/
 	boolean ensureNotNullEnabled() default true;
@@ -96,7 +94,7 @@ public @interface VALJOConfigure
 	*
 	* @return True if generated properties/methods are prefered to be synchronized.
 	*/
-	boolean synchronizedAccessEnabled() default true;
+	boolean synchronizedAccessEnabled() default false;
 
 	/**
 	* Specifies prefix to use by temporary variables in method in order to avoid clashing with members. May be overruled by equivalent annotation processor key.
@@ -160,6 +158,13 @@ public @interface VALJOConfigure
 	* @return True if javaDoc should be generated for the class.
 	*/
 	boolean javadDocEnabled() default true;
+
+	/**
+	* Specifies if errors should be issued for malformed getter and setter methods. May be overruled by equivalent annotation processor key.
+	*
+	* @return True if malformed getter/setter methods should be ignored. False if they should give errors.
+	*/
+	boolean ignoreMalformedProperties() default false;
 
 	/**
 	* Fully qualified extra classes to import into the generated code (in addition to implemented interfaces

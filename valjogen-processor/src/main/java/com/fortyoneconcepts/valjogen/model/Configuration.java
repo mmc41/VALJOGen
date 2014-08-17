@@ -105,6 +105,11 @@ public class Configuration implements ConfigurationOptionKeys
 		 return getValue(synchronizedAccessEnabled, configureAnnotation.synchronizedAccessEnabled());
 	 }
 
+	 public boolean isMalformedPropertiesIgnored()
+	 {
+		 return getValue(ignoreMalformedProperties, configureAnnotation.ignoreMalformedProperties());
+	 }
+
 	 public String getPackage()
 	 {
 	    return getValue(outputPackage, configureAnnotation.outputPackage());

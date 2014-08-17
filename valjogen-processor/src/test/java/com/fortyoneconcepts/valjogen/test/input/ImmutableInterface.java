@@ -6,8 +6,8 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 public interface ImmutableInterface
 {
 	public int getIntValue();
-	public ImmutableInterface setIntValue(int v);
+	public ImmutableInterface setIntValue(int intValue);
 
 	public Object getObjectValue();
-	public ImmutableInterface setObjectValue(Object v);
+	public ImmutableInterface setObjectValue(Object objectValue);
 }

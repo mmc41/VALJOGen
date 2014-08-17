@@ -155,6 +155,11 @@ public final class Clazz implements Model
 		return !methods.isEmpty();
 	}
 
+	public boolean isSynchronized()
+	{
+		return getConfiguration().isSynchronizedAccessEnabled() &&  members.stream().anyMatch(member -> !member.isFinal());
+	}
+
 	public boolean hasPrimitiveMembers()
 	{
 		return members.stream().anyMatch(m -> m.getType().isPrimitive());
@@ -172,6 +177,11 @@ public final class Clazz implements Model
 
 	public List<Member> getMembers() {
 		return members;
+	}
+
+	public boolean hasAnyMembers()
+	{
+		return !members.isEmpty();
 	}
 
     public void setPropertyMethods(List<Property> properties)

@@ -68,18 +68,14 @@ public final class SimpleClass implements SimpleInterface
   @Override
   public String toString()
   {
-    final StringBuilder _sb = new StringBuilder();
-
-    _sb.append("SimpleClass [");
-
-    _sb.append("_object=");
-    _sb.append(_object); 
-    _sb.append(", ");
-    _sb.append("_string=");
-    _sb.append(_string); 
-
-    _sb.append(']');
-
-    return _sb.toString();
+      final StringBuilder _sb = new StringBuilder();
+      _sb.append("SimpleClass [");
+      _sb.append("_object=");
+      _sb.append(_object); 
+      _sb.append(", ");
+      _sb.append("_string=");
+      _sb.append(_string); 
+      _sb.append(']');
+      return _sb.toString();
   }
 }

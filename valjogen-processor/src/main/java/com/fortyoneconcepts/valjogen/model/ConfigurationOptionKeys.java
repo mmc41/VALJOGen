@@ -92,6 +92,12 @@ public interface ConfigurationOptionKeys
 	 */
 	 public static String javadDocEnabled = "javadDocEnabled";
 
+
+	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#ignoreMalformedProperties
+	 */
+	 public static String ignoreMalformedProperties = "ignoreMalformedProperties";
+
 	 /**
 	 *
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOGenerate#name

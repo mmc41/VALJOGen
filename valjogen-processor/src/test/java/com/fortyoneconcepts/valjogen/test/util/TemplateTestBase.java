@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,10 +17,10 @@ import org.junit.Rule;
 import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 import com.fortyoneconcepts.valjogen.model.Clazz;
-import com.fortyoneconcepts.valjogen.model.ClazzFactory;
 import com.fortyoneconcepts.valjogen.model.Configuration;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
+import com.fortyoneconcepts.valjogen.processor.ClazzFactory;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
 import com.google.testing.compile.CompilationRule;
 
@@ -66,14 +67,22 @@ public abstract class TemplateTestBase
 		configurationOptions = new HashMap<String,String>();
 	}
 
-	protected String produceOutput(Class<?> sourceClass) {
+	protected String produceOutput(Class<?> sourceClass) throws Exception {
 		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build());
 	}
 
-	protected String produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) {
+	protected String produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception {
 		Configuration configuration = new Configuration(generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
-		Clazz clazz = clazzFactory.createClazz(types, elements, elements.getTypeElement(sourceClass.getCanonicalName()), configuration, e -> { throw new RuntimeException(e); });
+		Clazz clazz = clazzFactory.createClazz(types, elements, elements.getTypeElement(sourceClass.getCanonicalName()), configuration, (megElement, kind, message) ->
+		  {
+			if (kind==Kind.ERROR)
+			  Assert.fail(message);
+			else if (kind==Kind.WARNING || kind==Kind.MANDATORY_WARNING)
+			  System.out.println("WARNING: "+message);
+			else System.out.println("NOTE: "+message);
+		  }
+		);
 
 		STCodeWriter codeWriter = new STCodeWriter(failureMsg -> Assert.fail(failureMsg));
 

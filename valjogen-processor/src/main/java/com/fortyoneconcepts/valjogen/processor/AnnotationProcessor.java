@@ -3,7 +3,6 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Locale;
@@ -28,12 +27,13 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
  */
 public class AnnotationProcessor extends AbstractProcessor
 {
-	private Class<VALJOGenerate> annotationGenerateClass = VALJOGenerate.class;
-	private Class<VALJOConfigure> annotationConfigurationClass = VALJOConfigure.class;
+	public static final boolean debug = false;
+
+	private final Class<VALJOGenerate> annotationGenerateClass = VALJOGenerate.class;
+	private final Class<VALJOConfigure> annotationConfigurationClass = VALJOConfigure.class;
 
 	/**
 	 * Constructor called automatically by javac compiler.
-	 *
 	 */
 	public AnnotationProcessor()
 	{
@@ -59,16 +59,16 @@ public class AnnotationProcessor extends AbstractProcessor
 				    generate(annotationGenerate, optConfigureConfiguration, (TypeElement)e);
 				  } catch(Exception ex)
 				  {
-					messager.printMessage(Diagnostic.Kind.ERROR, "Failed processing "+e.toString()+" due to exception "+ex, e);
+					messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.ExceptionFailure, e.toString(), ex.toString()), e);
 				  }
-			  } else messager.printMessage(Diagnostic.Kind.ERROR, "Annotation "+annotationGenerateClass.getSimpleName()+ " may only be used with interfaces.", e);
+			  } else messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.AnnotationOnInterfacesOnly, annotationGenerateClass.getSimpleName()), e);
 			}
 		}
 
 		return true;
 	}
 
-	private void generate(VALJOGenerate annotation, VALJOConfigure optConfigureConfiguration, TypeElement element) throws IOException
+	private void generate(VALJOGenerate annotation, VALJOConfigure optConfigureConfiguration, TypeElement element) throws Exception
 	{
 		Locale optLocale = processingEnv.getLocale();
 
@@ -87,7 +87,9 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		ClazzFactory clazzFactory = ClazzFactory.getInstance();
 
-		Clazz clazz = clazzFactory.createClazz(types, elements, element, configuration, err -> messager.printMessage(Diagnostic.Kind.ERROR, err, element));
+		Clazz clazz = clazzFactory.createClazz(types, elements, element, configuration, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement));
+		if (clazz==null)
+			return;
 
 		String fileName=NamesUtil.stripGenericQualifier(clazz.getName());
 
@@ -97,13 +99,13 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		try (PrintWriter targetWriter = new PrintWriter(target.openWriter()))
 		{
-			messager.printMessage(Diagnostic.Kind.NOTE, "Writing file : "+fileName);
-
 			String output = writer.outputClass(clazz, configuration);
 			if (output!=null)
-			  targetWriter.write(output); // Locale ???
-
-			messager.printMessage(Diagnostic.Kind.NOTE, "done Writing file : "+fileName);
+			{
+			  targetWriter.write(output);
+			  if (debug)
+				System.out.println("Generated file "+fileName+" with content "+System.lineSeparator()+output);
+			}
 		}
 	}
 
@@ -121,7 +123,6 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		Element enlosingElement = annotatedInterfaceElement.getEnclosingElement();
 		return (enlosingElement!=null) ? getClosestConfiguration(enlosingElement) : null;
-
 	}
 
 	@Override

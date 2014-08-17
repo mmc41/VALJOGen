@@ -25,11 +25,11 @@ package <clazz.packageName>;
 
   <clazz.propertyMethods:property(); separator="\n">
 
-  <if(clazz.configuration.hashEnabled)>
+  <if(clazz.configuration.hashEnabled && clazz.anyMembers)>
   <hashCode(clazz)>
   <endif>
 
-  <if(clazz.configuration.equalsEnabled)>
+  <if(clazz.configuration.equalsEnabled && clazz.anyMembers)>
   <equals(clazz)>
   <endif>
 

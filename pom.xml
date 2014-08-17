@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<prerequisites>
-		<maven>3.2.0</maven>
+		<maven>3.1.0</maven>
 	</prerequisites>
 	<modelVersion>4.0.0</modelVersion>
 	<properties>
@@ -13,6 +13,7 @@
 		<maven.compiler.verbose>false</maven.compiler.verbose>
 		<maven.compiler.debug>true</maven.compiler.debug>
 		<maven.compiler.failOnError>true</maven.compiler.failOnError>
+        <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
 		<maven.build.timestamp.format>yyyy-MM-dd 'at' HH:mm</maven.build.timestamp.format>
 		<maven.javadoc.failOnError>true</maven.javadoc.failOnError>
 		<maven.javadoc.failOnWarning>true</maven.javadoc.failOnWarning>
@@ -92,6 +93,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
+					<configuration>
+                      <compilerArgs>
+                          <arg>-parameters</arg> <!-- Make sure parameter meta data is available for best code generation -->
+                      </compilerArgs>
+			        </configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -165,12 +171,12 @@
 								<classpathPrefix>lib/</classpathPrefix>
 							</manifest>
 							<manifestEntries>
-                                <Built-By>mmc</Built-By>
-                                <url>${project.url}</url>
-                                <Specification-Title>VALJOGen JavaDoc</Specification-Title>
-                                <Implementation-Vendor>www.41concepts.com</Implementation-Vendor>
-                                <Implementation-Version>${project.version}</Implementation-Version>
-                                <Licence-Url>${license.url}</Licence-Url>
+								<Built-By>mmc</Built-By>
+								<url>${project.url}</url>
+								<Specification-Title>VALJOGen JavaDoc</Specification-Title>
+								<Implementation-Vendor>www.41concepts.com</Implementation-Vendor>
+								<Implementation-Version>${project.version}</Implementation-Version>
+								<Licence-Url>${license.url}</Licence-Url>
 							</manifestEntries>
 							<addMavenDescriptor>false</addMavenDescriptor>
 						</archive>

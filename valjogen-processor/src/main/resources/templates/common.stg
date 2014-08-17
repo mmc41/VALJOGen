@@ -2,8 +2,8 @@ optFinal(model) ::= <%
 <if(model.final)>final<\ ><endif>
 %>
 
-optSynchronized(property) ::= <%
-<if(property.synchronized)>synchronized<\ ><endif>
+optSynchronized(propertyOrClass) ::= <%
+<if(propertyOrClass.synchronized)>synchronized<\ ><endif>
 %>
 
 optAbstract(clazz) ::= <%

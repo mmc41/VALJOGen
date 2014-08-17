@@ -14,7 +14,7 @@ public class HelperTypes
 	private final Type javaUtilArrays;
 	private final Type javaUtilObjects;
 
-	HelperTypes(Type javaUtilArrays, Type javaUtilObjects)
+	public HelperTypes(Type javaUtilArrays, Type javaUtilObjects)
 	{
 		this.javaUtilArrays=javaUtilArrays;
 		this.javaUtilObjects=javaUtilObjects;

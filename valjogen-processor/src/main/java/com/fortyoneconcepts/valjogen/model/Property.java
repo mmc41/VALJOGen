@@ -41,7 +41,7 @@ public final class Property extends Method
 
 	public boolean isSynchronized()
 	{
-		return getConfiguration().isSerializableEnabled() && !member.isFinal();
+		return getConfiguration().isSynchronizedAccessEnabled() && !member.isFinal();
 	}
 
 	public Parameter getParameter()
