@@ -174,6 +174,24 @@ public @interface VALJOConfigure
 	*/
     String[] importClasses() default { "java.util.Arrays", "java.util.Objects" };
 
+    /**
+	* Specifies the prefixes of javaBean-style getter methods. Governs which memebers are inserted into the target class and which property method are
+	* implemented. By default only standard javaBean prefixes are included but additional custom prefixes can be added.
+	* Prefixes may be overruled by equivalent annotation processor key.
+	*
+	* @return Array of prefixes for getter methods.
+	*/
+    String[] getterPrefixes() default { "is", "get" };
+
+    /**
+	* Specifies the prefixes of javaBean-style getter methods. Governs which memebers are inserted into the target class and which property method are
+	* implemented. By default only the standard javaBean prefix is included but additional custom prefixes can be added. For instance "withXXX" methods
+	* for immutable properties might be useful. Prefixes may be overruled by equivalent annotation processor key.
+	*
+	* @return Array of prefixes for setter methods.
+	*/
+    String[] setterPrefixes() default { "set" };
+
 	/**
 	* Specifies if additional interfaces should be implemented to the generated class. May be overruled by equivalent annotation processor key.
 	*
@@ -191,4 +209,11 @@ public @interface VALJOConfigure
 	* @return Name of the base class for the generated class.
 	*/
     String baseClazzName() default "java.lang.Object";
+
+    /**
+	* Specifies the annotation processor should output debug information. May be overruled by equivalent annotation processor key.
+	*
+	* @return True if annotation processor should output debug information.
+	*/
+    boolean debugInfo() default true;
 }

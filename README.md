@@ -82,6 +82,7 @@ In addition, to update readme pages in GitHub Flavored Markdown (`.md`) format u
 - http://blog.joda.org/2014/03/valjos-value-java-objects.html
 - https://blogs.oracle.com/jrose/entry/value_types_in_the_vm
 - http://martinfowler.com/bliki/ValueObject.html
+- http://c2.com/cgi/wiki?ValueObject
 
 #6. LICENSE
 - See [LICENSE file](./LICENSE).

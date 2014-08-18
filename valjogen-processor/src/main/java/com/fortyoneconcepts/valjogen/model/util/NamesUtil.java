@@ -133,19 +133,14 @@ public class NamesUtil
 		return getPackageFromQualifiedName(qualifiedName).equals(packageName);
 	}
 
-	public static boolean isGetterMethod(String methodName)
+	public static boolean isGetterMethod(String methodName, String[] getterPrefixes)
 	{
-		return (methodName.startsWith("get") && methodName.length()>3) || (methodName.startsWith("is") && methodName.length()>2);
+		return Arrays.stream(getterPrefixes).anyMatch(p -> methodName.startsWith(p) && methodName.length()>p.length());
 	}
 
-	public static boolean isSetterMethod(String methodName)
+	public static boolean isSetterMethod(String methodName, String[] setterPrefixes)
 	{
-		return (methodName.startsWith("set") && methodName.length()>3);
-	}
-
-	public static boolean isPropertyMethod(String methodName)
-	{
-		return isGetterMethod(methodName) || isSetterMethod(methodName);
+		return Arrays.stream(setterPrefixes).anyMatch(p -> methodName.startsWith(p) && methodName.length()>p.length());
 	}
 
 	public static String getWrapperTypeName(String typeName)

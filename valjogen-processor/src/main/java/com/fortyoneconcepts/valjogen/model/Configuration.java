@@ -130,6 +130,16 @@ public class Configuration implements ConfigurationOptionKeys
 		 return getValue(extraInterfaceNames, configureAnnotation.extraInterfaceNames());
 	 }
 
+	 public String[] getGetterPrefixes()
+	 {
+		 return getValue(getterPrefixes, configureAnnotation.getterPrefixes());
+	 }
+
+	 public String[] getSetterPrefixes()
+	 {
+		 return getValue(setterPrefixes, configureAnnotation.setterPrefixes());
+	 }
+
 	 public String getBaseClazzName()
 	 {
 		 return getValue(baseClazzName, configureAnnotation.baseClazzName());
@@ -168,6 +178,11 @@ public class Configuration implements ConfigurationOptionKeys
 	 public boolean isJavadDocEnabled()
 	 {
 		 return getValue(javadDocEnabled, configureAnnotation.javadDocEnabled());
+	 }
+
+	 public boolean isDebugInfoEnabled()
+	 {
+		 return getValue(debugInfo, configureAnnotation.debugInfo());
 	 }
 
 	 // ---- Internal helpers -----

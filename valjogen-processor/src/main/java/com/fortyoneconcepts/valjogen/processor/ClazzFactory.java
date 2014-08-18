@@ -29,6 +29,7 @@ import com.fortyoneconcepts.valjogen.model.Member;
 import com.fortyoneconcepts.valjogen.model.Method;
 import com.fortyoneconcepts.valjogen.model.Parameter;
 import com.fortyoneconcepts.valjogen.model.Property;
+import com.fortyoneconcepts.valjogen.model.PropertyKind;
 import com.fortyoneconcepts.valjogen.model.Type;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 
@@ -124,40 +125,38 @@ public final class ClazzFactory
 		allInterfaces.flatMap(i -> i.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault()))
 		             .forEach(m -> {
 		            	try {
-							Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceElement, configuration, m, errorConsumer);
-
 							String javaDoc = elements.getDocComment(m);
 							if (javaDoc==null)
 								javaDoc="";
 
-							if (propertyMember!=null) {
-				                final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
-				              	if (existingMember!=null)
-				              	   propertyMember = existingMember;
+							boolean captured = false;
 
-				              	Property property;
-				              	List<? extends VariableElement> parameterElements = m.getParameters();
-				              	if (parameterElements.size()==0) {
-				              		property=new Property(clazz, m, propertyMember, javaDoc);
-				              	} else if (parameterElements.size()==1) {
-				              		VariableElement varElement = m.getParameters().get(0);
+		            		String methodName = m.getSimpleName().toString();
 
-				              		String varElementName = varElement.getSimpleName().toString();
+		            		PropertyKind propertyKind = null;
+		                    if (NamesUtil.isGetterMethod(methodName, configuration.getGetterPrefixes()))
+		                    	propertyKind=PropertyKind.GETTER;
+		                    else if (NamesUtil.isSetterMethod(methodName, configuration.getSetterPrefixes()))
+		                    	propertyKind=PropertyKind.SETTER;
 
-				              		// Parameter names may be syntesised so we may need to fall back on using member
-				              		// name as parameter name. Note if this happen so we can issue a warning later.
-				              		String usedVarElementName;
-				              		if (varElementName.startsWith("arg")) { // Synthesised check (not bullet-proof).
-				              			statusHolder.encountedSynthesisedMembers=true;
-				              			usedVarElementName=propertyMember.getName();
-				              		} else usedVarElementName=varElementName;
+							if (propertyKind!=null) {
+								Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceElement, configuration, m, propertyKind, errorConsumer);
 
-				              		property = new Property(clazz, m, propertyMember, javaDoc, new Parameter(clazz, varElement, usedVarElementName));
-				              	} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
+								if (propertyMember!=null) {
+					                final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
+					              	if (existingMember!=null)
+					              	   propertyMember = existingMember;
 
-				              	propertyMember.addPropertyMethod(property);
-				              	propertyMethods.add(property);
-							} else {
+					              	Property property = createValidatedProperty(clazz, statusHolder, m, javaDoc,	propertyKind, propertyMember);
+
+					              	propertyMember.addPropertyMethod(property);
+					              	propertyMethods.add(property);
+					              	captured=true;
+								}
+							}
+
+							if (!captured)
+							{
 								List<Parameter> parameters = m.getParameters().stream().map(p -> new Parameter(clazz, p)).collect(Collectors.toList());
 								nonPropertyMethods.add(new Method(clazz, m, parameters, javaDoc));
 							}
@@ -177,6 +176,33 @@ public final class ClazzFactory
         clazz.setImportTypes(filterImportTypes(clazz, importTypes));
 
 		return clazz;
+	}
+
+
+	private Property createValidatedProperty(Clazz clazz, final StatusHolder statusHolder, ExecutableElement m, String javaDoc, PropertyKind propertyKind, Member propertyMember)
+	{
+		Property property;
+		List<? extends VariableElement> parameterElements = m.getParameters();
+
+		if (parameterElements.size()==0) {
+			property=new Property(clazz, m, propertyMember, propertyKind, javaDoc);
+		} else if (parameterElements.size()==1) {
+			VariableElement varElement = m.getParameters().get(0);
+
+			String varElementName = varElement.getSimpleName().toString();
+
+			// Parameter names may be syntesised so we may need to fall back on using member
+			// name as parameter name. Note if this happen so we can issue a warning later.
+			String usedVarElementName;
+			if (varElementName.startsWith("arg")) { // Synthesised check (not bullet-proof).
+				statusHolder.encountedSynthesisedMembers=true;
+				usedVarElementName=propertyMember.getName();
+			} else usedVarElementName=varElementName;
+
+			property = new Property(clazz, m, propertyMember, propertyKind, javaDoc, new Parameter(clazz, varElement, usedVarElementName));
+		} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
+
+		return property;
 	}
 
 	private List<Type> filterImportTypes(Clazz clazz, List<Type> importTypes)
@@ -226,15 +252,13 @@ public final class ClazzFactory
 				             .flatMap(z -> getInterfacesWithDecendents(types, z)), Stream.of(element));
 	}
 
-	private static Member createPropertyMemberIfValidProperty(Clazz clazz, TypeElement interfaceElement, Configuration configuration, ExecutableElement methodElement, DiagnosticMessageConsumer errorConsumer) throws Exception
+	private static Member createPropertyMemberIfValidProperty(Clazz clazz, TypeElement interfaceElement, Configuration configuration, ExecutableElement methodElement, PropertyKind kind, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
 		TypeMirror propertyType;
 
-		String methodName = methodElement.getSimpleName().toString();
-
 		List<? extends VariableElement> setterParams = methodElement.getParameters();
 
-		if (NamesUtil.isGetterMethod(methodName)) {
+		if (kind==PropertyKind.GETTER) {
 			if (setterParams.size()!=0) {
 				if (!configuration.isMalformedPropertiesIgnored())
 				  errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MalFormedGetter, methodElement.toString()));
@@ -243,13 +267,13 @@ public final class ClazzFactory
 
 			TypeMirror returnType = methodElement.getReturnType();
 
-			propertyType = methodElement.getReturnType();
-		} else if (NamesUtil.isSetterMethod(methodName)) {
+			propertyType = returnType;
+			return new Member(clazz, new Type(clazz, propertyType), syntesisePropertyMemberName(methodElement));
+		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
   				  errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MalFormedSetter, methodElement.toString()));
 				return null;
-
 			}
 
 			TypeMirror returnType = methodElement.getReturnType();

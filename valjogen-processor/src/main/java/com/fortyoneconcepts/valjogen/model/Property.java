@@ -20,17 +20,20 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 public final class Property extends Method
 {
 	private final Member member;
+	private final PropertyKind kind;
 
-	public Property(Clazz clazz, ExecutableElement element, Member member, String javaDoc)
+	public Property(Clazz clazz, ExecutableElement element, Member member, PropertyKind kind, String javaDoc)
 	{
 		super(clazz, element, Collections.emptyList(), javaDoc);
 		this.member=Objects.requireNonNull(member);
+		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, ExecutableElement element, Member member, String javaDoc, Parameter parameter)
+	public Property(Clazz clazz, ExecutableElement element, Member member, PropertyKind kind, String javaDoc, Parameter parameter)
 	{
 		super(clazz, element, Arrays.asList(parameter), javaDoc);
 		this.member=Objects.requireNonNull(member);
+		this.kind=kind;
 	}
 
 	@Override
@@ -56,12 +59,12 @@ public final class Property extends Method
 
 	public boolean isGetter()
 	{
-		return NamesUtil.isGetterMethod(element.getSimpleName().toString());
+		return kind==PropertyKind.GETTER;
 	}
 
 	public boolean isSetter()
 	{
-		return NamesUtil.isSetterMethod(element.getSimpleName().toString());
+		return kind==PropertyKind.SETTER;
 	}
 
 	public boolean isEnsureNotNullEnabled()

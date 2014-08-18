@@ -4,7 +4,9 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic.Kind;
 
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.*;
@@ -26,34 +28,25 @@ public final class STCodeWriter
 	private static final char delimiterStartChar = '<';
 	private static final char delimiterStopChar = '>';
 
-	private final Consumer<String> errorConsumer;
+	public STCodeWriter() {}
 
-	public STCodeWriter(Consumer<String> errorConsumer) {
-		this.errorConsumer = Objects.requireNonNull(errorConsumer);
-	}
-
-	public String outputClass(Clazz clazz, Configuration cfg)
+	public String outputClass(Clazz clazz, Configuration cfg) throws Exception
 	{
 		String result = null;
 
-		try {
-			STGroup group = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
+		STGroup group = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
 
-			group.registerModelAdaptor(Model.class, new CustomSTModelAdaptor());
+		group.registerModelAdaptor(Model.class, new CustomSTModelAdaptor());
 
-			group.setListener(new ErrorListener());
+		group.setListener(new ErrorListener());
 
-			ST st = group.getInstanceOf(mainTemplate);
+		ST st = group.getInstanceOf(mainTemplate);
 
-			st.add(mainTemplateArg, Objects.requireNonNull(clazz));
+		st.add(mainTemplateArg, Objects.requireNonNull(clazz));
 
-			result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
+		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
 
-			// System.out.println("Rendered "+result);
-
-		} catch (Throwable e) {
-			errorConsumer.accept(e.getMessage());
-		}
+		// System.out.println("Rendered "+result);
 
 		return result;
 	}
@@ -66,22 +59,22 @@ public final class STCodeWriter
 
 		@Override
 		public void runTimeError(STMessage msg) {
-			errorConsumer.accept(reportSTMsg(msg));
+			throw new STException(reportSTMsg(msg));
 		}
 
 		@Override
 		public void compileTimeError(STMessage msg) {
-			errorConsumer.accept(reportSTMsg(msg));
+			throw new STException(reportSTMsg(msg));
 		}
 
 		@Override
 		public void IOError(STMessage msg) {
-			errorConsumer.accept(reportSTMsg(msg));
+			throw new STException(reportSTMsg(msg));
 		}
 
 		@Override
 		public void internalError(STMessage msg) {
-			errorConsumer.accept(reportSTMsg(msg));
+			throw new STException(reportSTMsg(msg));
 		}
 	}
 }

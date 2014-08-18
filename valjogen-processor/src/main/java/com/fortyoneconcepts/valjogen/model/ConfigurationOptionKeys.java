@@ -111,6 +111,18 @@ public interface ConfigurationOptionKeys
 	 public static String importClasses = "importClasses";
 
 	 /**
+	 *
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#getterPrefixes
+	 */
+	 public static String getterPrefixes = "getterPrefixes";
+
+	 /**
+	 *
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#setterPrefixes
+	 */
+	 public static String setterPrefixes = "setterPrefixes";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#extraInterfaceNames
 	 */
 	 public static String extraInterfaceNames = "extraInterfaceNames";
@@ -119,4 +131,9 @@ public interface ConfigurationOptionKeys
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#baseClazzName
 	 */
 	 public static String baseClazzName = "baseClazzName";
+
+	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#debugInfo
+	 */
+	 public static String debugInfo = "debugInfo";
 }

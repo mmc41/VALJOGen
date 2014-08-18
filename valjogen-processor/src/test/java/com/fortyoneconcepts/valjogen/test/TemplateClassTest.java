@@ -21,6 +21,7 @@ public class TemplateClassTest extends TemplateTestBase
 	public void testImmutableAsFinal() throws Exception
 	{
 		String output = produceOutput(ImmutableInterface.class);
+		System.out.println(output);
 	    assertContains("final class "+generatedClassName, output);
 	}
 

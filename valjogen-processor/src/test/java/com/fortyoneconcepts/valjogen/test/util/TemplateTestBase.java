@@ -84,11 +84,15 @@ public abstract class TemplateTestBase
 		  }
 		);
 
-		STCodeWriter codeWriter = new STCodeWriter(failureMsg -> Assert.fail(failureMsg));
+		STCodeWriter codeWriter = new STCodeWriter();
 
 		String output = codeWriter.outputClass(clazz, configuration);
 
 		Assert.assertNotNull("template output should not be null", output);
+
+		// Since we are generating output without the annotation processor, let's do our own debug output if enabled.
+  	    if (configuration.isDebugInfoEnabled())
+		  System.out.println("VALJOGen STCodeWriter GENERATED CONTENT: "+System.lineSeparator()+output);
 
 	    output=output.replace('\r', ' ').replace('\n', ' ');
 	    output=output.replaceAll("\\s+", " ");

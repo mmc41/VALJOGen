@@ -27,8 +27,6 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
  */
 public class AnnotationProcessor extends AbstractProcessor
 {
-	public static final boolean debug = false;
-
 	private final Class<VALJOGenerate> annotationGenerateClass = VALJOGenerate.class;
 	private final Class<VALJOConfigure> annotationConfigurationClass = VALJOConfigure.class;
 
@@ -57,11 +55,18 @@ public class AnnotationProcessor extends AbstractProcessor
 					VALJOConfigure optConfigureConfiguration = getClosestConfiguration(e);
 
 				    generate(annotationGenerate, optConfigureConfiguration, (TypeElement)e);
-				  } catch(Exception ex)
+				  }
+				  catch(STException ex)
+				  {
+					messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.StringTemplateExceptionFailure, e.toString(), ex.toString()), e);
+				  }
+				  catch(Exception ex)
 				  {
 					messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.ExceptionFailure, e.toString(), ex.toString()), e);
 				  }
-			  } else messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.AnnotationOnInterfacesOnly, annotationGenerateClass.getSimpleName()), e);
+			  } else { // A class:
+				  messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.AnnotationOnInterfacesOnly, annotationGenerateClass.getSimpleName()), e);
+			  }
 			}
 		}
 
@@ -95,7 +100,7 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		JavaFileObject target = filer.createSourceFile(fileName, element);
 
-		STCodeWriter writer = new STCodeWriter(err -> messager.printMessage(Diagnostic.Kind.ERROR, err));
+		STCodeWriter writer = new STCodeWriter();
 
 		try (PrintWriter targetWriter = new PrintWriter(target.openWriter()))
 		{
@@ -103,8 +108,8 @@ public class AnnotationProcessor extends AbstractProcessor
 			if (output!=null)
 			{
 			  targetWriter.write(output);
-			  if (debug)
-				System.out.println("Generated file "+fileName+" with content "+System.lineSeparator()+output);
+			  if (configuration.isDebugInfoEnabled())
+				System.out.println("VALJOGen ANNOTATION PROCESSOR GENERATED FILE "+fileName+" WITH CONTENT: "+System.lineSeparator()+output);
 			}
 		}
 	}
