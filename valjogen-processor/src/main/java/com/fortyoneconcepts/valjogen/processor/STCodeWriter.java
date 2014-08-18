@@ -5,9 +5,6 @@ package com.fortyoneconcepts.valjogen.processor;
 
 import java.util.Objects;
 
-import javax.lang.model.element.Element;
-import javax.tools.Diagnostic.Kind;
-
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.*;
 
@@ -45,8 +42,6 @@ public final class STCodeWriter
 		st.add(mainTemplateArg, Objects.requireNonNull(clazz));
 
 		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
-
-		// System.out.println("Rendered "+result);
 
 		return result;
 	}

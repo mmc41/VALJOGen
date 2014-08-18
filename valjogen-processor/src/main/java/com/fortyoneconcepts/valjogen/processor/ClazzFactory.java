@@ -11,27 +11,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
+import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
-import com.fortyoneconcepts.valjogen.model.Clazz;
-import com.fortyoneconcepts.valjogen.model.Configuration;
-import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
-import com.fortyoneconcepts.valjogen.model.HelperTypes;
-import com.fortyoneconcepts.valjogen.model.Member;
-import com.fortyoneconcepts.valjogen.model.Method;
-import com.fortyoneconcepts.valjogen.model.Parameter;
-import com.fortyoneconcepts.valjogen.model.Property;
-import com.fortyoneconcepts.valjogen.model.PropertyKind;
-import com.fortyoneconcepts.valjogen.model.Type;
-import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
+import com.fortyoneconcepts.valjogen.model.*;
+import com.fortyoneconcepts.valjogen.model.util.*;
 
 /***
  * Create a Clazz instance along with all its dependencies by inspecting
@@ -56,8 +42,6 @@ public final class ClazzFactory
 	}
 
 	private ClazzFactory() {}
-
-
 
 	public Clazz createClazz(Types types, Elements elements, TypeElement interfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
@@ -268,7 +252,7 @@ public final class ClazzFactory
 			TypeMirror returnType = methodElement.getReturnType();
 
 			propertyType = returnType;
-			return new Member(clazz, new Type(clazz, propertyType), syntesisePropertyMemberName(methodElement));
+			return new Member(clazz, new Type(clazz, propertyType), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
 		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -286,29 +270,29 @@ public final class ClazzFactory
 			}
 
 			propertyType=setterParams.get(0).asType();
+			return new Member(clazz, new Type(clazz, propertyType), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
 		} else {
 			return null; // Not a proeprty.
 		}
-
-		return new Member(clazz, new Type(clazz, propertyType), syntesisePropertyMemberName(methodElement));
 	}
 
-	private static String syntesisePropertyMemberName(ExecutableElement method)
+	private static String syntesisePropertyMemberName(String[] propertyPrefixes, ExecutableElement method)
 	{
 		String name = method.getSimpleName().toString();
 
-		int skip;
-		if (name.startsWith("is"))
-			skip=2;
-		else if (name.startsWith("get") || name.startsWith("set"))
-			skip=3;
-		else skip=0;
-
-		if (name.length()>skip)
-			name=name.substring(skip);
-
-		name=Introspector.decapitalize(name);
-		name=NamesUtil.makeSafeJavaIdentifier(name);
+		int i=0;
+		while (i<propertyPrefixes.length)
+		{
+			String prefix=propertyPrefixes[i++];
+			int skip=prefix.length();
+			if (name.startsWith(prefix) && name.length()>skip)
+			{
+				name=name.substring(skip);
+				name=Introspector.decapitalize(name);
+				name=NamesUtil.makeSafeJavaIdentifier(name);
+				return name;
+			}
+		}
 
 		return name;
 	}

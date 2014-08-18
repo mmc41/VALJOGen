@@ -204,8 +204,6 @@ public @interface VALJOConfigure
 	/**
 	* Specifies the base class of the generated class. May be overruled by equivalent annotation processor key.
 	*
-	* NB: In progress - NOT FULLY IMPLEMENTED YET!
-	*
 	* @return Name of the base class for the generated class.
 	*/
     String baseClazzName() default "java.lang.Object";
@@ -215,5 +213,5 @@ public @interface VALJOConfigure
 	*
 	* @return True if annotation processor should output debug information.
 	*/
-    boolean debugInfo() default true;
+    boolean debugInfo() default false;
 }

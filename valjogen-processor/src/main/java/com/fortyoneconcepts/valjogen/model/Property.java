@@ -9,8 +9,6 @@ import java.util.Objects;
 
 import javax.lang.model.element.ExecutableElement;
 
-import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
-
 /***
  * Meta-information about a property setter/getter method that should be generated (implemented).
  *
