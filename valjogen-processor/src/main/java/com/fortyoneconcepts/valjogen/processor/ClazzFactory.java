@@ -5,7 +5,6 @@ package com.fortyoneconcepts.valjogen.processor;
 
 import java.beans.Introspector;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,35 +49,15 @@ public final class ClazzFactory
 
 		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.toString();
 
-		String baseClazzName = configuration.getBaseClazzName();
-		if (baseClazzName.isEmpty() || baseClazzName.equals(ConfigurationDefaults.NotApplicable))
-			baseClazzName=ConfigurationDefaults.RootObject;
-
-		TypeElement baseClazzElement = elements.getTypeElement(baseClazzName);
-		if (baseClazzElement==null) {
-			errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.BaseClassNotFound, baseClazzName));
+		TypeMirror baseClazzType = createBaseClazzType(elements,interfaceElement, configuration, errorConsumer);
+		if (baseClazzType==null)
 			return null;
-		}
-
-		TypeMirror baseClazzType = baseClazzElement.asType();
-//		final TypeMirror interfaceType = interfaceElement.asType();
 
 		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
 
+		List<TypeElement> interfaceElements = createInterfaceElements(elements,	interfaceElement, ekstraInterfaceNames, errorConsumer);
 
-		TypeElement[] interfaceElements = new TypeElement[ekstraInterfaceNames.length+1];
-		interfaceElements[0]=interfaceElement;
-		for (int i=0; i<ekstraInterfaceNames.length; ++i)
-		{
-			TypeElement e = elements.getTypeElement(ekstraInterfaceNames[i]);
-			if (e==null) {
-				errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.InterfaceNotFound, baseClazzName));
-				return null;
-			}
-			interfaceElements[i+1]=e;
-		}
-
-		List<TypeMirror> interfaceTypes = Arrays.stream(interfaceElements).map(ie -> ie.asType()).collect(Collectors.toList());
+		List<TypeMirror> interfaceTypes = interfaceElements.stream().map(ie -> ie.asType()).collect(Collectors.toList());
 
 		String className = createQualifiedClassName(configuration, interfaceElement.asType().toString(), sourceInterfacePackageName);
 
@@ -91,7 +70,6 @@ public final class ClazzFactory
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
 		List<Property> propertyMethods= new ArrayList<Property>();
-		List<Type> importTypes = new ArrayList<Type>();
 
 		// Define helper types
 		TypeElement arraysElement = elements.getTypeElement("java.util.Arrays");
@@ -103,26 +81,12 @@ public final class ClazzFactory
 		HelperTypes helperTypes = new HelperTypes(arraysType, objectsType);
 
 		// Import interface(s), base class and specified extras:
-		for (TypeMirror interfaceType : interfaceTypes)
-		  importTypes.add(new Type(clazz, interfaceType));
-
-		importTypes.add(new Type(clazz, baseClazzType));
-
-		for (String importName : configuration.getImportClasses())
-		{
-			TypeElement importElement = elements.getTypeElement(importName);
-			if (importElement==null) {
-				errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.ImportTypeNotFound, importName));
-			} else {
-			   Type importElementType = new Type(clazz, importElement.asType());
-			   importTypes.add(importElementType);
-			}
-		}
+		List<Type> importTypes = createImportTypes(clazz, elements, interfaceElement, configuration, baseClazzType, interfaceTypes, errorConsumer);
 
 		final StatusHolder statusHolder = new StatusHolder();
 
 		// Get stream of all interfaces that we need to deal with
-		final Stream<TypeElement> allInterfaces = Arrays.stream(interfaceElements).flatMap(ie -> getInterfacesWithDecendents(types, ie));
+		final Stream<TypeElement> allInterfaces = interfaceElements.stream().flatMap(ie -> getInterfacesWithDecendents(types, ie));
 
 		// Collect all members, property methods and non-property methods from interfaces:
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
@@ -180,6 +144,63 @@ public final class ClazzFactory
         clazz.setImportTypes(filterImportTypes(clazz, importTypes));
 
 		return clazz;
+	}
+
+	private TypeMirror createBaseClazzType(Elements elements, TypeElement interfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
+	{
+		String baseClazzName = configuration.getBaseClazzName();
+		if (baseClazzName.isEmpty() || baseClazzName.equals(ConfigurationDefaults.NotApplicable))
+			baseClazzName=ConfigurationDefaults.RootObject;
+
+		TypeElement baseClazzElement = elements.getTypeElement(baseClazzName);
+		if (baseClazzElement==null) {
+			errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.BaseClassNotFound, baseClazzName));
+			return null; // Abort.
+		}
+
+		TypeMirror baseClazzType = baseClazzElement.asType();
+
+		return baseClazzType;
+	}
+
+	private List<Type> createImportTypes(Clazz clazz, Elements elements, TypeElement interfaceElement, Configuration configuration, TypeMirror baseClazzType, List<TypeMirror> interfaceTypes, DiagnosticMessageConsumer errorConsumer) throws Exception
+	{
+		List<Type> importTypes = new ArrayList<Type>();
+		for (TypeMirror interfaceType : interfaceTypes)
+		  importTypes.add(new Type(clazz, interfaceType));
+
+		importTypes.add(new Type(clazz, baseClazzType));
+
+		for (String importName : configuration.getImportClasses())
+		{
+			TypeElement importElement = elements.getTypeElement(importName);
+			if (importElement==null) {
+				errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.ImportTypeNotFound, importName));
+			} else {
+			   Type importElementType = new Type(clazz, importElement.asType());
+			   importTypes.add(importElementType);
+			}
+		}
+		return importTypes;
+	}
+
+	private List<TypeElement> createInterfaceElements(Elements elements, TypeElement interfaceElement, String[] ekstraInterfaceNames, DiagnosticMessageConsumer errorConsumer) throws Exception
+	{
+		List<TypeElement> interfaceElements = new ArrayList<TypeElement>();
+		interfaceElements.add(interfaceElement);
+		for (int i=0; i<ekstraInterfaceNames.length; ++i)
+		{
+			String ekstraInterfaceName = ekstraInterfaceNames[i];
+			if (!ekstraInterfaceName.isEmpty() && !ekstraInterfaceName.equals(ConfigurationDefaults.NotApplicable))
+			{
+				TypeElement ektra = elements.getTypeElement(ekstraInterfaceName);
+				if (ektra==null) {
+					errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.InterfaceNotFound, ekstraInterfaceName));
+				}
+				interfaceElements.add(ektra);
+			}
+		}
+		return interfaceElements;
 	}
 
 
