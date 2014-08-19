@@ -3,9 +3,6 @@ package com.fortyoneconcepts.valjogen.testsources;
 import java.util.Arrays;
 import java.util.Objects;
 
-/**
- * {@inheritDoc}
- */
 
 public final class ComplexClass implements ComplexInterfaceWithAllTypes
 {
@@ -34,9 +31,6 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
     return new ComplexClass(other, _object, _string, date, objectArray, _byte, _int, _long, _char, _boolean, _float, _double, byteArray, intArray, longArray, charArray, booleanArray, floatArray, doubleArray);
   }
 
-  /**
-   * Constructs an instance of ComplexClass
-   */
   private ComplexClass(final ComplexInterfaceWithAllTypes other, final Object _object, final String _string, final java.util.Date date, final Object[] objectArray, final byte _byte, final int _int, final long _long, final char _char, final boolean _boolean, final float _float, final double _double, final byte[] byteArray, final int[] intArray, final long[] longArray, final char[] charArray, final boolean[] booleanArray, final float[] floatArray, final double[] doubleArray)
   {
     this.other=Objects.requireNonNull(other);
@@ -60,171 +54,114 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
     this.doubleArray=Objects.requireNonNull(doubleArray);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final ComplexInterfaceWithAllTypes getOther()
   {
     return other;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final Object getObject()
   {
     return _object;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final String getString()
   {
     return _string;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final java.util.Date getDate()
   {
     return date;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final Object[] getObjectArray()
   {
     return objectArray;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final byte getByte()
   {
     return _byte;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final int getInt()
   {
     return _int;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final long getLong()
   {
     return _long;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final char getChar()
   {
     return _char;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final boolean isBoolean()
   {
     return _boolean;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final float getFloat()
   {
     return _float;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final double getDouble()
   {
     return _double;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final byte[] getByteArray()
   {
     return byteArray;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final int[] getIntArray()
   {
     return intArray;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final long[] getLongArray()
   {
     return longArray;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final char[] getCharArray()
   {
     return charArray;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final boolean[] getBooleanArray()
   {
     return booleanArray;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final float[] getFloatArray()
   {
     return floatArray;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final double[] getDoubleArray()
   {

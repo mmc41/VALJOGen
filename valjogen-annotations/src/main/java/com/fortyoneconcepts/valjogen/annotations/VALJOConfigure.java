@@ -157,7 +157,7 @@ public @interface VALJOConfigure
 	*
 	* @return True if javaDoc should be generated for the class.
 	*/
-	boolean javadDocEnabled() default true;
+	boolean javadDocEnabled() default false;
 
 	/**
 	* Specifies if errors should be issued for malformed getter and setter methods. May be overruled by equivalent annotation processor key.
@@ -195,8 +195,6 @@ public @interface VALJOConfigure
 	/**
 	* Specifies if additional interfaces should be implemented to the generated class. May be overruled by equivalent annotation processor key.
 	*
-	* NB: NOT IMPLEMENTED YET!
-	*
 	* @return Array of all additional interfaces
 	*/
     String[] extraInterfaceNames() default {};
@@ -213,5 +211,5 @@ public @interface VALJOConfigure
 	*
 	* @return True if annotation processor should output debug information.
 	*/
-    boolean debugInfo() default false;
+    boolean debugInfo() default true;
 }

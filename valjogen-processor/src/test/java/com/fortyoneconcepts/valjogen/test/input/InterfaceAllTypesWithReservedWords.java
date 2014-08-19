@@ -3,7 +3,7 @@ package com.fortyoneconcepts.valjogen.test.input;
 import com.fortyoneconcepts.valjogen.annotations.*;
 
 @VALJOGenerate
-public interface InterfaceAllTypesWithReservedWords extends BaseInterfaceWithoutAnnotation
+public interface InterfaceAllTypesWithReservedWords extends InterfaceWithoutAnnotation
 {
 	public InterfaceAllTypesWithReservedWords get1();
 

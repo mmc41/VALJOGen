@@ -2,7 +2,6 @@ package com.fortyoneconcepts.valjogen.test;
 
 import org.junit.Test;
 
-import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
 

@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.*;
@@ -24,7 +25,7 @@ public final class Clazz implements Model
 
 	private final String packageName;
 	private final String qualifiedClassName;
-	private final Type interfaceType;
+	private final List<Type> interfaceTypes;
 	private final Type baseClazzType;
 
 	protected final String javaDoc;
@@ -35,13 +36,13 @@ public final class Clazz implements Model
 	private List<Method> methods;
 	private HelperTypes helperTypes;
 
-	public Clazz(Configuration configuration, Types types, Elements elements, String qualifiedClassName, TypeMirror interfaceType, TypeMirror baseClass, String javaDoc)
+	public Clazz(Configuration configuration, Types types, Elements elements, String qualifiedClassName, List<TypeMirror> interfaceTypes, TypeMirror baseClass, String javaDoc)
 	{
 		this.configuration = Objects.requireNonNull(configuration);
 		this.elements = Objects.requireNonNull(elements);
 		this.types = Objects.requireNonNull(types);
 		this.qualifiedClassName = Objects.requireNonNull(qualifiedClassName);
-		this.interfaceType = new Type(this, Objects.requireNonNull(interfaceType));
+		this.interfaceTypes = Objects.requireNonNull(interfaceTypes).stream().map(it -> new Type(this, it)).collect(Collectors.toList());
 		this.baseClazzType = new Type(this, Objects.requireNonNull(baseClass));
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 
@@ -130,9 +131,9 @@ public final class Clazz implements Model
 		return NamesUtil.getGenericQualifier(qualifiedClassName);
 	}
 
-	public Type getInterfaceType()
+	public List<Type> getInterfaceTypes()
 	{
-		return interfaceType;
+		return interfaceTypes;
 	}
 
 	public Type getBaseClazzType()
@@ -217,12 +218,7 @@ public final class Clazz implements Model
 	{
 		this.helperTypes=Objects.requireNonNull(helperTypes);
 	}
-/*
-	public String getHelperTypes()
-	{
-		return "bla"; // Objects.requireNonNull(helperTypes, "HelperTypes unavailable");
-	}
-*/
+
 	public HelperTypes getHelperTypes()
 	{
 		return Objects.requireNonNull(helperTypes, "HelperTypes unavailable");
@@ -242,7 +238,7 @@ public final class Clazz implements Model
 	@Override
 	public String toString() {
 		return "Clazz [packageName=" + packageName + ", qualifiedClassName="
-				+ qualifiedClassName + ", base type=" + getBaseClazzType().getName() + ", interface type="
-				+ getInterfaceType().getName() + ", properties=" + properties + "]";
+				+ qualifiedClassName + ", base type=" + getBaseClazzType().getName() + ", interface types="
+				+ getInterfaceTypes().stream().map(t -> t.getName()).collect(Collectors.joining(", ")) + ", properties=" + properties + "]";
 	}
 }

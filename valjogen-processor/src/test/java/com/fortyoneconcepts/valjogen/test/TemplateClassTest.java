@@ -21,7 +21,6 @@ public class TemplateClassTest extends TemplateTestBase
 	public void testImmutableAsFinal() throws Exception
 	{
 		String output = produceOutput(ImmutableInterface.class);
-		System.out.println(output);
 	    assertContains("final class "+generatedClassName, output);
 	}
 
@@ -73,5 +72,12 @@ public class TemplateClassTest extends TemplateTestBase
 	{
 		String output = produceOutput(GenericInterface.class);
 		assertContainsWithWildcards("class "+generatedClassName+" implements *GenericInterface<T>", output);
+	}
+
+	@Test
+	public void testExtraInterface() throws Exception
+	{
+		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable", "com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation"}).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable, InterfaceWithoutAnnotation", output);
 	}
 }

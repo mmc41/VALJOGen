@@ -15,14 +15,12 @@ import javax.lang.model.element.VariableElement;
 public class Parameter implements Model
 {
 	private final Clazz clazz;
-	private final VariableElement param;
 	private final String paramName;
 	private final Type type;
 
 	public Parameter(Clazz clazz, VariableElement param, String paramName)
 	{
 		this.clazz=Objects.requireNonNull(clazz);
-		this.param=Objects.requireNonNull(param);
 		this.paramName=Objects.requireNonNull(paramName);
 		this.type=new Type(clazz, param.asType());
 	}

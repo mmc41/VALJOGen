@@ -5,6 +5,7 @@ package com.fortyoneconcepts.valjogen.processor;
 
 import java.beans.Introspector;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,27 +61,39 @@ public final class ClazzFactory
 		}
 
 		TypeMirror baseClazzType = baseClazzElement.asType();
-		final TypeMirror interfaceType = interfaceElement.asType();
+//		final TypeMirror interfaceType = interfaceElement.asType();
 
-		String className = createQualifiedClassName(configuration, interfaceType.toString(), sourceInterfacePackageName);
+		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
+
+
+		TypeElement[] interfaceElements = new TypeElement[ekstraInterfaceNames.length+1];
+		interfaceElements[0]=interfaceElement;
+		for (int i=0; i<ekstraInterfaceNames.length; ++i)
+		{
+			TypeElement e = elements.getTypeElement(ekstraInterfaceNames[i]);
+			if (e==null) {
+				errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.InterfaceNotFound, baseClazzName));
+				return null;
+			}
+			interfaceElements[i+1]=e;
+		}
+
+		List<TypeMirror> interfaceTypes = Arrays.stream(interfaceElements).map(ie -> ie.asType()).collect(Collectors.toList());
+
+		String className = createQualifiedClassName(configuration, interfaceElement.asType().toString(), sourceInterfacePackageName);
 
 		String classJavaDoc = elements.getDocComment(interfaceElement);
 		if (classJavaDoc==null)
 			classJavaDoc="";
 
-		Clazz clazz = new Clazz(configuration, types, elements, className, interfaceElement.asType(), baseClazzType, classJavaDoc);
+		Clazz clazz = new Clazz(configuration, types, elements, className, interfaceTypes, baseClazzType, classJavaDoc);
 
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
 		List<Property> propertyMethods= new ArrayList<Property>();
 		List<Type> importTypes = new ArrayList<Type>();
 
-		// Collect all members, property methods and non-property methods from interfaces:
-		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
-		final Stream<TypeElement> allInterfaces = getInterfacesWithDecendents(types, interfaceElement);
-
 		// Define helper types
-
 		TypeElement arraysElement = elements.getTypeElement("java.util.Arrays");
 		TypeElement objectsElement = elements.getTypeElement("java.util.Objects");
 
@@ -89,9 +102,12 @@ public final class ClazzFactory
 
 		HelperTypes helperTypes = new HelperTypes(arraysType, objectsType);
 
-		// Import interface, base class and specified extras:
-		importTypes.add(new Type(clazz, interfaceType));
+		// Import interface(s), base class and specified extras:
+		for (TypeMirror interfaceType : interfaceTypes)
+		  importTypes.add(new Type(clazz, interfaceType));
+
 		importTypes.add(new Type(clazz, baseClazzType));
+
 		for (String importName : configuration.getImportClasses())
 		{
 			TypeElement importElement = elements.getTypeElement(importName);
@@ -105,7 +121,11 @@ public final class ClazzFactory
 
 		final StatusHolder statusHolder = new StatusHolder();
 
-		// Look at all methods in all reachable interfaces:
+		// Get stream of all interfaces that we need to deal with
+		final Stream<TypeElement> allInterfaces = Arrays.stream(interfaceElements).flatMap(ie -> getInterfacesWithDecendents(types, ie));
+
+		// Collect all members, property methods and non-property methods from interfaces:
+		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
 		allInterfaces.flatMap(i -> i.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault()))
 		             .forEach(m -> {
 		            	try {

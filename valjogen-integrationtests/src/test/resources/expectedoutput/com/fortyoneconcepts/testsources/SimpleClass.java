@@ -3,9 +3,6 @@ package com.fortyoneconcepts.valjogen.testsources;
 import java.util.Arrays;
 import java.util.Objects;
 
-/**
- * {@inheritDoc}
- */
 
 public final class SimpleClass implements SimpleInterface
 {
@@ -17,27 +14,18 @@ public final class SimpleClass implements SimpleInterface
     return new SimpleClass(_object, _string);
   }
 
-  /**
-   * Constructs an instance of SimpleClass
-   */
   private SimpleClass(final Object _object, final String _string)
   {
     this._object=Objects.requireNonNull(_object);
     this._string=Objects.requireNonNull(_string);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final Object getObject()
   {
     return _object;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public final String getString()
   {

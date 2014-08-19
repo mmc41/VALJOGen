@@ -13,7 +13,7 @@ package <clazz.packageName>;
 <endif>
 <classJavaDoc(clazz)>
 
-<optScope(clazz)><optFinal(clazz)><optAbstract(clazz)>class <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceType.prototypicalName>
+<optScope(clazz)><optFinal(clazz)><optAbstract(clazz)>class <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceTypes:{ _i |<_i.prototypicalName>}; wrap, anchor, separator=", ">
 {
   <clazz.members:declareMember(); separator="\n">
 

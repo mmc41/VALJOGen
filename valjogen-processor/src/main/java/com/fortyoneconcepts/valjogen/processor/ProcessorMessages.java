@@ -3,6 +3,8 @@ package com.fortyoneconcepts.valjogen.processor;
 public interface ProcessorMessages
 {
   public static final String BaseClassNotFound="Could not find base class %s";
+  public static final String InterfaceNotFound="Could not find inteface %s";
+
   public static final String ImportTypeNotFound="Unknown import type %s";
 
   public static final String MalFormedSetter="Malformed setter %s";

@@ -1,6 +1,6 @@
 package com.fortyoneconcepts.valjogen.test.input;
 
-public interface BaseInterfaceWithoutAnnotation
+public interface InterfaceWithoutAnnotation
 {
 	public long getBaseValue();
 }

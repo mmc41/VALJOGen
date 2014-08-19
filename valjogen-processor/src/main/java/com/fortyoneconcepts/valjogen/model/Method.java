@@ -61,7 +61,7 @@ public class Method implements Model
 
 	public boolean isSelfReturnType()
 	{
-		return returnType.equals(clazz.getInterfaceType());
+		return clazz.getInterfaceTypes().stream().anyMatch(t -> t.equals(returnType));
 	}
 
 	public Type getReturnType()
