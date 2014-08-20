@@ -14,6 +14,8 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 /**
  * Meta-information about class that need to be generated.
  *
+ * Nb. Unfortunately, this class needs to be mutable as some of the externally constructed instance members need to be constructed aftert this class so they can refer back to this instance.
+ *
  * @author mmc
  */
 public final class Clazz implements Model
@@ -25,8 +27,8 @@ public final class Clazz implements Model
 
 	private final String packageName;
 	private final String qualifiedClassName;
-	private final List<Type> interfaceTypes;
-	private final Type baseClazzType;
+	private List<Type> interfaceTypes;
+	private Type baseClazzType;
 
 	protected final String javaDoc;
 
@@ -36,14 +38,14 @@ public final class Clazz implements Model
 	private List<Method> methods;
 	private HelperTypes helperTypes;
 
-	public Clazz(Configuration configuration, Types types, Elements elements, String qualifiedClassName, List<TypeMirror> interfaceTypes, TypeMirror baseClass, String javaDoc)
+	public Clazz(Configuration configuration, Types types, Elements elements, String qualifiedClassName, String javaDoc)
 	{
 		this.configuration = Objects.requireNonNull(configuration);
 		this.elements = Objects.requireNonNull(elements);
 		this.types = Objects.requireNonNull(types);
 		this.qualifiedClassName = Objects.requireNonNull(qualifiedClassName);
-		this.interfaceTypes = Objects.requireNonNull(interfaceTypes).stream().map(it -> new Type(this, it)).collect(Collectors.toList());
-		this.baseClazzType = new Type(this, Objects.requireNonNull(baseClass));
+		this.interfaceTypes = new ArrayList<Type>();
+		this.baseClazzType = null;
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 
 		this.packageName = NamesUtil.getPackageFromQualifiedName(qualifiedClassName);
@@ -131,14 +133,25 @@ public final class Clazz implements Model
 		return NamesUtil.getGenericQualifier(qualifiedClassName);
 	}
 
+
 	public List<Type> getInterfaceTypes()
 	{
 		return interfaceTypes;
 	}
 
+	public void setInterfaceTypes(List<Type> interfaceTypes)
+	{
+		this.interfaceTypes=Objects.requireNonNull(interfaceTypes);
+	}
+
 	public Type getBaseClazzType()
 	{
-		return baseClazzType;
+		return Objects.requireNonNull(baseClazzType);
+	}
+
+	public void setBaseClazzType(Type baseClazzType)
+	{
+		this.baseClazzType=Objects.requireNonNull(baseClazzType);
 	}
 
 	public String getJavaDoc()

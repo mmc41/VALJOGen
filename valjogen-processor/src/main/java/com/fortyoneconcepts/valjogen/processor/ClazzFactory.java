@@ -49,15 +49,15 @@ public final class ClazzFactory
 
 		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.toString();
 
-		TypeMirror baseClazzType = createBaseClazzType(elements,interfaceElement, configuration, errorConsumer);
-		if (baseClazzType==null)
+		TypeMirror baseClazzTypeMirror = createBaseClazzType(elements,interfaceElement, configuration, errorConsumer);
+		if (baseClazzTypeMirror==null)
 			return null;
 
 		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
 
 		List<TypeElement> interfaceElements = createInterfaceElements(elements,	interfaceElement, ekstraInterfaceNames, errorConsumer);
 
-		List<TypeMirror> interfaceTypes = interfaceElements.stream().map(ie -> ie.asType()).collect(Collectors.toList());
+		List<TypeMirror> interfaceTypeMirrors = interfaceElements.stream().map(ie -> ie.asType()).collect(Collectors.toList());
 
 		String className = createQualifiedClassName(configuration, interfaceElement.asType().toString(), sourceInterfacePackageName);
 
@@ -65,7 +65,13 @@ public final class ClazzFactory
 		if (classJavaDoc==null)
 			classJavaDoc="";
 
-		Clazz clazz = new Clazz(configuration, types, elements, className, interfaceTypes, baseClazzType, classJavaDoc);
+		Clazz clazz = new Clazz(configuration, types, elements, className, classJavaDoc);
+
+		Type baseClazzType = new Type(clazz, baseClazzTypeMirror);
+		List<Type> interfaceTypes = interfaceTypeMirrors.stream().map(it -> new Type(clazz, it)).collect(Collectors.toList());
+
+		clazz.setBaseClazzType(baseClazzType);
+		clazz.setInterfaceTypes(interfaceTypes);
 
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
@@ -81,7 +87,7 @@ public final class ClazzFactory
 		HelperTypes helperTypes = new HelperTypes(arraysType, objectsType);
 
 		// Import interface(s), base class and specified extras:
-		List<Type> importTypes = createImportTypes(clazz, elements, interfaceElement, configuration, baseClazzType, interfaceTypes, errorConsumer);
+		List<Type> importTypes = createImportTypes(clazz, elements, interfaceElement, configuration, baseClazzTypeMirror, interfaceTypeMirrors, errorConsumer);
 
 		final StatusHolder statusHolder = new StatusHolder();
 
