@@ -3,11 +3,7 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
-
-import javax.lang.model.element.ExecutableElement;
+import java.util.*;
 
 /***
  * Meta-information about a property setter/getter method that should be generated (implemented).
@@ -20,16 +16,16 @@ public final class Property extends Method
 	private final Member member;
 	private final PropertyKind kind;
 
-	public Property(Clazz clazz, ExecutableElement element, Member member, PropertyKind kind, String javaDoc)
+	public Property(Clazz clazz, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc)
 	{
-		super(clazz, element, Collections.emptyList(), javaDoc);
+		super(clazz, propertyName, returnType, Collections.emptyList(), javaDoc);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, ExecutableElement element, Member member, PropertyKind kind, String javaDoc, Parameter parameter)
+	public Property(Clazz clazz, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, Parameter parameter)
 	{
-		super(clazz, element, Arrays.asList(parameter), javaDoc);
+		super(clazz, propertyName, returnType, Arrays.asList(parameter), javaDoc);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}

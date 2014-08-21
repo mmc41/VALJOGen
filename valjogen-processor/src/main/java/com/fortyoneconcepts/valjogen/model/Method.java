@@ -3,10 +3,7 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
-import java.util.List;
-import java.util.Objects;
-
-import javax.lang.model.element.ExecutableElement;
+import java.util.*;
 
 /***
  * Meta-information about a method that should be generated (implemented).
@@ -16,18 +13,18 @@ import javax.lang.model.element.ExecutableElement;
 public class Method implements Model
 {
 	protected final Clazz clazz;
-	protected final ExecutableElement element;
+	protected final String methodName;
 	protected final List<Parameter> parameters;
 	protected final String javaDoc;
 	protected final Type returnType;
 
-	public Method(Clazz clazz, ExecutableElement element, List<Parameter> parameters, String javaDoc)
+	public Method(Clazz clazz, String methodName, Type returnType, List<Parameter> parameters, String javaDoc)
 	{
 	    this.clazz = Objects.requireNonNull(clazz);
-		this.element = Objects.requireNonNull(element);
+		this.methodName = Objects.requireNonNull(methodName);
 		this.parameters = Objects.requireNonNull(parameters);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
-		this.returnType = new Type(clazz, element.getReturnType());
+		this.returnType = Objects.requireNonNull(returnType);
 	}
 
 	@Override
@@ -71,7 +68,7 @@ public class Method implements Model
 
 	public String getName()
 	{
-		return element.getSimpleName().toString();
+		return methodName;
 	}
 
 	public List<Parameter> getParameters()

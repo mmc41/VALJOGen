@@ -55,6 +55,6 @@ public interface Model
 	 */
 	public default String getVariablesPrefix()
 	{
-		 return getConfiguration().getSuggestedVariablesPrefix();
+		return getConfiguration().getSuggestedVariablesPrefix();
 	}
 }

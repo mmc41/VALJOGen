@@ -15,7 +15,7 @@ public interface ComplexInterfaceWithAllTypes
 	public java.util.Date getDate();
 
 	public Object[] getObjectArray();
-	// public Object[][] getObjectMultiArray();
+	public Object[][] getObjectMultiArray();
 
 	public byte getByte();
 	public int getInt();
@@ -32,7 +32,7 @@ public interface ComplexInterfaceWithAllTypes
 	public boolean[] getBooleanArray();
 	public float[] getFloatArray();
 	public double[] getDoubleArray();
-/*
+
 	public byte[][] getByteMultiArray();
 	public int[][] getIntMultiArray();
 	public long[][] getLongMultiArray();
@@ -40,5 +40,4 @@ public interface ComplexInterfaceWithAllTypes
 	public boolean[][] getBooleanMultiArray();
 	public float[][] getFloatMultiArray();
 	public double[][] getDoubleMultiArray();
-	*/
 }

@@ -4,10 +4,7 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.*;
@@ -18,7 +15,7 @@ import javax.tools.JavaFileObject;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.*;
-import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
+import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 /**
  * Main class for our annotation processor using the javax annotation processor api. Instantiated and used from javac compiler.
@@ -96,7 +93,7 @@ public class AnnotationProcessor extends AbstractProcessor
 		if (clazz==null)
 			return;
 
-		String fileName=NamesUtil.stripGenericQualifier(clazz.getName());
+		String fileName=stripGenericQualifier(clazz.getName());
 
 		JavaFileObject target = filer.createSourceFile(fileName, element);
 

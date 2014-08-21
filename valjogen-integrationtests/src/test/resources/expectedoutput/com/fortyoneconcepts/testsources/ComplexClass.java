@@ -11,6 +11,7 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
   private final String _string;
   private final java.util.Date date;
   private final Object[] objectArray;
+  private final Object[][] objectMultiArray;
   private final byte _byte;
   private final int _int;
   private final long _long;
@@ -25,19 +26,27 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
   private final boolean[] booleanArray;
   private final float[] floatArray;
   private final double[] doubleArray;
+  private final byte[][] byteMultiArray;
+  private final int[][] intMultiArray;
+  private final long[][] longMultiArray;
+  private final char[][] charMultiArray;
+  private final boolean[][] booleanMultiArray;
+  private final float[][] floatMultiArray;
+  private final double[][] doubleMultiArray;
 
-  public static ComplexClass valueOf(final ComplexInterfaceWithAllTypes other, final Object _object, final String _string, final java.util.Date date, final Object[] objectArray, final byte _byte, final int _int, final long _long, final char _char, final boolean _boolean, final float _float, final double _double, final byte[] byteArray, final int[] intArray, final long[] longArray, final char[] charArray, final boolean[] booleanArray, final float[] floatArray, final double[] doubleArray)
+  public static ComplexClass valueOf(final ComplexInterfaceWithAllTypes other, final Object _object, final String _string, final java.util.Date date, final Object[] objectArray, final Object[][] objectMultiArray, final byte _byte, final int _int, final long _long, final char _char, final boolean _boolean, final float _float, final double _double, final byte[] byteArray, final int[] intArray, final long[] longArray, final char[] charArray, final boolean[] booleanArray, final float[] floatArray, final double[] doubleArray, final byte[][] byteMultiArray, final int[][] intMultiArray, final long[][] longMultiArray, final char[][] charMultiArray, final boolean[][] booleanMultiArray, final float[][] floatMultiArray, final double[][] doubleMultiArray)
   {
-    return new ComplexClass(other, _object, _string, date, objectArray, _byte, _int, _long, _char, _boolean, _float, _double, byteArray, intArray, longArray, charArray, booleanArray, floatArray, doubleArray);
+    return new ComplexClass(other, _object, _string, date, objectArray, objectMultiArray, _byte, _int, _long, _char, _boolean, _float, _double, byteArray, intArray, longArray, charArray, booleanArray, floatArray, doubleArray, byteMultiArray, intMultiArray, longMultiArray, charMultiArray, booleanMultiArray, floatMultiArray, doubleMultiArray);
   }
 
-  private ComplexClass(final ComplexInterfaceWithAllTypes other, final Object _object, final String _string, final java.util.Date date, final Object[] objectArray, final byte _byte, final int _int, final long _long, final char _char, final boolean _boolean, final float _float, final double _double, final byte[] byteArray, final int[] intArray, final long[] longArray, final char[] charArray, final boolean[] booleanArray, final float[] floatArray, final double[] doubleArray)
+  private ComplexClass(final ComplexInterfaceWithAllTypes other, final Object _object, final String _string, final java.util.Date date, final Object[] objectArray, final Object[][] objectMultiArray, final byte _byte, final int _int, final long _long, final char _char, final boolean _boolean, final float _float, final double _double, final byte[] byteArray, final int[] intArray, final long[] longArray, final char[] charArray, final boolean[] booleanArray, final float[] floatArray, final double[] doubleArray, final byte[][] byteMultiArray, final int[][] intMultiArray, final long[][] longMultiArray, final char[][] charMultiArray, final boolean[][] booleanMultiArray, final float[][] floatMultiArray, final double[][] doubleMultiArray)
   {
     this.other=Objects.requireNonNull(other);
     this._object=Objects.requireNonNull(_object);
     this._string=Objects.requireNonNull(_string);
     this.date=Objects.requireNonNull(date);
-    this.objectArray=Objects.requireNonNull(objectArray);
+    this.objectArray=objectArray;
+    this.objectMultiArray=objectMultiArray;
     this._byte=_byte;
     this._int=_int;
     this._long=_long;
@@ -45,13 +54,20 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
     this._boolean=_boolean;
     this._float=_float;
     this._double=_double;
-    this.byteArray=Objects.requireNonNull(byteArray);
-    this.intArray=Objects.requireNonNull(intArray);
-    this.longArray=Objects.requireNonNull(longArray);
-    this.charArray=Objects.requireNonNull(charArray);
-    this.booleanArray=Objects.requireNonNull(booleanArray);
-    this.floatArray=Objects.requireNonNull(floatArray);
-    this.doubleArray=Objects.requireNonNull(doubleArray);
+    this.byteArray=byteArray;
+    this.intArray=intArray;
+    this.longArray=longArray;
+    this.charArray=charArray;
+    this.booleanArray=booleanArray;
+    this.floatArray=floatArray;
+    this.doubleArray=doubleArray;
+    this.byteMultiArray=byteMultiArray;
+    this.intMultiArray=intMultiArray;
+    this.longMultiArray=longMultiArray;
+    this.charMultiArray=charMultiArray;
+    this.booleanMultiArray=booleanMultiArray;
+    this.floatMultiArray=floatMultiArray;
+    this.doubleMultiArray=doubleMultiArray;
   }
 
   @Override
@@ -82,6 +98,12 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
   public final Object[] getObjectArray()
   {
     return objectArray;
+  }
+
+  @Override
+  public final Object[][] getObjectMultiArray()
+  {
+    return objectMultiArray;
   }
 
   @Override
@@ -169,6 +191,48 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
   }
 
   @Override
+  public final byte[][] getByteMultiArray()
+  {
+    return byteMultiArray;
+  }
+
+  @Override
+  public final int[][] getIntMultiArray()
+  {
+    return intMultiArray;
+  }
+
+  @Override
+  public final long[][] getLongMultiArray()
+  {
+    return longMultiArray;
+  }
+
+  @Override
+  public final char[][] getCharMultiArray()
+  {
+    return charMultiArray;
+  }
+
+  @Override
+  public final boolean[][] getBooleanMultiArray()
+  {
+    return booleanMultiArray;
+  }
+
+  @Override
+  public final float[][] getFloatMultiArray()
+  {
+    return floatMultiArray;
+  }
+
+  @Override
+  public final double[][] getDoubleMultiArray()
+  {
+    return doubleMultiArray;
+  }
+
+  @Override
   public int hashCode()
   {
     final int _prime = 31;
@@ -178,6 +242,7 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
     _result = _prime * _result + Objects.hashCode(_string); 
     _result = _prime * _result + Objects.hashCode(date); 
     _result = _prime * _result + Arrays.hashCode(objectArray); 
+    _result = _prime * _result + Arrays.deepHashCode(objectMultiArray); 
     _result = _prime * _result + Byte.hashCode(_byte); 
     _result = _prime * _result + Integer.hashCode(_int); 
     _result = _prime * _result + Long.hashCode(_long); 
@@ -192,6 +257,13 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
     _result = _prime * _result + Arrays.hashCode(booleanArray); 
     _result = _prime * _result + Arrays.hashCode(floatArray); 
     _result = _prime * _result + Arrays.hashCode(doubleArray); 
+    _result = _prime * _result + Arrays.deepHashCode(byteMultiArray); 
+    _result = _prime * _result + Arrays.deepHashCode(intMultiArray); 
+    _result = _prime * _result + Arrays.deepHashCode(longMultiArray); 
+    _result = _prime * _result + Arrays.deepHashCode(charMultiArray); 
+    _result = _prime * _result + Arrays.deepHashCode(booleanMultiArray); 
+    _result = _prime * _result + Arrays.deepHashCode(floatMultiArray); 
+    _result = _prime * _result + Arrays.deepHashCode(doubleMultiArray); 
     return _result;
   }
 
@@ -207,7 +279,7 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
 
     ComplexClass _other = (ComplexClass) obj;
 
-    return (Objects.equals(other, _other.other) && Objects.equals(_object, _other._object) && Objects.equals(_string, _other._string) && Objects.equals(date, _other.date) && Arrays.equals(objectArray, _other.objectArray) && (_byte == _other._byte) && (_int == _other._int) && (_long == _other._long) && (_char == _other._char) && (_boolean == _other._boolean) && (Float.floatToIntBits(_float) == Float.floatToIntBits(_other._float)) && (Double.doubleToLongBits(_double) == Double.doubleToLongBits(_other._double)) && Arrays.equals(byteArray, _other.byteArray) && Arrays.equals(intArray, _other.intArray) && Arrays.equals(longArray, _other.longArray) && Arrays.equals(charArray, _other.charArray) && Arrays.equals(booleanArray, _other.booleanArray) && Arrays.equals(floatArray, _other.floatArray) && Arrays.equals(doubleArray, _other.doubleArray));
+    return (Objects.equals(other, _other.other) && Objects.equals(_object, _other._object) && Objects.equals(_string, _other._string) && Objects.equals(date, _other.date) && Arrays.equals(objectArray, _other.objectArray) && Arrays.deepEquals(objectMultiArray, _other.objectMultiArray) && (_byte == _other._byte) && (_int == _other._int) && (_long == _other._long) && (_char == _other._char) && (_boolean == _other._boolean) && (Float.floatToIntBits(_float) == Float.floatToIntBits(_other._float)) && (Double.doubleToLongBits(_double) == Double.doubleToLongBits(_other._double)) && Arrays.equals(byteArray, _other.byteArray) && Arrays.equals(intArray, _other.intArray) && Arrays.equals(longArray, _other.longArray) && Arrays.equals(charArray, _other.charArray) && Arrays.equals(booleanArray, _other.booleanArray) && Arrays.equals(floatArray, _other.floatArray) && Arrays.equals(doubleArray, _other.doubleArray) && Arrays.deepEquals(byteMultiArray, _other.byteMultiArray) && Arrays.deepEquals(intMultiArray, _other.intMultiArray) && Arrays.deepEquals(longMultiArray, _other.longMultiArray) && Arrays.deepEquals(charMultiArray, _other.charMultiArray) && Arrays.deepEquals(booleanMultiArray, _other.booleanMultiArray) && Arrays.deepEquals(floatMultiArray, _other.floatMultiArray) && Arrays.deepEquals(doubleMultiArray, _other.doubleMultiArray));
   }
 
   @Override
@@ -229,6 +301,9 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
       _sb.append(", ");
       _sb.append("objectArray=");
       _sb.append(Arrays.toString(objectArray)); 
+      _sb.append(", ");
+      _sb.append("objectMultiArray=");
+      _sb.append(Arrays.toString(objectMultiArray)); 
       _sb.append(", ");
       _sb.append("_byte=");
       _sb.append(_byte); 
@@ -271,6 +346,27 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
       _sb.append(", ");
       _sb.append("doubleArray=");
       _sb.append(Arrays.toString(doubleArray)); 
+      _sb.append(", ");
+      _sb.append("byteMultiArray=");
+      _sb.append(Arrays.toString(byteMultiArray)); 
+      _sb.append(", ");
+      _sb.append("intMultiArray=");
+      _sb.append(Arrays.toString(intMultiArray)); 
+      _sb.append(", ");
+      _sb.append("longMultiArray=");
+      _sb.append(Arrays.toString(longMultiArray)); 
+      _sb.append(", ");
+      _sb.append("charMultiArray=");
+      _sb.append(Arrays.toString(charMultiArray)); 
+      _sb.append(", ");
+      _sb.append("booleanMultiArray=");
+      _sb.append(Arrays.toString(booleanMultiArray)); 
+      _sb.append(", ");
+      _sb.append("floatMultiArray=");
+      _sb.append(Arrays.toString(floatMultiArray)); 
+      _sb.append(", ");
+      _sb.append("doubleMultiArray=");
+      _sb.append(Arrays.toString(doubleMultiArray)); 
       _sb.append(']');
       return _sb.toString();
   }

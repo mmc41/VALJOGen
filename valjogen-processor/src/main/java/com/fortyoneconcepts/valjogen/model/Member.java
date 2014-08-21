@@ -3,11 +3,7 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /***
  * Meta-data about a membervariable that backs a property getter and/or setter method.

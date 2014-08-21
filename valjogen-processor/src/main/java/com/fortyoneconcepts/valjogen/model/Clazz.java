@@ -6,31 +6,28 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.*;
-
-import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
+import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 /**
- * Meta-information about class that need to be generated.
+ * Information about the java "class" that need to be generated. Refers to other model elements like members, properties, methods, types etc.
  *
- * Nb. Unfortunately, this class needs to be mutable as some of the externally constructed instance members need to be constructed aftert this class so they can refer back to this instance.
+ * Fully independent of javax.model.* classes even though {@link com.fortyoneconcepts.valjogen.processor.ClazzFactory} is the primary
+ * way to create Clazz instances from javax.model.* classes (provided by an annotation processor).
+ *
+ * Nb. Unlike other models, this class is mutable as some of the externally constructed instance members need
+ *     to be constructed after this class so they can refer back to this instance.
  *
  * @author mmc
  */
 public final class Clazz implements Model
 {
 	private final Configuration configuration;
-
-	private final Elements elements;
-	private final Types types;
-
 	private final String packageName;
 	private final String qualifiedClassName;
+	private final String javaDoc;
+
 	private List<Type> interfaceTypes;
 	private Type baseClazzType;
-
-	protected final String javaDoc;
 
 	private List<Type> importTypes;
 	private List<Member> members;
@@ -38,17 +35,23 @@ public final class Clazz implements Model
 	private List<Method> methods;
 	private HelperTypes helperTypes;
 
-	public Clazz(Configuration configuration, Types types, Elements elements, String qualifiedClassName, String javaDoc)
+	/**
+	 * Constructs a prelimiary Clazz instance from a configuration with only a few values such as name specificed in advanced. After constructing the instance, the various
+	 * setters must be used to finish initialization.
+	 *
+	 * @param configuration The configuration of how generated code should look.
+	 * @param qualifiedClassName The full name of the class that should be generated.
+	 * @param javaDoc JavaDoc if any.
+	 */
+	public Clazz(Configuration configuration, String qualifiedClassName, String javaDoc)
 	{
 		this.configuration = Objects.requireNonNull(configuration);
-		this.elements = Objects.requireNonNull(elements);
-		this.types = Objects.requireNonNull(types);
 		this.qualifiedClassName = Objects.requireNonNull(qualifiedClassName);
 		this.interfaceTypes = new ArrayList<Type>();
 		this.baseClazzType = null;
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 
-		this.packageName = NamesUtil.getPackageFromQualifiedName(qualifiedClassName);
+		this.packageName = getPackageFromQualifiedName(qualifiedClassName);
 
 		this.properties = new ArrayList<Property>();
 		this.methods = new ArrayList<Method>();
@@ -74,16 +77,6 @@ public final class Clazz implements Model
 		return this;
 	}
 
-	Types getTypes()
-	{
-		return types;
-	}
-
-	Elements getElements()
-	{
-		return elements;
-	}
-
 	/**
 	 * Returns a class type name but without package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
 	 *
@@ -91,7 +84,7 @@ public final class Clazz implements Model
 	 */
 	public String getPrototypicalName()
 	{
-		return NamesUtil.getUnqualifiedName(getPrototypicalFullName());
+		return getUnqualifiedName(getPrototypicalFullName());
 	}
 
 	/**
@@ -101,7 +94,7 @@ public final class Clazz implements Model
 	 */
 	public String getName()
 	{
-		return NamesUtil.stripGenericQualifier(getPrototypicalName());
+		return stripGenericQualifier(getPrototypicalName());
 	}
 
 	/**
@@ -111,7 +104,7 @@ public final class Clazz implements Model
 	 */
 	public String getQualifiedName()
 	{
-		return NamesUtil.stripGenericQualifier(getPrototypicalFullName());
+		return stripGenericQualifier(getPrototypicalFullName());
 	}
 
 	/**
@@ -130,7 +123,7 @@ public final class Clazz implements Model
 
 	public String getGenericQualifierText()
 	{
-		return NamesUtil.getGenericQualifier(qualifiedClassName);
+		return getGenericQualifier(qualifiedClassName);
 	}
 
 

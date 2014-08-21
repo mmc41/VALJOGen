@@ -3,7 +3,6 @@
 */
 package com.fortyoneconcepts.valjogen.integrationtests;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
@@ -25,7 +24,6 @@ public class EqualsTest
 	}
 
 	@Test
-	@Ignore("Ignored due to bug in Equalsverifier")
 	public void advancedlassEqualsAndHashContractTest() throws Throwable
 	{
 		Class<?> clazz = getTestClass(TestClassConstants.ComplexClass);

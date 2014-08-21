@@ -3,9 +3,7 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
@@ -17,7 +15,7 @@ import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
  *
  * @author mmc
  */
-public class Configuration implements ConfigurationOptionKeys
+public final class Configuration implements ConfigurationOptionKeys
 {
 	 private final VALJOGenerate generateAnnotation;
 	 private final VALJOConfigure configureAnnotation;

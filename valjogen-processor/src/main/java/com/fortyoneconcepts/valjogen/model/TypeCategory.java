@@ -4,7 +4,8 @@
 package com.fortyoneconcepts.valjogen.model;
 
 /**
- * Various type categories that needs to be deal with differently when generating code.
+ * Main type categories that needs to be deal with differently when
+ * generating code. Corresponds to the different subclasses of Type.
  *
  * @author mmc
  */

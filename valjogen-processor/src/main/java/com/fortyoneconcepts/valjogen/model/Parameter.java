@@ -5,8 +5,6 @@ package com.fortyoneconcepts.valjogen.model;
 
 import java.util.Objects;
 
-import javax.lang.model.element.VariableElement;
-
 /**
  * Meta-information about a formal parameter for a method/property.
  *
@@ -18,16 +16,11 @@ public class Parameter implements Model
 	private final String paramName;
 	private final Type type;
 
-	public Parameter(Clazz clazz, VariableElement param, String paramName)
+	public Parameter(Clazz clazz, Type paramType, String paramName)
 	{
 		this.clazz=Objects.requireNonNull(clazz);
 		this.paramName=Objects.requireNonNull(paramName);
-		this.type=new Type(clazz, param.asType());
-	}
-
-	public Parameter(Clazz clazz, VariableElement param)
-	{
-		this(clazz, param, param.getSimpleName().toString());
+		this.type=Objects.requireNonNull(paramType);
 	}
 
 	@Override

@@ -3,32 +3,27 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Stream.*;
-
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 /**
- * Meta-information about a type that our model use or refer to.
+ * Information about a type that a model use or refer to. Actual types are divided into 3 concrete subclasses depending on the category
+ * of the type. I.e. if the type is a primitive, an array or an object.
  *
  * @author mmc
  */
-public class Type implements Model
+public abstract class Type implements Model
 {
-	private Model modelUsingType;
-	private final TypeMirror type;
+	protected final Model modelUsingType;
+	protected final String qualifiedProtoTypicalTypeName; // or just a simple name for primities.
 
-	public Type(Model modelUsingType, TypeMirror type)
+	public Type(Model modelUsingType, String qualifiedProtoTypicalTypeName)
 	{
 		this.modelUsingType = Objects.requireNonNull(modelUsingType);
-		this.type = Objects.requireNonNull(type);
+		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
 	}
 
 	@Override
@@ -52,12 +47,12 @@ public class Type implements Model
 	@Override
 	public String getPackageName()
 	{
-		return getPackageFromQualifiedName(type.toString());
+		return getPackageFromQualifiedName(qualifiedProtoTypicalTypeName);
 	}
 
 	public String getQualifiedName()
 	{
-		return stripGenericQualifier(type.toString());
+		return stripGenericQualifier(qualifiedProtoTypicalTypeName);
 	}
 
 	/**
@@ -66,7 +61,7 @@ public class Type implements Model
 	 * @return The fully qualifid prototypical class type name.
 	 */
 	public String getPrototypicalQualifiedName() {
-		return type.toString();
+		return qualifiedProtoTypicalTypeName;
 	}
 
 	public String getName()
@@ -107,73 +102,57 @@ public class Type implements Model
 
 	public boolean isRootObject()
 	{
-	    return type.toString().equals(ConfigurationDefaults.RootObject);
+	    return false;
 	}
 
     public boolean isPrimitive()
     {
-    	return type instanceof PrimitiveType;
+    	return false;
     }
 
     public boolean isPrimitiveFloat()
     {
-    	return (type.toString().equals("float"));
+    	return false;
     }
 
     public boolean isPrimitiveDouble()
     {
-    	return (type.toString().equals("double"));
+    	return false;
     }
 
 	public boolean isArray()
 	{
-		return (type.getKind()==TypeKind.ARRAY);
+		return false;
 	}
 
 	public boolean isObject()
 	{
-		return (!isPrimitive());
+		return false;
 	}
 
 	public boolean isMultiDimensionalArray()
 	{
-		if (!isArray())
-			return false;
-		ArrayType arrayType = (ArrayType)type;
-		TypeMirror componentType = arrayType.getComponentType();
-		return (componentType instanceof ArrayType);
+		return false;
 	}
 
-	public Type getArrayComponentType()
-	{
-		if (!isArray())
-			throw new UnsupportedOperationException("Operation only supported for arrays");
-
-		ArrayType arrayType = (ArrayType)type;
-		TypeMirror componentType = arrayType.getComponentType();
-		return new Type(this, componentType);
-	}
-
-    public TypeCategory getTypeCategory()
-    {
-    	if (isPrimitive())
-    		return TypeCategory.PRIMITIVE;
-    	else if (isArray())
-    		return TypeCategory.ARRAY;
-    	else return TypeCategory.OBJECT;
-    }
+    public abstract TypeCategory getTypeCategory();
 
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((type == null) ? 0 : type.toString().hashCode());
+		result = prime * result
+				+ ((modelUsingType == null) ? 0 : modelUsingType.hashCode());
+		result = prime
+				* result
+				+ ((qualifiedProtoTypicalTypeName == null) ? 0
+						: qualifiedProtoTypicalTypeName.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -181,10 +160,13 @@ public class Type implements Model
 		if (getClass() != obj.getClass())
 			return false;
 		Type other = (Type) obj;
-		if (type == null) {
-			if (other.type != null)
+		if (modelUsingType != other.modelUsingType)
+			return false;
+		if (qualifiedProtoTypicalTypeName == null) {
+			if (other.qualifiedProtoTypicalTypeName != null)
 				return false;
-		} else if (!type.toString().equals(other.type.toString()))
+		} else if (!qualifiedProtoTypicalTypeName
+				.equals(other.qualifiedProtoTypicalTypeName))
 			return false;
 		return true;
 	}
