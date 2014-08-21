@@ -4,10 +4,7 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.beans.Introspector;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,8 +72,10 @@ public final class ClazzFactory
 		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
 
 		List<TypeElement> interfaceElements = createInterfaceElements(elements,	interfaceElement, ekstraInterfaceNames, errorConsumer);
-
 		List<TypeMirror> interfaceTypeMirrors = interfaceElements.stream().map(ie -> ie.asType()).collect(Collectors.toList());
+
+		List<TypeElement> allInterfaceElements = interfaceElements.stream().flatMap(ie -> getInterfacesWithDecendents(types, ie)).collect(Collectors.toList());
+		List<TypeMirror> allInterfaceTypeMirrors = allInterfaceElements.stream().map(ie -> ie.asType()).collect(Collectors.toList());
 
 		String className = createQualifiedClassName(configuration, interfaceElement.asType().toString(), sourceInterfacePackageName);
 
@@ -88,34 +87,23 @@ public final class ClazzFactory
 
 		Type baseClazzType = createType(clazz, baseClazzTypeMirror);
 		List<Type> interfaceTypes = interfaceTypeMirrors.stream().map(it -> createType(clazz, it)).collect(Collectors.toList());
+		Set<Type> allInterfaceTypes = allInterfaceTypeMirrors.stream().map(it -> createType(clazz, it)).collect(Collectors.toSet());
 
 		clazz.setBaseClazzType(baseClazzType);
-		clazz.setInterfaceTypes(interfaceTypes);
+		clazz.setInterfaceTypes(interfaceTypes, allInterfaceTypes);
 
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
 		List<Property> propertyMethods= new ArrayList<Property>();
-
-		// Define helper types
-		TypeElement arraysElement = elements.getTypeElement("java.util.Arrays");
-		TypeElement objectsElement = elements.getTypeElement("java.util.Objects");
-
-		Type arraysType = createType(clazz, arraysElement.asType());
-		Type objectsType = createType(clazz, objectsElement.asType());
-
-		HelperTypes helperTypes = new HelperTypes(arraysType, objectsType);
 
 		// Import interface(s), base class and specified extras:
 		List<Type> importTypes = createImportTypes(clazz, elements, interfaceElement, configuration, baseClazzTypeMirror, interfaceTypeMirrors, errorConsumer);
 
 		final StatusHolder statusHolder = new StatusHolder();
 
-		// Get stream of all interfaces that we need to deal with
-		final Stream<TypeElement> allInterfaces = interfaceElements.stream().flatMap(ie -> getInterfacesWithDecendents(types, ie));
-
 		// Collect all members, property methods and non-property methods from interfaces:
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
-		allInterfaces.flatMap(i -> i.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault()))
+		allInterfaceElements.stream().flatMap(i -> i.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault()))
 		             .forEach(m -> {
 		            	try {
 							String javaDoc = elements.getDocComment(m);
@@ -163,7 +151,6 @@ public final class ClazzFactory
 		if (statusHolder.encountedSynthesisedMembers)
 			errorConsumer.message(interfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, interfaceElement.toString()));
 
-		clazz.setHelperTypes(helperTypes);
         clazz.setPropertyMethods(propertyMethods);
         clazz.setNonPropertyMethods(nonPropertyMethods);
         clazz.setMembers(new ArrayList<Member>(membersByName.values()));
@@ -175,14 +162,14 @@ public final class ClazzFactory
 	private Type createType(Clazz clazz, TypeMirror type)
 	{
 		if (type instanceof javax.lang.model.type.PrimitiveType) {
-			return new com.fortyoneconcepts.valjogen.model.PrimitiveType(clazz, type.toString());
+			return com.fortyoneconcepts.valjogen.model.PrimitiveType.valueOf(clazz, type.toString());
 		} else if (type.getKind()==TypeKind.ARRAY) {
 			ArrayType arrayType = (ArrayType)type;
 			TypeMirror componentTypeMirror = arrayType.getComponentType();
 	        Type componentType = createType(clazz, componentTypeMirror);
-			return new com.fortyoneconcepts.valjogen.model.ArrayType(clazz, type.toString(), componentType);
+			return com.fortyoneconcepts.valjogen.model.ArrayType.valueOf(clazz, type.toString(), componentType);
 		} else {
-		    return new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, type.toString());
+		    return com.fortyoneconcepts.valjogen.model.ObjectType.valueOf(clazz, type.toString());
 		}
 	}
 

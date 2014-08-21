@@ -63,9 +63,9 @@ public interface ConfigurationOptionKeys
 	 public static String suggestedVariablesPrefix = "suggestedVariablesPrefix";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#serializableEnabled
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#serialVersionUID
 	 */
-	 public static String serializableEnabled = "serializableEnabled";
+	 public static String serialVersionUID = "serialVersionUID";
 
 	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#equalsEnabled

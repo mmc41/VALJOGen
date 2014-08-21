@@ -77,7 +77,31 @@ public class TemplateClassTest extends TemplateTestBase
 	@Test
 	public void testExtraInterface() throws Exception
 	{
-		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable", "com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation"}).build());
-		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable, InterfaceWithoutAnnotation", output);
+		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation"}).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, InterfaceWithoutAnnotation", output);
+	}
+
+	@Test
+	public void testDirectSerializableHasUID() throws Exception
+	{
+		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, 42L).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable", output);
+		assertContainsWithWildcards("private static final long serialVersionUID = 42;", output);
+	}
+
+	@Test
+	public void testIndirectSerializableHasUID() throws Exception
+	{
+		String output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 43L).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements SerializableInterface {", output);
+		assertContainsWithWildcards("private static final long serialVersionUID = 43;", output);
+	}
+
+	@Test
+	public void testSerializableWithNoUIDHasNoUID() throws Exception
+	{
+		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, ConfigurationDefaults.SerialVersionUID_NotSet).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable", output);
+		assertNotContains("serialVersionUID", output);
 	}
 }

@@ -9,9 +9,14 @@ import java.util.Objects;
  */
 public final class ArrayType extends Type
 {
-	private  final Type componentType;
+	private final Type componentType;
 
-	public ArrayType(Model modelUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
+	public static ArrayType valueOf(Model modelUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
+	{
+		return new ArrayType(modelUsingType, qualifiedProtoTypicalTypeName, componentType);
+	}
+
+	private ArrayType(Model modelUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
 	{
 		super(modelUsingType, qualifiedProtoTypicalTypeName);
 		this.componentType=Objects.requireNonNull(componentType);

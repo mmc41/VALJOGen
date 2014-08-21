@@ -15,6 +15,10 @@ package <clazz.packageName>;
 
 <optScope(clazz)><optFinal(clazz)><optAbstract(clazz)>class <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceTypes:{ _i |<_i.prototypicalName>}; wrap, anchor, separator=", ">
 {
+  <if(clazz.serializable && clazz.configuration.serialVersionUIDSpecified)>
+  private static final long serialVersionUID = <clazz.configuration.serialVersionUID>;
+  <endif>
+
   <clazz.members:declareMember(); separator="\n">
 
   <if(!clazz.abstract)>

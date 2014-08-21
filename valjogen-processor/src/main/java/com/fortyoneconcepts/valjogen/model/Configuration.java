@@ -148,9 +148,14 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(suggestedVariablesPrefix, configureAnnotation.suggestedVariablesPrefix());
 	 }
 
-	 public boolean isSerializableEnabled()
+	 public long getSerialVersionUID()
 	 {
-		 return getValue(serializableEnabled, configureAnnotation.serializableEnabled());
+		 return getValue(serialVersionUID, configureAnnotation.serialVersionUID());
+	 }
+
+	 public boolean getSerialVersionUIDSpecified()
+	 {
+		 return getSerialVersionUID()!=ConfigurationDefaults.SerialVersionUID_NotSet;
 	 }
 
 	 public boolean isEqualsEnabled()
@@ -230,6 +235,20 @@ public final class Configuration implements ConfigurationOptionKeys
 		 } catch (Throwable e)
 		 {
 			 throw new IllegalArgumentException("Option value "+value+" for key "+optionKey+" must be an integer value", e);
+		 }
+	 }
+
+	 private long getValue(String optionKey, long defaultValue)
+	 {
+		 String value = options.get(optionKey);
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
+		   return defaultValue;
+
+		 try {
+			 return Long.parseLong(value);
+		 } catch (Throwable e)
+		 {
+			 throw new IllegalArgumentException("Option value "+value+" for key "+optionKey+" must be an long integer value", e);
 		 }
 	 }
 }

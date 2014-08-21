@@ -7,7 +7,12 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public final class PrimitiveType extends Type
 {
-	public PrimitiveType(Model modelUsingType, String qualifiedProtoTypicalTypeName)
+	public static PrimitiveType valueOf(Model modelUsingType, String qualifiedProtoTypicalTypeName)
+	{
+		return new PrimitiveType(modelUsingType, qualifiedProtoTypicalTypeName);
+	}
+
+	private PrimitiveType(Model modelUsingType, String qualifiedProtoTypicalTypeName)
 	{
 		super(modelUsingType, qualifiedProtoTypicalTypeName);
 	}

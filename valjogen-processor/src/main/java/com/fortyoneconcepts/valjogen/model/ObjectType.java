@@ -7,7 +7,12 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public final class ObjectType extends Type
 {
-	public ObjectType(Model modelUsingType, String qualifiedProtoTypicalTypeName)
+	public static ObjectType valueOf(Model modelUsingType, String qualifiedProtoTypicalTypeName)
+	{
+		return new ObjectType(modelUsingType, qualifiedProtoTypicalTypeName);
+	}
+
+	private ObjectType(Model modelUsingType, String qualifiedProtoTypicalTypeName)
 	{
 		super(modelUsingType, qualifiedProtoTypicalTypeName);
 	}

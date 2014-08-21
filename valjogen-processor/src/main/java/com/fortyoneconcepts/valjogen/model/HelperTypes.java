@@ -11,21 +11,43 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public class HelperTypes
 {
-	private final Type javaUtilArrays;
-	private final Type javaUtilObjects;
+	private final Clazz clazz;
 
-	public HelperTypes(Type javaUtilArrays, Type javaUtilObjects)
+	public HelperTypes(Clazz clazz)
 	{
-		this.javaUtilArrays=javaUtilArrays;
-		this.javaUtilObjects=javaUtilObjects;
+		this.clazz=clazz;
 	}
+
+	/**
+	* @return The Type object for {@link java.io.Serializable}
+	*/
+	public Type getSerializableInterfaceType()
+	{
+		return ObjectType.valueOf(clazz, "java.io.Serializable");
+    }
+
+	/**
+	* @return The Type object for {@link java.io.Externalizable}
+	*/
+	public Type getExternalizableInterfaceType()
+	{
+		return ObjectType.valueOf(clazz, "java.io.Externalizable");
+    }
+
+	/**
+	* @return The Type object for {@link java.lang.Comparable}
+	*/
+	public Type getComparableInterfaceType()
+	{
+		return ObjectType.valueOf(clazz, "java.lang.Comparable");
+    }
 
 	/**
 	* @return The Type object for {@link java.util.Arrays}
 	*/
 	public Type getJavaUtilArrays()
 	{
-		return javaUtilArrays;
+		return ObjectType.valueOf(clazz, "java.util.Arrays");
 	}
 
 	/**
@@ -33,7 +55,7 @@ public class HelperTypes
 	*/
 	public Type getJavaUtilObjects()
 	{
-		return javaUtilObjects;
+		return ObjectType.valueOf(clazz, "java.util.Objects");
 	}
 
 	@Override

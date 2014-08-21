@@ -20,7 +20,7 @@ public abstract class Type implements Model
 	protected final Model modelUsingType;
 	protected final String qualifiedProtoTypicalTypeName; // or just a simple name for primities.
 
-	public Type(Model modelUsingType, String qualifiedProtoTypicalTypeName)
+	protected Type(Model modelUsingType, String qualifiedProtoTypicalTypeName)
 	{
 		this.modelUsingType = Objects.requireNonNull(modelUsingType);
 		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);

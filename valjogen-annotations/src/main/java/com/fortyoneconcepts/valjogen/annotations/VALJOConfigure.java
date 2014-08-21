@@ -104,13 +104,14 @@ public @interface VALJOConfigure
 	String suggestedVariablesPrefix() default "_";
 
 	/**
-	* Specifies if class should be serializable. May be overruled by equivalent annotation processor key.
+	* Specifies the serialization ID to use for generated classes or ZERO if not set. Any non-zero value will automatically be inserted into classes that
+	* directly or indirectly implement the {@link java.io.Serializable} interface.
 	*
-	* NB: NOT IMPLEMENTED YET!
+	* May be overruled by equivalent annotation processor key.
 	*
-	* @return True if generated class should be serializable.
+	* @return The serialization ID to use or '0' if not set.
 	*/
-	boolean serializableEnabled() default true;
+	long serialVersionUID() default 1L;
 
 	/**
 	* Specifies if equals method should be generated for the class. May be overruled by equivalent annotation processor key.
@@ -135,11 +136,11 @@ public @interface VALJOConfigure
 	boolean hashEnabled() default true;
 
 	/**
-	* Specifies if compareTo method should be generated for the class. May be overruled by equivalent annotation processor key.
+	* Specifies if compareTo implementation should be generated for classes that directly or indirectly implement the {@link Comparable} interface. May be overruled by equivalent annotation processor key.
 	*
 	*  NB: NOT IMPLEMENTED YET!
 	*
-	* @return True if a comparable method should be generated for the class.
+	* @return True if a comparable method should be generated for classes that implement the {@link Comparable} interface.
 	*/
 	boolean comparableEnabled() default true;
 

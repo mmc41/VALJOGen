@@ -25,15 +25,16 @@ public final class Clazz implements Model
 	private final String packageName;
 	private final String qualifiedClassName;
 	private final String javaDoc;
+	private final HelperTypes helperTypes;
 
 	private List<Type> interfaceTypes;
+	private Set<Type> interfaceTypesWithDescendants;
 	private Type baseClazzType;
 
 	private List<Type> importTypes;
 	private List<Member> members;
 	private List<Property> properties;
 	private List<Method> methods;
-	private HelperTypes helperTypes;
 
 	/**
 	 * Constructs a prelimiary Clazz instance from a configuration with only a few values such as name specificed in advanced. After constructing the instance, the various
@@ -57,7 +58,7 @@ public final class Clazz implements Model
 		this.methods = new ArrayList<Method>();
 		this.members = new ArrayList<Member>();
 		this.importTypes = new ArrayList<Type>();
-		this.helperTypes = null;
+		this.helperTypes = new HelperTypes(this);
 	}
 
 	@Override
@@ -126,15 +127,21 @@ public final class Clazz implements Model
 		return getGenericQualifier(qualifiedClassName);
 	}
 
-
 	public List<Type> getInterfaceTypes()
 	{
 		return interfaceTypes;
 	}
 
-	public void setInterfaceTypes(List<Type> interfaceTypes)
+	public Set<Type> getInterfaceTypesWithDescendants()
+	{
+		return interfaceTypesWithDescendants;
+	}
+
+	public void setInterfaceTypes(List<Type> interfaceTypes, Set<Type> interfaceTypesWithDescendants)
 	{
 		this.interfaceTypes=Objects.requireNonNull(interfaceTypes);
+		this.interfaceTypesWithDescendants=Objects.requireNonNull(interfaceTypesWithDescendants);
+		assert interfaceTypesWithDescendants.containsAll(interfaceTypes) : "All interfaces mentioned in interfaceTypes list must be contained in interfaceTypesWithDescendants set";
 	}
 
 	public Type getBaseClazzType()
@@ -150,6 +157,11 @@ public final class Clazz implements Model
 	public String getJavaDoc()
 	{
 		return javaDoc;
+	}
+
+	public boolean isSerializable()
+	{
+		return interfaceTypesWithDescendants.contains(helperTypes.getSerializableInterfaceType());
 	}
 
 	public boolean isFinal()
@@ -218,11 +230,6 @@ public final class Clazz implements Model
 	public List<Type> getImportTypes()
 	{
 		return importTypes;
-	}
-
-	public void setHelperTypes(HelperTypes helperTypes)
-	{
-		this.helperTypes=Objects.requireNonNull(helperTypes);
 	}
 
 	public HelperTypes getHelperTypes()

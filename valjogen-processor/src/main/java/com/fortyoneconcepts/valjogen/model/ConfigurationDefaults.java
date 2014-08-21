@@ -20,4 +20,6 @@ public interface ConfigurationDefaults
   public static final String NotApplicable = "N/A";
 
   public static final String RootObject = "java.lang.Object";
+
+  public static final long SerialVersionUID_NotSet = 0;
 }
