@@ -40,6 +40,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 	{
 		String output = produceOutput(ComparableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true).build());
 
+		System.out.println(output);
 		// assertContainsWithWildcards("public int compareTo(ComparableInterface obj) { ", output);
 	}
 

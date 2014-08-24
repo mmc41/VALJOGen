@@ -82,6 +82,21 @@ public class TemplateClassTest extends TemplateTestBase
 	}
 
 	@Test
+	public void testExtraGenericInterface() throws Exception
+	{
+		String output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<java.lang.String>"}).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<String>", output);
+	}
+
+
+	@Test
+	public void testExtraGenericSelfInterface() throws Exception
+	{
+		String output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$Self>"}).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<"+generatedClassName+">", output);
+	}
+
+	@Test
 	public void testDirectSerializableHasUID() throws Exception
 	{
 		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, 42L).build());

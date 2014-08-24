@@ -38,7 +38,7 @@ public class ProcessingFailureReportingTest
 	{
 		String unknownBaseClass = "unknownBaseClass";
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue();", ConfigurationOptionKeys.baseClazzName+"=\""+unknownBaseClass+"\"");
-		assertCompileFailure("ITest", source, String.format(ProcessorMessages.BaseClassNotFound, unknownBaseClass));
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.ClassNotFound, unknownBaseClass));
 	}
 
 	@Test

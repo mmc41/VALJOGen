@@ -1,9 +1,12 @@
 package com.fortyoneconcepts.valjogen.model;
 
+import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
@@ -14,28 +17,36 @@ import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
  */
 public final class ObjectType extends Type
 {
-	private final List<GenericParameter> genericParameters;
+	private List<Type> genericTypeArguments;
 	private final List<Type> superTypes;
 	private final Set<Type> superTypesWithAncestors;
 	private final HelperTypes helperTypes;
 
 	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
-		this(clazzUsingType, qualifiedProtoTypicalTypeName, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());// TODO: Add java.lang.Object as default supertype ??
+		this(clazzUsingType, qualifiedProtoTypicalTypeName, Collections.emptyList(), Collections.emptySet(), null);// TODO: Add java.lang.Object as default supertype ??
 	}
 
 	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, List<Type> superTypes, Set<Type> superTypesWithAncestors)
 	{
-		this(clazzUsingType, qualifiedProtoTypicalTypeName, superTypes, superTypesWithAncestors, Collections.emptyList());
+		this(clazzUsingType, qualifiedProtoTypicalTypeName, superTypes, superTypesWithAncestors, null);
 	}
 
-	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, List<Type> superTypes, Set<Type> superTypesWithAncestors, List<GenericParameter> genericParameters)
+	private ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, List<Type> superTypes, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
 	{
 		super(clazzUsingType, qualifiedProtoTypicalTypeName);
-		this.genericParameters=Objects.requireNonNull(genericParameters);
+		this.genericTypeArguments=genericTypeArguments;
 		this.superTypes=Objects.requireNonNull(superTypes);
 		this.superTypesWithAncestors=Objects.requireNonNull(superTypesWithAncestors);
 		this.helperTypes=clazzUsingType.getHelperTypes();
+	}
+
+	public void setGenericTypeArguments(List<Type> genericTypeArguments)
+	{
+		if (this.genericTypeArguments!=null)
+			throw new IllegalStateException("genericTypeArguments already specified");
+
+		this.genericTypeArguments=Objects.requireNonNull(genericTypeArguments);
 	}
 
 	public List<Type> getSuperTypes()
@@ -46,6 +57,29 @@ public final class ObjectType extends Type
 	public Set<Type> getSuperTypesWithAncestors()
 	{
 		return superTypesWithAncestors;
+	}
+
+	public List<Type> getGenericTypeArguments()
+	{
+		return genericTypeArguments==null ? Collections.emptyList() : genericTypeArguments;
+	}
+
+	@Override
+	public String getPrototypicalName()
+	{
+		String name = getPrototypicalQualifiedName();
+
+		if (hasGenericQualifier(name))
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append(getName());
+			sb.append('<');
+			if (genericTypeArguments!=null)
+  			  sb.append(genericTypeArguments.stream().map(t -> t.getPrototypicalName()).collect(Collectors.joining("," )));
+			sb.append('>');
+
+			return sb.toString();
+		} else return super.getPrototypicalName();
 	}
 
 	@Override
@@ -93,6 +127,6 @@ public final class ObjectType extends Type
 
 	@Override
 	public String toString() {
-		return "ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", typeName = "+qualifiedProtoTypicalTypeName+ ", genericParameters="+genericParameters+", superTypes="+superTypes+"]";
+		return "ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", qualifiedProtoTypicalTypeName = "+qualifiedProtoTypicalTypeName+ ", name="+getName()+", genericTypeArguments="+ToStringUtil.toRefsString(genericTypeArguments)+", superTypes="+superTypes+"]";
 	}
 }

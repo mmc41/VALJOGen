@@ -105,6 +105,11 @@ public class NamesUtil
 		else return emptyArray;
 	}
 
+	public static boolean hasGenericQualifier(String name)
+	{
+		return name.indexOf("<")>=0;
+	}
+
 	public static String stripGenericQualifier(String className)
 	{
 		int genericQualifierPos = className.indexOf("<");
@@ -123,12 +128,12 @@ public class NamesUtil
 
 	public static boolean isQualified(String name)
 	{
-		return name.indexOf(".")>=0;
+		return stripGenericQualifier(name).indexOf(".")>=0;
 	}
 
 	public static String getUnqualifiedName(String name)
 	{
-		int lastSep = name.lastIndexOf('.');
+		int lastSep = stripGenericQualifier(name).lastIndexOf('.');
 		if (lastSep>=0)
 			return name.substring(lastSep+1);
 		else return name;
@@ -136,7 +141,7 @@ public class NamesUtil
 
 	public static String getPackageFromQualifiedName(String name)
 	{
-		int lastSep = name.lastIndexOf('.');
+		int lastSep = stripGenericQualifier(name).lastIndexOf('.');
 		if (lastSep>=0)
 			return name.substring(0,lastSep);
 		else return "";

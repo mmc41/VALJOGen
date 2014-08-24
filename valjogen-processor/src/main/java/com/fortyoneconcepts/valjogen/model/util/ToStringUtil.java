@@ -7,6 +7,8 @@ public final class ToStringUtil
 {
  public static String toRefsString(Collection<?> c)
  {
-	 return "["+c.stream().map(p -> "@"+Integer.toHexString(System.identityHashCode(p))).collect(Collectors.joining(", "))+"]";
+	 if (c==null)
+		 return "null";
+	 else return "["+c.stream().map(p -> "@"+Integer.toHexString(System.identityHashCode(p))).collect(Collectors.joining(", "))+"]";
  }
 }

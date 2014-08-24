@@ -19,7 +19,7 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  *
  * @author mmc
  */
-public final class Clazz implements Model
+public final class Clazz implements Model // TODO: Consider extending ObjctType ???
 {
 	private final Configuration configuration;
 	private final String packageName;

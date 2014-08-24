@@ -83,6 +83,8 @@ public abstract class Type implements Model
 		String qualifiedPrototypicalName = getPrototypicalQualifiedName();
 		String qualifiedName = stripGenericQualifier(qualifiedPrototypicalName);
 
+		// TODO: Remove unqualify generic arguments also:
+
 		if (hasPackage(qualifiedPrototypicalName,"java.lang") || hasPackage(qualifiedPrototypicalName,getClazz().getPackageName()))
 			return getUnqualifiedName(qualifiedPrototypicalName);
 
