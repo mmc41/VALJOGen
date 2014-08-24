@@ -4,6 +4,9 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /***
  * Meta-data about a membervariable that backs a property getter and/or setter method.
@@ -118,6 +121,6 @@ public final class Member implements Model
 
 	@Override
 	public String toString() {
-		return "Member [clazz = "+clazz.getName()+", name=" + name + ", type=" + getType().getName() + "]";
+		return "Member [this=@"+ Integer.toHexString(System.identityHashCode(this))+", name=" + name + ", type=" + type.getName() + ", properties=["+properties.stream().map(p -> p.methodName).collect(Collectors.joining(", "))+"]"+"]";
 	}
 }

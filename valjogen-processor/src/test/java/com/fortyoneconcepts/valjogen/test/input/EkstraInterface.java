@@ -3,8 +3,8 @@ package com.fortyoneconcepts.valjogen.test.input;
 import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
-@VALJOGenerate
-@VALJOConfigure(extraInterfaceNames={ "java.io.Serializable", "com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation" })
+@VALJOGenerate(name="ExtraImpl")
+@VALJOConfigure(extraInterfaceNames={ "java.io.Serializable", /* "java.lang.Comparable<EkstraInterface>",*/ "com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation" })
 public interface EkstraInterface
 {
 	public int getIntValue();

@@ -34,4 +34,13 @@ public class TemplateMethodsTest extends TemplateTestBase
 		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=objectValue; }", output);
 	}
 
+
+	@Test
+	public void testComparable() throws Exception
+	{
+		String output = produceOutput(ComparableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true).build());
+
+		// assertContainsWithWildcards("public int compareTo(ComparableInterface obj) { ", output);
+	}
+
 }

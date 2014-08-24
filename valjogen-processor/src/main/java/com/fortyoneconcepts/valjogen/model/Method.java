@@ -13,16 +13,20 @@ import java.util.*;
 public class Method implements Model
 {
 	protected final Clazz clazz;
+	protected final Type declaringType;
 	protected final String methodName;
 	protected final List<Parameter> parameters;
+	protected final List<Type> typeParameters;
 	protected final String javaDoc;
 	protected final Type returnType;
 
-	public Method(Clazz clazz, String methodName, Type returnType, List<Parameter> parameters, String javaDoc)
+	public Method(Clazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> typeParameters, String javaDoc)
 	{
 	    this.clazz = Objects.requireNonNull(clazz);
+	    this.declaringType = Objects.requireNonNull(declaringType);
 		this.methodName = Objects.requireNonNull(methodName);
 		this.parameters = Objects.requireNonNull(parameters);
+		this.typeParameters = Objects.requireNonNull(typeParameters);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.returnType = Objects.requireNonNull(returnType);
 	}
@@ -83,6 +87,6 @@ public class Method implements Model
 
 	@Override
 	public String toString() {
-		return "Method [clazz = "+clazz.getName()+", methodName=" + getName() + ", returnType="+getReturnType() + "]";
+		return "Method [this=@"+ Integer.toHexString(System.identityHashCode(this))+", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", typeParameters="+typeParameters+"]";
 	}
 }

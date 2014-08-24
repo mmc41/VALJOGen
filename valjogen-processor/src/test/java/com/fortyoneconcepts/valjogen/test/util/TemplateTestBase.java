@@ -88,6 +88,9 @@ public abstract class TemplateTestBase
 		  }
 		);
 
+		if (configuration.isDebugInfoEnabled())
+			System.out.println("VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
+
 		STCodeWriter codeWriter = new STCodeWriter();
 
 		String output = codeWriter.outputClass(clazz, configuration);

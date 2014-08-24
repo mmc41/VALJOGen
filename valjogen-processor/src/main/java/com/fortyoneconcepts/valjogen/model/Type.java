@@ -17,31 +17,31 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  */
 public abstract class Type implements Model
 {
-	protected final Model modelUsingType;
+	protected final Clazz clazzUsingType;
 	protected final String qualifiedProtoTypicalTypeName; // or just a simple name for primities.
 
-	protected Type(Model modelUsingType, String qualifiedProtoTypicalTypeName)
+	protected Type(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
-		this.modelUsingType = Objects.requireNonNull(modelUsingType);
+		this.clazzUsingType = Objects.requireNonNull(clazzUsingType);
 		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
 	}
 
 	@Override
 	public Configuration getConfiguration()
 	{
-		return modelUsingType.getConfiguration();
+		return clazzUsingType.getConfiguration();
 	}
 
 	@Override
 	public HelperTypes getHelperTypes()
 	{
-		return modelUsingType.getHelperTypes();
+		return clazzUsingType.getHelperTypes();
 	}
 
 	@Override
 	public Clazz getClazz()
 	{
-		return modelUsingType.getClazz();
+		return clazzUsingType.getClazz();
 	}
 
 	@Override
@@ -135,19 +135,22 @@ public abstract class Type implements Model
 		return false;
 	}
 
+	public boolean isSerializable()
+	{
+		return false;
+	}
+
+	public boolean isComparable()
+	{
+		return false;
+	}
+
     public abstract TypeCategory getTypeCategory();
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((modelUsingType == null) ? 0 : modelUsingType.hashCode());
-		result = prime
-				* result
-				+ ((qualifiedProtoTypicalTypeName == null) ? 0
-						: qualifiedProtoTypicalTypeName.hashCode());
-		return result;
+	public int hashCode()
+	{
+		return qualifiedProtoTypicalTypeName.hashCode();
 	}
 
 	@Override
@@ -160,7 +163,7 @@ public abstract class Type implements Model
 		if (getClass() != obj.getClass())
 			return false;
 		Type other = (Type) obj;
-		if (modelUsingType != other.modelUsingType)
+		if (clazzUsingType != other.clazzUsingType)
 			return false;
 		if (qualifiedProtoTypicalTypeName == null) {
 			if (other.qualifiedProtoTypicalTypeName != null)
@@ -169,10 +172,5 @@ public abstract class Type implements Model
 				.equals(other.qualifiedProtoTypicalTypeName))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Type [type = "+getName()+ "]";
 	}
 }

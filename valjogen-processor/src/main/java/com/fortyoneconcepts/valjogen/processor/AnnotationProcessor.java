@@ -93,6 +93,9 @@ public class AnnotationProcessor extends AbstractProcessor
 		if (clazz==null)
 			return;
 
+		if (configuration.isDebugInfoEnabled())
+			System.out.println("VALJOGen ANNOTATION PROCESSOR GENERATED CLAZZ MODEL INSTANCE "+System.lineSeparator()+clazz.toString());
+
 		String fileName=stripGenericQualifier(clazz.getName());
 
 		JavaFileObject target = filer.createSourceFile(fileName, element);
@@ -106,7 +109,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			{
 			  targetWriter.write(output);
 			  if (configuration.isDebugInfoEnabled())
-				System.out.println("VALJOGen ANNOTATION PROCESSOR GENERATED FILE "+fileName+" WITH CONTENT: "+System.lineSeparator()+output);
+				System.out.println("VALJOGen ANNOTATION PROCESSOR GENERATED TARGET FILE "+fileName+" WITH CONTENT: "+System.lineSeparator()+output);
 			}
 		}
 	}

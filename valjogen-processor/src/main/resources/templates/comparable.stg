@@ -1,0 +1,30 @@
+comparable(clazz) ::= <<
+public <optSynchronized(clazz)>int compareTo(<clazz.name> obj)
+{
+  int <uniqueVariableName(clazz,"result")>;
+
+  <clazz.members:{m | <(comparableTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, m.name, m.type)>}; wrap, anchor, separator="\n\n">
+
+  return 0;
+}
+>>
+
+comparableTemplateNamesByTypeCategory ::= [ "PRIMITIVE": "comparable_primitive", "ARRAY": "comparable_array", default: "comparable_object"]
+
+comparable_primitive(clazz, var, type) ::= <<
+if ((<uniqueVariableName(clazz,"result")>=<type.wrapperName>.compare(<var>, obj.<var>))!=0)
+ return <uniqueVariableName(clazz,"result")>;
+>>
+
+comparable_array(clazz, var, type) ::= <<
+<! Comparing arrays not supported !>
+>>
+
+comparable_object(clazz, var, type) ::= <<
+<if(type.comparable)>
+if ((<uniqueVariableName(clazz,"result")>=<var>.compareTo(obj.<var>))!=0)
+ return <uniqueVariableName(clazz,"result")>;
+<else>
+<! Comparing non-comparable objects not supported !>
+<endif>
+>>

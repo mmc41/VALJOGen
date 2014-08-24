@@ -7,14 +7,9 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public final class PrimitiveType extends Type
 {
-	public static PrimitiveType valueOf(Model modelUsingType, String qualifiedProtoTypicalTypeName)
+	public PrimitiveType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
-		return new PrimitiveType(modelUsingType, qualifiedProtoTypicalTypeName);
-	}
-
-	private PrimitiveType(Model modelUsingType, String qualifiedProtoTypicalTypeName)
-	{
-		super(modelUsingType, qualifiedProtoTypicalTypeName);
+		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 	}
 
 	@Override
@@ -37,4 +32,9 @@ public final class PrimitiveType extends Type
     {
   		return TypeCategory.PRIMITIVE;
     }
+
+	@Override
+	public String toString() {
+		return "PrimitiveType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", typeName = "+qualifiedProtoTypicalTypeName+ "]";
+	}
 }

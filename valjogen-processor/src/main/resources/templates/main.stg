@@ -1,6 +1,7 @@
 import "common.stg"
 import "hash.stg"
 import "equals.stg"
+import "comparable.stg"
 import "tostring.stg"
 import "javadoc.stg"
 
@@ -35,6 +36,10 @@ package <clazz.packageName>;
 
   <if(clazz.configuration.equalsEnabled && clazz.anyMembers)>
   <equals(clazz)>
+  <endif>
+
+  <if(clazz.comparable && clazz.configuration.comparableEnabled && clazz.anyMembers)>
+  <comparable(clazz)>
   <endif>
 
   <if(clazz.configuration.toStringEnabled)>

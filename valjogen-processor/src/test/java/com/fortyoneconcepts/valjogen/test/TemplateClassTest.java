@@ -71,7 +71,7 @@ public class TemplateClassTest extends TemplateTestBase
 	public void testImplementsGenericInterface() throws Exception
 	{
 		String output = produceOutput(GenericInterface.class);
-		assertContainsWithWildcards("class "+generatedClassName+" implements *GenericInterface<T>", output);
+		assertContainsWithWildcards("class "+generatedClassName+" implements *GenericInterface<GT,ST,OT>", output);
 	}
 
 	@Test

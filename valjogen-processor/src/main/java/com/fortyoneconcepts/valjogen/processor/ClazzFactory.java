@@ -18,7 +18,12 @@ import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.*;
 
 /***
- * This class is responsible for transforming data in the javax.model.* format to our own valjogen models.
+ * This class is responsible for transforming data in the javax.lang.model.* format to our own valjogen models.
+ *
+ * The javax.lang.model.* lacks detailed documentation so some points is included here:
+ * - Elements are about the static structure of the program, ie packages, classes, methods and variables (similar to what is seen in a package explorer in an IDE).
+ * - Types are about the statically defined type constraints of the program, i.e. types, generic type parameters, generic type wildcards (Everything that is part of Java's type declarations before type erasure).
+ * - Mirror objects is where you can see the reflection of the object, thus seperating queries from the internal structure. This allows reflectiong on stuff that has not been loaded.
  *
  * @author mmc
  */
@@ -51,7 +56,7 @@ public final class ClazzFactory
     *
 	* @param types Utility instance provided by javax.lang.model framework.
 	* @param elements Utility instance provided by javax.lang.model framework.
-	* @param interfaceElement The interface that has been selected for code generation (by an annotation).
+	* @param masterInterfaceElement The interface that has been selected for code generation (by an annotation).
 	* @param configuration Descripes the user-selected details about what should be generated (combination of annotation(s) and annotation processor setup).
 	* @param errorConsumer Where to report errors and warning
 	*
@@ -59,35 +64,45 @@ public final class ClazzFactory
 	*
 	* @throws Exception if a fatal error has occured.
 	*/
-	public Clazz createClazz(Types types, Elements elements, TypeElement interfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
+	public Clazz createClazz(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
-		PackageElement sourcePackageElement = elements.getPackageOf(interfaceElement);
+		// Get the interface's .class abstraction:
+		DeclaredType masterInterfaceDecl = (DeclaredType)masterInterfaceElement.asType();
+
+		Map<String,Type> allTypesByPrototypicalFullName = new HashMap<String, Type>();
+
+		PackageElement sourcePackageElement = elements.getPackageOf(masterInterfaceElement);
 
 		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.toString();
 
-		TypeMirror baseClazzTypeMirror = createBaseClazzType(elements,interfaceElement, configuration, errorConsumer);
-		if (baseClazzTypeMirror==null)
+		TypeElement baseClazzTypeElement = createBaseClazzElement(elements, masterInterfaceElement, configuration, errorConsumer);
+		if (baseClazzTypeElement==null)
 			return null;
 
 		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
 
-		List<TypeElement> interfaceElements = createInterfaceElements(elements,	interfaceElement, ekstraInterfaceNames, errorConsumer);
-		List<TypeMirror> interfaceTypeMirrors = interfaceElements.stream().map(ie -> ie.asType()).collect(Collectors.toList());
-
+		List<TypeElement> interfaceElements = createInterfaceElements(elements,	types, masterInterfaceElement, ekstraInterfaceNames, errorConsumer);
 		List<TypeElement> allInterfaceElements = interfaceElements.stream().flatMap(ie -> getInterfacesWithDecendents(types, ie)).collect(Collectors.toList());
-		List<TypeMirror> allInterfaceTypeMirrors = allInterfaceElements.stream().map(ie -> ie.asType()).collect(Collectors.toList());
 
-		String className = createQualifiedClassName(configuration, interfaceElement.asType().toString(), sourceInterfacePackageName);
+		String className = createQualifiedClassName(configuration, masterInterfaceElement.asType().toString(), sourceInterfacePackageName);
 
-		String classJavaDoc = elements.getDocComment(interfaceElement);
+		String classJavaDoc = elements.getDocComment(masterInterfaceElement);
 		if (classJavaDoc==null)
 			classJavaDoc="";
 
 		Clazz clazz = new Clazz(configuration, className, classJavaDoc);
 
-		Type baseClazzType = createType(clazz, baseClazzTypeMirror);
-		List<Type> interfaceTypes = interfaceTypeMirrors.stream().map(it -> createType(clazz, it)).collect(Collectors.toList());
-		Set<Type> allInterfaceTypes = allInterfaceTypeMirrors.stream().map(it -> createType(clazz, it)).collect(Collectors.toSet());
+
+	    List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();
+
+	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, types, t)).collect(Collectors.toList());
+
+		List<GenericParameter> genericParameters = masterInterfaceElement.getTypeParameters().stream().map(p -> createGenericParameter(clazz, allTypesByPrototypicalFullName, types, p)).collect(Collectors.toList());
+		clazz.setGenericParametersList(genericParameters);
+
+		Type baseClazzType = createType(clazz, allTypesByPrototypicalFullName, types, baseClazzTypeElement);
+		List<Type> interfaceTypes = interfaceElements.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toList());
+		Set<Type> allInterfaceTypes = allInterfaceElements.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toSet());
 
 		clazz.setBaseClazzType(baseClazzType);
 		clazz.setInterfaceTypes(interfaceTypes, allInterfaceTypes);
@@ -97,7 +112,7 @@ public final class ClazzFactory
 		List<Property> propertyMethods= new ArrayList<Property>();
 
 		// Import interface(s), base class and specified extras:
-		List<Type> importTypes = createImportTypes(clazz, elements, interfaceElement, configuration, baseClazzTypeMirror, interfaceTypeMirrors, errorConsumer);
+		List<Type> importTypes = createImportTypes(clazz, allTypesByPrototypicalFullName, types, elements, masterInterfaceElement, configuration, baseClazzTypeElement, interfaceElements, errorConsumer);
 
 		final StatusHolder statusHolder = new StatusHolder();
 
@@ -112,8 +127,10 @@ public final class ClazzFactory
 
 							boolean captured = false;
 
+							Type declaringType = createType(clazz, allTypesByPrototypicalFullName, types, m.getEnclosingElement().asType());
+
 		            		String methodName = m.getSimpleName().toString();
-		            		Type returnType = createType(clazz, m.getReturnType());
+		            		Type returnType = createType(clazz, allTypesByPrototypicalFullName, types, m.getReturnType());
 
 		            		PropertyKind propertyKind = null;
 		                    if (NamesUtil.isGetterMethod(methodName, configuration.getGetterPrefixes()))
@@ -122,14 +139,14 @@ public final class ClazzFactory
 		                    	propertyKind=PropertyKind.SETTER;
 
 							if (propertyKind!=null) {
-								Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceElement, configuration, m, propertyKind, errorConsumer);
+								Member propertyMember = createPropertyMemberIfValidProperty(clazz, allTypesByPrototypicalFullName, types, masterInterfaceElement, configuration, m, propertyKind, errorConsumer);
 
 								if (propertyMember!=null) {
 					                final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
 					              	if (existingMember!=null)
 					              	   propertyMember = existingMember;
 
-					              	Property property = createValidatedProperty(clazz, statusHolder, m, returnType, javaDoc,	propertyKind, propertyMember);
+					              	Property property = createValidatedProperty(clazz, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, javaDoc,	propertyKind, propertyMember);
 
 					              	propertyMember.addPropertyMethod(property);
 					              	propertyMethods.add(property);
@@ -139,17 +156,22 @@ public final class ClazzFactory
 
 							if (!captured)
 							{
-								List<Parameter> parameters = m.getParameters().stream().map(p -> new Parameter(clazz, createType(clazz, p.asType()), p.getSimpleName().toString())).collect(Collectors.toList());
-								nonPropertyMethods.add(new Method(clazz, methodName, returnType, parameters, javaDoc));
+
+
+								List<Parameter> parameters = m.getParameters().stream().map(p -> createParameter(types,	elements, allTypesByPrototypicalFullName, clazz, p)).collect(Collectors.toList());
+								List<Type> typeParameters = m.getTypeParameters().stream().map(p -> createType(clazz, allTypesByPrototypicalFullName, types, p.asType())).collect(Collectors.toList());
+
+								nonPropertyMethods.add(new Method(clazz, declaringType, methodName, returnType, parameters, typeParameters, javaDoc));
 							}
 		            	} catch (Exception e)
 		            	{
-		            		throw new RuntimeException("Failure during processing", e);
+		            		String location = m.getEnclosingElement().toString()+"."+m.getSimpleName().toString();
+		            		throw new RuntimeException("Failure during processing of "+location+" due to "+e.getMessage(), e);
 		            	}
 					 });
 
 		if (statusHolder.encountedSynthesisedMembers)
-			errorConsumer.message(interfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, interfaceElement.toString()));
+			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
 
         clazz.setPropertyMethods(propertyMethods);
         clazz.setNonPropertyMethods(nonPropertyMethods);
@@ -159,24 +181,135 @@ public final class ClazzFactory
 		return clazz;
 	}
 
-	private Type createType(Clazz clazz, TypeMirror type)
+	private Parameter createParameter(Types types, Elements elements, Map<String, Type> allTypesByPrototypicalFullName, Clazz clazz, VariableElement p)
 	{
-		if (type instanceof javax.lang.model.type.PrimitiveType) {
-			return com.fortyoneconcepts.valjogen.model.PrimitiveType.valueOf(clazz, type.toString());
-		} else if (type.getKind()==TypeKind.ARRAY) {
-			ArrayType arrayType = (ArrayType)type;
-			TypeMirror componentTypeMirror = arrayType.getComponentType();
-	        Type componentType = createType(clazz, componentTypeMirror);
-			return com.fortyoneconcepts.valjogen.model.ArrayType.valueOf(clazz, type.toString(), componentType);
-		} else {
-		    return com.fortyoneconcepts.valjogen.model.ObjectType.valueOf(clazz, type.toString());
+		String name = p.getSimpleName().toString();
+		TypeMirror pTypeMirror = p.asType();
+
+		/*
+		if (p instanceof TypeParameterElement)
+		{
+			TypeParameterElement te = (TypeParameterElement)p;
+			String s = te.getSimpleName().toString();
 		}
+
+
+		if (pTypeMirror.toString().equals("T")){
+			TypeVariable variableTypeMirror = (TypeVariable)pTypeMirror;
+
+			Element e = variableTypeMirror.asElement();
+			String n = e.getSimpleName().toString();
+
+			TypeMirror lower =variableTypeMirror.getLowerBound();
+			TypeMirror higher =variableTypeMirror.getUpperBound();
+
+			String l = lower.toString();
+			String h = higher.toString();
+
+			System.out.println("bla: "+e);
+		}*/
+
+		return new Parameter(clazz, createType(clazz, allTypesByPrototypicalFullName, types, pTypeMirror), name);
 	}
 
-	private TypeMirror createBaseClazzType(Elements elements, TypeElement interfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
+	/**
+	 * Create a new type or reuse existing if already created in order to save memoery and processing time.
+	 *
+	 * @param clazz The class that directly or indirectly references the type
+	 * @param allTypesByPrototypicalFullName Pool of previously created types used to avoid duplicates.
+	 * @param typeMirrorTypes javax.model helper class
+	 * @param mirrorType corresponding javax.model type.
+	 *
+	 * @return A new or resued Type instance.
+	 */
+	private Type createType(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types typeMirrorTypes, TypeMirror mirrorType)
+	{
+		final String typeName = mirrorType.toString();
+
+		Type existingType = allTypesByPrototypicalFullName.get(typeName);
+		if (existingType!=null) {
+			assert(existingType.getClazz()==clazz);
+			return existingType;
+		}
+
+		Type newType;
+		if (mirrorType instanceof javax.lang.model.type.PrimitiveType) {
+			newType=new com.fortyoneconcepts.valjogen.model.PrimitiveType(clazz, typeName);
+		} else if (mirrorType.getKind()==TypeKind.ARRAY) {
+		   ArrayType arrayType = (ArrayType)mirrorType;
+		   TypeMirror componentTypeMirror = arrayType.getComponentType();
+	       Type componentType = createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, componentTypeMirror);
+	       newType=new com.fortyoneconcepts.valjogen.model.ArrayType(clazz, typeName, componentType);
+		} else {
+		   List<? extends TypeMirror> directSuperTypeMirrors = typeMirrorTypes.directSupertypes(mirrorType);
+		   List<Type> directSuperTypes = directSuperTypeMirrors.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toList());
+		   Stream<? extends TypeMirror> allSuperTypeMirrors = getSuperTypessWithAncestors(typeMirrorTypes, mirrorType);
+		   Set<Type> allSuperTypes = allSuperTypeMirrors.map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toSet());
+/*
+
+		   if (mirrorType instanceof TypeVariable) {
+				TypeVariable genericMirrorType = (TypeVariable)mirrorType;
+
+
+
+				System.out.println(typeName);
+		   }*/
+
+		  newType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName, directSuperTypes, allSuperTypes);
+		}
+
+		existingType=allTypesByPrototypicalFullName.put(typeName, newType);
+		assert (existingType==null);
+
+		return newType;
+	}
+
+	/**
+	 * Create a new type or reuse existing if already created in order to save memoery and processing time.
+	 *
+	 * @param clazz The class that directly or indirectly references the type
+	 * @param allTypesByPrototypicalFullName Pool of previously created types used to avoid duplicates.
+	 * @param typeMirrorTypes javax.model helper class
+	 * @param typeElement corresponding javax.model element.
+	 *
+	 * @return A new or resued Type instance.
+	 */
+	private Type createType(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types typeMirrorTypes, TypeElement typeElement)
+	{
+		TypeMirror mirrorType = typeElement.asType();
+		return createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, mirrorType);
+	}
+
+	private GenericParameter createGenericParameter(Clazz clazz, Map<String, Type> allTypesByPrototypicalFullName, Types types, TypeParameterElement typeELement)
+	{
+		TypeMirror parameterMirrorType = typeELement.asType();
+		String genericParameterName = parameterMirrorType.toString();
+		return new GenericParameter(clazz, genericParameterName);
+		/*
+
+		Element genericElement = typeELement.getGenericElement();
+	//	List<? extends TypeMirror> bounds = typeELement.getBounds();
+	//	List<String> bs = bounds.stream().map(b -> b.toString()).collect(Collectors.toList());
+
+		TypeMirror genericMirrorType = genericElement.asType();
+
+		final String typeName = genericMirrorType.toString();
+
+		Type genericType = new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
+
+		return genericType;
+		*/
+	}
+
+	private Stream<? extends TypeMirror> getSuperTypessWithAncestors(Types typeMirrorTypes, TypeMirror type)
+	{
+		return Stream.concat(typeMirrorTypes.directSupertypes(type).stream(), typeMirrorTypes.directSupertypes(type).stream().flatMap(t -> getSuperTypessWithAncestors(typeMirrorTypes, t)));
+	}
+
+	private TypeElement createBaseClazzElement(Elements elements, TypeElement interfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
 		String baseClazzName = configuration.getBaseClazzName();
-		if (baseClazzName.isEmpty() || baseClazzName.equals(ConfigurationDefaults.NotApplicable))
+		if (baseClazzName==null || baseClazzName.isEmpty())
 			baseClazzName=ConfigurationDefaults.RootObject;
 
 		TypeElement baseClazzElement = elements.getTypeElement(baseClazzName);
@@ -185,18 +318,16 @@ public final class ClazzFactory
 			return null; // Abort.
 		}
 
-		TypeMirror baseClazzType = baseClazzElement.asType();
-
-		return baseClazzType;
+		return baseClazzElement;
 	}
 
-	private List<Type> createImportTypes(Clazz clazz, Elements elements, TypeElement interfaceElement, Configuration configuration, TypeMirror baseClazzType, List<TypeMirror> interfaceTypes, DiagnosticMessageConsumer errorConsumer) throws Exception
+	private List<Type> createImportTypes(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types types, Elements elements, TypeElement interfaceElement, Configuration configuration, TypeElement baseClazzTypeElement, List<TypeElement> implementedInterfaceElements, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
 		List<Type> importTypes = new ArrayList<Type>();
-		for (TypeMirror interfaceType : interfaceTypes)
-		  importTypes.add(createType(clazz, interfaceType));
+		for (TypeElement implementedInterfaceElement : implementedInterfaceElements)
+		  importTypes.add(createType(clazz, allTypesByPrototypicalFullName, types, implementedInterfaceElement));
 
-		importTypes.add(createType(clazz, baseClazzType));
+		importTypes.add(createType(clazz, allTypesByPrototypicalFullName, types, baseClazzTypeElement));
 
 		for (String importName : configuration.getImportClasses())
 		{
@@ -204,42 +335,58 @@ public final class ClazzFactory
 			if (importElement==null) {
 				errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.ImportTypeNotFound, importName));
 			} else {
-			   Type importElementType = createType(clazz, importElement.asType());
+			   Type importElementType = createType(clazz, allTypesByPrototypicalFullName, types, importElement);
 			   importTypes.add(importElementType);
 			}
 		}
 		return importTypes;
 	}
 
-	private List<TypeElement> createInterfaceElements(Elements elements, TypeElement interfaceElement, String[] ekstraInterfaceNames, DiagnosticMessageConsumer errorConsumer) throws Exception
+	private List<TypeElement> createInterfaceElements(Elements elements, Types types, TypeElement interfaceElement, String[] ekstraInterfaceNames, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
 		List<TypeElement> interfaceElements = new ArrayList<TypeElement>();
 		interfaceElements.add(interfaceElement);
 		for (int i=0; i<ekstraInterfaceNames.length; ++i)
 		{
 			String ekstraInterfaceName = ekstraInterfaceNames[i];
-			if (!ekstraInterfaceName.isEmpty() && !ekstraInterfaceName.equals(ConfigurationDefaults.NotApplicable))
+			if (!ekstraInterfaceName.isEmpty())
 			{
-				TypeElement ektra = elements.getTypeElement(ekstraInterfaceName);
-				if (ektra==null) {
+				String ekstraInterfaceNameWithoutGenerics = NamesUtil.stripGenericQualifier(ekstraInterfaceName);
+
+
+				TypeElement extra = elements.getTypeElement(ekstraInterfaceNameWithoutGenerics);
+				if (extra==null) {
 					errorConsumer.message(interfaceElement, Kind.ERROR, String.format(ProcessorMessages.InterfaceNotFound, ekstraInterfaceName));
 				}
-				interfaceElements.add(ektra);
+
+				/*
+				String[] ekstraInterfaceNameGenericPart = NamesUtil.getGenericQualifierNames(ekstraInterfaceName);
+				if (ekstraInterfaceNameGenericPart.length==0)
+				{
+					interfaceElements.add(extra.asType());
+				} else {
+					DeclaredType extrType = types.getDeclaredType(extra, typeArgs);
+				}*/
+
+
+				interfaceElements.add(extra);
 			}
 		}
 		return interfaceElements;
 	}
 
 
-	private Property createValidatedProperty(Clazz clazz, final StatusHolder statusHolder, ExecutableElement m, Type returnType, String javaDoc, PropertyKind propertyKind, Member propertyMember)
+	private Property createValidatedProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, String javaDoc, PropertyKind propertyKind, Member propertyMember)
 	{
+		List<Type> typeParameters = m.getTypeParameters().stream().map(p -> createType(clazz, allTypesByPrototypicalFullName, types, p.asType())).collect(Collectors.toList());
+
 		Property property;
 		List<? extends VariableElement> parameterElements = m.getParameters();
 
 		String propertyName = m.getSimpleName().toString();
 
 		if (parameterElements.size()==0) {
-			property=new Property(clazz, propertyName, returnType, propertyMember, propertyKind, javaDoc);
+			property=new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc, typeParameters);
 		} else if (parameterElements.size()==1) {
 			VariableElement varElement = m.getParameters().get(0);
 
@@ -248,12 +395,12 @@ public final class ClazzFactory
 			// Parameter names may be syntesised so we may need to fall back on using member
 			// name as parameter name. Note if this happen so we can issue a warning later.
 			String usedVarElementName;
-			if (varElementName.startsWith("arg")) { // Synthesised check (not bullet-proof).
+			if (varElementName.startsWith("arg") && varElementName.length()>3) { // Synthesised check (not bullet-proof): - TODO: Consider replace with regular expression
 				statusHolder.encountedSynthesisedMembers=true;
 				usedVarElementName=propertyMember.getName();
 			} else usedVarElementName=varElementName;
 
-			property = new Property(clazz, propertyName, returnType, propertyMember, propertyKind, javaDoc, new Parameter(clazz, createType(clazz, varElement.asType()), usedVarElementName));
+			property = new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc, new Parameter(clazz, createType(clazz, allTypesByPrototypicalFullName, types, varElement.asType()), usedVarElementName), typeParameters);
 		} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
 
 		return property;
@@ -283,13 +430,13 @@ public final class ClazzFactory
 	private String createQualifiedClassName(Configuration configuration, String qualifedInterfaceName, String sourcePackageName)
 	{
 		String className = configuration.getName();
-		if (className.isEmpty() || className.equals(ConfigurationDefaults.NotApplicable))
+		if (className==null || className.isEmpty())
 			className = NamesUtil.createNewClassNameFromInterfaceName(qualifedInterfaceName);
 
 		if (!NamesUtil.isQualified(className))
 		{
 			String packageName = configuration.getPackage();
-			if (packageName.equals(ConfigurationDefaults.NotApplicable))
+			if (packageName==null)
 				packageName=sourcePackageName;
 
 			if (!packageName.isEmpty())
@@ -306,7 +453,7 @@ public final class ClazzFactory
 				             .flatMap(z -> getInterfacesWithDecendents(types, z)), Stream.of(element));
 	}
 
-	private Member createPropertyMemberIfValidProperty(Clazz clazz, TypeElement interfaceElement, Configuration configuration, ExecutableElement methodElement, PropertyKind kind, DiagnosticMessageConsumer errorConsumer) throws Exception
+	private Member createPropertyMemberIfValidProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types types, TypeElement interfaceElement, Configuration configuration, ExecutableElement methodElement, PropertyKind kind, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
 		TypeMirror propertyType;
 
@@ -322,7 +469,7 @@ public final class ClazzFactory
 			TypeMirror returnType = methodElement.getReturnType();
 
 			propertyType = returnType;
-			return new Member(clazz, createType(clazz, propertyType), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
+			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyType), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
 		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -340,7 +487,7 @@ public final class ClazzFactory
 			}
 
 			propertyType=setterParams.get(0).asType();
-			return new Member(clazz, createType(clazz, propertyType), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
+			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyType), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
 		} else {
 			return null; // Not a proeprty.
 		}

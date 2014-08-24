@@ -16,16 +16,16 @@ public final class Property extends Method
 	private final Member member;
 	private final PropertyKind kind;
 
-	public Property(Clazz clazz, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc)
+	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind,String javaDoc, List<Type> typeParameters)
 	{
-		super(clazz, propertyName, returnType, Collections.emptyList(), javaDoc);
+		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), typeParameters, javaDoc);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, Parameter parameter)
+	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, Parameter parameter, List<Type> typeParameters)
 	{
-		super(clazz, propertyName, returnType, Arrays.asList(parameter), javaDoc);
+		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), typeParameters, javaDoc);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
@@ -69,7 +69,7 @@ public final class Property extends Method
 	@Override
 	public String toString()
 	{
-		return "Property [clazz = "+clazz.getName()+", member=" + member + "]";
+		return "Property [this=@"+ Integer.toHexString(System.identityHashCode(this))+", member=" + member.getName() + ", propertyKind="+kind+", typeParameters="+typeParameters+"]";
 	}
 }
 

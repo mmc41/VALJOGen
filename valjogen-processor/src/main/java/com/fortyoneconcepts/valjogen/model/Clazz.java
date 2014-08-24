@@ -27,6 +27,7 @@ public final class Clazz implements Model
 	private final String javaDoc;
 	private final HelperTypes helperTypes;
 
+	private List<GenericParameter> genericParameters;
 	private List<Type> interfaceTypes;
 	private Set<Type> interfaceTypesWithDescendants;
 	private Type baseClazzType;
@@ -161,7 +162,14 @@ public final class Clazz implements Model
 
 	public boolean isSerializable()
 	{
-		return interfaceTypesWithDescendants.contains(helperTypes.getSerializableInterfaceType());
+		Type serializableType = helperTypes.getSerializableInterfaceType();
+		return interfaceTypesWithDescendants.contains(serializableType);
+	}
+
+	public boolean isComparable()
+	{
+		Type comparableType = helperTypes.getComparableInterfaceType();
+		return interfaceTypesWithDescendants.contains(comparableType);
 	}
 
 	public boolean isFinal()
@@ -187,6 +195,16 @@ public final class Clazz implements Model
 	public boolean hasArrayMembers()
 	{
 		return members.stream().anyMatch(m -> m.getType().isArray());
+	}
+
+	public List<GenericParameter> getGenericParameters()
+	{
+		return genericParameters;
+	}
+
+	public void setGenericParametersList(List<GenericParameter> genericParameters)
+	{
+		this.genericParameters=Objects.requireNonNull(genericParameters);
 	}
 
     public void setMembers(List<Member> members)
@@ -237,6 +255,11 @@ public final class Clazz implements Model
 		return Objects.requireNonNull(helperTypes, "HelperTypes unavailable");
 	}
 
+	public Type asType()
+	{
+		return new ObjectType(this, this.getPrototypicalFullName(), this.getInterfaceTypes(), this.getInterfaceTypesWithDescendants());
+    }
+
 	@Override
 	public int hashCode() {
 		return qualifiedClassName.hashCode();
@@ -250,8 +273,15 @@ public final class Clazz implements Model
 
 	@Override
 	public String toString() {
-		return "Clazz [packageName=" + packageName + ", qualifiedClassName="
-				+ qualifiedClassName + ", base type=" + getBaseClazzType().getName() + ", interface types="
-				+ getInterfaceTypes().stream().map(t -> t.getName()).collect(Collectors.joining(", ")) + ", properties=" + properties + "]";
+		return "Clazz [this=@"+ Integer.toHexString(System.identityHashCode(this))+", packageName=" + packageName + ", qualifiedClassName="+ qualifiedClassName + System.lineSeparator()
+				+", base type=" + Objects.toString(baseClazzType)
+				+ System.lineSeparator() + ", interface interfaceTypes=["
+				+ interfaceTypes.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()))+"  "+"]"+ System.lineSeparator()+ ", interfaceTypesWithDescendants=["
+				+ interfaceTypesWithDescendants.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()+"  ")) +"]"+ System.lineSeparator()
+				+ ", genericParameters="+Objects.toString(genericParameters)+System.lineSeparator()
+				+ ", members="+members+System.lineSeparator()
+				+ ", properties=" + properties +System.lineSeparator()
+				+ ", methods="+methods+System.lineSeparator()
+				+ ", configuration="+configuration+"]"+System.lineSeparator();
 	}
 }

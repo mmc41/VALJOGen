@@ -11,14 +11,9 @@ public final class ArrayType extends Type
 {
 	private final Type componentType;
 
-	public static ArrayType valueOf(Model modelUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
+	public ArrayType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
 	{
-		return new ArrayType(modelUsingType, qualifiedProtoTypicalTypeName, componentType);
-	}
-
-	private ArrayType(Model modelUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
-	{
-		super(modelUsingType, qualifiedProtoTypicalTypeName);
+		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 		this.componentType=Objects.requireNonNull(componentType);
 	}
 
@@ -69,5 +64,10 @@ public final class ArrayType extends Type
 		} else if (!componentType.equals(other.componentType))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ArrayType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", typeName = "+qualifiedProtoTypicalTypeName+ ", componentType="+componentType+"]";
 	}
 }

@@ -4,9 +4,11 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
+import com.fortyoneconcepts.valjogen.model.util.SelfReference;
 
 /**
  * Contains methods that return the effective configuration taking processor options and annotated elements into account.
@@ -190,19 +192,49 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 // ---- Internal helpers -----
 
-	 private String getValue(String optionKey, String defaultValue)
+	 private String preformMagicReplacements(String rawValue)
 	 {
-		 String value = options.get(optionKey);
-		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
-			 value=Objects.requireNonNull(defaultValue);
-		 return value.trim();
+		if (rawValue==null || rawValue.equals(ConfigurationDefaults.NotApplicable))
+			return null;
+
+		return rawValue.replace(ConfigurationDefaults.GeneratedClassNameReference, SelfReference.class.getName());
+	 }
+
+	 private String[] preformMagicReplacements(String[] rawValues)
+	 {
+		if (rawValues==null)
+			return null;
+
+		ArrayList<String> values = new ArrayList<String>();
+		for (int i=0; i<rawValues.length; ++i)
+		{
+			String rawValue = rawValues[i];
+			String value = preformMagicReplacements(rawValue);
+			if (value!=null)
+				values.add(value);
+		}
+
+		return values.toArray(new String[values.size()]);
+	 }
+
+	 private String getValue(String optionKey, String rawDefaultValue)
+	 {
+		 String value = preformMagicReplacements(options.get(optionKey));
+
+		 if (value==null || value.length() == 0 || value.trim().length() == 0)
+			 value=preformMagicReplacements(rawDefaultValue);
+
+		 if (value!=null)
+  		     value=value.trim();
+
+		 return value;
 	 }
 
 	 private String[] getValue(String optionKey, String[] defaultValue)
 	 {
-		 String value = options.get(optionKey);
+		 String value = preformMagicReplacements(options.get(optionKey));
 		 if (value==null)
-			 return Objects.requireNonNull(defaultValue);
+			 return preformMagicReplacements(defaultValue);
 
 		 value=value.trim();
 		 if (value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
@@ -251,4 +283,29 @@ public final class Configuration implements ConfigurationOptionKeys
 			 throw new IllegalArgumentException("Option value "+value+" for key "+optionKey+" must be an long integer value", e);
 		 }
 	 }
+
+	@Override
+	public String toString()
+	{
+		// Create toString by calling all getters programatically so we do not have to maintain this method (which is for debugging only anyway):
+		java.lang.reflect.Method[] methods = this.getClass().getMethods();
+		String nameValues = Arrays.stream(methods).filter(m -> m.getParameterCount()==0 && m.getDeclaringClass()==this.getClass() && !m.getName().equals("toString") && ((m.getModifiers() & java.lang.reflect.Modifier.PUBLIC)!=0)).map(m-> {
+			try {
+				String name = m.getName();
+				Object value = m.invoke(this);
+				String stringValue;
+				if (value instanceof String[])
+					stringValue="["+Arrays.stream((String[])value).map(s -> '"'+s+'"').collect(Collectors.joining(", "))+"]";
+				else if (value==null)
+					stringValue="null";
+			    else stringValue=value.toString();
+				return name+"="+stringValue;
+			} catch (Exception e)
+			{
+				return name+"=<error "+e.getMessage()+">";
+			}
+		}).collect(Collectors.joining(", "));
+
+		return "Configuration [this=@"+ Integer.toHexString(System.identityHashCode(this))+", "+nameValues+"]";
+	}
 }

@@ -4,8 +4,10 @@
 package com.fortyoneconcepts.valjogen.model.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +19,8 @@ import java.util.Set;
 public class NamesUtil
 {
 	public static final String ImplClassSuffix = "Impl";
+
+	private static final String[] emptyArray = new String[0];
 
 	@SuppressWarnings("serial")
 	private static final Map<String,String> primitiveToWrapperMap = new HashMap<String,String>() {{
@@ -89,6 +93,16 @@ public class NamesUtil
 		if (genericQualifierPos>=0)
 			return className.substring(genericQualifierPos);
 		else return "";
+	}
+
+	public static String[] getGenericQualifierNames(String className)
+	{
+		int genericQualifierPos = className.indexOf("<");
+		if (genericQualifierPos>=0 && genericQualifierPos+1<className.length()-1) {
+			String qualifiers = className.substring(genericQualifierPos+1, className.length()-1);
+			return qualifiers.split("\\,");
+		}
+		else return emptyArray;
 	}
 
 	public static String stripGenericQualifier(String className)

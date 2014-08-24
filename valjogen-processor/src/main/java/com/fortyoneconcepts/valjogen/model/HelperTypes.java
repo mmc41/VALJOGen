@@ -1,5 +1,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
+import java.util.Collections;
+
 /**
  * Contains definitions of (external) java classes that templates may refer to. Instead of hardcoding
  * a named reference to a java class like "java.util.Objects" use the corresponding method
@@ -23,7 +25,7 @@ public class HelperTypes
 	*/
 	public Type getSerializableInterfaceType()
 	{
-		return ObjectType.valueOf(clazz, "java.io.Serializable");
+		return new ObjectType(clazz, "java.io.Serializable");
     }
 
 	/**
@@ -31,15 +33,15 @@ public class HelperTypes
 	*/
 	public Type getExternalizableInterfaceType()
 	{
-		return ObjectType.valueOf(clazz, "java.io.Externalizable");
+		return new ObjectType(clazz, "java.io.Externalizable");
     }
 
 	/**
 	* @return The Type object for {@link java.lang.Comparable}
 	*/
-	public Type getComparableInterfaceType()
+	public Type getComparableInterfaceType() // TODO: Parameterize ???
 	{
-		return ObjectType.valueOf(clazz, "java.lang.Comparable");
+		return new ObjectType(clazz, "java.lang.Comparable<T>");
     }
 
 	/**
@@ -47,7 +49,7 @@ public class HelperTypes
 	*/
 	public Type getJavaUtilArrays()
 	{
-		return ObjectType.valueOf(clazz, "java.util.Arrays");
+		return new ObjectType(clazz, "java.util.Arrays");
 	}
 
 	/**
@@ -55,7 +57,7 @@ public class HelperTypes
 	*/
 	public Type getJavaUtilObjects()
 	{
-		return ObjectType.valueOf(clazz, "java.util.Objects");
+		return new ObjectType(clazz, "java.util.Objects");
 	}
 
 	@Override

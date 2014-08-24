@@ -51,6 +51,7 @@
                         <arg>-proc:none</arg>  <!-- Avoid compiler calling our annotation processor to compile itself -->
                         <arg>-parameters</arg> <!-- Make sure parameter meta data is available for best code generation -->
                     </compilerArgs>
+                    <enableAssertions>true</enableAssertions>
                 </configuration>
 			</plugin>
 			<plugin>
@@ -98,6 +99,7 @@
 					<excludes>
 						<exclude>source/**</exclude>
 					</excludes>
+                   <enableAssertions>true</enableAssertions>
 				</configuration>
 			</plugin>
 			<plugin>

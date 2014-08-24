@@ -58,6 +58,6 @@ public class Parameter implements Model
 
 	@Override
 	public String toString() {
-		return "Parameter [clazz = "+clazz.getName()+", name=" + getName() + ", type=" + getType().getName() + "]";
+		return "Parameter [name=" + paramName + ", type=" + type.getPrototypicalQualifiedName() + "]";
 	}
 }
