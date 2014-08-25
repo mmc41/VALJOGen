@@ -19,23 +19,19 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  *
  * @author mmc
  */
-public final class Clazz implements Model // TODO: Consider extending ObjctType ???
+public final class Clazz extends ObjectType implements Model
 {
 	private final Configuration configuration;
-	private final String packageName;
-	private final String qualifiedClassName;
-	private final String javaDoc;
-	private final HelperTypes helperTypes;
 
-	private List<GenericParameter> genericParameters;
-	private List<Type> interfaceTypes;
-	private Set<Type> interfaceTypesWithDescendants;
-	private Type baseClazzType;
+	private final String packageName;
+	private final String javaDoc;
 
 	private List<Type> importTypes;
 	private List<Member> members;
 	private List<Property> properties;
 	private List<Method> methods;
+
+	private boolean initializedContent;
 
 	/**
 	 * Constructs a prelimiary Clazz instance from a configuration with only a few values such as name specificed in advanced. After constructing the instance, the various
@@ -47,10 +43,13 @@ public final class Clazz implements Model // TODO: Consider extending ObjctType 
 	 */
 	public Clazz(Configuration configuration, String qualifiedClassName, String javaDoc)
 	{
+		super(qualifiedClassName);
+		super.clazzUsingType=this;
+		super.helperTypes = new HelperTypes(this);
+
 		this.configuration = Objects.requireNonNull(configuration);
-		this.qualifiedClassName = Objects.requireNonNull(qualifiedClassName);
 		this.interfaceTypes = new ArrayList<Type>();
-		this.baseClazzType = null;
+		this.baseClazzType = new NoType(this);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 
 		this.packageName = getPackageFromQualifiedName(qualifiedClassName);
@@ -59,7 +58,8 @@ public final class Clazz implements Model // TODO: Consider extending ObjctType 
 		this.methods = new ArrayList<Method>();
 		this.members = new ArrayList<Member>();
 		this.importTypes = new ArrayList<Type>();
-		this.helperTypes = new HelperTypes(this);
+
+		initializedContent=false;
 	}
 
 	@Override
@@ -79,43 +79,32 @@ public final class Clazz implements Model // TODO: Consider extending ObjctType 
 		return this;
 	}
 
-	/**
-	 * Returns a class type name but without package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
-	 *
-	 * @return The prototypical class type name without any package.
-	 */
-	public String getPrototypicalName()
+	@Override
+	public HelperTypes getHelperTypes()
 	{
-		return getUnqualifiedName(getPrototypicalFullName());
+		return helperTypes;
 	}
 
-	/**
-	 * Returns a simple class type name without package and without any generic parts. I.e. no &lt;T&gt; suffix.
-	 *
-	 * @return The simple class type name
-	 */
-	public String getName()
+	@Override
+	public boolean initialized()
 	{
-		return stripGenericQualifier(getPrototypicalName());
+		return initializedType && initializedContent;
 	}
 
-	/**
-	 * Returns a class type name with package but without any generic parts. I.e. no &lt;T&gt; suffix.
-	 *
-	 * @return The qualified class type name
-	 */
-	public String getQualifiedName()
+	public void initContent(List<Member> members, List<Property> properties, List<Method> nonPropertyMethods, List<Type> importTypes)
 	{
-		return stripGenericQualifier(getPrototypicalFullName());
-	}
+		if (initializedContent)
+			throw new IllegalStateException("Clazz content already initialized");
 
-	/**
-	 * Returns a full class type name with package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
-	 *
-	 * @return The fully qualifid prototypical class type name.
-	 */
-	public String getPrototypicalFullName() {
-		return qualifiedClassName;
+		this.importTypes=Objects.requireNonNull(importTypes);
+
+        this.members=Objects.requireNonNull(members);
+
+        this.properties=Objects.requireNonNull(properties);
+
+        this.methods=Objects.requireNonNull(nonPropertyMethods);
+
+        initializedContent=true;
 	}
 
 	public boolean hasGenericQualifier()
@@ -125,51 +114,12 @@ public final class Clazz implements Model // TODO: Consider extending ObjctType 
 
 	public String getGenericQualifierText()
 	{
-		return getGenericQualifier(qualifiedClassName);
-	}
-
-	public List<Type> getInterfaceTypes()
-	{
-		return interfaceTypes;
-	}
-
-	public Set<Type> getInterfaceTypesWithDescendants()
-	{
-		return interfaceTypesWithDescendants;
-	}
-
-	public void setInterfaceTypes(List<Type> interfaceTypes, Set<Type> interfaceTypesWithDescendants)
-	{
-		this.interfaceTypes=Objects.requireNonNull(interfaceTypes);
-		this.interfaceTypesWithDescendants=Objects.requireNonNull(interfaceTypesWithDescendants);
-		assert interfaceTypesWithDescendants.containsAll(interfaceTypes) : "All interfaces mentioned in interfaceTypes list must be contained in interfaceTypesWithDescendants set";
-	}
-
-	public Type getBaseClazzType()
-	{
-		return Objects.requireNonNull(baseClazzType);
-	}
-
-	public void setBaseClazzType(Type baseClazzType)
-	{
-		this.baseClazzType=Objects.requireNonNull(baseClazzType);
+		return getGenericQualifier(qualifiedProtoTypicalTypeName);
 	}
 
 	public String getJavaDoc()
 	{
 		return javaDoc;
-	}
-
-	public boolean isSerializable()
-	{
-		Type serializableType = helperTypes.getSerializableInterfaceType();
-		return interfaceTypesWithDescendants.contains(serializableType);
-	}
-
-	public boolean isComparable()
-	{
-		Type comparableType = helperTypes.getComparableInterfaceType();
-		return interfaceTypesWithDescendants.contains(comparableType);
 	}
 
 	public boolean isFinal()
@@ -189,80 +139,50 @@ public final class Clazz implements Model // TODO: Consider extending ObjctType 
 
 	public boolean hasPrimitiveMembers()
 	{
+		assert initialized() : "Class initialization missing";
 		return members.stream().anyMatch(m -> m.getType().isPrimitive());
 	}
 
 	public boolean hasArrayMembers()
 	{
+		assert initialized() : "Class initialization missing";
 		return members.stream().anyMatch(m -> m.getType().isArray());
 	}
 
-	public List<GenericParameter> getGenericParameters()
+	public List<Member> getMembers()
 	{
-		return genericParameters;
-	}
-
-	public void setGenericParametersList(List<GenericParameter> genericParameters)
-	{
-		this.genericParameters=Objects.requireNonNull(genericParameters);
-	}
-
-    public void setMembers(List<Member> members)
-    {
-        this.members=Objects.requireNonNull(members);
-    }
-
-	public List<Member> getMembers() {
+		assert initialized() : "Class initialization missing";
 		return members;
 	}
 
 	public boolean hasAnyMembers()
 	{
+		assert initialized() : "Class initialization missing";
 		return !members.isEmpty();
 	}
 
-    public void setPropertyMethods(List<Property> properties)
-    {
-        this.properties=Objects.requireNonNull(properties);
-    }
-
-	public List<Property> getPropertyMethods() {
+	public List<Property> getPropertyMethods()
+	{
+		assert initialized() : "Class initialization missing";
 		return properties;
 	}
 
-	public void setNonPropertyMethods(List<Method> methods)
-    {
-        this.methods=Objects.requireNonNull(methods);
-    }
-
 	public List<Method> getNonPropertyMethods()
 	{
+		assert initialized() : "Class initialization missing";
 		return methods;
 	}
 
-	public void setImportTypes(List<Type> importTypes)
-    {
-        this.importTypes=Objects.requireNonNull(importTypes);
-    }
-
 	public List<Type> getImportTypes()
 	{
+		assert initialized() : "Class initialization missing";
 		return importTypes;
 	}
 
-	public HelperTypes getHelperTypes()
-	{
-		return Objects.requireNonNull(helperTypes, "HelperTypes unavailable");
-	}
-
-	public Type asType()
-	{
-		return new ObjectType(this, this.getPrototypicalFullName(), this.getInterfaceTypes(), this.getInterfaceTypesWithDescendants());
-    }
-
 	@Override
-	public int hashCode() {
-		return qualifiedClassName.hashCode();
+	public int hashCode()
+	{
+		return qualifiedProtoTypicalTypeName.hashCode();
 	}
 
 	@Override
@@ -273,12 +193,12 @@ public final class Clazz implements Model // TODO: Consider extending ObjctType 
 
 	@Override
 	public String toString() {
-		return "Clazz [this=@"+ Integer.toHexString(System.identityHashCode(this))+", packageName=" + packageName + ", qualifiedClassName="+ qualifiedClassName + System.lineSeparator()
+		return "Clazz [this=@"+ Integer.toHexString(System.identityHashCode(this))+", initialized="+initialized()+" packageName=" + packageName + ", qualifiedClassName="+ qualifiedProtoTypicalTypeName + System.lineSeparator()
 				+", base type=" + Objects.toString(baseClazzType)
 				+ System.lineSeparator() + ", interface interfaceTypes=["
-				+ interfaceTypes.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()))+"  "+"]"+ System.lineSeparator()+ ", interfaceTypesWithDescendants=["
-				+ interfaceTypesWithDescendants.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()+"  ")) +"]"+ System.lineSeparator()
-				+ ", genericParameters="+Objects.toString(genericParameters)+System.lineSeparator()
+				+ interfaceTypes.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()))+"  "+"]"+ System.lineSeparator()+ ", interfaceTypesWithAscendants=["
+				+ interfaceTypesWithAscendants.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()+"  ")) +"]"+ System.lineSeparator()
+				+ ", genericTypeArguments="+Objects.toString(genericTypeArguments)+System.lineSeparator()
 				+ ", members="+members+System.lineSeparator()
 				+ ", properties=" + properties +System.lineSeparator()
 				+ ", methods="+methods+System.lineSeparator()

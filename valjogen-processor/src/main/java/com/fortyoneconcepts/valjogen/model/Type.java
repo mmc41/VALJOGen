@@ -17,8 +17,14 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  */
 public abstract class Type implements Model
 {
-	protected final Clazz clazzUsingType;
-	protected final String qualifiedProtoTypicalTypeName; // or just a simple name for primities.
+	protected Clazz clazzUsingType;
+	protected final String qualifiedProtoTypicalTypeName;
+
+	protected Type(String qualifiedProtoTypicalTypeName)
+	{
+		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
+		this.clazzUsingType = null; // Must be set manually after constructor.
+	}
 
 	protected Type(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
@@ -50,20 +56,30 @@ public abstract class Type implements Model
 		return getPackageFromQualifiedName(qualifiedProtoTypicalTypeName);
 	}
 
+	/**
+	 * Returns a type name with package but without any generic parts. I.e. no &lt;T&gt; suffix.
+	 *
+	 * @return The qualified type name
+	 */
 	public String getQualifiedName()
 	{
 		return stripGenericQualifier(qualifiedProtoTypicalTypeName);
 	}
 
 	/**
-	 * Returns a full class type name with package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
+	 * Returns a full type name with package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
 	 *
-	 * @return The fully qualifid prototypical class type name.
+	 * @return The fully qualifid prototypical type name.
 	 */
 	public String getPrototypicalQualifiedName() {
 		return qualifiedProtoTypicalTypeName;
 	}
 
+	/**
+	 * Returns a simple type name without package and without any generic parts. I.e. no &lt;T&gt; suffix.
+	 *
+	 * @return The simple type name
+	 */
 	public String getName()
 	{
 		String qualifiedName = getQualifiedName();
@@ -78,6 +94,11 @@ public abstract class Type implements Model
 		return qualifiedName;
 	}
 
+	/**
+	 * Returns a type name but without package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
+	 *
+	 * @return The prototypical type name without any package.
+	 */
 	public String getPrototypicalName()
 	{
 		String qualifiedPrototypicalName = getPrototypicalQualifiedName();

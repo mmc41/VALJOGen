@@ -15,48 +15,79 @@ import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
  *
  * @author mmc
  */
-public final class ObjectType extends Type
+public class ObjectType extends Type
 {
-	private List<Type> genericTypeArguments;
-	private final List<Type> superTypes;
-	private final Set<Type> superTypesWithAncestors;
-	private final HelperTypes helperTypes;
+	protected HelperTypes helperTypes;
+
+	protected List<Type> genericTypeArguments;
+
+	protected Type baseClazzType;
+	protected List<Type> interfaceTypes;
+	protected Set<Type> interfaceTypesWithAscendants;
+
+	protected boolean initializedType;
+
+	protected ObjectType(String qualifiedProtoTypicalTypeName)
+	{
+		super(qualifiedProtoTypicalTypeName);
+	    // All fields must be set manually after constructor.
+	}
 
 	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
-		this(clazzUsingType, qualifiedProtoTypicalTypeName, Collections.emptyList(), Collections.emptySet(), null);// TODO: Add java.lang.Object as default supertype ??
+		this(clazzUsingType, qualifiedProtoTypicalTypeName, new NoType(clazzUsingType), Collections.emptyList(), Collections.emptySet(), null);// TODO: Add java.lang.Object as default supertype ??
 	}
 
-	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, List<Type> superTypes, Set<Type> superTypesWithAncestors)
+	/*
+	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type baseClazz, List<Type> superInterfaces, Set<Type> superInterfacesWithAncestors)
 	{
-		this(clazzUsingType, qualifiedProtoTypicalTypeName, superTypes, superTypesWithAncestors, null);
-	}
+		this(clazzUsingType, qualifiedProtoTypicalTypeName, baseClazz, superInterfaces, superInterfacesWithAncestors, null);
+	}*/
 
-	private ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, List<Type> superTypes, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
+	private ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type baseClazz, List<Type> superInterfaces, Set<Type> superInterfacesWithAncestors, List<Type> genericTypeArguments)
 	{
 		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 		this.genericTypeArguments=genericTypeArguments;
-		this.superTypes=Objects.requireNonNull(superTypes);
-		this.superTypesWithAncestors=Objects.requireNonNull(superTypesWithAncestors);
+		this.baseClazzType = Objects.requireNonNull(baseClazz);
+		this.interfaceTypes=Objects.requireNonNull(superInterfaces);
+		this.interfaceTypesWithAscendants=Objects.requireNonNull(superInterfacesWithAncestors);
 		this.helperTypes=clazzUsingType.getHelperTypes();
 	}
 
-	public void setGenericTypeArguments(List<Type> genericTypeArguments)
+	public void initType(Type baseClazzType, List<Type> interfaceTypes, Set<Type> interfaceTypesWithAscendants, List<Type> genericTypeArguments)
 	{
-		if (this.genericTypeArguments!=null)
-			throw new IllegalStateException("genericTypeArguments already specified");
+		if (initializedType)
+			throw new IllegalStateException("Clazz type aspects already initialized");
+
+		this.baseClazzType=Objects.requireNonNull(baseClazzType);
+
+		this.interfaceTypes=Objects.requireNonNull(interfaceTypes);
+		this.interfaceTypesWithAscendants=Objects.requireNonNull(interfaceTypesWithAscendants);
+		assert interfaceTypesWithAscendants.containsAll(interfaceTypes) : "All interfaces mentioned in interfaceTypes list must be contained in interfaceTypesWithAscendants set";
 
 		this.genericTypeArguments=Objects.requireNonNull(genericTypeArguments);
+
+		initializedType=true;
 	}
 
-	public List<Type> getSuperTypes()
+	public boolean initialized()
 	{
-		return superTypes;
+		return initializedType;
 	}
 
-	public Set<Type> getSuperTypesWithAncestors()
+	public Type getBaseClazzType()
 	{
-		return superTypesWithAncestors;
+		return Objects.requireNonNull(baseClazzType);
+	}
+
+	public List<Type> getInterfaceTypes()
+	{
+		return interfaceTypes;
+	}
+
+	public Set<Type> getInterfaceTypesWithAscendants()
+	{
+		return interfaceTypesWithAscendants;
 	}
 
 	public List<Type> getGenericTypeArguments()
@@ -106,7 +137,7 @@ public final class ObjectType extends Type
 		Type serializableType = helperTypes.getSerializableInterfaceType();
 		if (this.equals(serializableType))
 			return true;
-		else return superTypesWithAncestors.contains(serializableType);
+		else return interfaceTypesWithAscendants.contains(serializableType);
 	}
 
 	@Override
@@ -121,12 +152,12 @@ public final class ObjectType extends Type
 		//if (this.equals(comparableType))
 		//	return true;
 
-		boolean comparable = superTypesWithAncestors.stream().anyMatch(t -> t.getQualifiedName().equals("java.lang.Comparable"));
+		boolean comparable = interfaceTypesWithAscendants.stream().anyMatch(t -> t.getQualifiedName().equals("java.lang.Comparable"));
 		return comparable;
 	}
 
 	@Override
 	public String toString() {
-		return "ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", qualifiedProtoTypicalTypeName = "+qualifiedProtoTypicalTypeName+ ", name="+getName()+", genericTypeArguments="+ToStringUtil.toRefsString(genericTypeArguments)+", superTypes="+superTypes+"]";
+		return "ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", initialized="+initialized()+", qualifiedProtoTypicalTypeName = "+qualifiedProtoTypicalTypeName+ ", name="+getName()+", genericTypeArguments="+ToStringUtil.toRefsString(genericTypeArguments)+", baseClass="+baseClazzType+", interfaceTypes="+interfaceTypes+"]";
 	}
 }

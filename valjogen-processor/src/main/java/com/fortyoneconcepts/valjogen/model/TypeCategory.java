@@ -11,5 +11,5 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public enum TypeCategory
 {
-  PRIMITIVE, OBJECT, ARRAY
+  PRIMITIVE, OBJECT, ARRAY, NONE
 }

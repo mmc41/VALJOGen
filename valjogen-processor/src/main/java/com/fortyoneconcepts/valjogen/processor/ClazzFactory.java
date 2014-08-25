@@ -15,6 +15,7 @@ import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
 import com.fortyoneconcepts.valjogen.model.*;
+import com.fortyoneconcepts.valjogen.model.NoType;
 import com.fortyoneconcepts.valjogen.model.util.*;
 
 /***
@@ -95,17 +96,15 @@ public final class ClazzFactory
 
 	    List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();
 
-	    // List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, types, t)).collect(Collectors.toList());
+	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, types, t)).collect(Collectors.toList());
 
-		List<GenericParameter> genericParameters = masterInterfaceElement.getTypeParameters().stream().map(p -> createGenericParameter(clazz, allTypesByPrototypicalFullName, types, p)).collect(Collectors.toList());
-		clazz.setGenericParametersList(genericParameters);
+		// List<GenericParameter> genericParameters = masterInterfaceElement.getTypeParameters().stream().map(p -> createGenericParameter(clazz, allTypesByPrototypicalFullName, types, p)).collect(Collectors.toList());
 
 		Type baseClazzType = createType(clazz, allTypesByPrototypicalFullName, types, baseClazzDeclaredMirrorType);
 		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toList());
-		Set<Type> allInterfaceTypes = allInterfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toSet());
+		Set<Type> interfaceTypesWithAscendants = allInterfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toSet());
 
-		clazz.setBaseClazzType(baseClazzType);
-		clazz.setInterfaceTypes(interfaceTypes, allInterfaceTypes);
+		clazz.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, typeArgTypes);
 
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
@@ -173,10 +172,7 @@ public final class ClazzFactory
 		if (statusHolder.encountedSynthesisedMembers)
 			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
 
-        clazz.setPropertyMethods(propertyMethods);
-        clazz.setNonPropertyMethods(nonPropertyMethods);
-        clazz.setMembers(new ArrayList<Member>(membersByName.values()));
-        clazz.setImportTypes(filterImportTypes(clazz, importTypes));
+		clazz.initContent(new ArrayList<Member>(membersByName.values()), propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes));
 
 		return clazz;
 	}
@@ -225,15 +221,9 @@ public final class ClazzFactory
 	private Type createType(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types typeMirrorTypes, TypeMirror mirrorType)
 	{
 		String typeName = mirrorType.toString();
-		System.out.println("typename ="+typeName);
-		System.out.flush();
 
 		// If using self-stand-in, replace with name of generated class.
-		typeName=typeName.replace(SelfReference.class.getName(), clazz.getPrototypicalFullName());
-
-		// If exact self match - return type representing clazz:
-		//if (typeName.equals(clazz.getPrototypicalFullName()))
-		//    return clazz.asType();
+		typeName=typeName.replace(SelfReference.class.getName(), clazz.getPrototypicalQualifiedName());
 
 		Type existingType = allTypesByPrototypicalFullName.get(typeName);
 		if (existingType!=null) {
@@ -252,24 +242,39 @@ public final class ClazzFactory
 	       newType=new com.fortyoneconcepts.valjogen.model.ArrayType(clazz, typeName, componentType);
 	       existingType=allTypesByPrototypicalFullName.put(typeName, newType);
 		} else {
-		   List<? extends TypeMirror> directSuperTypeMirrors = typeMirrorTypes.directSupertypes(mirrorType);
-		   List<Type> directSuperTypes = directSuperTypeMirrors.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toList());
-		   Stream<? extends TypeMirror> allSuperTypeMirrors = getSuperTypessWithAncestors(typeMirrorTypes, mirrorType);
-		   Set<Type> allSuperTypes = allSuperTypeMirrors.map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toSet());
-
   	       ObjectType newObjectType;
-  	       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName, directSuperTypes, allSuperTypes);
+  	       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
 		   existingType=allTypesByPrototypicalFullName.put(typeName, newType);
 
+		   List<? extends TypeMirror> directSuperTypeMirrors = typeMirrorTypes.directSupertypes(mirrorType);
+
+		   Type baseClazzType;
+		   List<Type> interfaceTypes;
+		   Set<Type> interfaceTypesWithAscendants;
+		   if (directSuperTypeMirrors.size()>0) {
+			   TypeMirror baseClazzTypeMirror = directSuperTypeMirrors.get(0);
+			   baseClazzType = createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, baseClazzTypeMirror);
+
+			   List<? extends TypeMirror> interfaceSuperTypeMirrors = directSuperTypeMirrors.size()>1 ? directSuperTypeMirrors.subList(1, directSuperTypeMirrors.size()-1) : Collections.emptyList();
+			   interfaceTypes = interfaceSuperTypeMirrors.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toList());
+			   Stream<? extends TypeMirror> interfaceTypesWithAscendantsTypeMirrors = getSuperTypesWithAncestors(typeMirrorTypes, interfaceSuperTypeMirrors);
+			   interfaceTypesWithAscendants = interfaceTypesWithAscendantsTypeMirrors.map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toSet());
+		   } else {
+			   baseClazzType=new NoType(clazz);
+			   interfaceTypes=Collections.emptyList();
+			   interfaceTypesWithAscendants=Collections.emptySet();
+		   }
+
+		   List<Type> genericTypeArguments = Collections.emptyList();
 		   if (mirrorType instanceof DeclaredType) {
 			   DeclaredType declaredType = (DeclaredType)mirrorType;
 
 			   List<? extends TypeMirror> genericTypeMirrorArguments = declaredType.getTypeArguments();
 
-			   List<Type> genericTypeArguments = genericTypeMirrorArguments.stream().peek(t -> System.out.println("Finding generic type "+t)).map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toList());
-
-			   newObjectType.setGenericTypeArguments(genericTypeArguments);
+			   genericTypeArguments = genericTypeMirrorArguments.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toList());
 		   }
+
+		   newObjectType.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, genericTypeArguments);
 
 		   /*
 		   if (mirrorType instanceof TypeVariable) {
@@ -278,7 +283,7 @@ public final class ClazzFactory
 		   }*/
 		}
 
-		assert (existingType==null);
+		assert existingType==null : "Should not overwrite existing type";
 
 		return newType;
 	}
@@ -304,9 +309,9 @@ public final class ClazzFactory
 		*/
 	}
 
-	private Stream<? extends TypeMirror> getSuperTypessWithAncestors(Types typeMirrorTypes, TypeMirror type)
+	private Stream<? extends TypeMirror> getSuperTypesWithAncestors(Types typeMirrorTypes, List<? extends TypeMirror> superTypes)
 	{
-		return Stream.concat(typeMirrorTypes.directSupertypes(type).stream(), typeMirrorTypes.directSupertypes(type).stream().flatMap(t -> getSuperTypessWithAncestors(typeMirrorTypes, t)));
+		return Stream.concat(superTypes.stream(), superTypes.stream().flatMap(type -> getSuperTypesWithAncestors(typeMirrorTypes, typeMirrorTypes.directSupertypes(type))));
 	}
 
 	private DeclaredType createBaseClazzDeclaredType(Elements elements, Types types, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, String clazzPackage) throws Exception
@@ -532,4 +537,26 @@ public final class ClazzFactory
 
 		return name;
 	}
+
+	/*
+	public static boolean isCallableConstructor(ExecutableElement constructor) {
+	 if (constructor.getModifiers().contains(Modifier.PRIVATE)) {
+	   return false;
+	 }
+
+	 TypeElement type = (TypeElement) constructor.getEnclosingElement();
+	 return type.getEnclosingElement().getKind() == ElementKind.PACKAGE || type.getModifiers().contains(Modifier.STATIC);
+	}*/
+
+	public static boolean isClass(TypeMirror typeMirror)
+	{
+		ElementKind kind = (typeMirror instanceof DeclaredType) ? ((DeclaredType) typeMirror).asElement().getKind() : ElementKind.OTHER;
+		return kind==ElementKind.CLASS || kind==ElementKind.ENUM;
+    }
+
+	public static boolean isInterface(TypeMirror typeMirror)
+	{
+		ElementKind kind = (typeMirror instanceof DeclaredType) ? ((DeclaredType) typeMirror).asElement().getKind() : ElementKind.OTHER;
+        return kind == ElementKind.INTERFACE;
+    }
 }
