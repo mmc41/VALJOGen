@@ -6,7 +6,7 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
+import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
@@ -15,9 +15,6 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  *
  * Fully independent of javax.model.* classes even though {@link com.fortyoneconcepts.valjogen.processor.ClazzFactory} is the primary
  * way to create Clazz instances from javax.model.* classes (provided by an annotation processor).
- *
- * Nb. Unlike most models, this class is mutable as some of the externally constructed instance members need
- *     to be constructed after this class so they can refer back to this instance.
  *
  * @author mmc
  */
@@ -93,6 +90,12 @@ public final class Clazz extends ObjectType implements Model
 		return initializedType && initializedContent;
 	}
 
+	@Override
+	public boolean isSelfType()
+	{
+		return true;
+	}
+
 	/**
      * Nb. Post-constructor for what is inside the class such as methods, members etc. + imports. Both this method and the super class'es {@link ObjectType#initType}
      * methods must be called for the class to be fully initialized and ready for use. Must be called only once.
@@ -141,7 +144,7 @@ public final class Clazz extends ObjectType implements Model
 	public boolean isAbstract()
 	{
 		assert initialized() : "Class initialization missing";
-		return !methods.isEmpty();
+		return !methods.stream().allMatch(m -> m.implementationClaimed);
 	}
 
 	public boolean isSynchronized()
@@ -180,10 +183,15 @@ public final class Clazz extends ObjectType implements Model
 		return properties;
 	}
 
-	public List<Method> getNonPropertyMethods()
+	public List<Method> getMethods()
 	{
 		assert initialized() : "Class initialization missing";
 		return methods;
+	}
+
+	public List<Method> getClaimedImplementationMethods()
+	{
+		return methods.stream().filter(m -> m.implementationClaimed).collect(Collectors.toList());
 	}
 
 	public List<Type> getImportTypes()
@@ -205,16 +213,34 @@ public final class Clazz extends ObjectType implements Model
 	}
 
 	@Override
-	public String toString() {
-		return "Clazz [this=@"+ Integer.toHexString(System.identityHashCode(this))+", initialized="+initialized()+" packageName=" + packageName + ", qualifiedClassName="+ qualifiedProtoTypicalTypeName + System.lineSeparator()
-				+", base type=" + Objects.toString(baseClazzType)
-				+ System.lineSeparator() + ", interface interfaceTypes=["
-				+ interfaceTypes.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()))+"  "+"]"+ System.lineSeparator()+ ", interfaceTypesWithAscendants=["
-				+ interfaceTypesWithAscendants.stream().map(t -> Objects.toString(t)).collect(Collectors.joining(","+System.lineSeparator()+"  ")) +"]"+ System.lineSeparator()
-				+ ", genericTypeArguments="+Objects.toString(genericTypeArguments)+System.lineSeparator()
-				+ ", members="+members+System.lineSeparator()
-				+ ", properties=" + properties +System.lineSeparator()
-				+ ", methods="+methods+System.lineSeparator()
-				+ ", configuration="+configuration+"]"+System.lineSeparator();
+	public String toString(int level)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("Clazz [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+
+		if (level<MAX_RECURSIVE_LEVEL)
+		{
+			sb.append(", initialized="+initialized()+", qualifiedClassName="+ qualifiedProtoTypicalTypeName);
+		}
+
+		// Specific to class, most details are only printed as top level:
+		if (level==0)
+		{
+			sb.append(" packageName=" + packageName + System.lineSeparator()
+					 +", base type=" + baseClazzType.toString(level+1)
+					 + System.lineSeparator() + ", interface interfaceTypes=["
+					 + interfaceTypes.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+ System.lineSeparator()+ ", interfaceTypesWithAscendants=["
+					 + interfaceTypesWithAscendants.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator())) +"]"+ System.lineSeparator()
+					 + ", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, level+1)+System.lineSeparator()
+					 + ", members="+ToStringUtil.toString(members, level+1)+System.lineSeparator()
+					 + ", properties=" + ToStringUtil.toString(properties,level+1)+System.lineSeparator()
+					 + ", methods="+ToStringUtil.toString(methods,level+1)+System.lineSeparator()
+					 + ", configuration="+configuration+"]"+System.lineSeparator());
+		}
+
+		sb.append("]");
+
+		return sb.toString();
 	}
 }

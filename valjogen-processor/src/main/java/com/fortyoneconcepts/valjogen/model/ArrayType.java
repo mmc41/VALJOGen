@@ -2,6 +2,8 @@ package com.fortyoneconcepts.valjogen.model;
 
 import java.util.Objects;
 
+import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
+
 /**
  * Represents a java array data type.
  *
@@ -67,7 +69,17 @@ public final class ArrayType extends Type
 	}
 
 	@Override
-	public String toString() {
-		return "ArrayType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", typeName = "+qualifiedProtoTypicalTypeName+ ", componentType="+componentType+"]";
+	public String toString(int level)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("ArrayType [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+
+		if (level<MAX_RECURSIVE_LEVEL)
+		  sb.append(", typeName = "+qualifiedProtoTypicalTypeName+ ", componentType="+componentType.toString(level+1));
+
+		sb.append("]");
+
+		return sb.toString();
 	}
 }

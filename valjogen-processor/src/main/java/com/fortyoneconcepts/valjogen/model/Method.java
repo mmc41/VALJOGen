@@ -4,31 +4,34 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /***
  * Meta-information about a method that should be generated (implemented).
  *
  * @author mmc
  */
-public class Method implements Model
+public class Method extends ModelBase
 {
 	protected final Clazz clazz;
 	protected final Type declaringType;
 	protected final String methodName;
 	protected final List<Parameter> parameters;
-	protected final List<Type> typeParameters;
 	protected final String javaDoc;
 	protected final Type returnType;
+	protected final boolean implementationClaimed;
 
-	public Method(Clazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> typeParameters, String javaDoc)
+	public Method(Clazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, String javaDoc, boolean implementationClaimed)
 	{
 	    this.clazz = Objects.requireNonNull(clazz);
 	    this.declaringType = Objects.requireNonNull(declaringType);
 		this.methodName = Objects.requireNonNull(methodName);
 		this.parameters = Objects.requireNonNull(parameters);
-		this.typeParameters = Objects.requireNonNull(typeParameters);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.returnType = Objects.requireNonNull(returnType);
+		this.implementationClaimed = implementationClaimed;
 	}
 
 	@Override
@@ -53,6 +56,11 @@ public class Method implements Model
 	public String getPackageName()
 	{
 		return clazz.getPackageName();
+	}
+
+	public boolean isImplementationClaimed()
+	{
+		return implementationClaimed;
 	}
 
 	public boolean isFinal()
@@ -86,7 +94,17 @@ public class Method implements Model
 	}
 
 	@Override
-	public String toString() {
-		return "Method [this=@"+ Integer.toHexString(System.identityHashCode(this))+", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", typeParameters="+typeParameters+"]";
+	public String toString(int level)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("Method [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+
+		if (level<MAX_RECURSIVE_LEVEL)
+			sb.append(", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", implementationClaimed="+implementationClaimed+"]");
+
+		sb.append("]");
+
+		return sb.toString();
 	}
 }

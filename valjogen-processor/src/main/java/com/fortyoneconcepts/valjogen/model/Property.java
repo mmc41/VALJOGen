@@ -16,16 +16,16 @@ public final class Property extends Method
 	private final Member member;
 	private final PropertyKind kind;
 
-	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind,String javaDoc, List<Type> typeParameters)
+	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind,String javaDoc)
 	{
-		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), typeParameters, javaDoc);
+		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), javaDoc, true);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, Parameter parameter, List<Type> typeParameters)
+	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, Parameter parameter)
 	{
-		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), typeParameters, javaDoc);
+		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), javaDoc, true);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
@@ -67,9 +67,18 @@ public final class Property extends Method
 	}
 
 	@Override
-	public String toString()
+	public String toString(int level)
 	{
-		return "Property [this=@"+ Integer.toHexString(System.identityHashCode(this))+", member=" + member.getName() + ", propertyKind="+kind+", typeParameters="+typeParameters+"]";
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("Property [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+
+		if (level<MAX_RECURSIVE_LEVEL)
+			sb.append(", member=" + member.getName() + ", propertyKind="+kind+", implementationClaimed="+implementationClaimed+"]");
+
+		sb.append("]");
+
+		return sb.toString();
 	}
 }
 

@@ -1,9 +1,9 @@
-comparable(clazz) ::= <<
-public <optSynchronized(clazz)>int compareTo(<clazz.name> obj)
+method_compareTo(clazz, method) ::= <<
+<declare_method(clazz, method)>
 {
   int <uniqueVariableName(clazz,"result")>;
 
-  <clazz.members:{m | <(comparableTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, m.name, m.type)>}; wrap, anchor, separator="\n\n">
+  <clazz.members:{m | <(comparableTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, first(method.parameters), m, m.type)>}; wrap, anchor, separator="\n\n">
 
   return 0;
 }
@@ -11,20 +11,20 @@ public <optSynchronized(clazz)>int compareTo(<clazz.name> obj)
 
 comparableTemplateNamesByTypeCategory ::= [ "PRIMITIVE": "comparable_primitive", "ARRAY": "comparable_array", default: "comparable_object"]
 
-comparable_primitive(clazz, var, type) ::= <<
-if ((<uniqueVariableName(clazz,"result")>=<type.wrapperName>.compare(<var>, obj.<var>))!=0)
+comparable_primitive(clazz, other, member, type) ::= <<
+if ((<uniqueVariableName(clazz,"result")>=<type.wrapperName>.compare(<member.name>, <other_instance_get_member_value(other, member)>))!=0)
  return <uniqueVariableName(clazz,"result")>;
 >>
 
-comparable_array(clazz, var, type) ::= <<
+comparable_array(clazz, param, var, type) ::= <<
 <! Comparing arrays not supported !>
 >>
 
-comparable_object(clazz, var, type) ::= <<
-<if(type.comparable)>
-if ((<uniqueVariableName(clazz,"result")>=<var>.compareTo(obj.<var>))!=0)
+comparable_object(clazz, other, member, type) ::= <<
+<if(type.comparable && (other.type.selfType || member.getter))>
+if ((<uniqueVariableName(clazz,"result")>=<member.name>.compareTo(<other_instance_get_member_value(other, member)>))!=0)
  return <uniqueVariableName(clazz,"result")>;
 <else>
-<! Comparing non-comparable objects not supported !>
+<! Comparing non-comparable objects or members through interfaces without getters not supported !>
 <endif>
 >>

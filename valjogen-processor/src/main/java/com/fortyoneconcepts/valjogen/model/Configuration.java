@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
+import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 import com.fortyoneconcepts.valjogen.model.util.SelfReference;
 
 /**
@@ -190,6 +191,11 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(debugInfo, configureAnnotation.debugInfo());
 	 }
 
+	 public String[] getImplementedMethodNames()
+	 {
+		 return getValue(implementedMethodNames, configureAnnotation.implementedMethodNames());
+	 }
+
 	 // ---- Internal helpers -----
 
 	 private String preformMagicReplacements(String rawValue)
@@ -289,7 +295,7 @@ public final class Configuration implements ConfigurationOptionKeys
 	{
 		// Create toString by calling all getters programatically so we do not have to maintain this method (which is for debugging only anyway):
 		java.lang.reflect.Method[] methods = this.getClass().getMethods();
-		String nameValues = Arrays.stream(methods).filter(m -> m.getParameterCount()==0 && m.getDeclaringClass()==this.getClass() && !m.getName().equals("toString") && ((m.getModifiers() & java.lang.reflect.Modifier.PUBLIC)!=0)).map(m-> {
+		String nameValues = Arrays.stream(methods).filter(m -> m.getParameterCount()==0 && m.getDeclaringClass()==this.getClass() && NamesUtil.isGetterMethod(m.getName(), new String[] { "is", "get"}) && !m.getName().equals("toString") && ((m.getModifiers() & java.lang.reflect.Modifier.PUBLIC)!=0)).map(m-> {
 			try {
 				String name = m.getName();
 				Object value = m.invoke(this);

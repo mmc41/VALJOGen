@@ -128,6 +128,11 @@ public interface ConfigurationOptionKeys
 	 public static String extraInterfaceNames = "extraInterfaceNames";
 
 	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#extraInterfaceNames
+	 */
+	 public static String implementedMethodNames = "implementedMethodNames";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#baseClazzName
 	 */
 	 public static String baseClazzName = "baseClazzName";

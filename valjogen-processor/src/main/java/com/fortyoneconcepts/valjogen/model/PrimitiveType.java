@@ -34,7 +34,7 @@ public final class PrimitiveType extends Type
     }
 
 	@Override
-	public String toString() {
+	public String toString(int level) {
 		return "PrimitiveType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", typeName = "+qualifiedProtoTypicalTypeName+ "]";
 	}
 }

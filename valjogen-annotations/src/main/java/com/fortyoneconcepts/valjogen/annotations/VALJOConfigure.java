@@ -200,6 +200,15 @@ public @interface VALJOConfigure
 	*/
     String[] extraInterfaceNames() default {};
 
+    /**
+	* Specifies names of methods that will be implemented by the generated class. May be overruled by equivalent annotation processor key.
+	*
+	* NOTE: Do not set this (yet). Presently used internally only. Reserved for future use.
+	*
+	* @return Array of names of implemented methods.
+	*/
+    String[] implementedMethodNames() default {};
+
 	/**
 	* Specifies the base class of the generated class. May be overruled by equivalent annotation processor key.
 	*

@@ -66,4 +66,5 @@ public final class SimpleClass implements SimpleInterface
       _sb.append(']');
       return _sb.toString();
   }
+
 }

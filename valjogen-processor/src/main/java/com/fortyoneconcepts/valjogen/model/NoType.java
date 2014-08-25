@@ -9,7 +9,7 @@ public class NoType extends Type
 {
 	public NoType(Clazz clazzUsingType)
 	{
-		super(clazzUsingType, "");
+		super(clazzUsingType, "NONE");
 	}
 
 	@Override
@@ -19,7 +19,8 @@ public class NoType extends Type
 	}
 
 	@Override
-	public String toString() {
+	public String toString(int level)
+	{
 		return "<NONE>";
 	}
 }

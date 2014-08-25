@@ -51,6 +51,18 @@ public final class ClazzFactory
 
 	private ClazzFactory() {}
 
+	private static class ExecutableElementAndDeclaredTypePair
+	{
+		public final DeclaredType interfaceDecl;
+		public final ExecutableElement executableElement;
+
+		public ExecutableElementAndDeclaredTypePair(DeclaredType interfaceDecl, ExecutableElement executableElement)
+		{
+			this.interfaceDecl=interfaceDecl;
+			this.executableElement=executableElement;
+		}
+	}
+
 	/**
     * Create a Clazz model instance along with all its dependen model instancess by inspecting
     * javax.model metadata and the configuration provided by annotation(s) read by annotation processor.
@@ -67,7 +79,7 @@ public final class ClazzFactory
 	*/
 	public Clazz createClazz(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
-		// Get the interface's .class abstraction:
+		// Step 1 - Create clazz:
 		DeclaredType masterInterfaceDecl = (DeclaredType)masterInterfaceElement.asType();
 
 		Map<String,Type> allTypesByPrototypicalFullName = new HashMap<String, Type>();
@@ -78,6 +90,12 @@ public final class ClazzFactory
 		String className = createQualifiedClassName(configuration, masterInterfaceElement.asType().toString(), sourceInterfacePackageName);
 		String classPackage = NamesUtil.getPackageFromQualifiedName(className);
 
+		String classJavaDoc = elements.getDocComment(masterInterfaceElement);
+		if (classJavaDoc==null)
+			classJavaDoc="";
+
+		Clazz clazz = new Clazz(configuration, className, classJavaDoc);
+
 		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(elements, types, masterInterfaceElement, configuration, errorConsumer, classPackage);
 		if (baseClazzDeclaredMirrorType==null)
 			return null;
@@ -87,14 +105,8 @@ public final class ClazzFactory
 		List<DeclaredType> interfaceDeclaredMirrorTypes = createInterfaceDeclaredTypes(elements, types, masterInterfaceElement, masterInterfaceDecl, ekstraInterfaceNames, errorConsumer, classPackage);
 		List<DeclaredType> allInterfaceDeclaredMirrorTypes = interfaceDeclaredMirrorTypes.stream().flatMap(ie -> getDeclaredInterfacesWithDecendents(types, ie)).collect(Collectors.toList());
 
-		String classJavaDoc = elements.getDocComment(masterInterfaceElement);
-		if (classJavaDoc==null)
-			classJavaDoc="";
-
-		Clazz clazz = new Clazz(configuration, className, classJavaDoc);
-
-
-	    List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();
+        // Step 2 - Init type part of clzzz:
+		List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();
 
 	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, types, t)).collect(Collectors.toList());
 
@@ -106,106 +118,108 @@ public final class ClazzFactory
 
 		clazz.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, typeArgTypes);
 
+		// Step 3 - Init content part of clazz:
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
 		List<Method> nonPropertyMethods = new ArrayList<Method>();
 		List<Property> propertyMethods= new ArrayList<Property>();
 
-		// Import interface(s), base class and specified extras:
-		List<Type> importTypes = createImportTypes(clazz, allTypesByPrototypicalFullName, types, elements, masterInterfaceElement, configuration, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes, errorConsumer);
-
 		final StatusHolder statusHolder = new StatusHolder();
 
-		// Collect all members, property methods and non-property methods from interfaces:
+		Set<String> implementedMethodNames = new HashSet<String>(Arrays.asList(configuration.getImplementedMethodNames()));
+		if (clazz.isComparable() && configuration.isComparableEnabled())
+			implementedMethodNames.add("compareTo"); // TODO: Consider adding type argument signatures to support overloading.
+
+		// Collect all members, property methods and non-property methods from interfaces paired with the interface they belong to:
+		Stream<ExecutableElementAndDeclaredTypePair> executableElements = allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault())));
+
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
-		allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(em -> !em.isDefault()))
-		             .forEach(m -> {
-		            	try {
-							String javaDoc = elements.getDocComment(m);
-							if (javaDoc==null)
-								javaDoc="";
-
-							boolean captured = false;
-
-							Type declaringType = createType(clazz, allTypesByPrototypicalFullName, types, m.getEnclosingElement().asType());
-
-		            		String methodName = m.getSimpleName().toString();
-		            		Type returnType = createType(clazz, allTypesByPrototypicalFullName, types, m.getReturnType());
-
-		            		PropertyKind propertyKind = null;
-		                    if (NamesUtil.isGetterMethod(methodName, configuration.getGetterPrefixes()))
-		                    	propertyKind=PropertyKind.GETTER;
-		                    else if (NamesUtil.isSetterMethod(methodName, configuration.getSetterPrefixes()))
-		                    	propertyKind=PropertyKind.SETTER;
-
-							if (propertyKind!=null) {
-								Member propertyMember = createPropertyMemberIfValidProperty(clazz, allTypesByPrototypicalFullName, types, masterInterfaceElement, configuration, m, propertyKind, errorConsumer);
-
-								if (propertyMember!=null) {
-					                final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
-					              	if (existingMember!=null)
-					              	   propertyMember = existingMember;
-
-					              	Property property = createValidatedProperty(clazz, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, javaDoc,	propertyKind, propertyMember);
-
-					              	propertyMember.addPropertyMethod(property);
-					              	propertyMethods.add(property);
-					              	captured=true;
-								}
-							}
-
-							if (!captured)
-							{
-
-
-								List<Parameter> parameters = m.getParameters().stream().map(p -> createParameter(types,	elements, allTypesByPrototypicalFullName, clazz, p)).collect(Collectors.toList());
-								List<Type> typeParameters = m.getTypeParameters().stream().map(p -> createType(clazz, allTypesByPrototypicalFullName, types, p.asType())).collect(Collectors.toList());
-
-								nonPropertyMethods.add(new Method(clazz, declaringType, methodName, returnType, parameters, typeParameters, javaDoc));
-							}
-		            	} catch (Exception e)
-		            	{
-		            		String location = m.getEnclosingElement().toString()+"."+m.getSimpleName().toString();
-		            		throw new RuntimeException("Failure during processing of "+location+" due to "+e.getMessage(), e);
-		            	}
-					 });
+		executableElements.forEach(e -> processMethod(types, elements, masterInterfaceElement, configuration, errorConsumer, allTypesByPrototypicalFullName, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames));
 
 		if (statusHolder.encountedSynthesisedMembers)
 			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
+
+		List<Type> importTypes = createImportTypes(clazz, allTypesByPrototypicalFullName, types, elements, masterInterfaceElement, configuration, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes, errorConsumer);
 
 		clazz.initContent(new ArrayList<Member>(membersByName.values()), propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes));
 
 		return clazz;
 	}
 
-	private Parameter createParameter(Types types, Elements elements, Map<String, Type> allTypesByPrototypicalFullName, Clazz clazz, VariableElement p)
+	private Stream<ExecutableElementAndDeclaredTypePair> toExecutableElementAndDeclaredTypePair(DeclaredType interfaceMirrorType, Stream<ExecutableElement> elements)
 	{
-		String name = p.getSimpleName().toString();
-		TypeMirror pTypeMirror = p.asType();
+		return elements.map(e -> new ExecutableElementAndDeclaredTypePair(interfaceMirrorType, e));
+	}
 
-		/*
-		if (p instanceof TypeParameterElement)
+	private void processMethod(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, Map<String, Type> allTypesByPrototypicalFullName,
+			                   Clazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods,	List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceMirrorType, Set<String> implementedMethodNames)
+	{
+		try {
+			String javaDoc = elements.getDocComment(m);
+			if (javaDoc==null)
+				javaDoc="";
+
+			boolean captured = false;
+
+			ExecutableType executableMethodMirrorType = (ExecutableType)types.asMemberOf(interfaceMirrorType, m);
+
+			Type declaringType = createType(clazz, allTypesByPrototypicalFullName, types, interfaceMirrorType);
+
+			String methodName = m.getSimpleName().toString();
+
+			TypeMirror returnTypeMirror = executableMethodMirrorType.getReturnType();
+			Type returnType = createType(clazz, allTypesByPrototypicalFullName, types, returnTypeMirror);
+
+			List<? extends VariableElement> params =  m.getParameters();
+			List<? extends TypeMirror> paramTypes = executableMethodMirrorType.getParameterTypes();
+
+			if (params.size()!=paramTypes.size())
+				throw new Exception("Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
+
+			List<Parameter> parameters = new ArrayList<Parameter>();
+			for (int i=0; i<params.size(); ++i)
+			{
+				Parameter param = createParameter(types, elements, allTypesByPrototypicalFullName, clazz, params.get(i), paramTypes.get(i));
+				parameters.add(param);
+			}
+
+			PropertyKind propertyKind = null;
+		    if (NamesUtil.isGetterMethod(methodName, configuration.getGetterPrefixes()))
+		    	propertyKind=PropertyKind.GETTER;
+		    else if (NamesUtil.isSetterMethod(methodName, configuration.getSetterPrefixes()))
+		    	propertyKind=PropertyKind.SETTER;
+
+			if (propertyKind!=null) {
+				Member propertyMember = createPropertyMemberIfValidProperty(clazz, allTypesByPrototypicalFullName, types, masterInterfaceElement, configuration, m, propertyKind, errorConsumer);
+
+				if (propertyMember!=null) {
+		            final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
+		          	if (existingMember!=null)
+		          	   propertyMember = existingMember;
+
+		          	Property property = createValidatedProperty(clazz, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, parameters, javaDoc, propertyKind, propertyMember);
+
+		          	propertyMember.addPropertyMethod(property);
+		          	propertyMethods.add(property);
+		          	captured=true;
+				}
+			}
+
+			if (!captured)
+			{
+				boolean claimedImplementation = implementedMethodNames.contains(methodName);
+				nonPropertyMethods.add(new Method(clazz, declaringType, methodName, returnType, parameters, javaDoc, claimedImplementation));
+			}
+		} catch (Exception e)
 		{
-			TypeParameterElement te = (TypeParameterElement)p;
-			String s = te.getSimpleName().toString();
+			String location = m.getEnclosingElement().toString()+"."+m.getSimpleName().toString();
+			throw new RuntimeException("Failure during processing of "+location+" due to "+e.getMessage(), e);
 		}
+	}
 
-
-		if (pTypeMirror.toString().equals("T")){
-			TypeVariable variableTypeMirror = (TypeVariable)pTypeMirror;
-
-			Element e = variableTypeMirror.asElement();
-			String n = e.getSimpleName().toString();
-
-			TypeMirror lower =variableTypeMirror.getLowerBound();
-			TypeMirror higher =variableTypeMirror.getUpperBound();
-
-			String l = lower.toString();
-			String h = higher.toString();
-
-			System.out.println("bla: "+e);
-		}*/
-
-		return new Parameter(clazz, createType(clazz, allTypesByPrototypicalFullName, types, pTypeMirror), name);
+	private Parameter createParameter(Types types, Elements elements, Map<String, Type> allTypesByPrototypicalFullName, Clazz clazz, VariableElement param, TypeMirror paramType)
+	{
+		String name = param.getSimpleName().toString();
+		return new Parameter(clazz, createType(clazz, allTypesByPrototypicalFullName, types, paramType), name);
 	}
 
 	/**
@@ -277,38 +291,11 @@ public final class ClazzFactory
 		   }
 
 		   newObjectType.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, genericTypeArguments);
-
-		   /*
-		   if (mirrorType instanceof TypeVariable) {
-				TypeVariable genericMirrorType = (TypeVariable)mirrorType;
-				// System.out.println(typeName);
-		   }*/
 		}
 
 		assert existingType==null : "Should not overwrite existing type in pool";
 
 		return newType;
-	}
-
-	private GenericParameter createGenericParameter(Clazz clazz, Map<String, Type> allTypesByPrototypicalFullName, Types types, TypeParameterElement typeELement)
-	{
-		TypeMirror parameterMirrorType = typeELement.asType();
-		String genericParameterName = parameterMirrorType.toString();
-		return new GenericParameter(clazz, genericParameterName);
-		/*
-
-		Element genericElement = typeELement.getGenericElement();
-	//	List<? extends TypeMirror> bounds = typeELement.getBounds();
-	//	List<String> bs = bounds.stream().map(b -> b.toString()).collect(Collectors.toList());
-
-		TypeMirror genericMirrorType = genericElement.asType();
-
-		final String typeName = genericMirrorType.toString();
-
-		Type genericType = new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
-
-		return genericType;
-		*/
 	}
 
 	private Stream<? extends TypeMirror> getSuperTypesWithAncestors(Types typeMirrorTypes, List<? extends TypeMirror> superTypes)
@@ -401,31 +388,25 @@ public final class ClazzFactory
 	}
 
 
-	private Property createValidatedProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, String javaDoc, PropertyKind propertyKind, Member propertyMember)
+	private Property createValidatedProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, String javaDoc, PropertyKind propertyKind, Member propertyMember)
 	{
-		List<Type> typeParameters = m.getTypeParameters().stream().map(p -> createType(clazz, allTypesByPrototypicalFullName, types, p.asType())).collect(Collectors.toList());
-
 		Property property;
-		List<? extends VariableElement> parameterElements = m.getParameters();
 
 		String propertyName = m.getSimpleName().toString();
 
-		if (parameterElements.size()==0) {
-			property=new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc, typeParameters);
-		} else if (parameterElements.size()==1) {
-			VariableElement varElement = m.getParameters().get(0);
+		if (parameters.size()==0) {
+			property=new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc);
+		} else if (parameters.size()==1) {
+			Parameter parameter = parameters.get(0);
 
-			String varElementName = varElement.getSimpleName().toString();
-
-			// Parameter names may be syntesised so we may need to fall back on using member
+			// Parameter names may be syntesised so we can fall back on using member
 			// name as parameter name. Note if this happen so we can issue a warning later.
-			String usedVarElementName;
-			if (varElementName.matches("arg\\d+")) { // Synthesised check (not bullet-proof):
+			if (parameter.getName().matches("arg\\d+")) { // Synthesised check (not bullet-proof):
 				statusHolder.encountedSynthesisedMembers=true;
-				usedVarElementName=propertyMember.getName();
-			} else usedVarElementName=varElementName;
+				parameter=parameter.setName(propertyMember.getName());
+			}
 
-			property = new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc, new Parameter(clazz, createType(clazz, allTypesByPrototypicalFullName, types, varElement.asType()), usedVarElementName), typeParameters);
+			property = new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc, parameter);
 		} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
 
 		return property;

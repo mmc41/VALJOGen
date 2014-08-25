@@ -370,4 +370,5 @@ public final class ComplexClass implements ComplexInterfaceWithAllTypes
       _sb.append(']');
       return _sb.toString();
   }
+
 }

@@ -15,7 +15,7 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  *
  * @author mmc
  */
-public abstract class Type implements Model
+public abstract class Type extends ModelBase
 {
 	protected Clazz clazzUsingType; // May be set by subclass immediately after constructor but not changed afterwards.
 	protected final String qualifiedProtoTypicalTypeName;
@@ -164,6 +164,11 @@ public abstract class Type implements Model
 	}
 
 	public boolean isComparable()
+	{
+		return false;
+	}
+
+	public boolean isSelfType()
 	{
 		return false;
 	}

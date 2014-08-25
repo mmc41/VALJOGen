@@ -38,13 +38,12 @@ package <clazz.packageName>;
   <equals(clazz)>
   <endif>
 
-  <if(clazz.comparable && clazz.configuration.comparableEnabled && clazz.anyMembers)>
-  <comparable(clazz)>
-  <endif>
-
   <if(clazz.configuration.toStringEnabled)>
   <toString(clazz)>
   <endif>
+
+  <! Call template methods corresponding to prefixed method names !>
+  <clazz.claimedImplementationMethods:{m | <(implementationMethod(m.name))(clazz, m)>}>
 }
 >>
 

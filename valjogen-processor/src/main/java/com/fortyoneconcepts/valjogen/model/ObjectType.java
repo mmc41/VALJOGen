@@ -77,32 +77,32 @@ public class ObjectType extends Type
 
 	public Type getBaseClazzType()
 	{
-		assert initialized() : "Class initialization missing";
+		assert initializedType : "Type initialization missing";
 		return Objects.requireNonNull(baseClazzType);
 	}
 
 	public List<Type> getInterfaceTypes()
 	{
-		assert initialized() : "Class initialization missing";
+		assert initializedType : "Type initialization missing";
 		return interfaceTypes;
 	}
 
 	public Set<Type> getInterfaceTypesWithAscendants()
 	{
-		assert initialized() : "Class initialization missing";
+		assert initializedType : "Type initialization missing";
 		return interfaceTypesWithAscendants;
 	}
 
 	public List<Type> getGenericTypeArguments()
 	{
-		assert initialized() : "Class initialization missing";
+		assert initializedType : "Type initialization missing";
 		return genericTypeArguments==null ? Collections.emptyList() : genericTypeArguments;
 	}
 
 	@Override
 	public String getPrototypicalName()
 	{
-		assert initialized() : "Class initialization missing";
+		assert initializedType : "Type initialization missing";
 
 		String name = getPrototypicalQualifiedName();
 
@@ -140,7 +140,7 @@ public class ObjectType extends Type
 	@Override
 	public boolean isSerializable()
 	{
-		assert initialized() : "Class initialization missing";
+		assert initializedType : "Type initialization missing";
 
 		Type serializableType = helperTypes.getSerializableInterfaceType();
 		if (this.equals(serializableType))
@@ -151,7 +151,7 @@ public class ObjectType extends Type
 	@Override
 	public boolean isComparable()
 	{
-		assert initialized() : "Class initialization missing";
+		assert initializedType : "Type initialization missing";
 
         // java.lang.Comparable generic i.e  java.lang.Comparable<java.lang.String> so our helperTypes need an arg for this to work ???
 
@@ -167,7 +167,17 @@ public class ObjectType extends Type
 	}
 
 	@Override
-	public String toString() {
-		return "ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", initialized="+initialized()+", qualifiedProtoTypicalTypeName = "+qualifiedProtoTypicalTypeName+ ", name="+getName()+", genericTypeArguments="+ToStringUtil.toRefsString(genericTypeArguments)+", baseClass="+baseClazzType+", interfaceTypes="+interfaceTypes+"]";
+	public String toString(int level)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+
+		if (level<MAX_RECURSIVE_LEVEL)
+		  sb.append("initialized="+initialized()+", qualifiedProtoTypicalTypeName = "+qualifiedProtoTypicalTypeName+ ", name="+getName()+", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, level+1)+", baseClass="+baseClazzType.toString(level+1)+", interfaceTypes="+ToStringUtil.toString(interfaceTypes, level+1));
+
+		sb.append("]");
+
+		return sb.toString();
 	}
 }

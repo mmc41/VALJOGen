@@ -13,7 +13,7 @@ import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
  *
  * @author mmc
  */
-public final class Member implements Model
+public final class Member extends ModelBase
 {
 	private final Clazz clazz;
 	private final String name;
@@ -59,6 +59,15 @@ public final class Member implements Model
 	public Type getType()
 	{
 	    return type;
+	}
+
+	public Property getGetter()
+	{
+		for (Property property : properties)
+			if (property.isGetter())
+				return property;
+
+		return null;
 	}
 
 	public boolean isFinal()
@@ -120,7 +129,17 @@ public final class Member implements Model
 	}
 
 	@Override
-	public String toString() {
-		return "Member [this=@"+ Integer.toHexString(System.identityHashCode(this))+", name=" + name + ", type=" + type.getName() + ", properties=["+properties.stream().map(p -> p.methodName).collect(Collectors.joining(", "))+"]"+"]";
+	public String toString(int level)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("Member [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+
+		if (level<MAX_RECURSIVE_LEVEL)
+			sb.append(", name=" + name + ", type=" + type.getName() + ", properties=["+properties.stream().map(p -> p.methodName).collect(Collectors.joining(", "))+"]");
+
+		sb.append("]");
+
+		return sb.toString();
 	}
 }

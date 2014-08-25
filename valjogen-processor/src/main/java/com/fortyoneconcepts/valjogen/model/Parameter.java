@@ -51,6 +51,11 @@ public class Parameter implements Model
 		return paramName;
 	}
 
+	public Parameter setName(String newParamName)
+	{
+		return new Parameter(clazz, type, newParamName);
+	}
+
 	public Type getType()
 	{
 	    return type;
