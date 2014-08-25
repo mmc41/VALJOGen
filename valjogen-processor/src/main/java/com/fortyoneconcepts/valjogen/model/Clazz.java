@@ -6,6 +6,8 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
+
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 /**
@@ -14,7 +16,7 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  * Fully independent of javax.model.* classes even though {@link com.fortyoneconcepts.valjogen.processor.ClazzFactory} is the primary
  * way to create Clazz instances from javax.model.* classes (provided by an annotation processor).
  *
- * Nb. Unlike other models, this class is mutable as some of the externally constructed instance members need
+ * Nb. Unlike most models, this class is mutable as some of the externally constructed instance members need
  *     to be constructed after this class so they can refer back to this instance.
  *
  * @author mmc
@@ -91,6 +93,15 @@ public final class Clazz extends ObjectType implements Model
 		return initializedType && initializedContent;
 	}
 
+	/**
+     * Nb. Post-constructor for what is inside the class such as methods, members etc. + imports. Both this method and the super class'es {@link ObjectType#initType}
+     * methods must be called for the class to be fully initialized and ready for use. Must be called only once.
+     *
+	 * @param members Member variables for class.
+	 * @param properties Property methods for class.
+	 * @param nonPropertyMethods Other methods for class.
+	 * @param importTypes Types to be imported for class.
+	 */
 	public void initContent(List<Member> members, List<Property> properties, List<Method> nonPropertyMethods, List<Type> importTypes)
 	{
 		if (initializedContent)
@@ -129,11 +140,13 @@ public final class Clazz extends ObjectType implements Model
 
 	public boolean isAbstract()
 	{
+		assert initialized() : "Class initialization missing";
 		return !methods.isEmpty();
 	}
 
 	public boolean isSynchronized()
 	{
+		assert initialized() : "Class initialization missing";
 		return getConfiguration().isSynchronizedAccessEnabled() &&  members.stream().anyMatch(member -> !member.isFinal());
 	}
 

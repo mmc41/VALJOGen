@@ -222,8 +222,10 @@ public final class ClazzFactory
 	{
 		String typeName = mirrorType.toString();
 
-		// If using self-stand-in, replace with name of generated class.
+		// If using self-stand-in, replace with name of generated class and if identical with generate class return clazz itself as type
 		typeName=typeName.replace(SelfReference.class.getName(), clazz.getPrototypicalQualifiedName());
+		if (typeName.equals(clazz.getPrototypicalQualifiedName()))
+			return clazz;
 
 		Type existingType = allTypesByPrototypicalFullName.get(typeName);
 		if (existingType!=null) {
@@ -283,7 +285,7 @@ public final class ClazzFactory
 		   }*/
 		}
 
-		assert existingType==null : "Should not overwrite existing type";
+		assert existingType==null : "Should not overwrite existing type in pool";
 
 		return newType;
 	}

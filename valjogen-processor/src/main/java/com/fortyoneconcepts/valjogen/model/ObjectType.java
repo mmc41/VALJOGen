@@ -20,29 +20,21 @@ public class ObjectType extends Type
 	protected HelperTypes helperTypes;
 
 	protected List<Type> genericTypeArguments;
-
 	protected Type baseClazzType;
 	protected List<Type> interfaceTypes;
 	protected Set<Type> interfaceTypesWithAscendants;
 
 	protected boolean initializedType;
 
-	protected ObjectType(String qualifiedProtoTypicalTypeName)
-	{
-		super(qualifiedProtoTypicalTypeName);
-	    // All fields must be set manually after constructor.
-	}
-
 	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
-		this(clazzUsingType, qualifiedProtoTypicalTypeName, new NoType(clazzUsingType), Collections.emptyList(), Collections.emptySet(), null);// TODO: Add java.lang.Object as default supertype ??
+		this(clazzUsingType, qualifiedProtoTypicalTypeName, new NoType(clazzUsingType), Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
 	}
 
-	/*
-	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type baseClazz, List<Type> superInterfaces, Set<Type> superInterfacesWithAncestors)
+	protected ObjectType(String qualifiedProtoTypicalTypeName)
 	{
-		this(clazzUsingType, qualifiedProtoTypicalTypeName, baseClazz, superInterfaces, superInterfacesWithAncestors, null);
-	}*/
+		super(qualifiedProtoTypicalTypeName);  // All fields must be set manually after constructor.
+	}
 
 	private ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type baseClazz, List<Type> superInterfaces, Set<Type> superInterfacesWithAncestors, List<Type> genericTypeArguments)
 	{
@@ -54,17 +46,25 @@ public class ObjectType extends Type
 		this.helperTypes=clazzUsingType.getHelperTypes();
 	}
 
+	/**
+     * Nb. Post-constructor for what this type is based on such as supertypes. This method must be called for the type to be fully initialized. Nb. Subclasses of this class may
+     * require additional post-constructors to be called. Must be called only once.
+     *
+	 * @param baseClazzType Base class of this type if any (NoType if no base class exist).
+	 * @param interfaceTypes Direct super-interfaces of this type.
+	 * @param interfaceTypesWithAscendants All ancestor interfaces of this type.
+	 * @param genericTypeArguments Generic arguments of this type.
+	 */
 	public void initType(Type baseClazzType, List<Type> interfaceTypes, Set<Type> interfaceTypesWithAscendants, List<Type> genericTypeArguments)
 	{
 		if (initializedType)
 			throw new IllegalStateException("Clazz type aspects already initialized");
 
-		this.baseClazzType=Objects.requireNonNull(baseClazzType);
-
-		this.interfaceTypes=Objects.requireNonNull(interfaceTypes);
-		this.interfaceTypesWithAscendants=Objects.requireNonNull(interfaceTypesWithAscendants);
 		assert interfaceTypesWithAscendants.containsAll(interfaceTypes) : "All interfaces mentioned in interfaceTypes list must be contained in interfaceTypesWithAscendants set";
 
+		this.baseClazzType=Objects.requireNonNull(baseClazzType);
+		this.interfaceTypes=Objects.requireNonNull(interfaceTypes);
+		this.interfaceTypesWithAscendants=Objects.requireNonNull(interfaceTypesWithAscendants);
 		this.genericTypeArguments=Objects.requireNonNull(genericTypeArguments);
 
 		initializedType=true;
@@ -77,27 +77,33 @@ public class ObjectType extends Type
 
 	public Type getBaseClazzType()
 	{
+		assert initialized() : "Class initialization missing";
 		return Objects.requireNonNull(baseClazzType);
 	}
 
 	public List<Type> getInterfaceTypes()
 	{
+		assert initialized() : "Class initialization missing";
 		return interfaceTypes;
 	}
 
 	public Set<Type> getInterfaceTypesWithAscendants()
 	{
+		assert initialized() : "Class initialization missing";
 		return interfaceTypesWithAscendants;
 	}
 
 	public List<Type> getGenericTypeArguments()
 	{
+		assert initialized() : "Class initialization missing";
 		return genericTypeArguments==null ? Collections.emptyList() : genericTypeArguments;
 	}
 
 	@Override
 	public String getPrototypicalName()
 	{
+		assert initialized() : "Class initialization missing";
+
 		String name = getPrototypicalQualifiedName();
 
 		if (hasGenericQualifier(name))
@@ -134,6 +140,8 @@ public class ObjectType extends Type
 	@Override
 	public boolean isSerializable()
 	{
+		assert initialized() : "Class initialization missing";
+
 		Type serializableType = helperTypes.getSerializableInterfaceType();
 		if (this.equals(serializableType))
 			return true;
@@ -143,6 +151,8 @@ public class ObjectType extends Type
 	@Override
 	public boolean isComparable()
 	{
+		assert initialized() : "Class initialization missing";
+
         // java.lang.Comparable generic i.e  java.lang.Comparable<java.lang.String> so our helperTypes need an arg for this to work ???
 
 //		Type comparableType = helperTypes.getComparableInterfaceType();

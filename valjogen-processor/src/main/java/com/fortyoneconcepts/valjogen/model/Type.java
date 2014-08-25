@@ -17,7 +17,7 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  */
 public abstract class Type implements Model
 {
-	protected Clazz clazzUsingType;
+	protected Clazz clazzUsingType; // May be set by subclass immediately after constructor but not changed afterwards.
 	protected final String qualifiedProtoTypicalTypeName;
 
 	protected Type(String qualifiedProtoTypicalTypeName)
