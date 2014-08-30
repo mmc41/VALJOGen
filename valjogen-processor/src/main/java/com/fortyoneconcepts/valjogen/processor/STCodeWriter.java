@@ -3,9 +3,11 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
+import java.util.Date;
 import java.util.Objects;
 
 import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.gui.STViz;
 import org.stringtemplate.v4.misc.*;
 
 import com.fortyoneconcepts.valjogen.model.*;
@@ -33,7 +35,12 @@ public final class STCodeWriter
 
 		STGroup group = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
 
-		group.registerModelAdaptor(Model.class, new CustomSTModelAdaptor());
+		STGroup.verbose = cfg.isDebugInfoEnabled() && cfg.isVerboseInfoEnabled();
+		STGroup.trackCreationEvents = cfg.isDebugShowingSTVizGuiExplorerEnabled();
+
+		group.registerModelAdaptor(Model.class, new STCustomModelAdaptor());
+
+		group.registerRenderer(Date.class, new STISODateRender());
 
 		group.setListener(new ErrorListener());
 
@@ -42,6 +49,13 @@ public final class STCodeWriter
 		st.add(mainTemplateArg, Objects.requireNonNull(clazz));
 
 		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
+
+		if (cfg.isDebugShowingSTVizGuiExplorerEnabled()) {
+			System.out.println("Showing STViz - Pausing code generation until STViz is closed...");
+
+			STViz viz = st.inspect();
+			viz.waitForClose();
+		}
 
 		return result;
 	}

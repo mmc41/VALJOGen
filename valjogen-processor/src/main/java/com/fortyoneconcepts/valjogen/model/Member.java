@@ -6,8 +6,6 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
-
 /***
  * Meta-data about a membervariable that backs a property getter and/or setter method.
  *
@@ -72,7 +70,7 @@ public final class Member extends ModelBase
 
 	public boolean isFinal()
 	{
-		return properties.stream().noneMatch(p -> p.isSetter() && !p.isSelfReturnType()) && getConfiguration().isFinalMembersEnabled();
+		return properties.stream().noneMatch(p -> p.isSetter() && !p.isThisReturnType()) && getConfiguration().isFinalMembersEnabled();
 	}
 
 	public boolean isEnsureNotNullEnabled()

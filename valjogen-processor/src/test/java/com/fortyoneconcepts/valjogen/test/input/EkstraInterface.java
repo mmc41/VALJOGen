@@ -4,7 +4,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate(name="ExtraImpl")
-@VALJOConfigure(extraInterfaceNames={ "java.io.Serializable", /* "$Self",*/ "com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation" })
+@VALJOConfigure(extraInterfaceNames={ "java.io.Serializable", "java.lang.Comparable<$(This)>", "com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation" })
 public interface EkstraInterface
 {
 	public int getIntValue();

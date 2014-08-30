@@ -9,7 +9,8 @@ import java.lang.annotation.*;
  * Specifies details about the code that should be generated. May be specified on a package (package-info.java) or on a inteface alongside
  * the {@link VALJOGenerate} annotation. If specified on both a package and an interface then the package specification is ignored. Has no effect
  * unless affected interfaces also has a {@link VALJOGenerate} annotation. All details may be overruled by setting indentically named key/values
- * in the annotation processor.
+ * in the annotation processor. Indeed some details like "debugXXX" are usally better specified as a runtime option instead of hardcoding in the source using
+ * this annotation.
  *
  * <p><b>Usage example (package-info.java):</b></p>
  * <pre>
@@ -22,6 +23,8 @@ import java.lang.annotation.*;
  * The above code will instruct the VALJOGen annotation processor to have generated value object classes from interfaces in this package belong to
  * the "test.impl" package and to inherit from a common base class with qualified name "test.CommonBaseClass". Note that generation requires
  * seperate {@link VALJOGenerate} annotations.
+ *
+ * All string properties recognize the following macro: <code>$(This)</code> which resolves to the fully qualified name of the generated class.
  *
  * @author mmc
  */
@@ -173,7 +176,7 @@ public @interface VALJOConfigure
 	*
 	* @return Array of all qualified classes to import.
 	*/
-    String[] importClasses() default { "java.util.Arrays", "java.util.Objects" };
+    String[] importClasses() default { "java.util.Arrays", "java.util.Objects", "javax.annotation.Generated" };
 
     /**
 	* Specifies the prefixes of javaBean-style getter methods. Governs which memebers are inserted into the target class and which property method are
@@ -196,6 +199,9 @@ public @interface VALJOConfigure
 	/**
 	* Specifies if additional interfaces should be implemented to the generated class. May be overruled by equivalent annotation processor key.
 	*
+	* Hint: For generic interfaces using the macro <code>"$(This)"</code> for the generic qualifier is useful to refer to the name of the generated class. F.x.
+	* to implement Comparable write "<code>java.lang.Comparable&lt;(This)&gt;</code>".
+	*
 	* @return Array of all additional interfaces
 	*/
     String[] extraInterfaceNames() default {};
@@ -216,10 +222,35 @@ public @interface VALJOConfigure
 	*/
     String baseClazzName() default "java.lang.Object";
 
+
     /**
-	* Specifies the annotation processor should output debug information. May be overruled by equivalent annotation processor key.
+	* UTF-8 formatted file that contains a header that should be added at the top of the generated output.
+	*
+	* @return Filename of text file containing header.
+	*/
+    String headerFileName() default "N/A";
+
+    /**
+	* Specifies the annotation processor should verbose processing information like the names of the files it generates. May be overruled by equivalent annotation processor key.
+	*
+	* @return True if annotation processor should output verbose processingt information.
+	*/
+    boolean verboseInfo() default true;
+
+    /**
+	* Specifies the annotation processor should output debug information like the what the internal model looks like that build up as basis for templates that generate code.
+	* You should not need to enable this unless you are adding/modifying code templates. May be overruled by equivalent annotation processor key.
 	*
 	* @return True if annotation processor should output debug information.
 	*/
     boolean debugInfo() default true;
+
+    /**
+	* Experimental feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are
+	* adding/modifying code templates and run into problems. Beware thar code generation will pause while the generator is shown - you properly do not want to do that when using an IDE.
+	* May be overruled by equivalent annotation processor key.
+	*
+	* @return True if annotation processor should open StringTemplagte's STViz Gui explorer during code generation phase.
+	*/
+    boolean debugShowingSTVizGuiExplorer() default false;
 }

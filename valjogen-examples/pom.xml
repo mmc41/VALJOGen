@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.fortyoneconcepts.valjogen</groupId>
+		<artifactId>valjogen-projectsmaster</artifactId>
+		<version>0.5</version>
+	</parent>
+
+	<groupId>com.fortyoneconcepts.valjogen.examples</groupId>
+	<artifactId>valjogen-examples</artifactId>
+	<packaging>jar</packaging>
+
+	<name>ValjoGen-Examples</name>
+	<description>Example usage of ValjoGen generator</description>
+	<url>http://valjogen.41concepts.com</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.fortyoneconcepts.valjogen.annotations</groupId>
+			<artifactId>valjogen-annotations</artifactId>
+			<version>0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
+			<artifactId>valjogen-annotationprocessor</artifactId>
+			<version>0.5</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<skipIfEmpty>true</skipIfEmpty>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                  <compilerArgs>
+                      <arg>-parameters</arg>                     <!-- Make sure parameter meta data is available for best code generation -->
+                      <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=../../src/main/java</arg> <!-- Specify where to locate sources relative to class path -->
+                      <arg>-Acom.fortyoneconcepts.valjogen.headerFileName=Header.txt</arg>      <!-- Specify header to insert at top of generated files -->
+                  </compilerArgs>
+                  <enableAssertions>true</enableAssertions>
+                </configuration>
+         </plugin>
+		</plugins>
+	</build>
+</project>

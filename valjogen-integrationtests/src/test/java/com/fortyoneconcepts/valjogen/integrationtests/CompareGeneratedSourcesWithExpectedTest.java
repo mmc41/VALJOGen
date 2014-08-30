@@ -68,6 +68,7 @@ public class CompareGeneratedSourcesWithExpectedTest
 		List<String> expectedContent = Files.readAllLines(expectedJavaFilePath);
 		List<String> actualContent = Files.readAllLines(actualJavaFilePath);
 
+
 		Assert.assertEquals("Expected file "+expectedFileName+ " and actual file "+actualFileName+" has different sizes (#lines)", expectedContent.size(), actualContent.size());
 
 		// Check content of individual lines in the files.
@@ -75,6 +76,10 @@ public class CompareGeneratedSourcesWithExpectedTest
 		{
 			String expectedLine = expectedContent.get(j);
 			String actualLine = actualContent.get(j);
+
+			// Do not use dates in comparisons:
+			expectedLine=expectedLine.replaceAll("date\\s?=\\s?\"[^\"]+\"", "date=\"\"");
+			actualLine=actualLine.replaceAll("date\\s?=\\s?\"[^\"]+\"", "date=\"\"");
 
 			Assert.assertEquals("Expected file "+expectedFileName+ " and actual file "+actualFileName+" differ in content from line #"+Integer.toString(j+1), expectedLine, actualLine);
 		}

@@ -1,7 +1,5 @@
 package com.fortyoneconcepts.valjogen.model;
 
-import java.util.Collections;
-
 /**
  * Contains definitions of (external) java classes that templates may refer to. Instead of hardcoding
  * a named reference to a java class like "java.util.Objects" use the corresponding method
@@ -58,6 +56,14 @@ public class HelperTypes
 	public Type getJavaUtilObjects()
 	{
 		return new ObjectType(clazz, "java.util.Objects");
+	}
+
+	/**
+	* @return The Type object for {@link javax.annotation.Generated}
+	*/
+	public Type getGeneratedAnnotation()
+	{
+		return new ObjectType(clazz, "javax.annotation.Generated");
 	}
 
 	@Override

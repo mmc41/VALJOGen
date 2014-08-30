@@ -47,12 +47,12 @@ import java.util.Map;
  *
  * @author mmc
  */
-public class CustomSTModelAdaptor implements ModelAdaptor {
+public class STCustomModelAdaptor implements ModelAdaptor {
 	protected static final Member INVALID_MEMBER;
 	static {
 		Member invalidMember;
 		try {
-			invalidMember = CustomSTModelAdaptor.class.getDeclaredField("INVALID_MEMBER");
+			invalidMember = STCustomModelAdaptor.class.getDeclaredField("INVALID_MEMBER");
 		} catch (NoSuchFieldException ex) {
 			invalidMember = null;
 		} catch (SecurityException ex) {

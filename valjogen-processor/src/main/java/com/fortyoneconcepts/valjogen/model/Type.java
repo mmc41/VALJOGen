@@ -168,7 +168,7 @@ public abstract class Type extends ModelBase
 		return false;
 	}
 
-	public boolean isSelfType()
+	public boolean isThisType()
 	{
 		return false;
 	}

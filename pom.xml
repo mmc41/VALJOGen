@@ -61,6 +61,7 @@
 		<module>valjogen-annotations</module>
 		<module>valjogen-integrationtests</module>
 		<module>valjogen-processor</module>
+		<module>valjogen-examples</module>
 	</modules>
 	<developers>
 		<developer>
@@ -96,6 +97,7 @@
 					<configuration>
                       <compilerArgs>
                           <arg>-parameters</arg> <!-- Make sure parameter meta data is available for best code generation -->
+                          <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=../../src/test/java</arg> <!-- Specify where to locate sources relative to class path -->
                       </compilerArgs>
                       <enableAssertions>true</enableAssertions>
 			        </configuration>

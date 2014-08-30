@@ -2,6 +2,7 @@ package com.fortyoneconcepts.valjogen.test;
 
 import org.junit.Test;
 
+import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
@@ -47,7 +48,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testPublicMutableSetter() throws Exception
 	{
-		configurationOptions.put(ConfigurationOptionKeys.ensureNotNullEnabled, "false");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
 
 		String output = produceOutput(MutableInterface.class);
 
@@ -57,7 +58,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testMutableGuardedSetter() throws Exception
 	{
-		configurationOptions.put(ConfigurationOptionKeys.ensureNotNullEnabled, "true");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "true");
 		String output = produceOutput(MutableInterface.class);
 
 		assertContainsWithWildcards("setObjectValue(final Object objectValue) { this.objectValue=Objects.requireNonNull(objectValue); }", output);
@@ -66,7 +67,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testMutableNotGuardedSetter() throws Exception
 	{
-		configurationOptions.put(ConfigurationOptionKeys.ensureNotNullEnabled, "false");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
 		String output = produceOutput(MutableInterface.class);
 
 		assertContainsWithWildcards("setObjectValue(final Object objectValue) { this.objectValue=objectValue; }", output);

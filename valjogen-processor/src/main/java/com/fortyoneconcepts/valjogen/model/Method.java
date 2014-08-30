@@ -4,9 +4,6 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /***
  * Meta-information about a method that should be generated (implemented).
@@ -68,7 +65,7 @@ public class Method extends ModelBase
 		return false;
 	}
 
-	public boolean isSelfReturnType()
+	public boolean isThisReturnType()
 	{
 		return clazz.getInterfaceTypes().stream().anyMatch(t -> t.equals(returnType));
 	}

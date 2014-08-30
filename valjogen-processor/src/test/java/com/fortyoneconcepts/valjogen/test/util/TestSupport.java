@@ -1,6 +1,7 @@
 package com.fortyoneconcepts.valjogen.test.util;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -28,6 +29,11 @@ import com.google.testing.compile.JavaFileObjects;
  */
 public final class TestSupport
 {
+	// TODO: Move these two into build tool cfg:
+
+	private static String relSourcePath = "../../src/test/java";
+	private static String classPathSourceCopyRelPath ="source"; // Source files copied to this dir in test output.
+
 	public static Path getProjectRootPath() throws URISyntaxException
 	{
 		URL url = ClassLoader.getSystemResource(".");
@@ -36,12 +42,27 @@ public final class TestSupport
 		return Paths.get(url.toURI()).getParent().getParent();
 	}
 
-	public static URL getResourcePath(String className) throws FileNotFoundException
+	public static String getFileContent(URL url) throws IOException
 	{
-		String clazzSourceFile = className.replace(".", "/").concat(".java");
-		URL url = GeneratedOutputCanCompileTest.class.getClassLoader().getResource("source/"+className.replace(".", "/").concat(".java"));
+		JavaFileObject fileObject = JavaFileObjects.forResource(url);
+		return fileObject.getCharContent(false).toString();
+	}
+
+	public static URL getTestSourceFileResourcePath(String relPath) throws FileNotFoundException
+	{
+		String absPath = classPathSourceCopyRelPath+"/"+relPath;
+		URL url = TestSupport.class.getClassLoader().getResource(absPath);
 		if (url==null)
-			throw new FileNotFoundException(clazzSourceFile.toString());
+			throw new FileNotFoundException(absPath);
+		return url;
+	}
+
+	public static URL getJavaSourceResourcePath(String className) throws FileNotFoundException
+	{
+		String absPath = classPathSourceCopyRelPath+"/"+className.replace(".", "/").concat(".java");
+		URL url = GeneratedOutputCanCompileTest.class.getClassLoader().getResource(absPath);
+		if (url==null)
+			throw new FileNotFoundException(absPath);
 		return url;
 	}
 
@@ -100,7 +121,7 @@ public final class TestSupport
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor())
+		 .processedWith(new AnnotationProcessor(relSourcePath))
 		 .failsToCompile()
 		 .withErrorContaining(errorMsg).in(javaObject);
 	}
@@ -111,7 +132,7 @@ public final class TestSupport
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor())
+		 .processedWith(new AnnotationProcessor(relSourcePath))
 		 .compilesWithoutError();
 	}
 
@@ -119,7 +140,7 @@ public final class TestSupport
 	{
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(forResource)
-		 .processedWith(new AnnotationProcessor())
+		 .processedWith(new AnnotationProcessor(relSourcePath))
 		 .compilesWithoutError();
 	}
 }

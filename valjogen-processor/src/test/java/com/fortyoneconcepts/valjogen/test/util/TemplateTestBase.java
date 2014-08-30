@@ -1,11 +1,14 @@
 package com.fortyoneconcepts.valjogen.test.util;
 
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
@@ -78,17 +81,28 @@ public abstract class TemplateTestBase
 	protected String produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception {
 		Configuration configuration = new Configuration(generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
-		Clazz clazz = clazzFactory.createClazz(types, elements, elements.getTypeElement(sourceClass.getCanonicalName()), configuration, (megElement, kind, message) ->
+		TypeElement interfaceElement = elements.getTypeElement(sourceClass.getCanonicalName());
+		PackageElement pacakgeElementElement = (PackageElement)interfaceElement.getEnclosingElement();
+		Clazz clazz = clazzFactory.createClazz(types, elements, interfaceElement, configuration, (megElement, kind, message) ->
 		  {
 			if (kind==Kind.ERROR)
 			  Assert.fail(message);
 			else if (kind==Kind.WARNING || kind==Kind.MANDATORY_WARNING)
 			  System.out.println("WARNING: "+message);
 			else System.out.println("NOTE: "+message);
+		  },
+		  (fileName) -> {
+			  // TODO: Refactor so same impl. is used as in annotation processor:
+			  String basePathString = pacakgeElementElement.isUnnamed() ? "" : pacakgeElementElement.toString().replace('.', '/');
+			  if (!basePathString.equals(""))
+				  basePathString=basePathString+"//";
+
+			  URL url = TestSupport.getTestSourceFileResourcePath(basePathString+fileName);
+			  return TestSupport.getFileContent(url);
 		  }
 		);
 
-		if (configuration.isDebugInfoEnabled())
+		if (configuration.isVerboseInfoEnabled())
 			System.out.println("VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
 
 		STCodeWriter codeWriter = new STCodeWriter();
@@ -98,7 +112,7 @@ public abstract class TemplateTestBase
 		Assert.assertNotNull("template output should not be null", output);
 
 		// Since we are generating output without the annotation processor, let's do our own debug output if enabled.
-  	    if (configuration.isDebugInfoEnabled())
+  	    if (configuration.isVerboseInfoEnabled())
 		  System.out.println("VALJOGen STCodeWriter GENERATED CONTENT: "+System.lineSeparator()+output);
 
 	    output=output.replace('\r', ' ').replace('\n', ' ');

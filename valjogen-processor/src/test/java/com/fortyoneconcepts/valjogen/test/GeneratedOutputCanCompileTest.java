@@ -53,6 +53,6 @@ public class GeneratedOutputCanCompileTest
 	@Test // // Nb. Must be executed from test class - can not be run individually.
 	public void testInterface() throws FileNotFoundException,MalformedURLException, URISyntaxException
 	{
-		assertCompileSuccess(JavaFileObjects.forResource(getResourcePath(className)));
+		assertCompileSuccess(JavaFileObjects.forResource(getJavaSourceResourcePath(className)));
 	}
 }

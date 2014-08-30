@@ -24,6 +24,7 @@ public final class Clazz extends ObjectType implements Model
 
 	private final String packageName;
 	private final String javaDoc;
+	private final String fileHeaderText;
 
 	private List<Type> importTypes;
 	private List<Member> members;
@@ -39,8 +40,9 @@ public final class Clazz extends ObjectType implements Model
 	 * @param configuration The configuration of how generated code should look.
 	 * @param qualifiedClassName The full name of the class that should be generated.
 	 * @param javaDoc JavaDoc if any.
+	 * @param fileHeaderText Text to output as header for file(s).
 	 */
-	public Clazz(Configuration configuration, String qualifiedClassName, String javaDoc)
+	public Clazz(Configuration configuration, String qualifiedClassName, String javaDoc, String fileHeaderText)
 	{
 		super(qualifiedClassName);
 		super.clazzUsingType=this;
@@ -50,6 +52,7 @@ public final class Clazz extends ObjectType implements Model
 		this.interfaceTypes = new ArrayList<Type>();
 		this.baseClazzType = new NoType(this);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
+		this.fileHeaderText = Objects.requireNonNull(fileHeaderText);
 
 		this.packageName = getPackageFromQualifiedName(qualifiedClassName);
 
@@ -84,6 +87,11 @@ public final class Clazz extends ObjectType implements Model
 		return helperTypes;
 	}
 
+	public String getFileHeaderText()
+	{
+		return fileHeaderText;
+	}
+
 	@Override
 	public boolean initialized()
 	{
@@ -91,7 +99,7 @@ public final class Clazz extends ObjectType implements Model
 	}
 
 	@Override
-	public boolean isSelfType()
+	public boolean isThisType()
 	{
 		return true;
 	}
@@ -232,6 +240,7 @@ public final class Clazz extends ObjectType implements Model
 					 + System.lineSeparator() + ", interface interfaceTypes=["
 					 + interfaceTypes.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+ System.lineSeparator()+ ", interfaceTypesWithAscendants=["
 					 + interfaceTypesWithAscendants.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator())) +"]"+ System.lineSeparator()
+ 					 + ", importedTypes="+ToStringUtil.toString(importTypes,level+1)+System.lineSeparator()
 					 + ", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, level+1)+System.lineSeparator()
 					 + ", members="+ToStringUtil.toString(members, level+1)+System.lineSeparator()
 					 + ", properties=" + ToStringUtil.toString(properties,level+1)+System.lineSeparator()

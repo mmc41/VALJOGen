@@ -14,6 +14,7 @@ public interface ProcessorMessages
 
   public static final String StringTemplateExceptionFailure = "Fatal error - processing of %s failed due to template error %s";
   public static final String ExceptionFailure = "Fatal error - processing of %s failed due to internal exception %s";
+  public static final String ConfigurationFailure = "Fatal error - configuration error %s";
 
   public static final String ParameterNamesUnavailable="Could not retrive correct parameter names to use for %s (-parameters option missing from javac?)";
 

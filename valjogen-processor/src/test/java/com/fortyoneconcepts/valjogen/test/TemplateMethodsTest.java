@@ -2,6 +2,7 @@ package com.fortyoneconcepts.valjogen.test;
 
 import org.junit.Test;
 
+import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
@@ -19,7 +20,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 	@Test
 	public void testGuardedConstructor() throws Exception
 	{
-		configurationOptions.put(ConfigurationOptionKeys.ensureNotNullEnabled, "true");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "true");
 		String output = produceOutput(MutableInterface.class);
 
 		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=Objects.requireNonNull(objectValue); }", output);
@@ -28,7 +29,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 	@Test
 	public void testNotGuardedConstructor() throws Exception
 	{
-		configurationOptions.put(ConfigurationOptionKeys.ensureNotNullEnabled, "false");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
 		String output = produceOutput(MutableInterface.class);
 
 		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=objectValue; }", output);

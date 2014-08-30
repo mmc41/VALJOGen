@@ -2,8 +2,6 @@ package com.fortyoneconcepts.valjogen.model;
 
 import java.util.Objects;
 
-import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
-
 /**
  * Represents a java array data type.
  *

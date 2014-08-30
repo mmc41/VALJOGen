@@ -72,12 +72,13 @@ public final class ClazzFactory
 	* @param masterInterfaceElement The interface that has been selected for code generation (by an annotation).
 	* @param configuration Descripes the user-selected details about what should be generated (combination of annotation(s) and annotation processor setup).
 	* @param errorConsumer Where to report errors and warning
+	* @param resourceProducer What to call to get resource files
 	*
 	* @return A initialized Clazz which is a model for what our generated code should look like.
 	*
 	* @throws Exception if a fatal error has occured.
 	*/
-	public Clazz createClazz(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer) throws Exception
+	public Clazz createClazz(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, ResourceProducer resourceProducer) throws Exception
 	{
 		// Step 1 - Create clazz:
 		DeclaredType masterInterfaceDecl = (DeclaredType)masterInterfaceElement.asType();
@@ -94,7 +95,14 @@ public final class ClazzFactory
 		if (classJavaDoc==null)
 			classJavaDoc="";
 
-		Clazz clazz = new Clazz(configuration, className, classJavaDoc);
+		String headerFileName = configuration.getHeaderFileName();
+		String headerText = "";
+		if (headerFileName!=null)
+		{
+			headerText=resourceProducer.getResourceAsText(headerFileName);
+		}
+
+		Clazz clazz = new Clazz(configuration, className, classJavaDoc, headerText);
 
 		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(elements, types, masterInterfaceElement, configuration, errorConsumer, classPackage);
 		if (baseClazzDeclaredMirrorType==null)
@@ -237,7 +245,7 @@ public final class ClazzFactory
 		String typeName = mirrorType.toString();
 
 		// If using self-stand-in, replace with name of generated class and if identical with generate class return clazz itself as type
-		typeName=typeName.replace(SelfReference.class.getName(), clazz.getPrototypicalQualifiedName());
+		typeName=typeName.replace(ThisReference.class.getName(), clazz.getPrototypicalQualifiedName());
 		if (typeName.equals(clazz.getPrototypicalQualifiedName()))
 			return clazz;
 

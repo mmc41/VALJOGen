@@ -48,7 +48,7 @@ public class TemplateClassTest extends TemplateTestBase
 	@Test
 	public void testPrivateClassCanBeSet() throws Exception
 	{
-		configurationOptions.put(ConfigurationOptionKeys.clazzScope, "private");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.clazzScope, "private");
 		String output = produceOutput(ImmutableInterface.class);
 		assertContainsWithWildcards("private * class "+generatedClassName, output);
 	}
@@ -90,9 +90,9 @@ public class TemplateClassTest extends TemplateTestBase
 
 
 	@Test
-	public void testExtraGenericSelfInterface() throws Exception
+	public void testExtraGenericThisInterface() throws Exception
 	{
-		String output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$Self>"}).build());
+		String output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"}).build());
 		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<"+generatedClassName+">", output);
 	}
 
@@ -118,5 +118,12 @@ public class TemplateClassTest extends TemplateTestBase
 		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, ConfigurationDefaults.SerialVersionUID_NotSet).build());
 		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable", output);
 		assertNotContains("serialVersionUID", output);
+	}
+
+	@Test
+	public void testFileHeader() throws Exception
+	{
+		String output = produceOutput(AnnotatedInterfaceWithHeader.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.headerFileName, "Header.txt").build());
+		assertContainsWithWildcards("sample header file", output);
 	}
 }

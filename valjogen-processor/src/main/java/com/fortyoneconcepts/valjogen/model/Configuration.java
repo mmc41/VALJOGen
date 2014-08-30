@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
-import com.fortyoneconcepts.valjogen.model.util.SelfReference;
+import com.fortyoneconcepts.valjogen.model.util.ThisReference;
 
 /**
  * Contains methods that return the effective configuration taking processor options and annotated elements into account.
@@ -24,13 +24,11 @@ public final class Configuration implements ConfigurationOptionKeys
 	 private final VALJOConfigure configureAnnotation;
 	 private final Locale optDefaultLocale;
 	 private final Map<String,String> options;
+	 private final Date processorExecutionDate;
 
 	 public Configuration(VALJOGenerate annotation, Locale optDefaultLocale, Map<String,String> options)
 	 {
-		 this.generateAnnotation=Objects.requireNonNull(annotation);
-		 this.configureAnnotation=new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build();
-		 this.optDefaultLocale=optDefaultLocale;
-		 this.options=Objects.requireNonNull(options);
+		 this(annotation, new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build(), optDefaultLocale, options);
 	 }
 
 	 public Configuration(VALJOGenerate annotation, VALJOConfigure configureAnnotation, Locale optDefaultLocale, Map<String,String> options)
@@ -39,6 +37,12 @@ public final class Configuration implements ConfigurationOptionKeys
 		 this.configureAnnotation=Objects.requireNonNull(configureAnnotation);
 		 this.optDefaultLocale=optDefaultLocale;
 		 this.options=Objects.requireNonNull(options);
+		 this.processorExecutionDate=new Date();
+	 }
+
+	 public Date getExecutionDate()
+	 {
+		 return processorExecutionDate;
 	 }
 
 	 public String getLocaleTag()
@@ -186,9 +190,24 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(javadDocEnabled, configureAnnotation.javadDocEnabled());
 	 }
 
+	 public String getHeaderFileName()
+	 {
+		 return getValue(headerFileName, configureAnnotation.headerFileName());
+	 }
+
+	 public boolean isVerboseInfoEnabled()
+	 {
+		 return getValue(verboseInfo, configureAnnotation.verboseInfo());
+	 }
+
 	 public boolean isDebugInfoEnabled()
 	 {
 		 return getValue(debugInfo, configureAnnotation.debugInfo());
+	 }
+
+	 public boolean isDebugShowingSTVizGuiExplorerEnabled()
+	 {
+		 return getValue(debugShowingSTVizGuiExplorer, configureAnnotation.debugShowingSTVizGuiExplorer());
 	 }
 
 	 public String[] getImplementedMethodNames()
@@ -203,7 +222,7 @@ public final class Configuration implements ConfigurationOptionKeys
 		if (rawValue==null || rawValue.equals(ConfigurationDefaults.NotApplicable))
 			return null;
 
-		return rawValue.replace(ConfigurationDefaults.GeneratedClassNameReference, SelfReference.class.getName());
+		return rawValue.replace(ConfigurationDefaults.GeneratedClassNameReference, ThisReference.class.getName());
 	 }
 
 	 private String[] preformMagicReplacements(String[] rawValues)
@@ -225,7 +244,7 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 private String getValue(String optionKey, String rawDefaultValue)
 	 {
-		 String value = preformMagicReplacements(options.get(optionKey));
+		 String value = preformMagicReplacements(options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey));
 
 		 if (value==null || value.length() == 0 || value.trim().length() == 0)
 			 value=preformMagicReplacements(rawDefaultValue);
@@ -238,7 +257,7 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 private String[] getValue(String optionKey, String[] defaultValue)
 	 {
-		 String value = preformMagicReplacements(options.get(optionKey));
+		 String value = preformMagicReplacements(options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey));
 		 if (value==null)
 			 return preformMagicReplacements(defaultValue);
 
@@ -251,7 +270,7 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 private boolean getValue(String optionKey, boolean defaultValue)
 	 {
-		 String value = options.get(optionKey);
+		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
 		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
 		   return defaultValue;
 		 if (value.equalsIgnoreCase("false"))
@@ -264,7 +283,7 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 private int getValue(String optionKey, int defaultValue)
 	 {
-		 String value = options.get(optionKey);
+		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
 		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
 		   return defaultValue;
 
@@ -278,7 +297,7 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 private long getValue(String optionKey, long defaultValue)
 	 {
-		 String value = options.get(optionKey);
+		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
 		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
 		   return defaultValue;
 

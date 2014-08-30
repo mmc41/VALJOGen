@@ -55,7 +55,7 @@ final <param.type.name> <param.name>
 >>
 
 other_instance_get_member_value(other, member) ::= <%
-<if(other.type.selfType)>
+<if(other.type.thisType)>
  <other.name>.<member.name>
 <else>
  <if(member.getter)>

@@ -7,7 +7,7 @@ package com.fortyoneconcepts.valjogen.model.util;
  *
  * @author mmc
  */
-public class SelfReference
+public class ThisReference
 {
 
 }
