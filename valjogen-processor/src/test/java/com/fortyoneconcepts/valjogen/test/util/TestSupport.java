@@ -1,3 +1,6 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.test.util;
 
 import java.io.FileNotFoundException;
@@ -31,7 +34,6 @@ public final class TestSupport
 {
 	// TODO: Move these two into build tool cfg:
 
-	private static String relSourcePath = "../../src/test/java";
 	private static String classPathSourceCopyRelPath ="source"; // Source files copied to this dir in test output.
 
 	public static Path getProjectRootPath() throws URISyntaxException
@@ -121,7 +123,7 @@ public final class TestSupport
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor(relSourcePath))
+		 .processedWith(new AnnotationProcessor(TestClassConstants.relSourcePath))
 		 .failsToCompile()
 		 .withErrorContaining(errorMsg).in(javaObject);
 	}
@@ -132,7 +134,7 @@ public final class TestSupport
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor(relSourcePath))
+		 .processedWith(new AnnotationProcessor(TestClassConstants.relSourcePath))
 		 .compilesWithoutError();
 	}
 
@@ -140,7 +142,7 @@ public final class TestSupport
 	{
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(forResource)
-		 .processedWith(new AnnotationProcessor(relSourcePath))
+		 .processedWith(new AnnotationProcessor(TestClassConstants.relSourcePath))
 		 .compilesWithoutError();
 	}
 }

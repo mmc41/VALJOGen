@@ -72,13 +72,13 @@ public final class ClazzFactory
 	* @param masterInterfaceElement The interface that has been selected for code generation (by an annotation).
 	* @param configuration Descripes the user-selected details about what should be generated (combination of annotation(s) and annotation processor setup).
 	* @param errorConsumer Where to report errors and warning
-	* @param resourceProducer What to call to get resource files
+	* @param resourceLoader What to call to get resource files
 	*
 	* @return A initialized Clazz which is a model for what our generated code should look like.
 	*
 	* @throws Exception if a fatal error has occured.
 	*/
-	public Clazz createClazz(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, ResourceProducer resourceProducer) throws Exception
+	public Clazz createClazz(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, ResourceLoader resourceLoader) throws Exception
 	{
 		// Step 1 - Create clazz:
 		DeclaredType masterInterfaceDecl = (DeclaredType)masterInterfaceElement.asType();
@@ -99,10 +99,10 @@ public final class ClazzFactory
 		String headerText = "";
 		if (headerFileName!=null)
 		{
-			headerText=resourceProducer.getResourceAsText(headerFileName);
+			headerText=resourceLoader.getResourceAsText(headerFileName);
 		}
 
-		Clazz clazz = new Clazz(configuration, className, classJavaDoc, headerText);
+		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText);
 
 		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(elements, types, masterInterfaceElement, configuration, errorConsumer, classPackage);
 		if (baseClazzDeclaredMirrorType==null)

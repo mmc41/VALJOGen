@@ -144,19 +144,19 @@ public interface ConfigurationOptionKeys
      public static String headerFileName = "headerFileName";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#verboseInfo
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#customTemplateFileName
 	 */
-     public static String verboseInfo = "verboseInfo";
+     public static String customTemplateFileName = "customTemplateFileName";
+
+     /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#logLevel
+	 */
+     public static String logLevel = "logLevel";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#debugInfo
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#debugStringTemplates
 	 */
-	 public static String debugInfo = "debugInfo";
-
-	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#debugShowingSTVizGuiExplorer
-	 */
-	 public static String debugShowingSTVizGuiExplorer = "debugShowingSTVizGuiExplorer";
+	 public static String debugStringTemplates = "debugStringTemplates";
 
 	 /**
 	 * Java source path to where source code is stored. Required option for some other options to work. Differently from all other options, this is an annotation

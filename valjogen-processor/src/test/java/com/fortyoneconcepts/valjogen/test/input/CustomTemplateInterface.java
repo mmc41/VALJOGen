@@ -6,7 +6,8 @@ package com.fortyoneconcepts.valjogen.test.input;
 import com.fortyoneconcepts.valjogen.annotations.*;
 
 @VALJOGenerate
-public interface SimpleAnnotatedInterface
+@VALJOConfigure(customTemplateFileName="custom_template.stg")
+public interface CustomTemplateInterface
 {
-	public Object getObjectValue();
+	public Object getObject();
 }

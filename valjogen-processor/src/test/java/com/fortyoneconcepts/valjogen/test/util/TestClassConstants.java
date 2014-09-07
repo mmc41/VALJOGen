@@ -14,4 +14,6 @@ public interface TestClassConstants
 
 	public static String ImmutableClass = PackageName+".ImmutableClass";
 	public static String GenericClass = PackageName+".GenericClass";
+
+	public static String relSourcePath = "../../src/test/java";
 }

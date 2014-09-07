@@ -1,7 +1,13 @@
-hashCode(clazz) ::= <<
-@Override
+/**
+* Copyright (C) 2014 41concepts Aps
+*
+* This is a helper template group file that is responsible for generating the hashCode method.
+**/
+method_hashCode(clazz) ::= <<
+<@annotations>@Override<@end>
 public <optSynchronized(clazz)>int hashCode()
 {
+  <@preamble><@end>
   <if(clazz.primitiveMembers || clazz.arrayMembers)>
   final int <uniqueVariableName(clazz,"prime")> = 31;
   int <uniqueVariableName(clazz,"result")> = 1;

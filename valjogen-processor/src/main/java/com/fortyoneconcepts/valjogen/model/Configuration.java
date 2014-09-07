@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
@@ -195,19 +196,22 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(headerFileName, configureAnnotation.headerFileName());
 	 }
 
-	 public boolean isVerboseInfoEnabled()
+	 public String getCustomTemplateFileName()
 	 {
-		 return getValue(verboseInfo, configureAnnotation.verboseInfo());
+		 return getValue(customTemplateFileName, configureAnnotation.customTemplateFileName());
 	 }
 
-	 public boolean isDebugInfoEnabled()
+	 public Level getLogLevel()
 	 {
-		 return getValue(debugInfo, configureAnnotation.debugInfo());
+		 String level = getValue(logLevel, configureAnnotation.logLevel());
+		 if (level!=null)
+			 return Level.parse(level);
+		 return Level.ALL;
 	 }
 
-	 public boolean isDebugShowingSTVizGuiExplorerEnabled()
+	 public boolean isDebugStringTemplatesEnabled()
 	 {
-		 return getValue(debugShowingSTVizGuiExplorer, configureAnnotation.debugShowingSTVizGuiExplorer());
+		 return getValue(debugStringTemplates, configureAnnotation.debugStringTemplates());
 	 }
 
 	 public String[] getImplementedMethodNames()

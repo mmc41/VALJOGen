@@ -222,7 +222,6 @@ public @interface VALJOConfigure
 	*/
     String baseClazzName() default "java.lang.Object";
 
-
     /**
 	* UTF-8 formatted file that contains a header that should be added at the top of the generated output.
 	*
@@ -231,26 +230,28 @@ public @interface VALJOConfigure
     String headerFileName() default "N/A";
 
     /**
-	* Specifies the annotation processor should verbose processing information like the names of the files it generates. May be overruled by equivalent annotation processor key.
+	* UTF-8 formatted string template file that should be used.
 	*
-	* @return True if annotation processor should output verbose processingt information.
+	* @return Filename of string template file.
 	*/
-    boolean verboseInfo() default true;
+    String customTemplateFileName() default "N/A";
 
     /**
-	* Specifies the annotation processor should output debug information like the what the internal model looks like that build up as basis for templates that generate code.
-	* You should not need to enable this unless you are adding/modifying code templates. May be overruled by equivalent annotation processor key.
+	* Specifies the {@link java.util.logging.Level} log level to use inside the annotation processor. Set this to INFO or FINE to inspect model instances,
+	* inspect output or to help track errors inside the processor
 	*
-	* @return True if annotation processor should output debug information.
+	* Note that normally java.util.logging.ConsoleHandler.level needs to be set as well for log levels below INFO to be shown.
+	*
+	* @return Log level
 	*/
-    boolean debugInfo() default true;
+    String logLevel() default "WARNING";
 
     /**
 	* Experimental feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are
-	* adding/modifying code templates and run into problems. Beware thar code generation will pause while the generator is shown - you properly do not want to do that when using an IDE.
+	* adding/modifying code templates and run into problems. Be aware that code generation will pause while the generator is shown - you properly do not want to do that when using an IDE.
 	* May be overruled by equivalent annotation processor key.
 	*
 	* @return True if annotation processor should open StringTemplagte's STViz Gui explorer during code generation phase.
 	*/
-    boolean debugShowingSTVizGuiExplorer() default false;
+    boolean debugStringTemplates() default false;
 }

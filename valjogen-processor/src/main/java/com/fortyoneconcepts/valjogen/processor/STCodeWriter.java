@@ -3,8 +3,12 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.Date;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.gui.STViz;
@@ -20,6 +24,8 @@ import com.fortyoneconcepts.valjogen.model.*;
  */
 public final class STCodeWriter
 {
+	private final static Logger LOGGER = Logger.getLogger(STCodeWriter.class.getName());
+
 	private static final String mainTemplateFile = "templates/main.stg";
 	private static final String mainTemplate = "class";
 	private static final String mainTemplateArg = "clazz";
@@ -27,16 +33,37 @@ public final class STCodeWriter
 	private static final char delimiterStartChar = '<';
 	private static final char delimiterStopChar = '>';
 
-	public STCodeWriter() {}
+	private final ResourceLoader resourceLoader;
+
+	public STCodeWriter(ResourceLoader resourceLoader)
+	{
+		this.resourceLoader=resourceLoader;
+	}
 
 	public String outputClass(Clazz clazz, Configuration cfg) throws Exception
 	{
 		String result = null;
 
-		STGroup group = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
+		STGroup.verbose = LOGGER.isLoggable(Level.FINE);
+		STGroup.trackCreationEvents = cfg.isDebugStringTemplatesEnabled();
 
-		STGroup.verbose = cfg.isDebugInfoEnabled() && cfg.isVerboseInfoEnabled();
-		STGroup.trackCreationEvents = cfg.isDebugShowingSTVizGuiExplorerEnabled();
+		STGroup defaultGroup = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
+
+		String customTemplateFileName = cfg.getCustomTemplateFileName();
+
+		STGroup group;
+		if (customTemplateFileName!=null)
+		{
+			URI uri = resourceLoader.getFileResourceAsURL(customTemplateFileName);
+			URL url = uri.toURL();
+
+			group = new STGroupFile(url, "UTF8", delimiterStartChar, delimiterStopChar);
+			group.importTemplates(defaultGroup);
+
+			LOGGER.info(() -> "Added custom sub-template: "+customTemplateFileName+" from "+url.toString());
+		} else {
+			group = defaultGroup;
+		}
 
 		group.registerModelAdaptor(Model.class, new STCustomModelAdaptor());
 
@@ -50,8 +77,9 @@ public final class STCodeWriter
 
 		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
 
-		if (cfg.isDebugShowingSTVizGuiExplorerEnabled()) {
-			System.out.println("Showing STViz - Pausing code generation until STViz is closed...");
+		if (cfg.isDebugStringTemplatesEnabled())
+		{
+			LOGGER.warning(() -> "Showing STViz - Pausing code generation until STViz is closed...");
 
 			STViz viz = st.inspect();
 			viz.waitForClose();
@@ -63,7 +91,6 @@ public final class STCodeWriter
 	private final class ErrorListener implements STErrorListener  {
 		private String reportSTMsg(STMessage msg) {
 			return msg.toString();
-			//return String.format(msg.error.message, msg.arg, msg.arg2, msg.arg3);
 		}
 
 		@Override

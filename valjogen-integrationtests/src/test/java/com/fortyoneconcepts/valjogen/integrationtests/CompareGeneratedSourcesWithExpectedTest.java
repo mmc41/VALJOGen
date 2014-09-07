@@ -57,7 +57,7 @@ public class CompareGeneratedSourcesWithExpectedTest
 	@Test() // Nb. Must be executed from test class - can not be run individually.
 	public void compareSourcesTest() throws Exception
 	{
-		rule.setErrorMsgHeader("NOTE: This test stricly checks for regressions. Failure may happen if output has changed on purpose. If generated output is indeed correct please update expected file(s) stored at '"+expectedSourcePath.getParent().toString()+"' with result from generated file(s) at "+actualOutputPath+" to make this test pass."+System.lineSeparator());
+		rule.setErrorMsgHeader("NOTE: This test stricly checks for regressions. Failure may happen if output has changed on purpose. If generated output is indeed correct please update expected file(s) stored at '"+expectedSourcePath.toString()+"' with result from generated file(s) at "+actualOutputPath+" to make this test pass."+System.lineSeparator());
 
 		// Check if filenames are identical:
 		String expectedFileName = getFileName(expectedJavaFilePath);

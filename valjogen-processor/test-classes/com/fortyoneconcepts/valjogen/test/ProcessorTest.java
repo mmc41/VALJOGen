@@ -28,12 +28,6 @@ public class ProcessorTest
 		return url;
 	}
 
-	@Test
-	public void exTest()
-	{
-		System.err.println("ex called");
-	}
-
 
 	@Test
 	public void test()
@@ -51,8 +45,6 @@ public class ProcessorTest
 		 .that(JavaFileObjects.forResource(getResourcePath(InterfaceAllTypesWithDefaultsAndReservedWords.class)))
 		 .processedWith(new AnnotationProcessor())
 		 .compilesWithoutError();
-
-		 System.out.println("SUCESS TESTJAVA");
 	}
 
 	/*

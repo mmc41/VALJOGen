@@ -6,9 +6,9 @@ package com.fortyoneconcepts.valjogen.testsources;
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
 
-@VALJOGenerate(name=TestClassConstants.SimpleClass)
-public interface SimpleInterface
+@VALJOGenerate(name=TestClassConstants.CustomTemplateClass)
+@VALJOConfigure(customTemplateFileName="custom_template.stg")
+public interface CustomTemplateInterface
 {
 	public Object getObject();
-	public String getString();
 }

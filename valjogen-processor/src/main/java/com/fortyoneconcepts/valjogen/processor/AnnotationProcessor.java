@@ -3,19 +3,12 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.*;
@@ -38,12 +31,15 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  */
 public class AnnotationProcessor extends AbstractProcessor
 {
+	private final static Logger LOGGER = Logger.getLogger(AnnotationProcessor.class.getName());
+
 	private final Class<VALJOGenerate> annotationGenerateClass = VALJOGenerate.class;
 	private final Class<VALJOConfigure> annotationConfigurationClass = VALJOConfigure.class;
 
 	private String processingEnvClassName;
 	private String optCtrDefaultSourcePath;
-	private Path[] configuredSourcePaths;
+
+	private final Logger parentLogger;
 
 	/**
 	 * Constructor called automatically by javac compiler.
@@ -57,7 +53,12 @@ public class AnnotationProcessor extends AbstractProcessor
 	{
 		super();
 		this.optCtrDefaultSourcePath=defaultSourcePath;
-		this.configuredSourcePaths = new Path[0];
+
+		parentLogger = Logger.getLogger(ConfigurationDefaults.TOP_PACKAGE_NAME);
+
+		// Set a tempoary default log level until configuration has been read.
+		parentLogger.setLevel(Level.INFO);
+
 	}
 
 	@Override
@@ -94,15 +95,7 @@ public class AnnotationProcessor extends AbstractProcessor
 	public boolean process(Set<? extends TypeElement> annotationElements, RoundEnvironment roundEnv)
 	{
 		Messager messager = processingEnv.getMessager();
-
-		try {
-			configure(processingEnv.getOptions());
-		}
-		catch(Exception e)
-		{
-			messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.ConfigurationFailure, e.toString()));
-			return false;
-		}
+		Locale optLocale = processingEnv.getLocale();
 
 		for (TypeElement te: annotationElements)
 		{
@@ -112,15 +105,33 @@ public class AnnotationProcessor extends AbstractProcessor
 					VALJOGenerate annotationGenerate = e.getAnnotation(VALJOGenerate.class);
 					VALJOConfigure optConfigureConfiguration = getClosestConfiguration(e);
 
-				    generate(annotationGenerate, optConfigureConfiguration, (TypeElement)e);
+					Map<String,String> options = processingEnv.getOptions();
+					if (options==null)
+						options=Collections.emptyMap();
+
+					Configuration configuration = optConfigureConfiguration!=null
+							                      ? new Configuration(annotationGenerate, optConfigureConfiguration, optLocale, options)
+					                              :  new Configuration(annotationGenerate, optLocale, options);
+
+			        // Know that we know what proper log level to set, do set it correctly.
+				    parentLogger.setLevel(configuration.getLogLevel());
+
+					String path = processingEnv.getOptions().getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.SOURCEPATH, optCtrDefaultSourcePath);
+					LOGGER.fine(() -> "GOT SOURCEPATH: "+path);
+
+					PackageElement packageElement = (PackageElement)(e.getEnclosingElement());
+					String sourcePackageElementPath = packageElement.toString().replace('.', '/');
+					ResourceLoader resourceLoader = new ResourceLoader(path, sourcePackageElementPath);
+
+				    generate((TypeElement)e, configuration, resourceLoader);
 				  }
 				  catch(STException ex)
 				  {
-					messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.StringTemplateExceptionFailure, e.toString(), ex.toString()), e);
+					 messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.StringTemplateExceptionFailure, e.toString(), ex.toString()), e);
 				  }
 				  catch(Exception ex)
 				  {
-					messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.ExceptionFailure, e.toString(), trace(ex)), e);
+					 messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.ExceptionFailure, e.toString(), LOGGER.isLoggable(Level.INFO) ? trace(ex) : ex), e);
 				  }
 			  } else { // A class:
 				  messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.AnnotationOnInterfacesOnly, annotationGenerateClass.getSimpleName()), e);
@@ -131,118 +142,34 @@ public class AnnotationProcessor extends AbstractProcessor
 		return true;
 	}
 
-	private void configure(Map<String,String> options) throws Exception
+	private void generate(TypeElement element, Configuration configuration, ResourceLoader resourceLoader) throws Exception
 	{
-		String sourcePathOption=options.getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.SOURCEPATH, optCtrDefaultSourcePath);
-
-		if (sourcePathOption!=null && sourcePathOption.length()>0) {
-		  String[] sourcePathStrings = sourcePathOption.split("\\"+System.getProperty("path.separator"));
-		  FileSystem fileSystem = FileSystems.getDefault();
-
-		  configuredSourcePaths = new Path[sourcePathStrings.length];
-		  for (int i=0; i<sourcePathStrings.length; ++i)
-		  {
-			 String sourcePathString = sourcePathStrings[i].trim();
-			 Path sourcePath = fileSystem.getPath(sourcePathString);
-
-			 if (!sourcePath.isAbsolute())
-			 {
-				 try {
-					 URL url = this.getClass().getClassLoader().getResource(".");
-					 URI uri = url.toURI();
-					 Path classPath = Paths.get(uri);
-					 sourcePath=classPath.resolve(sourcePath);
-				 }
-				 catch (Exception e)
-				 {
-					 throw new ConfigurationException("Could not locate processor path used to resolve relative source path (consider using absolute source path)", e);
-				 }
-			 }
-
-			 sourcePath=sourcePath.normalize().toAbsolutePath();
-
-			 if (!Files.exists(sourcePath))
-				 throw new ConfigurationException("Configured source path directory \""+sourcePathString+"\" does not exist");
-
-			 if (!Files.isDirectory(sourcePath))
-				 throw new ConfigurationException("Configured source path \""+sourcePathString+"\" is not a directory");
-
-			 configuredSourcePaths[i]=sourcePath;
-		  }
-		}
-	}
-
-	private String readFileResource(Path path) throws IOException
-	{
-		return new String(Files.readAllBytes(path));
-	}
-
-	private String readFileResource(PackageElement defaultRelPackage, String fileName) throws Exception
-	{
-		if (configuredSourcePaths.length==0)
-			throw new Exception(ConfigurationOptionKeys.SOURCEPATH+" not configured (forgot to specify in annotation processor options?).");
-
-		String defaultRelPackagePath = defaultRelPackage.toString().replace('.', '/');
-
-		// Unfortunately, the Filer api does not allow us to read sources so we do our own lookup using our own source path:
-		for (Path sourcePath: configuredSourcePaths)
-		{
-			Path targetPath = sourcePath.resolve(defaultRelPackagePath).resolve(fileName);
-			if (Files.exists(targetPath) && Files.isRegularFile(targetPath) && Files.isReadable(targetPath))
-				return readFileResource(targetPath);
-
-			targetPath = sourcePath.resolve(fileName);
-			if (Files.exists(targetPath) && Files.isRegularFile(targetPath) && Files.isReadable(targetPath))
-				return readFileResource(targetPath);
-		}
-
-		throw new FileNotFoundException("Could not find fileName in any specified source path(s)");
-	}
-
-	private void generate(VALJOGenerate annotation, VALJOConfigure optConfigureConfiguration, TypeElement element) throws Exception
-	{
-		Locale optLocale = processingEnv.getLocale();
-
-		Map<String,String> options = processingEnv.getOptions();
-		if (options==null)
-			options=Collections.emptyMap();
-
-		Configuration configuration = optConfigureConfiguration!=null
-				                      ? new Configuration(annotation, optConfigureConfiguration, optLocale, options)
-		                              :  new Configuration(annotation, optLocale, options);
-
-
-		if (configuration.isDebugInfoEnabled())
-			System.out.println("Using Annotation processing environment : "+processingEnvClassName);
+		LOGGER.fine(() -> "Using Annotation processing environment : "+processingEnvClassName);
 
 		Messager messager = processingEnv.getMessager();
 		Filer filer = processingEnv.getFiler();
 		Types types = processingEnv.getTypeUtils();
 		Elements elements = processingEnv.getElementUtils();
 
-		if (configuredSourcePaths.length==0)
+		if (!resourceLoader.hasSourcePaths())
 			messager.printMessage(Kind.WARNING, "VALJOGen annotion processor option "+ConfigurationOptionKeys.SOURCEPATH+" not specified. Code generation may fail in some cases.");
-		else if (configuration.isDebugInfoEnabled()) {
-			String resolvedSourcePath = Arrays.stream(configuredSourcePaths).map(p -> "\""+p.toString()+"\"").collect(Collectors.joining(", "));
-			System.out.println("Resolved sourcePath : "+resolvedSourcePath);
+		else {
+			LOGGER.fine(() -> "Using resourceloader: "+resourceLoader);
 		}
 
 		ClazzFactory clazzFactory = ClazzFactory.getInstance();
 
-		PackageElement packageElement = (PackageElement)element.getEnclosingElement();
-
-		Clazz clazz = clazzFactory.createClazz(types, elements, element, configuration, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement), (fileName) -> readFileResource(packageElement, fileName));
+		Clazz clazz = clazzFactory.createClazz(types, elements, element, configuration, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement), resourceLoader);
 		if (clazz==null)
 			return;
 
-		if (configuration.isDebugInfoEnabled())
-			System.out.println("VALJOGen ANNOTATION PROCESSOR GENERATED CLAZZ MODEL INSTANCE "+System.lineSeparator()+clazz.toString());
+		LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR GENERATED CLAZZ MODEL INSTANCE "+System.lineSeparator()+clazz.toString());
 
 		String fileName=stripGenericQualifier(clazz.getName());
 
 		JavaFileObject target = filer.createSourceFile(fileName, element);
 
-		STCodeWriter writer = new STCodeWriter();
+		STCodeWriter writer = new STCodeWriter(resourceLoader);
 
 		try (PrintWriter targetWriter = new PrintWriter(target.openWriter()))
 		{
@@ -250,8 +177,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			if (output!=null)
 			{
 			  targetWriter.write(output);
-			  if (configuration.isVerboseInfoEnabled())
-				System.out.println("VALJOGen ANNOTATION PROCESSOR GENERATED TARGET FILE "+fileName+" WITH CONTENT: "+System.lineSeparator()+output);
+  			  LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR GENERATED TARGET FILE "+fileName+" WITH CONTENT: "+System.lineSeparator()+output);
 			}
 		}
 	}

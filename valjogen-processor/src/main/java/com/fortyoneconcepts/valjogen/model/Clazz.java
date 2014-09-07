@@ -6,6 +6,7 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
@@ -23,6 +24,7 @@ public final class Clazz extends ObjectType implements Model
 	private final Configuration configuration;
 
 	private final String packageName;
+	private final String qualifiedMaster;
 	private final String javaDoc;
 	private final String fileHeaderText;
 
@@ -39,16 +41,18 @@ public final class Clazz extends ObjectType implements Model
 	 *
 	 * @param configuration The configuration of how generated code should look.
 	 * @param qualifiedClassName The full name of the class that should be generated.
+	 * @param qualifiedMaster The fill name of the item this class was generated from.
 	 * @param javaDoc JavaDoc if any.
 	 * @param fileHeaderText Text to output as header for file(s).
 	 */
-	public Clazz(Configuration configuration, String qualifiedClassName, String javaDoc, String fileHeaderText)
+	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText)
 	{
 		super(qualifiedClassName);
 		super.clazzUsingType=this;
 		super.helperTypes = new HelperTypes(this);
 
 		this.configuration = Objects.requireNonNull(configuration);
+		this.qualifiedMaster = qualifiedMaster;
 		this.interfaceTypes = new ArrayList<Type>();
 		this.baseClazzType = new NoType(this);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
@@ -62,6 +66,11 @@ public final class Clazz extends ObjectType implements Model
 		this.importTypes = new ArrayList<Type>();
 
 		initializedContent=false;
+	}
+
+	public String getMasterName()
+	{
+		return NamesUtil.getUnqualifiedName(qualifiedMaster);
 	}
 
 	@Override

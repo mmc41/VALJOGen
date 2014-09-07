@@ -1,7 +1,13 @@
-equals(clazz) ::= <<
-@Override
+/**
+* Copyright (C) 2014 41concepts Aps
+*
+* This is a helper template group file that is responsible for generating the equals method.
+**/
+method_equals(clazz) ::= <<
+<@annotations>@Override<@end>
 public <optSynchronized(clazz)>boolean equals(final Object obj)
 {
+  <@preamble><@end>
   if (this == obj)
     return true;
   if (obj == null)

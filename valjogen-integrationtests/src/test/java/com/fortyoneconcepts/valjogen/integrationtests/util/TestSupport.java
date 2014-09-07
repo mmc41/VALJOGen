@@ -48,6 +48,7 @@ public final class TestSupport
 		return optPath!=null ? optPath.getFileName().toString() : unavailableFile;
 	}
 
+	// TODO: Configure externally in maven
 	public static Path getRootPathExpectedOutput() throws URISyntaxException, FileNotFoundException
 	{
 		Path root = getProjectRootPath();
@@ -55,6 +56,7 @@ public final class TestSupport
 		return validatePath(result);
 	}
 
+	// TODO: Configure externally in maven
 	public static Path getRootPathGeneratedOutput() throws URISyntaxException, FileNotFoundException
 	{
 		Path root = getProjectRootPath();

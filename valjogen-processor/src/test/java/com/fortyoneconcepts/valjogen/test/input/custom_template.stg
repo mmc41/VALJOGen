@@ -1,0 +1,85 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
+
+@class.imports() ::= <%
+import java.util.*;
+import javax.annotation.Generated;
+// Inserted import stuff here.
+%>
+@class.javadoc() ::= <%
+// Inserted class javadoc stuff here.
+%>
+@class.generated() ::= <%
+// Inserted generated stuff here.
+%>
+@class.annotations() ::= <%
+// Inserted class annotation stuff here.
+%>
+
+@class.before_class_members() ::= <%
+// Inserted before static members stuff here.
+%>
+@class.after_class_members() ::= <%
+// Inserted after static members stuff here.
+%>
+@class.before_instance_members() ::= <%
+// Inserted before instance members stuff here.
+%>
+@class.after_instance_members() ::= <%
+// Inserted after instance members stuff here.
+%>
+@class.before_class_methods() ::= <%
+// Inserted before static methods stuff here.
+%>
+@class.after_class_methods() ::= <%
+// Inserted after static methods stuff here.
+%>
+@class.before_instance_methods() ::= <%
+// Inserted before instance methods stuff here.
+%>
+@class.after_instance_methods() ::= <%
+// Inserted after instance methods stuff here.
+%>
+
+@member.annotations() ::= <%
+<! Note region has access to arguments in scope of where it is declared !>
+// Inserted member <member.name> annotation stuff here.
+%>
+
+@method_valueOf.annotations() ::= <%
+// Inserted factory annotation stuff here.
+%>
+@method_this.annotations() ::= <%
+// Inserted constructor annotation stuff here.
+%>
+@method_equals.annotations() ::= <%
+// Inserted equals annotation stuff here.
+%>
+@method_hashCode.annotations() ::= <%
+// Inserted hashCode annotation stuff here.
+%>
+@method_toString.annotations() ::= <%
+// Inserted toString annotation stuff here.
+%>
+
+@property.preamble() ::= <%
+<! Note region has access to arguments in scope of where it is declared !>
+// Inserted property <property.name> preamble stuff here.
+%>
+
+@method_valueOf.preamble() ::= <%
+// Inserted factory preamble stuff here.
+%>
+@method_this.preamble() ::= <%
+// Inserted constructor preamble stuff here.
+%>
+@method_equals.preamble() ::= <%
+// Inserted equals preamble stuff here.
+%>
+@method_hashCode.preamble() ::= <%
+// Inserted hashCode preamble stuff here.
+%>
+@method_toString.preamble() ::= <%
+// Inserted toString preamble stuff here.
+%>

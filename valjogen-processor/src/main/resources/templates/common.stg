@@ -1,3 +1,8 @@
+/**
+* Copyright (C) 2014 41concepts Aps
+*
+* This is a helper template group file that provides various utility templates.
+**/
 optFinal(model) ::= <%
 <if(model.final)>final<\ ><endif>
 %>

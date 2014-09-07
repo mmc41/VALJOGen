@@ -96,7 +96,7 @@
 					<version>3.1</version>
 					<configuration>
                       <compilerArgs>
-                          <arg>-parameters</arg> <!-- Make sure parameter meta data is available for best code generation -->
+                          <arg>-parameters</arg>                                                    <!-- Make sure parameter meta data is available for best code generation -->
                           <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=../../src/test/java</arg> <!-- Specify where to locate sources relative to class path -->
                       </compilerArgs>
                       <enableAssertions>true</enableAssertions>
@@ -132,10 +132,10 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.17</version>
 					<configuration>
-					  <compilerArgs>
-	                    <arg>-parameters</arg> <!-- Make sure parameter meta data is available for best code generation -->
-	                  </compilerArgs>
-                      <enableAssertions>true</enableAssertions>
+	                    <excludes>
+	                        <exclude>source/**</exclude>
+	                    </excludes>
+	                    <enableAssertions>true</enableAssertions>
                     </configuration>
 				</plugin>
 				<plugin>

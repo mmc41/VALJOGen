@@ -1,11 +1,15 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.test.util;
 
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -21,9 +25,11 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 import com.fortyoneconcepts.valjogen.model.Clazz;
 import com.fortyoneconcepts.valjogen.model.Configuration;
+import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.processor.ClazzFactory;
+import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
 import com.google.testing.compile.CompilationRule;
 
@@ -40,6 +46,8 @@ import com.google.testing.compile.CompilationRule;
  */
 public abstract class TemplateTestBase
 {
+	private final static Logger LOGGER = Logger.getLogger(TemplateTestBase.class.getName());
+
 	@Rule
 	public CompilationRule compilationRule = new CompilationRule();
 
@@ -53,8 +61,14 @@ public abstract class TemplateTestBase
 	protected static final String generatedPackageName = "testPackage";
 	protected static final String generatedClassName = "TestImpl";
 
+	private final Logger parentLogger;
+
 	public TemplateTestBase() {
 		super();
+		parentLogger = Logger.getLogger(ConfigurationDefaults.TOP_PACKAGE_NAME);
+
+		// Set a tempoary default log level until configuration has been read.
+   	   parentLogger.setLevel(Level.INFO);
 	}
 
 	@Before
@@ -78,42 +92,41 @@ public abstract class TemplateTestBase
 		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotation);
 	}
 
-	protected String produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception {
+	protected String produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception
+	{
 		Configuration configuration = new Configuration(generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
+		 // Know that we know what proper log level to set, do set it correctly.
+	    parentLogger.setLevel(configuration.getLogLevel());
+
 		TypeElement interfaceElement = elements.getTypeElement(sourceClass.getCanonicalName());
-		PackageElement pacakgeElementElement = (PackageElement)interfaceElement.getEnclosingElement();
+		PackageElement packageElement = (PackageElement)(interfaceElement.getEnclosingElement());
+
+		String sourcePackageElementPath = packageElement.toString().replace('.', '/');
+		ResourceLoader resourceLoader = new ResourceLoader(TestClassConstants.relSourcePath, sourcePackageElementPath);
+
 		Clazz clazz = clazzFactory.createClazz(types, elements, interfaceElement, configuration, (megElement, kind, message) ->
 		  {
-			if (kind==Kind.ERROR)
+			if (kind==Kind.ERROR) {
+  			  LOGGER.severe(message);
 			  Assert.fail(message);
-			else if (kind==Kind.WARNING || kind==Kind.MANDATORY_WARNING)
-			  System.out.println("WARNING: "+message);
-			else System.out.println("NOTE: "+message);
+			} else if (kind==Kind.WARNING || kind==Kind.MANDATORY_WARNING) {
+			  LOGGER.warning(message);
+			} else LOGGER.info(message);
 		  },
-		  (fileName) -> {
-			  // TODO: Refactor so same impl. is used as in annotation processor:
-			  String basePathString = pacakgeElementElement.isUnnamed() ? "" : pacakgeElementElement.toString().replace('.', '/');
-			  if (!basePathString.equals(""))
-				  basePathString=basePathString+"//";
-
-			  URL url = TestSupport.getTestSourceFileResourcePath(basePathString+fileName);
-			  return TestSupport.getFileContent(url);
-		  }
+		  resourceLoader
 		);
 
-		if (configuration.isVerboseInfoEnabled())
-			System.out.println("VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
+		LOGGER.info(() -> "VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
 
-		STCodeWriter codeWriter = new STCodeWriter();
+		STCodeWriter codeWriter = new STCodeWriter(resourceLoader);
 
 		String output = codeWriter.outputClass(clazz, configuration);
 
 		Assert.assertNotNull("template output should not be null", output);
 
 		// Since we are generating output without the annotation processor, let's do our own debug output if enabled.
-  	    if (configuration.isVerboseInfoEnabled())
-		  System.out.println("VALJOGen STCodeWriter GENERATED CONTENT: "+System.lineSeparator()+output);
+    	LOGGER.info("VALJOGen STCodeWriter GENERATED CONTENT: "+System.lineSeparator()+output);
 
 	    output=output.replace('\r', ' ').replace('\n', ' ');
 	    output=output.replaceAll("\\s+", " ");

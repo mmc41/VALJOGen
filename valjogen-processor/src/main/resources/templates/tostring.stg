@@ -1,7 +1,13 @@
-toString(clazz) ::= <<
-@Override
+/**
+* Copyright (C) 2014 41concepts Aps
+*
+* This is a helper template group file that is responsible for generating code for the toString method.
+**/
+method_toString(clazz) ::= <<
+<@annotations>@Override<@end>
 public <optSynchronized(clazz)>String toString()
 {
+  <@preamble><@end>
   <if(clazz.anyMembers)>
     final StringBuilder <uniqueVariableName(clazz,"sb")> = new StringBuilder();
     <uniqueVariableName(clazz,"sb")>.append("<clazz.name> [");

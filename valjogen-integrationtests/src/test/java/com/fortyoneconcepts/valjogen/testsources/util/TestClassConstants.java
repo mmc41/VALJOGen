@@ -14,4 +14,5 @@ public interface TestClassConstants
 
 	public static String SimpleClass = PackageName+".SimpleClass";
 	public static String ComplexClass = PackageName+".ComplexClass";
+	public static String CustomTemplateClass = PackageName+".CustomTemplateClass";
 }

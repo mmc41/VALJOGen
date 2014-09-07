@@ -1,3 +1,6 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.test;
 
 import org.junit.Test;
@@ -124,6 +127,6 @@ public class TemplateClassTest extends TemplateTestBase
 	public void testFileHeader() throws Exception
 	{
 		String output = produceOutput(AnnotatedInterfaceWithHeader.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.headerFileName, "Header.txt").build());
-		assertContainsWithWildcards("sample header file", output);
+		assertContainsWithWildcards(" This is a sample header for VALJOGen", output);
 	}
 }

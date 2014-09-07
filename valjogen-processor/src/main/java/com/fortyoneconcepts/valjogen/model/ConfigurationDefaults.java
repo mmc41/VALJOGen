@@ -9,10 +9,12 @@ import com.fortyoneconcepts.valjogen.annotations.*;
  */
 public interface ConfigurationDefaults
 {
+  public static final String TOP_PACKAGE_NAME = "com.fortyoneconcepts.valjogen";
+
   /**
   * Common qualifier for all options.
   */
-  public static final String OPTION_QUALIFIER = "com.fortyoneconcepts.valjogen.";
+  public static final String OPTION_QUALIFIER = TOP_PACKAGE_NAME+".";
 
   /**
   * The value that specified that no value is set.
