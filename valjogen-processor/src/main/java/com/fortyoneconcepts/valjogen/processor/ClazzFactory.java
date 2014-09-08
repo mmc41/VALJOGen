@@ -148,9 +148,44 @@ public final class ClazzFactory
 
 		List<Type> importTypes = createImportTypes(clazz, allTypesByPrototypicalFullName, types, elements, masterInterfaceElement, configuration, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes, errorConsumer);
 
-		clazz.initContent(new ArrayList<Member>(membersByName.values()), propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes));
+		List<Member> members = new ArrayList<Member>(membersByName.values());
+		List<Member> selectedComparableMembers = getSelectedComparableMembers(masterInterfaceElement, configuration, errorConsumer, membersByName, members);
+
+		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers);
 
 		return clazz;
+	}
+
+	private List<Member> getSelectedComparableMembers(TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, Map<String, Member> membersByName, List<Member> members) throws Exception
+	{
+		List<Member> comparableMembers;
+
+		String[] comparableMemberNames = configuration.getComparableMembers();
+		if (comparableMemberNames.length==0)
+		{
+			comparableMembers=members.stream().filter(m -> m.getType().isComparable()).collect(Collectors.toList());
+			if (configuration.isComparableEnabled() && comparableMembers.size()!=members.size())
+			{
+				errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.NotAllMembersAreComparable, masterInterfaceElement.toString()));
+			}
+		} else {
+			comparableMembers=new ArrayList<Member>();
+
+			for (String comparableMemberName : comparableMemberNames)
+			{
+				Member member = membersByName.get(comparableMemberName);
+				if (member!=null) {
+					comparableMembers.add(member);
+					if (!member.getType().isComparable()) {
+						errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.MemberNotComparable, comparableMemberName));
+					}
+				} else {
+					errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.MemberNotFound, comparableMemberName));
+				}
+			}
+		}
+
+		return comparableMembers;
 	}
 
 	private Stream<ExecutableElementAndDeclaredTypePair> toExecutableElementAndDeclaredTypePair(DeclaredType interfaceMirrorType, Stream<ExecutableElement> elements)

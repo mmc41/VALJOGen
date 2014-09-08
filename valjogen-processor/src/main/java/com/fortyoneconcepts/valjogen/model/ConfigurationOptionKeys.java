@@ -84,6 +84,11 @@ public interface ConfigurationOptionKeys
 	 public static String comparableEnabled = "comparableEnabled";
 
 	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#comparableMembers
+	 */
+	 public static String comparableMembers = "comparableMembers";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#toStringEnabled
 	 */
 	 public static String toStringEnabled = "toStringEnabled";

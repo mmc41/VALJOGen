@@ -23,110 +23,110 @@ public class TemplateClassTest extends TemplateTestBase
 	@Test
 	public void testImmutableAsFinal() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
-	    assertContains("final class "+generatedClassName, output);
+		Output output = produceOutput(ImmutableInterface.class);
+	    assertContains("final class "+generatedClassName, output.code);
 	}
 
 	@Test
 	public void testImmutableAsNonAbstract() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
-		assertNotContainsWithWildcards("abstract class "+generatedClassName, output);
+		Output output = produceOutput(ImmutableInterface.class);
+		assertNotContainsWithWildcards("abstract class "+generatedClassName, output.code);
 	}
 
 	@Test
 	public void testUnknownNonPropertyMethodsAsAbstractClass() throws Exception
 	{
-		String output = produceOutput(InterfaceWithNonPropertyMethods.class);
-		assertContainsWithWildcards("abstract class "+generatedClassName, output);
+		Output output = produceOutput(InterfaceWithNonPropertyMethods.class);
+		assertContainsWithWildcards("abstract class "+generatedClassName, output.code);
 	}
 
 	@Test
 	public void testPublicClassByDefault() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("public * class "+generatedClassName, output);
+		Output output = produceOutput(ImmutableInterface.class);
+		assertContainsWithWildcards("public * class "+generatedClassName, output.code);
 	}
 
 	@Test
 	public void testPrivateClassCanBeSet() throws Exception
 	{
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.clazzScope, "private");
-		String output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("private * class "+generatedClassName, output);
+		Output output = produceOutput(ImmutableInterface.class);
+		assertContainsWithWildcards("private * class "+generatedClassName, output.code);
 	}
 
 	@Test
 	public void testGenerateClassNameWhenNotSet() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.build());
-		assertContainsWithWildcards("class "+ImmutableInterface.class.getSimpleName().replace("Interface", "")+NamesUtil.ImplClassSuffix, output);
+		Output output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.build());
+		assertContainsWithWildcards("class "+ImmutableInterface.class.getSimpleName().replace("Interface", "")+NamesUtil.ImplClassSuffix, output.code);
 	}
 
 	@Test
 	public void testImplementsInterface() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("class "+generatedClassName+" implements *"+ImmutableInterface.class.getSimpleName(), output);
+		Output output = produceOutput(ImmutableInterface.class);
+		assertContainsWithWildcards("class "+generatedClassName+" implements *"+ImmutableInterface.class.getSimpleName(), output.code);
 	}
 
 	@Test
 	public void testImplementsGenericInterface() throws Exception
 	{
-		String output = produceOutput(GenericInterface.class);
-		assertContainsWithWildcards("class "+generatedClassName+" implements *GenericInterface<GT,ST,OT>", output);
+		Output output = produceOutput(GenericInterface.class);
+		assertContainsWithWildcards("class "+generatedClassName+" implements *GenericInterface<GT,ST,OT>", output.code);
 	}
 
 	@Test
 	public void testExtraInterface() throws Exception
 	{
-		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation"}).build());
-		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, InterfaceWithoutAnnotation", output);
+		Output output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"com.fortyoneconcepts.valjogen.test.input.InterfaceWithoutAnnotation"}).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, InterfaceWithoutAnnotation", output.code);
 	}
 
 	@Test
 	public void testExtraGenericInterface() throws Exception
 	{
-		String output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<java.lang.String>"}).build());
-		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<String>", output);
+		Output output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<java.lang.String>"}).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<String>", output.code);
 	}
 
 
 	@Test
 	public void testExtraGenericThisInterface() throws Exception
 	{
-		String output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"}).build());
-		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<"+generatedClassName+">", output);
+		Output output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"}).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<"+generatedClassName+">", output.code);
 	}
 
 	@Test
 	public void testDirectSerializableHasUID() throws Exception
 	{
-		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, 42L).build());
-		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable", output);
-		assertContainsWithWildcards("private static final long serialVersionUID = 42;", output);
+		Output output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, 42L).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable", output.code);
+		assertContainsWithWildcards("private static final long serialVersionUID = 42;", output.code);
 	}
 
 	@Test
 	public void testIndirectSerializableHasUID() throws Exception
 	{
-		String output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 43L).build());
-		assertContainsWithWildcards("class "+generatedClassName+" implements SerializableInterface {", output);
-		assertContainsWithWildcards("private static final long serialVersionUID = 43;", output);
+		Output output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 43L).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements SerializableInterface {", output.code);
+		assertContainsWithWildcards("private static final long serialVersionUID = 43;", output.code);
 	}
 
 	@Test
 	public void testSerializableWithNoUIDHasNoUID() throws Exception
 	{
-		String output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, ConfigurationDefaults.SerialVersionUID_NotSet).build());
-		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable", output);
-		assertNotContains("serialVersionUID", output);
+		Output output = produceOutput(EkstraInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.io.Serializable"}).add(ConfigurationOptionKeys.serialVersionUID, ConfigurationDefaults.SerialVersionUID_NotSet).build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements EkstraInterface, Serializable", output.code);
+		assertNotContains("serialVersionUID", output.code);
 	}
 
 	@Test
 	public void testFileHeader() throws Exception
 	{
-		String output = produceOutput(AnnotatedInterfaceWithHeader.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.headerFileName, "Header.txt").build());
-		assertContainsWithWildcards(" This is a sample header for VALJOGen", output);
+		Output output = produceOutput(AnnotatedInterfaceWithHeader.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.headerFileName, "Header.txt").build());
+		assertContainsWithWildcards(" This is a sample header for VALJOGen", output.code);
 	}
 }

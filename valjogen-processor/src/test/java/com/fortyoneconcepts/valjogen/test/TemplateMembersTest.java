@@ -21,15 +21,15 @@ public class TemplateMembersTest extends TemplateTestBase
 	@Test
 	public void testImmutableHasPrivateFinalMembers() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("private final int intValue;", output);
+		Output output = produceOutput(ImmutableInterface.class);
+		assertContainsWithWildcards("private final int intValue;", output.code);
 	}
 
 	@Test
 	public void testAbstractHasProtectedFinalMembers() throws Exception
 	{
-		String output = produceOutput(InterfaceWithNonPropertyMethods.class);
-		assertContainsWithWildcards("protected final int intValue;", output);
+		Output output = produceOutput(InterfaceWithNonPropertyMethods.class);
+		assertContainsWithWildcards("protected final int intValue;", output.code);
 	}
 
 }

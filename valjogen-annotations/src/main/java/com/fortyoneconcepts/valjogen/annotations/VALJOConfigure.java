@@ -141,11 +141,18 @@ public @interface VALJOConfigure
 	/**
 	* Specifies if compareTo implementation should be generated for classes that directly or indirectly implement the {@link Comparable} interface. May be overruled by equivalent annotation processor key.
 	*
-	*  NB: NOT IMPLEMENTED YET!
-	*
+	* @see VALJOConfigure#extraInterfaceNames for how to make the implementation class implement Comparable with regard to itself.
+	* @see VALJOConfigure#comparableMembers For how to specify which members to check for in the implemenation.
 	* @return True if a comparable method should be generated for classes that implement the {@link Comparable} interface.
 	*/
 	boolean comparableEnabled() default true;
+
+	/**
+	* Ordered names of members to use in a compareTo implementation and in which order. If left unspecified all members in declaration order is assumed. May be overruled by equivalent annotation processor key.
+	*
+	* @return Array of names of all members to use in compareTo method and in specified order.
+	*/
+    String[] comparableMembers() default { };
 
 	/**
 	* Specifies if a toString method should be generated the class. May be overruled by equivalent annotation processor key.
@@ -244,7 +251,7 @@ public @interface VALJOConfigure
 	*
 	* @return Log level
 	*/
-    String logLevel() default "WARNING";
+    String logLevel() default "INFO"; // "WARNING";
 
     /**
 	* Experimental feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are

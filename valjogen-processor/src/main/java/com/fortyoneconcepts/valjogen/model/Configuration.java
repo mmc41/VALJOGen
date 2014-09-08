@@ -181,6 +181,11 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(comparableEnabled, configureAnnotation.comparableEnabled());
 	 }
 
+	 public String[] getComparableMembers()
+	 {
+		 return getValue(comparableMembers, configureAnnotation.comparableMembers());
+	 }
+
 	 public boolean isToStringEnabled()
 	 {
 		 return getValue(toStringEnabled, configureAnnotation.toStringEnabled());

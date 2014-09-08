@@ -30,6 +30,7 @@ public final class Clazz extends ObjectType implements Model
 
 	private List<Type> importTypes;
 	private List<Member> members;
+	private List<Member> chosenComparableMembers;
 	private List<Property> properties;
 	private List<Method> methods;
 
@@ -121,8 +122,9 @@ public final class Clazz extends ObjectType implements Model
 	 * @param properties Property methods for class.
 	 * @param nonPropertyMethods Other methods for class.
 	 * @param importTypes Types to be imported for class.
+	 * @param chosenComparableMembers Members to be used for compareToOperation
 	 */
-	public void initContent(List<Member> members, List<Property> properties, List<Method> nonPropertyMethods, List<Type> importTypes)
+	public void initContent(List<Member> members, List<Property> properties, List<Method> nonPropertyMethods, List<Type> importTypes, List<Member> chosenComparableMembers)
 	{
 		if (initializedContent)
 			throw new IllegalStateException("Clazz content already initialized");
@@ -130,6 +132,7 @@ public final class Clazz extends ObjectType implements Model
 		this.importTypes=Objects.requireNonNull(importTypes);
 
         this.members=Objects.requireNonNull(members);
+        this.chosenComparableMembers = Objects.requireNonNull(chosenComparableMembers);
 
         this.properties=Objects.requireNonNull(properties);
 
@@ -180,6 +183,12 @@ public final class Clazz extends ObjectType implements Model
 	{
 		assert initialized() : "Class initialization missing";
 		return members.stream().anyMatch(m -> m.getType().isArray());
+	}
+
+	public List<Member> getChosenComparableMembers()
+	{
+		assert initialized() : "Class initialization missing";
+		return chosenComparableMembers;
 	}
 
 	public List<Member> getMembers()

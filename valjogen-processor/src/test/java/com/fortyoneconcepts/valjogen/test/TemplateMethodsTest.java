@@ -24,25 +24,17 @@ public class TemplateMethodsTest extends TemplateTestBase
 	public void testGuardedConstructor() throws Exception
 	{
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "true");
-		String output = produceOutput(MutableInterface.class);
+		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=Objects.requireNonNull(objectValue); }", output);
+		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=Objects.requireNonNull(objectValue); }", output.code);
 	}
 
 	@Test
 	public void testNotGuardedConstructor() throws Exception
 	{
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
-		String output = produceOutput(MutableInterface.class);
+		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=objectValue; }", output);
-	}
-
-	@Test
-	public void testComparable() throws Exception
-	{
-		String output = produceOutput(ComparableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true).build());
-
-		assertContainsWithWildcards("public int compareTo(final ComparableInterface *) { ", output);
+		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=objectValue; }", output.code);
 	}
 }

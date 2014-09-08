@@ -10,7 +10,7 @@ method_compareTo(clazz, method) ::= <<
   <@preamble><@end>
   int <uniqueVariableName(clazz,"result")>;
 
-  <clazz.members:{m | <(comparableTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, first(method.parameters), m, m.type)>}; wrap, anchor, separator="\n\n">
+  <clazz.chosenComparableMembers:{m | <(comparableTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, first(method.parameters), m, m.type)>}; wrap, anchor, separator="\n">
 
   return 0;
 }
@@ -24,14 +24,16 @@ if ((<uniqueVariableName(clazz,"result")>=<type.wrapperName>.compare(<member.nam
 >>
 
 comparable_array(clazz, param, var, type) ::= <<
-<! Comparing arrays not supported !>
+ <! Arrays are not supported and this method will not be called unless explicitly requested !>
+ // SKIPPING: <member.name> : Comparing arrays not supported
 >>
 
 comparable_object(clazz, other, member, type) ::= <<
-<if(type.comparable && (other.type.thisType || member.getter))>
+<if(type.comparable && (other.type.thisType || member.getter))><\\>
 if ((<uniqueVariableName(clazz,"result")>=<member.name>.compareTo(<other_instance_get_member_value(other, member)>))!=0)
- return <uniqueVariableName(clazz,"result")>;
+ return <uniqueVariableName(clazz,"result")>;<\\>
 <else>
-<! Comparing non-comparable objects or members through interfaces without getters not supported !>
+ <! This case is not supported and should not happen unless explicitly requested !>
+ // SKIPPING: <member.name> : Comparing non-comparable objects or members through interfaces without getters not supported.
 <endif>
 >>

@@ -18,6 +18,12 @@ public final class PrimitiveType extends Type
 	}
 
 	@Override
+	public boolean isComparable()
+	{
+		return true;
+	}
+
+	@Override
 	public boolean isPrimitiveFloat() {
 		return (qualifiedProtoTypicalTypeName.equals("float"));
 	}

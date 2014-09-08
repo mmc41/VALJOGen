@@ -4,7 +4,10 @@
 package com.fortyoneconcepts.valjogen.test.util;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -84,15 +87,34 @@ public abstract class TemplateTestBase
 		configurationOptions = new HashMap<String,String>();
 	}
 
-	protected String produceOutput(Class<?> sourceClass) throws Exception {
-		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build());
+	public final class Output
+	{
+		public final String code;
+		public final List<String> warnings;
+		public final List<String> errors;
+
+		public Output(String code, List<String> warnings, List<String> errors)
+		{
+			this.code=Objects.requireNonNull(code);
+			this.warnings=Objects.requireNonNull(warnings);
+			this.errors=Objects.requireNonNull(errors);
+		}
 	}
 
-	protected String produceOutput(Class<?> sourceClass, VALJOConfigure configureAnnotation) throws Exception {
-		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotation);
+	protected Output produceOutput(Class<?> sourceClass) throws Exception {
+		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build(), false);
 	}
 
-	protected String produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception
+	protected Output produceOutput(Class<?> sourceClass, VALJOConfigure configureAnnotation) throws Exception {
+		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotation, false);
+	}
+
+	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception
+	{
+		return produceOutput(sourceClass, generateAnnotation, configureAnnotation, false);
+	}
+
+	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation, boolean allowErrors) throws Exception
 	{
 		Configuration configuration = new Configuration(generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
@@ -105,12 +127,19 @@ public abstract class TemplateTestBase
 		String sourcePackageElementPath = packageElement.toString().replace('.', '/');
 		ResourceLoader resourceLoader = new ResourceLoader(TestClassConstants.relSourcePath, sourcePackageElementPath);
 
+		List<String> warnings = new ArrayList<String>();
+		List<String> errors = new ArrayList<String>();
+
 		Clazz clazz = clazzFactory.createClazz(types, elements, interfaceElement, configuration, (megElement, kind, message) ->
 		  {
 			if (kind==Kind.ERROR) {
-  			  LOGGER.severe(message);
-			  Assert.fail(message);
+			  errors.add(message);
+			  if (!allowErrors) {
+	  			  LOGGER.severe(message);
+				  Assert.fail(message);
+			  }
 			} else if (kind==Kind.WARNING || kind==Kind.MANDATORY_WARNING) {
+			  warnings.add(message);
 			  LOGGER.warning(message);
 			} else LOGGER.info(message);
 		  },
@@ -132,6 +161,6 @@ public abstract class TemplateTestBase
 	    output=output.replaceAll("\\s+", " ");
 	    output=output.trim();
 
-		return output;
+		return new Output(output, warnings, errors);
 	}
 }

@@ -23,29 +23,29 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testPublicGetter() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("public * int getIntValue() { return intValue; }", output);
+		Output output = produceOutput(ImmutableInterface.class);
+		assertContainsWithWildcards("public * int getIntValue() { return intValue; }", output.code);
 	}
 
 	@Test
 	public void testPublicImmutableSetter() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
+		Output output = produceOutput(ImmutableInterface.class);
 
-		assertContainsWithWildcards("public * ImmutableInterface setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output);
+		assertContainsWithWildcards("public * ImmutableInterface setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output.code);
 	}
 
 	@Test
 	public void testCustomSetterAndGetter() throws Exception
 	{
-		String output = produceOutput(CustomPropertiesInterface.class,
+		Output output = produceOutput(CustomPropertiesInterface.class,
 				                      generateAnnotationBuilder.build(),
 				                      configureAnnotationBuilder.add(ConfigurationOptionKeys.getterPrefixes, new String[] { "should"})
 				                      .add(ConfigurationOptionKeys.setterPrefixes, new String[] { "with"})
 				                      .build());
 
-		assertContainsWithWildcards("boolean shouldRequire() { return require; }", output);
-		assertContainsWithWildcards("CustomPropertiesInterface withRequire(final boolean require) { return new CustomPropertiesImpl(require); }", output);
+		assertContainsWithWildcards("boolean shouldRequire() { return require; }", output.code);
+		assertContainsWithWildcards("CustomPropertiesInterface withRequire(final boolean require) { return new CustomPropertiesImpl(require); }", output.code);
 	}
 
 	@Test
@@ -53,26 +53,26 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	{
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
 
-		String output = produceOutput(MutableInterface.class);
+		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards("public * setObjectValue(final Object objectValue) { this.objectValue=objectValue; }", output);
+		assertContainsWithWildcards("public * setObjectValue(final Object objectValue) { this.objectValue=objectValue; }", output.code);
 	}
 
 	@Test
 	public void testMutableGuardedSetter() throws Exception
 	{
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "true");
-		String output = produceOutput(MutableInterface.class);
+		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards("setObjectValue(final Object objectValue) { this.objectValue=Objects.requireNonNull(objectValue); }", output);
+		assertContainsWithWildcards("setObjectValue(final Object objectValue) { this.objectValue=Objects.requireNonNull(objectValue); }", output.code);
 	}
 
 	@Test
 	public void testMutableNotGuardedSetter() throws Exception
 	{
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
-		String output = produceOutput(MutableInterface.class);
+		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards("setObjectValue(final Object objectValue) { this.objectValue=objectValue; }", output);
+		assertContainsWithWildcards("setObjectValue(final Object objectValue) { this.objectValue=objectValue; }", output.code);
 	}
 }

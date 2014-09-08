@@ -21,22 +21,22 @@ public class TemplatePackageTest extends TemplateTestBase
 	@Test
 	public void testCorrectNonDefaultPackage() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("package "+generatedPackageName+";", output);
+		Output output = produceOutput(ImmutableInterface.class);
+		assertContainsWithWildcards("package "+generatedPackageName+";", output.code);
 	}
 
 	@Test
 	public void testInterfacePackageByDefault() throws Exception
 	{
 
-		String output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.build());
-		assertContainsWithWildcards("package "+ImmutableInterface.class.getPackage().getName()+";", output);
+		Output output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.build());
+		assertContainsWithWildcards("package "+ImmutableInterface.class.getPackage().getName()+";", output.code);
 	}
 
 	@Test
 	public void testDefaultPackageWorksToo() throws Exception
 	{
-		String output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.outputPackage, "").build());
-		assertNotContainsWithWildcards("package *;", output);
+		Output output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.outputPackage, "").build());
+		assertNotContainsWithWildcards("package *;", output.code);
 	}
 }

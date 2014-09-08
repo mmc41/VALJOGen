@@ -22,7 +22,7 @@ public class TemplateCustomTest extends TemplateTestBase
 	@Test
 	public void testCustomTemplate() throws Exception
 	{
-		String output = produceOutput(CustomTemplateInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.customTemplateFileName, "custom_template.stg").build());
+		Output output = produceOutput(CustomTemplateInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.customTemplateFileName, "custom_template.stg").build());
 		String[] searchStrings = { "generated", "class annotation", "import", "class javadoc",
 				                   "before static members", "after static members",
 				                   "before instance members", "after instance members",
@@ -37,6 +37,6 @@ public class TemplateCustomTest extends TemplateTestBase
 		};
 
 		for (String searchString : searchStrings)
-		  assertContainsWithWildcards("Inserted "+searchString+" stuff here.", output);
+		  assertContainsWithWildcards("Inserted "+searchString+" stuff here.", output.code);
 	}
 }
