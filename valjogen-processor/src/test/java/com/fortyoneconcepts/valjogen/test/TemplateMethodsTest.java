@@ -37,4 +37,13 @@ public class TemplateMethodsTest extends TemplateTestBase
 
 		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=objectValue; }", output.code);
 	}
+
+
+	@Test
+	public void testDefaultMethodIgnored() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithDefaultMethod.class);
+
+		assertNotContainsWithWildcards("getDefMethod", output.code);
+	}
 }

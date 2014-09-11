@@ -16,16 +16,16 @@ public final class Property extends Method
 	private final Member member;
 	private final PropertyKind kind;
 
-	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind,String javaDoc)
+	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
 	{
-		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), javaDoc, true);
+		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, Parameter parameter)
+	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
 	{
-		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), javaDoc, true);
+		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
@@ -74,7 +74,7 @@ public final class Property extends Method
 		sb.append("Property [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", member=" + member.getName() + ", propertyKind="+kind+", implementationClaimed="+implementationClaimed+"]");
+			sb.append(", member=" + member.getName() + ", propertyKind="+kind+", implementationInfo="+implementationInfo+"]");
 
 		sb.append("]");
 

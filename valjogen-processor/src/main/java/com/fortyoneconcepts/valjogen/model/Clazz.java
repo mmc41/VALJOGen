@@ -164,7 +164,7 @@ public final class Clazz extends ObjectType implements Model
 	public boolean isAbstract()
 	{
 		assert initialized() : "Class initialization missing";
-		return !methods.stream().allMatch(m -> m.implementationClaimed);
+		return !methods.stream().allMatch(m -> m.implementationInfo!=ImplementationInfo.IMPLEMENTATION_MISSING);
 	}
 
 	public boolean isSynchronized()
@@ -217,7 +217,7 @@ public final class Clazz extends ObjectType implements Model
 
 	public List<Method> getClaimedImplementationMethods()
 	{
-		return methods.stream().filter(m -> m.implementationClaimed).collect(Collectors.toList());
+		return methods.stream().filter(m -> m.implementationInfo==ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT).collect(Collectors.toList());
 	}
 
 	public List<Type> getImportTypes()

@@ -18,9 +18,9 @@ public class Method extends ModelBase
 	protected final List<Parameter> parameters;
 	protected final String javaDoc;
 	protected final Type returnType;
-	protected final boolean implementationClaimed;
+	protected final ImplementationInfo implementationInfo;
 
-	public Method(Clazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, String javaDoc, boolean implementationClaimed)
+	public Method(Clazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, String javaDoc, ImplementationInfo implementationInfo)
 	{
 	    this.clazz = Objects.requireNonNull(clazz);
 	    this.declaringType = Objects.requireNonNull(declaringType);
@@ -28,7 +28,7 @@ public class Method extends ModelBase
 		this.parameters = Objects.requireNonNull(parameters);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.returnType = Objects.requireNonNull(returnType);
-		this.implementationClaimed = implementationClaimed;
+		this.implementationInfo = implementationInfo;
 	}
 
 	@Override
@@ -55,9 +55,9 @@ public class Method extends ModelBase
 		return clazz.getPackageName();
 	}
 
-	public boolean isImplementationClaimed()
+	public ImplementationInfo getImplementationInfo()
 	{
-		return implementationClaimed;
+		return implementationInfo;
 	}
 
 	public boolean isFinal()
@@ -98,7 +98,7 @@ public class Method extends ModelBase
 		sb.append("Method [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", implementationClaimed="+implementationClaimed+"]");
+			sb.append(", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", implementationInfo="+implementationInfo+"]");
 
 		sb.append("]");
 

@@ -13,5 +13,10 @@ public interface InterfaceWithDefaultMethod
 		return "defaultValue";
 	}
 
+	public default int calculateSomethingMethod()
+	{
+		return 42;
+	}
+
 	public int getValue();
 }
