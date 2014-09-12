@@ -3,21 +3,25 @@
 *
 * This is a helper template group file that is responsible for generating the equals method.
 **/
-method_equals(clazz) ::= <<
-<@annotations>@Override<@end>
-public <optSynchronized(clazz)>boolean equals(final Object obj)
+method_equals(clazz, method) ::= <<
+<@javadoc><methodJavaDoc(method)><@end><@annotations>@Override<@end>
+<declare_method(clazz, method)>
 {
   <@preamble><@end>
-  if (this == obj)
+  if (this == <first(method.parameters).name>)
     return true;
-  if (obj == null)
+  if (<first(method.parameters).name> == null)
     return false;
-  if (getClass() != obj.getClass())
+  if (getClass() != <first(method.parameters).name>.getClass())
     return false;
 
-  <clazz.prototypicalName> <uniqueVariableName(clazz,"other")> = (<clazz.prototypicalName>) obj;
+  <if(clazz.anyMembers)>
+  <clazz.prototypicalName> <uniqueVariableName(clazz,"other")> = (<clazz.prototypicalName>) <first(method.parameters).name>;
 
   return (<clazz.members:{m | <(equalsTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, m.name, m.type)>}; wrap, anchor, separator=" && ">);
+  <else>
+  return true;
+  <endif>
 }
 >>
 

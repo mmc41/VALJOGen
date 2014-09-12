@@ -38,6 +38,23 @@ public class TemplateMethodsTest extends TemplateTestBase
 		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=objectValue; }", output.code);
 	}
 
+	@Test
+	public void testInHeritedJavaDoc() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.insertInheritDocOnMethodsEnabled, "true");
+		Output output = produceOutput(MutableInterface.class);
+
+		assertContainsWithWildcards("{@inheritDoc}*public final int getIntValue()", output.code);
+	}
+
+	@Test
+	public void testNoInHeritedJavaDoc() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.insertInheritDocOnMethodsEnabled, "false");
+		Output output = produceOutput(MutableInterface.class);
+
+		assertNotContainsWithWildcards("{@inheritDoc}*public final int getIntValue()", output.code);
+	}
 
 	@Test
 	public void testDefaultMethodIgnored() throws Exception

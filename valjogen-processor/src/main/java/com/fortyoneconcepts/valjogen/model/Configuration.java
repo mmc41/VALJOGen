@@ -191,9 +191,9 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(toStringEnabled, configureAnnotation.toStringEnabled());
 	 }
 
-	 public boolean isJavadDocEnabled()
+	 public boolean isInsertInheritDocOnMethodsEnabled()
 	 {
-		 return getValue(javadDocEnabled, configureAnnotation.javadDocEnabled());
+		 return getValue(insertInheritDocOnMethodsEnabled, configureAnnotation.insertInheritDocOnMethodsEnabled());
 	 }
 
 	 public String getHeaderFileName()

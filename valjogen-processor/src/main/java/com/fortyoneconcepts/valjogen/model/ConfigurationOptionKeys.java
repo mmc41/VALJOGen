@@ -94,10 +94,9 @@ public interface ConfigurationOptionKeys
 	 public static String toStringEnabled = "toStringEnabled";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#javadDocEnabled
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#insertInheritDocOnMethodsEnabled
 	 */
-	 public static String javadDocEnabled = "javadDocEnabled";
-
+	 public static String insertInheritDocOnMethodsEnabled = "insertInheritDocOnMethodsEnabled";
 
 	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#ignoreMalformedProperties

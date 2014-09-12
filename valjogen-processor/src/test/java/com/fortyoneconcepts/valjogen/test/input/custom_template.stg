@@ -7,16 +7,12 @@ import java.util.*;
 import javax.annotation.Generated;
 // Inserted import stuff here.
 %>
-@class.javadoc() ::= <%
-// Inserted class javadoc stuff here.
-%>
 @class.generated() ::= <%
 // Inserted generated stuff here.
 %>
 @class.annotations() ::= <%
 // Inserted class annotation stuff here.
 %>
-
 @class.before_class_members() ::= <%
 // Inserted before static members stuff here.
 %>
@@ -63,6 +59,10 @@ import javax.annotation.Generated;
 // Inserted toString annotation stuff here.
 %>
 
+@method_compareTo.annotations() ::= <%
+// Inserted compareTo annotation stuff here.
+%>
+
 @property.preamble() ::= <%
 <! Note region has access to arguments in scope of where it is declared !>
 // Inserted property <property.name> preamble stuff here.
@@ -82,4 +82,26 @@ import javax.annotation.Generated;
 %>
 @method_toString.preamble() ::= <%
 // Inserted toString preamble stuff here.
+%>
+@method_compareTo.preamble() ::= <%
+// Inserted compareTo preamble stuff here.
+%>
+
+@class.javadoc() ::= <%
+// Inserted class javadoc stuff here.
+%>
+@property.javadoc() ::= <%
+// Inserted property javadoc stuff here.
+%>
+@method_equals.javadoc() ::= <%
+// Inserted equals javadoc stuff here.
+%>
+@method_hashCode.javadoc() ::= <%
+// Inserted hashCode javadoc stuff here.
+%>
+@method_toString.javadoc() ::= <%
+// Inserted toString javadoc stuff here.
+%>
+@method_compareTo.javadoc() ::= <%
+// Inserted compareTo javadoc stuff here.
 %>

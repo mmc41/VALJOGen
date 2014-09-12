@@ -3,26 +3,10 @@
 *
 * This is a helper template group file that is responsible for generating javadoc.
 **/
-classJavaDoc(clazz) ::= <<
-<if(clazz.configuration.javadDocEnabled)>
-/**
- * {@inheritDoc}
- */<\\>
+methodJavaDoc(property) ::= <%
+<if(property.configuration.insertInheritDocOnMethodsEnabled)>
+/**<\n>
+ * {@inheritDoc}<\n>
+ */<\n>
 <endif>
->>
-
-constructorJavaDoc(clazz) ::= <<
-<if(clazz.configuration.javadDocEnabled)>
-/**
- * Constructs an instance of <clazz.name>
- */<\\>
-<endif>
->>
-
-propertyJavaDoc(property) ::= <<
-<if(property.configuration.javadDocEnabled)>
-/**
- * {@inheritDoc}
- */<\\>
-<endif>
->>
+%>

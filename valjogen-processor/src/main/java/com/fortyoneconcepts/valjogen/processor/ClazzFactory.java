@@ -5,6 +5,7 @@ package com.fortyoneconcepts.valjogen.processor;
 
 import java.beans.Introspector;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,8 @@ import com.fortyoneconcepts.valjogen.model.util.*;
  */
 public final class ClazzFactory
 {
+	private final static Logger LOGGER = Logger.getLogger(ClazzFactory.class.getName());
+
 	private static ClazzFactory instance = null;
 
 	public static synchronized ClazzFactory getInstance() {
@@ -92,7 +95,7 @@ public final class ClazzFactory
 		String classPackage = NamesUtil.getPackageFromQualifiedName(className);
 
 		String classJavaDoc = elements.getDocComment(masterInterfaceElement);
-		if (classJavaDoc==null)
+		if (classJavaDoc==null) // hmmm - seems to be null always (api not working?)
 			classJavaDoc="";
 
 		String headerFileName = configuration.getHeaderFileName();
@@ -124,7 +127,6 @@ public final class ClazzFactory
 
 		Type baseClazzType = createType(clazz, allTypesByPrototypicalFullName, types, baseClazzDeclaredMirrorType);
 
-
 		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toList());
 		Set<Type> interfaceTypesWithAscendants = allInterfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toSet());
 
@@ -138,8 +140,16 @@ public final class ClazzFactory
 		final StatusHolder statusHolder = new StatusHolder();
 
 		Set<String> implementedMethodNames = new HashSet<String>(Arrays.asList(configuration.getImplementedMethodNames()));
+
+		// TODO: Consider adding type argument signatures to support overloading.
 		if (clazz.isComparable() && configuration.isComparableEnabled())
-			implementedMethodNames.add("compareTo"); // TODO: Consider adding type argument signatures to support overloading.
+			implementedMethodNames.add("compareTo");
+		if (configuration.isHashEnabled())
+			implementedMethodNames.add("hashCode");
+		if (configuration.isEqualsEnabled())
+			implementedMethodNames.add("equals");
+		if (configuration.isToStringEnabled())
+			implementedMethodNames.add("toString");
 
 		// Collect all members, property methods and non-property methods from interfaces paired with the interface they belong to:
 		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromInterfaces = allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
@@ -153,6 +163,9 @@ public final class ClazzFactory
 		})));
 
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
+		// Currently it is assmued that all methods from base classes are implemented already - this does no take abstract base classes into account.
+		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming.
+
 		executableElementsFromInterfaces.forEach(e -> processMethod(types, elements, masterInterfaceElement, configuration, errorConsumer, allTypesByPrototypicalFullName, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, false));
 		executableElementsFromBaseClasses.forEach(e -> processMethod(types, elements, masterInterfaceElement, configuration, errorConsumer, allTypesByPrototypicalFullName, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, true));
 
@@ -162,7 +175,7 @@ public final class ClazzFactory
 		List<Type> importTypes = createImportTypes(clazz, allTypesByPrototypicalFullName, types, elements, masterInterfaceElement, configuration, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes, errorConsumer);
 
 		List<Member> members = new ArrayList<Member>(membersByName.values());
-		List<Member> selectedComparableMembers = getSelectedComparableMembers(masterInterfaceElement, configuration, errorConsumer, membersByName, members);
+		List<Member> selectedComparableMembers = (clazz.isComparable() && configuration.isComparableEnabled()) ? getSelectedComparableMembers(masterInterfaceElement, configuration, errorConsumer, membersByName, members) : Collections.emptyList();
 
 		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers);
 
@@ -212,7 +225,7 @@ public final class ClazzFactory
 	{
 		try {
 			String javaDoc = elements.getDocComment(m);
-			if (javaDoc==null)
+			if (javaDoc==null) // hmmm - seems to be null always (api not working?)
 				javaDoc="";
 
 			ExecutableType executableMethodMirrorType = (ExecutableType)types.asMemberOf(interfaceOrClassMirrorType, m);
@@ -268,10 +281,10 @@ public final class ClazzFactory
 
 			if (!validProperty)
 			{
-				if (implementedAlready)
-					implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
-				else if (implementedMethodNames.contains(methodName))
+				if (implementedMethodNames.contains(methodName))
 					implementationInfo=ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT;
+				else if (implementedAlready)
+					implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
 				else if (m.isDefault())
 					implementationInfo=ImplementationInfo.IMPLEMENTATION_DEFAULT_PROVIDED;
 				else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;

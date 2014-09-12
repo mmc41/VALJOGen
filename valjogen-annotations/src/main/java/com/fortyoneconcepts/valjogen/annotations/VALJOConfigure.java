@@ -162,13 +162,11 @@ public @interface VALJOConfigure
 	boolean toStringEnabled() default true;
 
 	/**
-	* Specifies if javaDoc should be added to the generated class. May be overruled by equivalent annotation processor key.
+	* Specifies if inheritDoc javaDoc comments should be added to the generated class for methods. May be overruled by equivalent annotation processor key.
 	*
-	* NB: In progress - NOT IMPLEMENTED YET!
-	*
-	* @return True if javaDoc should be generated for the class.
+	* @return True if sinple javaDoc with inheritDoc reference should be generated for methods on the generated class.
 	*/
-	boolean javadDocEnabled() default false;
+	boolean insertInheritDocOnMethodsEnabled() default false;
 
 	/**
 	* Specifies if errors should be issued for malformed getter and setter methods. May be overruled by equivalent annotation processor key.
@@ -213,15 +211,6 @@ public @interface VALJOConfigure
 	*/
     String[] extraInterfaceNames() default {};
 
-    /**
-	* Specifies names of methods that will be implemented by the generated class. May be overruled by equivalent annotation processor key.
-	*
-	* NOTE: Do not set this (yet). Presently used internally only. Reserved for future use.
-	*
-	* @return Array of names of implemented methods.
-	*/
-    String[] implementedMethodNames() default {};
-
 	/**
 	* Specifies the base class of the generated class. May be overruled by equivalent annotation processor key.
 	*
@@ -237,7 +226,21 @@ public @interface VALJOConfigure
     String headerFileName() default "N/A";
 
     /**
-	* UTF-8 formatted string template file that should be used.
+	* Specifies names of (custom) methods that will be implemented by the generated class. May be overruled by equivalent annotation processor key.
+	*
+	* Required to use if a custom templates add new methods.
+	*
+	* @return Array of names of implemented (custom) methods.
+	*/
+    String[] implementedMethodNames() default {};
+
+    /**
+	* UTF-8 formatted string template group file that should be used.May be overruled by equivalent annotation processor key. See StringTemplate 4 documentation for details
+	* about how to write String Templates. See the existing source (*.stg files) for this processor for examples that work with the models available.
+	*
+	* Preferably (when possible) override declared ST regions in the template to change output rather then overriding existing templates. This should reduce maintaince problems for
+	* future updates. When you need to add java methods, do add a template called template_methodname written like f.x. method_equals. Also remember to add the method name to
+	* implementedMethodNames to ensure your new template is called and taken into account when deciding if the generated class should be abstract or not.
 	*
 	* @return Filename of string template file.
 	*/
@@ -251,7 +254,7 @@ public @interface VALJOConfigure
 	*
 	* @return Log level
 	*/
-    String logLevel() default "INFO"; // "WARNING";
+    String logLevel() default "WARNING"; // "WARNING"; // INFO
 
     /**
 	* Experimental feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are

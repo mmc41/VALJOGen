@@ -96,8 +96,12 @@ public class NamesUtil
 	public static String[] getGenericQualifierNames(String className)
 	{
 		int genericQualifierPos = className.indexOf("<");
-		if (genericQualifierPos>=0 && genericQualifierPos+1<className.length()-1) {
-			String qualifiers = className.substring(genericQualifierPos+1, className.length()-1);
+		int genericQualifierEndPos = className.indexOf(">");
+		if (genericQualifierPos>=0 && genericQualifierEndPos<=0 || genericQualifierPos>genericQualifierEndPos)
+			throw new IllegalArgumentException("Illegal format of generic qualifier in "+className);
+
+		if (genericQualifierPos>=0) {
+			String qualifiers = className.substring(genericQualifierPos+1, genericQualifierEndPos);
 			return qualifiers.split("\\,");
 		}
 		else return emptyArray;
