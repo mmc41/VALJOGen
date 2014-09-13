@@ -17,11 +17,10 @@ method_equals(clazz, method) ::= <<
 
   <if(clazz.anyMembers)>
   <clazz.prototypicalName> <uniqueVariableName(clazz,"other")> = (<clazz.prototypicalName>) <first(method.parameters).name>;
-
-  return (<clazz.members:{m | <(equalsTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, m.name, m.type)>}; wrap, anchor, separator=" && ">);
-  <else>
-  return true;
   <endif>
+
+  <@postamble><@end>
+  return <@returnvalue><if(clazz.anyMembers)>(<clazz.members:{m | <(equalsTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, m.name, m.type)>}; wrap, anchor, separator=" && ">)<else>true<endif><@end>;
 }
 >>
 

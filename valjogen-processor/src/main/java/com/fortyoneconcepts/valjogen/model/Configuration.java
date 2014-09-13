@@ -101,6 +101,11 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(finalPropertiesEnabled, configureAnnotation.finalPropertiesEnabled());
 	 }
 
+	 public boolean isStaticFactoryMethodEnabled()
+	 {
+		 return getValue(staticFactoryMethodEnabled, configureAnnotation.staticFactoryMethodEnabled());
+	 }
+
 	 public boolean isEnsureNotNullEnabled()
 	 {
 		 return getValue(ensureNotNullEnabled, configureAnnotation.ensureNotNullEnabled());

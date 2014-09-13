@@ -1,0 +1,25 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
+
+@class.before_class_members() ::= <<
+private volatile int cachedHashCode = 0;
+>>
+
+@method_hashCode.preamble() ::= <<
+if (cachedHashCode!=0)
+ return cachedHashCode;
+
+>>
+
+@method_hashCode.returnvalue() ::= <%
+ <! Captures return value before return statement. Could also have overriden method_hashCode.postamble instead !>
+ (cachedHashCode=<@super.returnvalue()>)
+%>
+
+@method_hashCode.javadoc() ::= <<
+/**
+* Returns a hash code value for the object or cached value if already called.
+*/
+
+>>

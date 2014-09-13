@@ -12,7 +12,8 @@ method_compareTo(clazz, method) ::= <<
 
   <clazz.chosenComparableMembers:{m | <(comparableTemplateNamesByTypeCategory.(m.type.typeCategory))(clazz, first(method.parameters), m, m.type)>}; wrap, anchor, separator="\n">
 
-  return 0;
+  <@postamble><@end>
+  return <@returnvalue>0<@end>;
 }
 >>
 
@@ -20,7 +21,7 @@ comparableTemplateNamesByTypeCategory ::= [ "PRIMITIVE": "comparable_primitive",
 
 comparable_primitive(clazz, other, member, type) ::= <<
 if ((<uniqueVariableName(clazz,"result")>=<type.wrapperName>.compare(<member.name>, <other_instance_get_member_value(other, member)>))!=0)
- return <uniqueVariableName(clazz,"result")>;
+ return <@returnvalue><uniqueVariableName(clazz,"result")><@end>;
 >>
 
 comparable_array(clazz, param, var, type) ::= <<
@@ -31,7 +32,7 @@ comparable_array(clazz, param, var, type) ::= <<
 comparable_object(clazz, other, member, type) ::= <<
 <if(type.comparable && (other.type.thisType || member.getter))><\\>
 if ((<uniqueVariableName(clazz,"result")>=<member.name>.compareTo(<other_instance_get_member_value(other, member)>))!=0)
- return <uniqueVariableName(clazz,"result")>;<\\>
+ return <@returnvalue><uniqueVariableName(clazz,"result")><@end>;<\\>
 <else>
  <! This case is not supported and should not happen unless explicitly requested !>
  // SKIPPING: <member.name> : Comparing non-comparable objects or members through interfaces without getters not supported.

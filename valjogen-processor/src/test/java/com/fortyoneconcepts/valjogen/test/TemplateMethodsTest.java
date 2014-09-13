@@ -39,6 +39,26 @@ public class TemplateMethodsTest extends TemplateTestBase
 	}
 
 	@Test
+	public void testStaticFactory() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.staticFactoryMethodEnabled, "true");
+		Output output = produceOutput(MutableInterface.class);
+
+		assertContainsWithWildcards("public static "+generatedClassName+" valueOf(", output.code);
+		assertContainsWithWildcards("private "+generatedClassName+"(", output.code);
+	}
+
+	@Test
+	public void testNoStaticFactory() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.staticFactoryMethodEnabled, "false");
+		Output output = produceOutput(MutableInterface.class);
+
+		assertNotContainsWithWildcards(generatedClassName+" valueOf(", output.code);
+		assertContainsWithWildcards("public "+generatedClassName+"(", output.code);
+	}
+
+	@Test
 	public void testInHeritedJavaDoc() throws Exception
 	{
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.insertInheritDocOnMethodsEnabled, "true");

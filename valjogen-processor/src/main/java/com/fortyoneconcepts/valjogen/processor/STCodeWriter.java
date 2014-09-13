@@ -20,6 +20,8 @@ import com.fortyoneconcepts.valjogen.model.*;
  * Controller for StringTemplate 4 templates groups. Calls into the main.stg
  * template.
  *
+ * Instancess class is NOT multi-thread safe across threads. Individual instances are needed for each thread.
+ *
  * @author mmc
  */
 public final class STCodeWriter
@@ -35,13 +37,18 @@ public final class STCodeWriter
 
 	private final ResourceLoader resourceLoader;
 
+	private RuntimeException lastException;
+
 	public STCodeWriter(ResourceLoader resourceLoader)
 	{
 		this.resourceLoader=resourceLoader;
+		this.lastException=null;
 	}
 
 	public String outputClass(Clazz clazz, Configuration cfg) throws Exception
 	{
+		lastException = null;
+
 		String result = null;
 
 		STGroup.verbose = LOGGER.isLoggable(Level.FINE);
@@ -77,6 +84,11 @@ public final class STCodeWriter
 
 		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
 
+		// Unfortunately, ST does not propagate exceptions so we have to do that.
+		Exception exception = lastException;
+		if (exception!=null)
+			throw exception;
+
 		if (cfg.isDebugStringTemplatesEnabled())
 		{
 			LOGGER.warning(() -> "Showing STViz - Pausing code generation until STViz is closed...");
@@ -95,22 +107,22 @@ public final class STCodeWriter
 
 		@Override
 		public void runTimeError(STMessage msg) {
-			throw new STException(reportSTMsg(msg));
+			throw (lastException = new STException(reportSTMsg(msg)));
 		}
 
 		@Override
 		public void compileTimeError(STMessage msg) {
-			throw new STException(reportSTMsg(msg));
+			throw (lastException = new STException(reportSTMsg(msg)));
 		}
 
 		@Override
 		public void IOError(STMessage msg) {
-			throw new STException(reportSTMsg(msg));
+			throw (lastException = new STException(reportSTMsg(msg)));
 		}
 
 		@Override
 		public void internalError(STMessage msg) {
-			throw new STException(reportSTMsg(msg));
+			throw (lastException = new STException(reportSTMsg(msg)));
 		}
 	}
 }

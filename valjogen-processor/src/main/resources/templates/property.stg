@@ -1,0 +1,49 @@
+/**
+* Copyright (C) 2014 41concepts Aps
+*
+* This is a helper template group file that is responsible for generating properties (getters/setters).
+**/
+
+property(property) ::= <%
+<if(property.getter)>
+ <getter(property)>
+<elseif(property.setter)>
+ <if(property.thisReturnType)>
+   <immutable_setter(property)>
+ <else>
+  <mutable_setter(property)>
+ <endif>
+ <else>
+  <! Error - Should not occur !>
+ <endif>
+%>
+
+getter(property) ::= <<
+<@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
+public <optFinal(property)><optSynchronized(property)><property.returnType.name> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+{
+ <@preamble><@end>
+ <@postamble><@end>
+ return <@returnvalue><property.member.name><@end>;
+}
+>>
+
+mutable_setter(property) ::= <<
+<@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
+public <optFinal(property)><optSynchronized(property)><property.returnType.name> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+{
+ <@preamble><@end>
+ this.<property.member.name>=<guard(property.member, property.parameter)>;
+ <@postamble><@end>
+}
+>>
+
+immutable_setter(property) ::= <<
+<@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
+public <optFinal(property)><optSynchronized(property)><property.returnType.name> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+{
+ <@preamble><@end>
+ <@postamble><@end>
+ return <@returnvalue>new <clazz.name>(<[property.member.otherMembersBeforeThis:{m | this.<m.name>}, property.parameter.name , property.member.otherMembersAfterThis:{m | this.<m.name>}]; wrap, anchor, separator=", ">)<@end>;
+}
+>>

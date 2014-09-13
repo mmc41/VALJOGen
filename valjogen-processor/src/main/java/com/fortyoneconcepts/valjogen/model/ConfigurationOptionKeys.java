@@ -44,6 +44,11 @@ public interface ConfigurationOptionKeys
 	 public static String finalPropertiesEnabled = "finalPropertiesEnabled";
 
 	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#staticFactoryMethodEnabled
+	 */
+	 public static String staticFactoryMethodEnabled = "staticFactoryMethodEnabled";
+
+	 /**
      * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#ensureNotNullEnabled
 	 */
 	 public static String ensureNotNullEnabled = "ensureNotNullEnabled";

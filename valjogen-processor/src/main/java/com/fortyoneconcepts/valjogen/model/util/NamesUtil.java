@@ -96,7 +96,7 @@ public class NamesUtil
 	public static String[] getGenericQualifierNames(String className)
 	{
 		int genericQualifierPos = className.indexOf("<");
-		int genericQualifierEndPos = className.indexOf(">");
+		int genericQualifierEndPos = className.lastIndexOf(">");
 		if (genericQualifierPos>=0 && genericQualifierEndPos<=0 || genericQualifierPos>genericQualifierEndPos)
 			throw new IllegalArgumentException("Illegal format of generic qualifier in "+className);
 

@@ -6,26 +6,25 @@ package com.fortyoneconcepts.valjogen.annotations;
 import java.lang.annotation.*;
 
 /**
- * Specifies details about the code that should be generated. May be specified on a package (package-info.java) or on a inteface alongside
+ * Specifies details about the code that should be generated. May be specified on a package (package-info.java) or on a interface alongside
  * the {@link VALJOGenerate} annotation. If specified on both a package and an interface then the package specification is ignored. Has no effect
- * unless affected interfaces also has a {@link VALJOGenerate} annotation. All details may be overruled by setting indentically named key/values
- * in the annotation processor. Indeed some details like "debugXXX" are usally better specified as a runtime option instead of hardcoding in the source using
- * this annotation.
- *
- * <p><b>Usage example (package-info.java):</b></p>
- * <pre>
- * <code>
+ * unless affected interfaces also has a {@link VALJOGenerate} annotation. All options may be overruled by setting identically named qualified key/values
+ * in the annotation processor using the <b>-A</b>com.fortyoneconcepts.valjogen.<i>optionName</i>=<i>value</i> option to javac. Indeed some details like logLevel
+ * are usally better specified as a runtime option instead of hardcoding in the source using this annotation.
+ * <p>
+ * <b>Usage example (package-info.java):</b></p>
+ * <pre><code>
  *<span class="identifier">{@literal @}VALJOConfigure</span>(<span class="identifier">outputPackage</span>=<span class="string">"test.impl"</span>, <span class="identifier">baseClazzName</span>=<span class="string">"test.CommonBaseClass"</span>)
  * <span class="keyword">package</span> <span class="identifier">test</span>;
- * </code>
- * </pre>
- *
+ * </code></pre>
+ * <p>
  * The above code will instruct the VALJOGen annotation processor to have generated value object classes from interfaces in this package belong to
  * the "test.impl" package and to inherit from a common base class with qualified name "test.CommonBaseClass". Note that generation requires
- * seperate {@link VALJOGenerate} annotations.
- *
- * All string properties recognize the following macro: <code>$(This)</code> which resolves to the fully qualified name of the generated class.
- *
+ * a seperate {@link VALJOGenerate} annotation. This other annotation is also used to specify what name the generated class should have.
+ * <p>
+ * All string properties recognize the following macro: <code>$(This)</code> which resolves to the fully qualified name of the generated class. The macro can be especially
+ * useful when implementing the Comparable interface using the extraInterfaceNames option.
+ * <p>
  * @author mmc
  */
 @Retention(RetentionPolicy.SOURCE)
@@ -91,6 +90,13 @@ public @interface VALJOConfigure
 	* @return True if local variables should be guarded against null assignments
 	*/
 	boolean ensureNotNullEnabled() default true;
+
+	/**
+	* Specifie if a static factory method should be generated instead of having the constructor being public. May be overruled by equivalent annotation processor key.
+	*
+	* @return True a static factory method should be generated.
+	*/
+	boolean staticFactoryMethodEnabled() default true;
 
 	/**
 	* Specifies if generated properties/methods for mutable members should be synchronized. May be overruled by equivalent annotation processor key.
@@ -166,7 +172,7 @@ public @interface VALJOConfigure
 	*
 	* @return True if sinple javaDoc with inheritDoc reference should be generated for methods on the generated class.
 	*/
-	boolean insertInheritDocOnMethodsEnabled() default false;
+	boolean insertInheritDocOnMethodsEnabled() default true;
 
 	/**
 	* Specifies if errors should be issued for malformed getter and setter methods. May be overruled by equivalent annotation processor key.
@@ -226,38 +232,74 @@ public @interface VALJOConfigure
     String headerFileName() default "N/A";
 
     /**
-	* Specifies names of (custom) methods that will be implemented by the generated class. May be overruled by equivalent annotation processor key.
+	* Specifies names of custom methods that will be implemented by the generated class using a custom template. Required when adding new methods in a custom template. May be overruled by equivalent annotation processor key.
 	*
-	* Required to use if a custom templates add new methods.
-	*
+	* @see VALJOConfigure#customTemplateFileName
 	* @return Array of names of implemented (custom) methods.
 	*/
     String[] implementedMethodNames() default {};
 
     /**
-	* UTF-8 formatted string template group file that should be used.May be overruled by equivalent annotation processor key. See StringTemplate 4 documentation for details
-	* about how to write String Templates. See the existing source (*.stg files) for this processor for examples that work with the models available.
+	* This is the <b>ultimate customization power feature</b> as it allows all aspects of the generated class to be changed or extended. To enable this feature supply the name of a UTF-8 formatted
+	* StringTemplate 4 (ST) group file that should be used. It can be bit more difficult to use compared to other features of this tool, so do look at the other options first.
+	* <p>
+	* See <a href="http://www.stringtemplate.org/" target="_blank">ST 4 documentation</a> and the <a href="https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+cheat+sheet" target="_blank">cheat sheet</a> in
+	* particular for details about how to write templates. The custom group file that can be added using this option will inherit from the existing templates allowing you to add new templates
+	* or override the build-in templates.
+	* <p>
+	* Note that ST maintains strict Model-View separation so templates can not contain logic or compare values other then booleans. Note also that templates can call into model getters but with the <b>get</b>/<b>is</b> prefix omitted.
+	* <p>
+	* Refer to the <a href="http://github.com/41concepts/VALJOGen/tree/master/valjogen-processor/src/main/resources/templates" target="_blank">existing source (*.stg files)</a>
+	* for this processor for how to work with the models available from a template. For details about the model see refer to javadoc or source for the <b>com.fortyoneconcepts.valjogen.model.*</b>
+	* classes in the annotation processor tool.
+	* <p>
+	* Preferably consider overriding declared ST regions like for example <code>&lt;{@literal @}preamble&gt;</code> to change output rather then overriding existing templates. This should reduce
+	* maintaince problems for future updates. ST requires regions to be prefixed with the template method they are declared in, so to add code in beginning of the equals method, add a
+	* ST file with a template rule like this:
+	* <pre><code>
+	* {@literal @}<span class="st-identifier">method_equals</span>.<span class="st-identifier">preamble</span>() ::= &lt;&lt; <span class="free-comment">// initial method code here.</span> &gt;&gt;
+	* </code></pre>
+	* <p>
+	* When you need to add new java methods, do add a template called <code>method_<i>methodname</i></code>. As an example it is shown below how the main part of the equals method is defined at the time of this
+	* documentation. Refer to the ST <a href="http://github.com/41concepts/VALJOGen/blob/master/valjogen-processor/src/main/resources/templates/equals.stg" target="_blank">source file for the equals method</a>
+	* for the complete source code. Note how getters in the model is accessed (with getter prefixes stripped) to facilitate the generation of the method according of the actal class members, method arguments etc.
+	* <pre><code>
+	* <span class="st-identifier">method_equals</span>(<span class="st-identifier">clazz</span>, <span class="st-identifier">method</span>) ::= &lt;&lt;
+	*  &lt;<span class="st-identifier">declare_method</span>(<span class="st-identifier">clazz</span>, <span class="st-identifier">method</span>)&gt;
+	*  {
+	*     &lt;<span class="st-keyword">if</span>(<span class="st-identifier">clazz</span>.<span class="identifier">anyMembers</span>)&gt;
+	*     &lt;<span class="st-identifier">clazz</span>.<span class="identifier">prototypicalName</span>&gt; &lt;<span class="st-identifier">uniqueVariableName</span>(<span class="st-identifier">clazz</span>,<span class="string">"other"</span>)&gt; = (&lt;<span class="st-identifier">clazz</span>.prototypicalName&gt;) &lt;<span class="st-keyword">first</span>(<span class="st-identifier">method</span>.<span class="identifier">parameters</span>).<span class="identifier">name</span>&gt;;
 	*
-	* Preferably (when possible) override declared ST regions in the template to change output rather then overriding existing templates. This should reduce maintaince problems for
-	* future updates. When you need to add java methods, do add a template called template_methodname written like f.x. method_equals. Also remember to add the method name to
-	* implementedMethodNames to ensure your new template is called and taken into account when deciding if the generated class should be abstract or not.
-	*
-	* @return Filename of string template file.
+    *     <span class="keyword">return</span> (&lt;<span class="st-identifier">clazz</span>.<span class="identifier">members</span>:{<span class="st-identifier">m</span> | &lt;(<span class="st-identifier">equalsTemplateNamesByTypeCategory</span>.(<span class="st-identifier">m</span>.<span class="identifier">type.typeCategory</span>))(<span class="st-identifier">clazz</span>, <span class="st-identifier">m</span>.<span class="identifier">name</span>, <span class="st-identifier">m</span>.<span class="identifier">type</span>)&gt;}; <span class="st-keyword">wrap</span>, <span class="st-keyword">anchor</span>, <span class="st-keyword">separator</span>=" &amp;&amp; "&gt;);
+	*     &lt;<span class="st-keyword">else</span>&gt;
+	*     <span class="keyword">return true</span>;
+    *     &lt;<span class="st-keyword">endif</span>&gt;
+	*  }
+	* &gt;&gt;
+	* </code></pre>
+	* <p>
+	* When adding new methods of your own, do remember to add the method name to the option <b>implementedMethodNames</b> to ensure your new template is called! This also means the method is taken into account
+	* when deciding if the generated class should be abstract or not.
+	* <p>
+	* This file name may be overruled by equivalent annotation processor key.
+	* <p>
+	* @see VALJOConfigure#implementedMethodNames
+	* @return Filename of string template group file.
 	*/
     String customTemplateFileName() default "N/A";
 
     /**
 	* Specifies the {@link java.util.logging.Level} log level to use inside the annotation processor. Set this to INFO or FINE to inspect model instances,
-	* inspect output or to help track errors inside the processor
+	* inspect output or to help track errors inside the processor. Set to WARNING otherwise.
 	*
 	* Note that normally java.util.logging.ConsoleHandler.level needs to be set as well for log levels below INFO to be shown.
 	*
 	* @return Log level
 	*/
-    String logLevel() default "WARNING"; // "WARNING"; // INFO
+    String logLevel() default "INFO"; // "WARNING"; // INFO
 
     /**
-	* Experimental feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are
+	* Experimental debugging feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are
 	* adding/modifying code templates and run into problems. Be aware that code generation will pause while the generator is shown - you properly do not want to do that when using an IDE.
 	* May be overruled by equivalent annotation processor key.
 	*

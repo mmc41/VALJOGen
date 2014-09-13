@@ -21,8 +21,10 @@
          <!-- Additional custom styles for code syntax highlightning -->
          <style type="text/css">
             .string { color: #8A85FC; }
-            .keyword { color: #913474; }
-            .identifier { color: #101010; }
+            .keyword { color: #712353; }
+            .st-keyword { color: #913474; font-weight: bold; }
+            .identifier { color: #204020; }
+            .st-identifier { color: #202060; font-weight: bold; }
             .free-comment { color: #7CA590; }
             .javadoc-comment { color: #F0F3FA; }
          </style>

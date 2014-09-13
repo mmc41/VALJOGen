@@ -35,6 +35,16 @@ protected<\ >
 <endif>
 %>
 
+constructorLevel(clazz) ::= <%
+<if(!clazz.configuration.staticFactoryMethodEnabled)>
+public<\ >
+<elseif(clazz.final)>
+private<\ >
+<else>
+protected<\ >
+<endif>
+%>
+
 guard(member, param) ::= <%
 <if(member.ensureNotNullEnabled && member.type.object)>
 <clazz.helperTypes.javaUtilObjects.name>.requireNonNull(<param.name>)
@@ -69,4 +79,9 @@ other_instance_get_member_value(other, member) ::= <%
   ?
  <endif>
 <endif>
+%>
+
+/** Generate a formal parameter for a method: **/
+formalParameter(member) ::= <%
+final <member.type.name> <member.name>
 %>

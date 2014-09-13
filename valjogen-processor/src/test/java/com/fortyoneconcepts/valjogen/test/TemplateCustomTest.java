@@ -15,6 +15,8 @@ import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
  * Stubbed integration test of StringTemplate generation of special code related to a custom string template. See {@link TemplateTestBase} for general
  * words about template tests.
  *
+ * Note that the generated output from these templates can compile but make very little/no sense.
+ *
  * @author mmc
  */
 public class TemplateCustomTest extends TemplateTestBase
@@ -27,20 +29,33 @@ public class TemplateCustomTest extends TemplateTestBase
 				                                                     .add(ConfigurationOptionKeys.customTemplateFileName, "custom_template.stg").build());
 
 		String[] searchStrings = { "generated", "class annotation", "import",
-				                   "class javadoc", "property javadoc", "equals javadoc", "hashCode javadoc", "toString javadoc", "compareTo javadoc",
+				                   "class javadoc", "getter javadoc", "mutable setter javadoc", "immutable setter javadoc", "equals javadoc", "hashCode javadoc", "toString javadoc", "compareTo javadoc",
 				                   "before static members", "after static members",
 				                   "before instance members", "after instance members",
 				                   "before static methods", "after static methods",
 				                   "before instance methods", "after instance methods",
-				                   "member _object annotation",
+				                   "member mutableObject annotation",
 				                   "constructor annotation", "factory annotation",
-				                   "equals annotation", "hashCode annotation", "toString annotation", "compareTo annotation",
+				                   "equals annotation", "hashCode annotation", "toString annotation", "compareTo annotation", "getter getMutableObject annotation", "immutable setter setImmutableObject annotation", "mutable setter setMutableObject annotation",
 				                   "constructor preamble", "factory preamble",
-				                   "equals preamble", "hashCode preamble", "toString preamble", "compareTo preamble",
-				                   "property getObject preamble"
+				                   "equals preamble", "hashCode preamble", "toString preamble", "compareTo preamble", "getter getMutableObject preamble", "immutable setter setImmutableObject preamble", "mutable setter setMutableObject preamble",
+				                   "equals postamble", "hashCode postamble", "toString postamble", "compareTo postamble", "getter getMutableObject postamble", "immutable setter setImmutableObject postamble", "mutable setter setMutableObject postamble"
 		};
 
 		for (String searchString : searchStrings)
 		  assertContainsWithWildcards("Inserted "+searchString+" stuff here.", output.code);
+	}
+
+	@Test
+	public void testCustomTemplateReturnValues() throws Exception
+	{
+		Output output = produceOutput(CustomTemplateInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true)
+				                                                     .add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"})
+				                                                     .add(ConfigurationOptionKeys.customTemplateFileName, "custom_template.stg").build());
+
+		String[] searchStrings = { "4242", "!(!", "\"dummyValue\"", "9999", "(null)", "(this)" };
+
+		for (String searchString : searchStrings)
+		  assertContainsWithWildcards(searchString, output.code);
 	}
 }

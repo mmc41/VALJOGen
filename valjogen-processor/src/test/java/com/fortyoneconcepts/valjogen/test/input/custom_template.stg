@@ -1,5 +1,7 @@
 /*
 * Copyright (C) 2014 41concepts Aps
+*
+* Note that the template here is for testing only - it produce code that make little sense (but can compile).
 */
 
 @class.imports() ::= <%
@@ -40,7 +42,7 @@ import javax.annotation.Generated;
 
 @member.annotations() ::= <%
 <! Note region has access to arguments in scope of where it is declared !>
-// Inserted member <member.name> annotation stuff here.
+// Inserted member <member.name> annotation stuff here.<\n>
 %>
 
 @method_valueOf.annotations() ::= <%
@@ -62,12 +64,28 @@ import javax.annotation.Generated;
 @method_compareTo.annotations() ::= <%
 // Inserted compareTo annotation stuff here.
 %>
-
-@property.preamble() ::= <%
-<! Note region has access to arguments in scope of where it is declared !>
-// Inserted property <property.name> preamble stuff here.
+@getter.annotations() ::= <%
+// Inserted getter <property.name> annotation stuff here.
+%>
+@mutable_setter.annotations() ::= <%
+// Inserted mutable setter <property.name> annotation stuff here.
+%>
+@immutable_setter.annotations() ::= <%
+// Inserted immutable setter <property.name> annotation stuff here.
 %>
 
+@getter.preamble() ::= <%
+<! Note region has access to arguments in scope of where it is declared !>
+// Inserted getter <property.name> preamble stuff here.
+%>
+@mutable_setter.preamble() ::= <%
+<! Note region has access to arguments in scope of where it is declared !>
+// Inserted mutable setter <property.name> preamble stuff here.
+%>
+@immutable_setter.preamble() ::= <%
+<! Note region has access to arguments in scope of where it is declared !>
+// Inserted immutable setter <property.name> preamble stuff here.
+%>
 @method_valueOf.preamble() ::= <%
 // Inserted factory preamble stuff here.
 %>
@@ -87,11 +105,45 @@ import javax.annotation.Generated;
 // Inserted compareTo preamble stuff here.
 %>
 
+@getter.postamble() ::= <%
+// Inserted getter <property.name> postamble stuff here.
+%>
+@mutable_setter.postamble() ::= <%
+// Inserted mutable setter <property.name> postamble stuff here.
+%>
+@immutable_setter.postamble() ::= <%
+// Inserted immutable setter <property.name> postamble stuff here.
+%>
+@method_valueOf.postamble() ::= <%
+// Inserted factory postamble stuff here.
+%>
+@method_this.postamble() ::= <%
+// Inserted constructor postamble stuff here.
+%>
+@method_equals.postamble() ::= <%
+// Inserted equals postamble stuff here.
+%>
+@method_hashCode.postamble() ::= <%
+// Inserted hashCode postamble stuff here.
+%>
+@method_toString.postamble() ::= <%
+// Inserted toString postamble stuff here.
+%>
+@method_compareTo.postamble() ::= <%
+// Inserted compareTo postamble stuff here.
+%>
+
 @class.javadoc() ::= <%
 // Inserted class javadoc stuff here.
 %>
-@property.javadoc() ::= <%
-// Inserted property javadoc stuff here.
+@getter.javadoc() ::= <%
+// Inserted getter javadoc stuff here.
+%>
+@mutable_setter.javadoc() ::= <%
+// Inserted mutable setter javadoc stuff here.
+%>
+@immutable_setter.javadoc() ::= <%
+// Inserted immutable setter javadoc stuff here.
 %>
 @method_equals.javadoc() ::= <%
 // Inserted equals javadoc stuff here.
@@ -105,3 +157,17 @@ import javax.annotation.Generated;
 @method_compareTo.javadoc() ::= <%
 // Inserted compareTo javadoc stuff here.
 %>
+
+@getter.returnvalue() ::= <%"getterReturnValue"%>
+
+@immutable_setter.returnvalue() ::= <%(this)%>
+
+@method_valueOf.returnvalue() ::= <%(null)%>
+
+@method_hashCode.returnvalue() ::= <%4242%>
+
+@method_equals.returnvalue() ::= <%!(!<@super.returnvalue()>)%>
+
+@method_toString.returnvalue() ::= <%"dummyValue"%>
+
+@method_compareTo.returnvalue() ::= <%9999%>
