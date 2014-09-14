@@ -28,7 +28,7 @@ public class TemplateComparableTest extends TemplateTestBase
 		assertContainsWithWildcards("public int compareTo(final ComparableInterface *) { ", output.code);
 		assertContainsWithWildcards("if ((_result=Integer.compare(intValue, arg0.getIntValue()))!=0) return _result; if ((_result=stringValue.compareTo(arg0.getStringValue()))!=0) return _result;", output.code);
 
-		Assert.assertTrue("Single warning about not all members being comparalle expected", output.warnings.size()==1 && output.warnings.get(0).contains("not all members are comparable"));
+		Assert.assertTrue("Single warning about not all members being comparable expected", output.warnings.size()==1 && output.warnings.get(0).contains("not all members are comparable"));
 	}
 
 	@Test

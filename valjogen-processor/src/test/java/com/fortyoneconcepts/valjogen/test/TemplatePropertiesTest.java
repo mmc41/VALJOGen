@@ -38,14 +38,14 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testCustomSetterAndGetter() throws Exception
 	{
-		Output output = produceOutput(CustomPropertiesInterface.class,
+		Output output = produceOutput(CustomNamedPropertiesInterface.class,
 				                      generateAnnotationBuilder.build(),
 				                      configureAnnotationBuilder.add(ConfigurationOptionKeys.getterPrefixes, new String[] { "should"})
 				                      .add(ConfigurationOptionKeys.setterPrefixes, new String[] { "with"})
 				                      .build());
 
 		assertContainsWithWildcards("boolean shouldRequire() { return require; }", output.code);
-		assertContainsWithWildcards("CustomPropertiesInterface withRequire(final boolean require) { return new CustomPropertiesImpl(require); }", output.code);
+		assertContainsWithWildcards(CustomNamedPropertiesInterface.class.getSimpleName()+" withRequire(final boolean require) { return new CustomNamedPropertiesImpl(require); }", output.code);
 	}
 
 	@Test
@@ -74,5 +74,29 @@ public class TemplatePropertiesTest extends TemplateTestBase
 		Output output = produceOutput(MutableInterface.class);
 
 		assertContainsWithWildcards("setObjectValue(final Object objectValue) { this.objectValue=objectValue; }", output.code);
+	}
+
+	@Test
+	public void testGenricImmutableSetter() throws Exception
+	{
+		Output output = produceOutput(GenericInterface.class);
+
+		assertContainsWithWildcards("public * GenericInterface<GT,ST,OT> setSt(final ST st) { return new TestImpl(this.gt, st, this.ot); }", output.code);
+	}
+
+	@Test
+	public void testGenricMutableSetter() throws Exception
+	{
+		Output output = produceOutput(GenericInterface.class);
+
+		assertContainsWithWildcards("public final void setGt(final GT gt) { this.gt=Objects.requireNonNull(gt); }", output.code);
+	}
+
+	@Test
+	public void testGenricMutableGetter() throws Exception
+	{
+		Output output = produceOutput(GenericInterface.class);
+
+		assertContainsWithWildcards("public final GT getGt() { return gt; }", output.code);
 	}
 }

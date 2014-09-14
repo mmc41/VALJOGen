@@ -20,7 +20,7 @@ property(property) ::= <%
 
 getter(property) ::= <<
 <@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
-public <optFinal(property)><optSynchronized(property)><property.returnType.name> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
  <@preamble><@end>
  <@postamble><@end>
@@ -30,7 +30,7 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.name>
 
 mutable_setter(property) ::= <<
 <@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
-public <optFinal(property)><optSynchronized(property)><property.returnType.name> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
  <@preamble><@end>
  this.<property.member.name>=<guard(property.member, property.parameter)>;
@@ -40,10 +40,10 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.name>
 
 immutable_setter(property) ::= <<
 <@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
-public <optFinal(property)><optSynchronized(property)><property.returnType.name> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
  <@preamble><@end>
  <@postamble><@end>
- return <@returnvalue>new <clazz.name>(<[property.member.otherMembersBeforeThis:{m | this.<m.name>}, property.parameter.name , property.member.otherMembersAfterThis:{m | this.<m.name>}]; wrap, anchor, separator=", ">)<@end>;
+ return <@returnvalue>new <clazz.prototypicalName>(<[property.member.otherMembersBeforeThis:{m | this.<m.name>}, property.parameter.name , property.member.otherMembersAfterThis:{m | this.<m.name>}]; wrap, anchor, separator=", ">)<@end>;
 }
 >>

@@ -12,6 +12,7 @@ public interface ProcessorMessages
 
   public static final String MalFormedSetter="Malformed setter %s";
   public static final String MalFormedGetter="Malformed getter %s";
+  public static final String InconsistentProperty="Type inconsistency between property methods %s";
 
   public static final String AnnotationOnInterfacesOnly = "Annotation %s may only be used with interfaces.";
 

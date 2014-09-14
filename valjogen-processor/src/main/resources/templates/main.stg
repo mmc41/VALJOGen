@@ -73,7 +73,7 @@ import <type.qualifiedName>;
 /** Generate a class instance member **/
 member(member) ::= <<
 <@javadoc><@end><@annotations><@end><\\>
-<internalLevel(member.clazz)><optFinal(member)><member.type.name> <member.name>;
+<internalLevel(member.clazz)><optFinal(member)><member.type.prototypicalName> <member.name>;
 >>
 
 /** Generate constructor **/
@@ -94,7 +94,7 @@ method_valueOf(clazz) ::= <<
 public static <optGenericQualifier(clazz)><clazz.prototypicalName> valueOf(<clazz.members:formalParameter(); wrap, anchor, separator=", ">)
 {
   <@preamble><@end>
-  <clazz.prototypicalName> <uniqueVariableName(clazz,"instance")> = new <clazz.name>(<clazz.members:{m | <m.name>}; wrap, anchor, separator=", ">);
+  <clazz.prototypicalName> <uniqueVariableName(clazz,"instance")> = new <clazz.prototypicalName>(<clazz.members:{m | <m.name>}; wrap, anchor, separator=", ">);
   <@postamble><@end>
   return <@returnvalue><uniqueVariableName(clazz,"instance")><@end>;
 }

@@ -8,14 +8,21 @@ method_equals(clazz, method) ::= <<
 <declare_method(clazz, method)>
 {
   <@preamble><@end>
+  <@sameinstancecheck>
   if (this == <first(method.parameters).name>)
     return true;
+  <@end>
+  <@nullcheck>
   if (<first(method.parameters).name> == null)
     return false;
+  <@end>
+  <@typecheck>
   if (getClass() != <first(method.parameters).name>.getClass())
     return false;
+  <@end>
 
   <if(clazz.anyMembers)>
+  @SuppressWarnings("unchecked")
   <clazz.prototypicalName> <uniqueVariableName(clazz,"other")> = (<clazz.prototypicalName>) <first(method.parameters).name>;
   <endif>
 

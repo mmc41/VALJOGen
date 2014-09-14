@@ -83,5 +83,5 @@ other_instance_get_member_value(other, member) ::= <%
 
 /** Generate a formal parameter for a method: **/
 formalParameter(member) ::= <%
-final <member.type.name> <member.name>
+final <member.type.prototypicalName> <member.name>
 %>

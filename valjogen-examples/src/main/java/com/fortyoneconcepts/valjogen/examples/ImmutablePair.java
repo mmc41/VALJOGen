@@ -6,11 +6,11 @@ package com.fortyoneconcepts.valjogen.examples;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate
-public interface ImmutablePair
+public interface ImmutablePair<TLeft, TRight>
 {
-	public Object getLeft();
-	//public Object setLeft(Object left);
+	public TLeft getLeft();
+	public ImmutablePair<TLeft, TRight> setLeft(TLeft left);
 
-	public Object getRight();
-	//public Object setRight(Object right);
+	public TRight getRight();
+	public ImmutablePair<TLeft, TRight> setRight(TRight right);
 }

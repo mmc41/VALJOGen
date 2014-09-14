@@ -153,14 +153,8 @@ public class ObjectType extends Type
 	{
 		assert initializedType : "Type initialization missing";
 
-        // java.lang.Comparable generic i.e  java.lang.Comparable<java.lang.String> so our helperTypes need an arg for this to work ???
-
-//		Type comparableType = helperTypes.getComparableInterfaceType();
 		if (this.getQualifiedName().equals("java.lang.Comparable"))
 			return true;
-
-		//if (this.equals(comparableType))
-		//	return true;
 
 		boolean comparable = interfaceTypesWithAscendants.stream().anyMatch(t -> t.getQualifiedName().equals("java.lang.Comparable"));
 		return comparable;

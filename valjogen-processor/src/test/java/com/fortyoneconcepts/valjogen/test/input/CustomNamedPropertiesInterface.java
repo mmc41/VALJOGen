@@ -7,8 +7,8 @@ import com.fortyoneconcepts.valjogen.annotations.*;
 
 @VALJOGenerate
 @VALJOConfigure(getterPrefixes={ "should" }, setterPrefixes= {"with"})
-public interface CustomPropertiesInterface
+public interface CustomNamedPropertiesInterface
 {
 	public boolean shouldRequire();
-	public CustomPropertiesInterface withRequire(boolean require);
+	public CustomNamedPropertiesInterface withRequire(boolean require);
 }

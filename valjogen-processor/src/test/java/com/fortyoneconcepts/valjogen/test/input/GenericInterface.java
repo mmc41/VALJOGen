@@ -9,8 +9,11 @@ import com.fortyoneconcepts.valjogen.annotations.*;
 public interface GenericInterface<GT,ST,OT> // Wildcards like <GT extends java.io.Serializable, ST extends CharSequence, OT> not yet supported.
 {
 	public GT getGt();
+	public void setGt(GT arg0); // Mutable setter.
 
 	public ST getSt();
+	public GenericInterface<GT,ST,OT> setSt(ST arg0); // Immutable setter.
 
 	public OT getOt();
+	public GenericInterface<GT,ST,OT> setOt(OT arg0); // Immutable setter;
 }

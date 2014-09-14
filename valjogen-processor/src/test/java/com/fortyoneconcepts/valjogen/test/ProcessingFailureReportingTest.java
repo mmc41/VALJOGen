@@ -67,6 +67,13 @@ public class ProcessingFailureReportingTest
 	}
 
 	@Test
+	public void testMalformedSetterDueToWrongTypeNotIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	{
+		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue(); public void setIntValue(double value);", ConfigurationOptionKeys.ignoreMalformedProperties+"=false");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.InconsistentProperty, "getIntValue, intValue"));
+	}
+
+	@Test
 	public void testMalformedGetterNotIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
 	{
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue(int other);", ConfigurationOptionKeys.ignoreMalformedProperties+"=false");

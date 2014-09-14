@@ -1,0 +1,37 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*
+* This example shows how to implement a custom method declared in the interface. First it overrides StringTemplate regions to
+* add a variable holding a time then it modifies the constructor and setter to update the time of change. Finally, a new method
+* is added to return the time as declared in the interface.
+*
+* The custom template for the method must have a name of "method_"+the-name-of-the-method and the arguments clazz and model.
+* The custom template is called automatically if @VALJOConfigure annotation implementedMethodNames contains the name of
+* the method ("nanoLastUpdated").
+*
+* Refer to the *.stg files in the source for how to find the refered regions and for descriptions of the used sub-template
+* declare_method that helps with generating the correct declaration.
+*
+*/
+
+@class.before_instance_members() ::= <<
+private long changeNanoTime;
+>>
+
+@mutable_setter.preamble() ::= <%
+changeNanoTime=System.nanoTime();
+%>
+
+@method_this.postamble() ::= <%
+changeNanoTime=System.nanoTime();
+%>
+
+method_nanoLastUpdated(clazz, method) ::= <<
+/**
+* Returnes the last time this class was updated.
+*/
+<declare_method(clazz, method)>
+{
+  return changeNanoTime;
+}
+>>

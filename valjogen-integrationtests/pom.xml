@@ -42,6 +42,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <compilerArgs>
+                        <arg>-Xlint</arg>
                         <arg>-parameters</arg>                                                        <!-- Make sure parameter meta data is available for best code generation -->
                         <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/test/java</arg><!-- Specify where to locate sources as abs dir -->
                     </compilerArgs>

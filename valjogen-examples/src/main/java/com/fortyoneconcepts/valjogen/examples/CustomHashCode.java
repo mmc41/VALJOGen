@@ -8,7 +8,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate
 @VALJOConfigure(customTemplateFileName="custom_hashCode.stg")
-public interface CustomHashCode extends java.io.Serializable
+public interface CustomHashCode
 {
 	public String getFirstName();
 	public String getLastName();

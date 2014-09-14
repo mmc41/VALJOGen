@@ -9,9 +9,9 @@ import com.fortyoneconcepts.valjogen.annotations.*;
 @VALJOConfigure(customTemplateFileName="custom_template.stg")
 public interface CustomTemplateInterface
 {
-	public Object getMutableObject();
-	public void setMutableObject(Object o);
+	public String getMutableObject();
+	public void setMutableObject(String o);
 
-	public Object getImmutableObject();
-	public CustomTemplateInterface setImmutableObject(Object o);
+	public String getImmutableObject();
+	public CustomTemplateInterface setImmutableObject(String o);
 }

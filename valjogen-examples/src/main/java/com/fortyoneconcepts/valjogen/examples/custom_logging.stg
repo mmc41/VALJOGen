@@ -1,0 +1,27 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*
+* This example shows how to add logging of created instances to a generated class. It overrides StringTemplate regions to
+* add an import, add a static logger instance and add a log message at the end of the constructor. Refer to the *.stg files
+* in the source for how to find the refered regions.
+*
+* Note that regions must be qualified with the name of the template they are declared in, that they can refer to the
+* stringtemplate arguments of the template they are called from and how <@super.imports()> are used to refer to the
+* region's orginal content.
+*
+* NOTE 1: The import could also have been done easier VALJOConfigure annotation's importClasses option - this is just an alternative.
+*/
+
+<@class.imports() ::= <<
+<! Add our log class manually - Note 1 !>
+<@super.imports()>
+import java.util.logging.Logger;
+>>
+
+@class.before_class_members() ::= <<
+private final static Logger LOGGER = Logger.getLogger(<clazz.name>.class.getName());
+>>
+
+@method_this.preamble() ::= <<
+LOGGER.fine(() -> "Constructing <clazz.name>");
+>>

@@ -50,7 +50,7 @@ public final class AnnotationProxyBuilder<A extends Annotation> implements Invoc
 	@SuppressWarnings("unchecked")
 	public A build()
 	{
-	  return (A) Proxy.newProxyInstance(annotation.getClassLoader(), new Class[] { annotation }, this);
+	  return (A) Proxy.newProxyInstance(annotation.getClassLoader(), new Class<?>[] { annotation }, this);
 	}
 
 	/***

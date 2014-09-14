@@ -1,8 +1,16 @@
 /*
 * Copyright (C) 2014 41concepts Aps
+*
+* This example shows how to add caching to the generated hashCode methody. It overrides StringTemplate regions to
+* add a new instance member to hold the cached value, add a check in start of the hashCode method and store
+* the returned value of hashCode to the assoicated instance member. Finally it adds a javadoc comment on top
+* of the hashCode method. Refer to the *.stg files in the source for how to find the refered regions.
+*
+* Note that regions must be qualified with the name of the template they are declared in and how <@super.returnvalue()>
+* can be used to refer to the region's orginal content.
 */
 
-@class.before_class_members() ::= <<
+@class.before_instance_members() ::= <<
 private volatile int cachedHashCode = 0;
 >>
 

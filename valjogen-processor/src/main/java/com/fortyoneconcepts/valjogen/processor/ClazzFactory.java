@@ -5,9 +5,9 @@ package com.fortyoneconcepts.valjogen.processor;
 
 import java.beans.Introspector;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import static java.util.stream.Stream.*;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
@@ -31,7 +31,7 @@ import com.fortyoneconcepts.valjogen.model.util.*;
  */
 public final class ClazzFactory
 {
-	private final static Logger LOGGER = Logger.getLogger(ClazzFactory.class.getName());
+	// private final static Logger LOGGER = Logger.getLogger(ClazzFactory.class.getName());
 
 	private static ClazzFactory instance = null;
 
@@ -241,7 +241,7 @@ public final class ClazzFactory
 			List<? extends TypeMirror> paramTypes = executableMethodMirrorType.getParameterTypes();
 
 			if (params.size()!=paramTypes.size())
-				throw new Exception("Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
+				throw new Exception("Internal error - Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
 
 			List<Parameter> parameters = new ArrayList<Parameter>();
 			for (int i=0; i<params.size(); ++i)
@@ -261,12 +261,20 @@ public final class ClazzFactory
 			    	propertyKind=PropertyKind.SETTER;
 
 				if (propertyKind!=null) {
-					Member propertyMember = createPropertyMemberIfValidProperty(clazz, allTypesByPrototypicalFullName, types, masterInterfaceElement, configuration, m, propertyKind, errorConsumer);
+					Member propertyMember = createPropertyMemberIfValidProperty(clazz, allTypesByPrototypicalFullName, types, interfaceOrClassMirrorType, masterInterfaceElement, returnTypeMirror, params, paramTypes, configuration, m, propertyKind, errorConsumer);
 
 					if (propertyMember!=null) {
 			            final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
-			          	if (existingMember!=null)
+			          	if (existingMember!=null) {
+			          	   if (!existingMember.getType().equals(propertyMember.getType())) {
+			          		 if (!configuration.isMalformedPropertiesIgnored()) {
+			          			  String propertyNames = concat(existingMember.getPropertyMethods().stream().map(p -> p.getName()), of(propertyMember.getName())).collect(Collectors.joining(", "));
+			     				  errorConsumer.message(m, Kind.ERROR, String.format(ProcessorMessages.InconsistentProperty, propertyNames ));
+			          		 }
+			          	   }
+
 			          	   propertyMember = existingMember;
+			          	}
 
 						implementationInfo=ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT;
 
@@ -550,28 +558,11 @@ public final class ClazzFactory
 
 	}
 
-	/*
-	private Stream<DeclaredType> getSuperTypesWithAscendents(Types types, DeclaredType classType)
+	private Member createPropertyMemberIfValidProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types types, DeclaredType interfaceOrClassMirrorType, TypeElement interfaceElement,
+			                                           TypeMirror returnTypeMirror, List<? extends VariableElement> setterParams, List<? extends TypeMirror> setterParamTypes,
+			                                           Configuration configuration, ExecutableElement methodElement, PropertyKind kind, DiagnosticMessageConsumer errorConsumer) throws Exception
 	{
-		ArrayList<DeclaredType> result = new ArrayList<DeclaredType>();
-		result.add(classType);
-
-		DeclaredType currentType = classType;
-		do {
-			TypeMirror superType = types.directSupertypes(t) currentType.getSuperclass();
-			if (superType!=null && superType.getKind()!=TypeKind.NONE)
-			 currentType=(DeclaredType)superType;
-			else currentType=null;
-		} while (currentType!=null);
-
-		return result.stream();
-	}*/
-
-	private Member createPropertyMemberIfValidProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types types, TypeElement interfaceElement, Configuration configuration, ExecutableElement methodElement, PropertyKind kind, DiagnosticMessageConsumer errorConsumer) throws Exception
-	{
-		TypeMirror propertyType;
-
-		List<? extends VariableElement> setterParams = methodElement.getParameters();
+		TypeMirror propertyTypeMirror;
 
 		if (kind==PropertyKind.GETTER) {
 			if (setterParams.size()!=0) {
@@ -580,10 +571,8 @@ public final class ClazzFactory
 				return null;
 			}
 
-			TypeMirror returnType = methodElement.getReturnType();
-
-			propertyType = returnType;
-			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyType), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
+			propertyTypeMirror = returnTypeMirror;
+			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyTypeMirror), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
 		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -591,17 +580,17 @@ public final class ClazzFactory
 				return null;
 			}
 
-			TypeMirror returnType = methodElement.getReturnType();
-			String returnTypeName = returnType.toString();
+			String returnTypeName = returnTypeMirror.toString();
 
-			if (!returnTypeName.equals("void") && !returnTypeName.equals(interfaceElement.toString()) && !returnTypeName.equals(clazz.getQualifiedName())) {
+			String declaredInterfaceTypeName = interfaceOrClassMirrorType.toString();
+			if (!returnTypeName.equals("void") && !returnTypeName.equals(declaredInterfaceTypeName) && !returnTypeName.equals(clazz.getQualifiedName())) {
 				if (!configuration.isMalformedPropertiesIgnored())
 					  errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MalFormedSetter, methodElement.toString()));
 				return null;
 			}
 
-			propertyType=setterParams.get(0).asType();
-			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyType), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
+			propertyTypeMirror=setterParamTypes.get(0); // setterParams.get(0).asType();
+			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyTypeMirror), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
 		} else {
 			return null; // Not a proeprty.
 		}

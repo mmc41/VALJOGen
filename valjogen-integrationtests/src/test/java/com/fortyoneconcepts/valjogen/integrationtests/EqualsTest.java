@@ -6,27 +6,23 @@ package com.fortyoneconcepts.valjogen.integrationtests;
 import org.junit.Test;
 
 import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
+import com.fortyoneconcepts.valjogen.testsources.util.TestUtil;
 
 import nl.jqno.equalsverifier.*;
 
 public class EqualsTest
 {
-	private static Class<?> getTestClass(String name) throws ClassNotFoundException
-	{
-		return EqualsTest.class.getClassLoader().loadClass(name);
-	}
-
 	@Test
 	public void simpleClassEqualsAndHashContractTest() throws Throwable
 	{
-		Class<?> clazz = getTestClass(TestClassConstants.SimpleClass);
+		Class<?> clazz = TestUtil.getTestClass(TestClassConstants.SimpleClass);
 	    EqualsVerifier.forClass(clazz).verify();
 	}
 
 	@Test
 	public void advancedlassEqualsAndHashContractTest() throws Throwable
 	{
-		Class<?> clazz = getTestClass(TestClassConstants.ComplexClass);
+		Class<?> clazz = TestUtil.getTestClass(TestClassConstants.ComplexClass);
 	    EqualsVerifier.forClass(clazz).verify();
 	}
 }
