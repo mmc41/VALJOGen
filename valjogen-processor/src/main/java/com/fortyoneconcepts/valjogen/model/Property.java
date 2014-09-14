@@ -16,16 +16,16 @@ public final class Property extends Method
 	private final Member member;
 	private final PropertyKind kind;
 
-	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
+	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, List<Type> thrownTypes, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
 	{
-		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), javaDoc, implementationInfo);
+		super(clazz, accessLevel, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, Type declaringType, String propertyName, Type returnType, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
+	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
 	{
-		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), javaDoc, implementationInfo);
+		super(clazz, accessLevel, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);
 		this.kind=kind;
 	}
@@ -74,7 +74,7 @@ public final class Property extends Method
 		sb.append("Property [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", member=" + member.getName() + ", propertyKind="+kind+", implementationInfo="+implementationInfo+"]");
+			sb.append(", accessLevel="+accessLevel+", member=" + member.getName() + ", propertyKind="+kind+", thrownTypes="+thrownTypes+", implementationInfo="+implementationInfo+"]");
 
 		sb.append("]");
 

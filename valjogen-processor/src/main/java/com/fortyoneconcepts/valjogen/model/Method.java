@@ -13,19 +13,23 @@ import java.util.*;
 public class Method extends ModelBase
 {
 	protected final Clazz clazz;
+	protected final AccessLevel accessLevel;
 	protected final Type declaringType;
 	protected final String methodName;
 	protected final List<Parameter> parameters;
+	protected final List<Type> thrownTypes;
 	protected final String javaDoc;
 	protected final Type returnType;
-	protected final ImplementationInfo implementationInfo;
+	protected ImplementationInfo implementationInfo;
 
-	public Method(Clazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, String javaDoc, ImplementationInfo implementationInfo)
+	public Method(Clazz clazz, AccessLevel accessLevel, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, ImplementationInfo implementationInfo)
 	{
 	    this.clazz = Objects.requireNonNull(clazz);
+	    this.accessLevel = Objects.requireNonNull(accessLevel);
 	    this.declaringType = Objects.requireNonNull(declaringType);
 		this.methodName = Objects.requireNonNull(methodName);
 		this.parameters = Objects.requireNonNull(parameters);
+		this.thrownTypes = Objects.requireNonNull(thrownTypes);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.returnType = Objects.requireNonNull(returnType);
 		this.implementationInfo = implementationInfo;
@@ -60,6 +64,16 @@ public class Method extends ModelBase
 		return implementationInfo;
 	}
 
+	public void setImplementationInfo(ImplementationInfo implementationInfo)
+	{
+		this.implementationInfo=implementationInfo;
+	}
+
+	public AccessLevel getAccessLevel()
+	{
+		return accessLevel;
+	}
+
 	public boolean isFinal()
 	{
 		return false;
@@ -85,6 +99,11 @@ public class Method extends ModelBase
 		return parameters;
 	}
 
+	public List<Type> getThrownTypes()
+	{
+		return thrownTypes;
+	}
+
 	public String getJavaDoc()
 	{
 		return javaDoc;
@@ -98,7 +117,7 @@ public class Method extends ModelBase
 		sb.append("Method [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", implementationInfo="+implementationInfo+"]");
+			sb.append(", accessLevel="+accessLevel+", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", thrownTypes="+thrownTypes+", implementationInfo="+implementationInfo+"]");
 
 		sb.append("]");
 

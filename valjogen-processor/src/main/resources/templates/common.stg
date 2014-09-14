@@ -61,9 +61,12 @@ implementationMethod(javaName) ::= <%
 method_<javaName>
 %>
 
-declare_method(clazz, method) ::= <<
-public <optSynchronized(clazz)><method.returnType.name> <method.name>(<method.parameters:declare_parameter(); wrap, anchor, separator=", ">)
->>
+declare_method(clazz, method) ::= <%
+<m.accessLevel> <optSynchronized(clazz)><method.returnType.name> <method.name>(<method.parameters:declare_parameter(); wrap, anchor, separator=", ">)
+<if(method.thrownTypes)>
+<\ >throws <method.thrownTypes:{m | <m.name>}; wrap, anchor, separator=", ">
+<endif>
+%>
 
 declare_parameter(param) ::= <<
 final <param.type.name> <param.name>

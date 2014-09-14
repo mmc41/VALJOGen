@@ -3,10 +3,14 @@
 */
 package com.fortyoneconcepts.valjogen.test.input;
 
+import java.io.ObjectInputValidation;
+
+import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate
-public interface SerializableInterface extends java.io.Serializable
+@VALJOConfigure(customTemplateFileName="custom_serializable.stg", implementedMethodNames= { "validateObject", "writeObject", "writeReplace", "readObject", "readResolve" })
+public interface SerializableInterface extends java.io.Serializable, ObjectInputValidation
 {
 	public int getIntValue();
 	public void setIntValue(int intValue);

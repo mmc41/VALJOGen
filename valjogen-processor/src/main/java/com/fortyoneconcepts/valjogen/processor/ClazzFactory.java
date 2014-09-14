@@ -7,6 +7,7 @@ import java.beans.Introspector;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import static java.util.stream.Stream.*;
 
 import javax.lang.model.element.*;
@@ -139,7 +140,7 @@ public final class ClazzFactory
 
 		final StatusHolder statusHolder = new StatusHolder();
 
-		Set<String> implementedMethodNames = new HashSet<String>(Arrays.asList(configuration.getImplementedMethodNames()));
+		Set<String> implementedMethodNames = configuration.getImplementedMethodNames();
 
 		// TODO: Consider adding type argument signatures to support overloading.
 		if (clazz.isComparable() && configuration.isComparableEnabled())
@@ -177,9 +178,47 @@ public final class ClazzFactory
 		List<Member> members = new ArrayList<Member>(membersByName.values());
 		List<Member> selectedComparableMembers = (clazz.isComparable() && configuration.isComparableEnabled()) ? getSelectedComparableMembers(masterInterfaceElement, configuration, errorConsumer, membersByName, members) : Collections.emptyList();
 
+		if (clazz.isSerializable()) {
+			addMagicSerializationMethods(clazz, nonPropertyMethods, allTypesByPrototypicalFullName);
+		}
+
+		for (Method method : nonPropertyMethods)
+		{
+			if (implementedMethodNames.contains(method.getName()))
+				method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
+		}
+
+		for (Method method : propertyMethods)
+		{
+			method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
+		}
+
 		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers);
 
 		return clazz;
+	}
+
+	private void addMagicSerializationMethods(Clazz clazz, List<Method> nonPropertyMethods, Map<String, Type> allTypesByPrototypicalFullName)
+	{
+		Type noType = new NoType(clazz);
+
+		// Add : private Object readResolve() throws ObjectStreamException :
+		Method readResolve = new Method(clazz, AccessLevel.PRIVATE, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		nonPropertyMethods.add(readResolve);
+
+		// Add : private void writeObject (ObjectOutputStream out) throws IOException :
+		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, new ObjectType(clazz, "java.io.ObjectOutputStream"), "out"));
+		Method writeObject = new Method(clazz, AccessLevel.PRIVATE, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList(new ObjectType(clazz, "java.io.IOException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		nonPropertyMethods.add(writeObject);
+
+		// Add : private Object writeReplace() throws ObjectStreamException :
+		Method writeReplace = new Method(clazz, AccessLevel.PRIVATE, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		nonPropertyMethods.add(writeReplace);
+
+		// Add private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException :
+		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, new ObjectType(clazz, "java.io.ObjectInputStream"), "in"));
+		Method readObject = new Method(clazz, AccessLevel.PRIVATE, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { new ObjectType(clazz, "java.io.IOException"), new ObjectType(clazz, "java.lang.ClassNotFoundException") }), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		nonPropertyMethods.add(readObject);
 	}
 
 	private List<Member> getSelectedComparableMembers(TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, Map<String, Member> membersByName, List<Member> members) throws Exception
@@ -243,6 +282,9 @@ public final class ClazzFactory
 			if (params.size()!=paramTypes.size())
 				throw new Exception("Internal error - Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
 
+			List<? extends TypeMirror> thrownTypeMirrors = executableMethodMirrorType.getThrownTypes();
+			List<Type> thrownTypes = thrownTypeMirrors.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toList());
+
 			List<Parameter> parameters = new ArrayList<Parameter>();
 			for (int i=0; i<params.size(); ++i)
 			{
@@ -251,7 +293,6 @@ public final class ClazzFactory
 			}
 
 			boolean validProperty = false;
-		    ImplementationInfo implementationInfo;
 		    if (!m.isDefault() && !implementedAlready)
 			{
 				PropertyKind propertyKind = null;
@@ -276,9 +317,7 @@ public final class ClazzFactory
 			          	   propertyMember = existingMember;
 			          	}
 
-						implementationInfo=ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT;
-
-			          	Property property = createValidatedProperty(clazz, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, parameters, javaDoc, propertyKind, propertyMember, implementationInfo);
+			          	Property property = createValidatedProperty(clazz, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
 
 			          	propertyMember.addPropertyMethod(property);
 			          	propertyMethods.add(property);
@@ -289,15 +328,14 @@ public final class ClazzFactory
 
 			if (!validProperty)
 			{
-				if (implementedMethodNames.contains(methodName))
-					implementationInfo=ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT;
-				else if (implementedAlready)
+			    ImplementationInfo implementationInfo;
+				if (implementedAlready)
 					implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
 				else if (m.isDefault())
 					implementationInfo=ImplementationInfo.IMPLEMENTATION_DEFAULT_PROVIDED;
 				else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;
 
-				nonPropertyMethods.add(new Method(clazz, declaringType, methodName, returnType, parameters, javaDoc, implementationInfo));
+				nonPropertyMethods.add(new Method(clazz, AccessLevel.PUBLIC, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, implementationInfo));
 			}
 		} catch (Exception e)
 		{
@@ -478,14 +516,14 @@ public final class ClazzFactory
 	}
 
 
-	private Property createValidatedProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
+	private Property createValidatedProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
 	{
 		Property property;
 
 		String propertyName = m.getSimpleName().toString();
 
 		if (parameters.size()==0) {
-			property=new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc, implementationInfo);
+			property=new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo);
 		} else if (parameters.size()==1) {
 			Parameter parameter = parameters.get(0);
 
@@ -496,7 +534,7 @@ public final class ClazzFactory
 				parameter=parameter.setName(propertyMember.getName());
 			}
 
-			property = new Property(clazz, declaringType, propertyName, returnType, propertyMember, propertyKind, javaDoc, implementationInfo, parameter);
+			property = new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo, parameter);
 		} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
 
 		return property;

@@ -1,0 +1,43 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*
+* Note that the template here is for testing only - it produce code that make little sense (but can compile).
+*/
+
+method_validateObject(clazz, method) ::= <<
+@Override
+<declare_method(clazz, method)>
+{
+ // Validate object stuff here
+}
+>>
+
+method_readResolve(clazz, method) ::= <<
+<declare_method(clazz, method)>
+{
+ // readResolve stuff here
+ return this;
+}
+>>
+
+method_writeObject(clazz, method) ::= <<
+<declare_method(clazz, method)>
+{
+ // writeObject stuff here
+}
+>>
+
+method_writeReplace(clazz, method) ::= <<
+<declare_method(clazz, method)>
+{
+ // writeReplace stuff here
+ return this;
+}
+>>
+
+method_readObject(clazz, method) ::= <<
+<declare_method(clazz, method)>
+{
+ // readObject stuff here
+}
+>>

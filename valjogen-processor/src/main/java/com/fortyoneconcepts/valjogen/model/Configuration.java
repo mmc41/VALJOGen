@@ -224,9 +224,10 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(debugStringTemplates, configureAnnotation.debugStringTemplates());
 	 }
 
-	 public String[] getImplementedMethodNames()
+	 public Set<String> getImplementedMethodNames()
 	 {
-		 return getValue(implementedMethodNames, configureAnnotation.implementedMethodNames());
+		 String[] names = getValue(implementedMethodNames, configureAnnotation.implementedMethodNames());
+		 return new HashSet<String>(Arrays.asList(names));
 	 }
 
 	 // ---- Internal helpers -----

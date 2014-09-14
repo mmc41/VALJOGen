@@ -20,5 +20,10 @@ public enum ImplementationInfo
 	/**
 	* Assumed implemented by generated class.
 	*/
-	IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT
+	IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT,
+
+	/**
+	* Synthetic method that belongs to no interface where implemention is optional (used for readResolve etc).
+	*/
+	IMPLEMENTATION_MAGIC,
 }

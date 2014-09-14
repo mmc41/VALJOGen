@@ -7,6 +7,8 @@ package com.fortyoneconcepts.valjogen.model;
  * to get a name that correctly refers to the java class. This name may be qualified or unqualified
  * depending on if an import has been made.
  *
+ * TODO: Cache these as singletons.
+ *
  * @author mmc
  */
 public class HelperTypes
@@ -17,6 +19,30 @@ public class HelperTypes
 	{
 		this.clazz=clazz;
 	}
+
+	/**
+	* @return The Type object specifiying no type exist.
+	*/
+	public NoType getNoType()
+	{
+		return new NoType(clazz);
+    }
+
+	/**
+	* @return The Type object for {@link java.lang.Object}
+	*/
+	public Type getJavaLangObjectType()
+	{
+		return new ObjectType(clazz, "java.lang.Object");
+    }
+
+	/**
+	* @return The Type object for void.
+	*/
+	public Type getVoidType()
+	{
+		return new ObjectType(clazz, "void");
+    }
 
 	/**
 	* @return The Type object for {@link java.io.Serializable}

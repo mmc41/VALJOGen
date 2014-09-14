@@ -1,7 +1,8 @@
 package com.fortyoneconcepts.valjogen.model;
 
 /**
- * Specifies a non-exisisting type. Type type of nothing.
+ * Specifies a non-exisisting type. Type of nothing.
+ *
  * @author mmc
  *
  */

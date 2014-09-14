@@ -58,4 +58,18 @@ public class TemplateCustomTest extends TemplateTestBase
 		for (String searchString : searchStrings)
 		  assertContainsWithWildcards(searchString, output.code);
 	}
+
+	@Test
+	public void testCustomSerializable() throws Exception
+	{
+		Output output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
+				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_serializable.stg")
+				                                                   .add(ConfigurationOptionKeys.implementedMethodNames, new String[] {"validateObject", "writeObject", "writeReplace", "readObject", "readResolve"} ).build());
+
+		assertContainsWithWildcards("public void validateObject() throws java.io.InvalidObjectException {", output.code);
+		assertContainsWithWildcards("private Object readResolve() throws java.io.ObjectStreamException {", output.code);
+		assertContainsWithWildcards("private void writeObject(final java.io.ObjectOutputStream out) throws java.io.IOException {", output.code);
+		assertContainsWithWildcards("private Object writeReplace() throws java.io.ObjectStreamException {", output.code);
+		assertContainsWithWildcards("private void readObject(final java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {", output.code);
+	}
 }
