@@ -41,3 +41,10 @@ method_readObject(clazz, method) ::= <<
  // readObject stuff here
 }
 >>
+
+method_readObjectNoData(clazz, method) ::= <<
+<declare_method(clazz, method)>
+{
+ // readObjectNoData stuff here
+}
+>>

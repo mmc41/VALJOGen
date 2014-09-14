@@ -206,6 +206,15 @@ public final class ClazzFactory
 		Method readResolve = new Method(clazz, AccessLevel.PRIVATE, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
 		nonPropertyMethods.add(readResolve);
 
+		// Add private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException :
+		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, new ObjectType(clazz, "java.io.ObjectInputStream"), "in"));
+		Method readObject = new Method(clazz, AccessLevel.PRIVATE, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { new ObjectType(clazz, "java.io.IOException"), new ObjectType(clazz, "java.lang.ClassNotFoundException") }), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		nonPropertyMethods.add(readObject);
+
+		// Add private void readObjectNoData() throws InvalidObjectException
+		Method readObjectNoData = new Method(clazz, AccessLevel.PRIVATE, noType, "readObjectNoData", clazz.getHelperTypes().getVoidType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		nonPropertyMethods.add(readObjectNoData);
+
 		// Add : private void writeObject (ObjectOutputStream out) throws IOException :
 		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, new ObjectType(clazz, "java.io.ObjectOutputStream"), "out"));
 		Method writeObject = new Method(clazz, AccessLevel.PRIVATE, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList(new ObjectType(clazz, "java.io.IOException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
@@ -214,11 +223,6 @@ public final class ClazzFactory
 		// Add : private Object writeReplace() throws ObjectStreamException :
 		Method writeReplace = new Method(clazz, AccessLevel.PRIVATE, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
 		nonPropertyMethods.add(writeReplace);
-
-		// Add private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException :
-		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, new ObjectType(clazz, "java.io.ObjectInputStream"), "in"));
-		Method readObject = new Method(clazz, AccessLevel.PRIVATE, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { new ObjectType(clazz, "java.io.IOException"), new ObjectType(clazz, "java.lang.ClassNotFoundException") }), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
-		nonPropertyMethods.add(readObject);
 	}
 
 	private List<Member> getSelectedComparableMembers(TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, Map<String, Member> membersByName, List<Member> members) throws Exception
