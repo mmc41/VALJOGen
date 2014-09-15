@@ -14,12 +14,12 @@ The project consist of 4 modules:
 #1. VALJOGen FEATURES
 
 + Can generate **mutable or immutable value objects** with **auto-implemented getters and setters from interfaces**.
-+ Support for auto-implementing factory methods, constructors, Object.hashCode, Object.equals, Object.toString, Comparable.compareTo, Serializable etc.
++ Support for auto-implementing factory methods, constructors, Object.**hashCode**, Object.**equals*, Object.**toString*, Comparable.**compareTo**, **Serializable** etc.
 + **Extremely customizable** code output. You can change every aspect for the generated class and even add your own code using [StringTemplate 4](http://www.stringtemplate.org) based custom templates.
 + Great support for **immutable objects**, including final fields and immutable setters that return new instances.
-+ Support for checks against null arguments, synchronized/unsynchronized mutable objects, custom getter/setter prefixes, injection of base class and extra interfaces into implementation etc.
-+ The annotation processor run on any standard compliant Java developer tool running **JDK1.8+**. Does **not** require plugins to work nicely with IDE's (as long as they offer the usual standard annotation processor support).
-+ Outputs concise, modern and nicely formated Java 7+ source code as if written by hand.
++ Support for guards (checks) against null arguments, synchronized/unsynchronized mutable objects, custom getter/setter prefixes, injection of base class and extra interfaces into implementation etc.
++ The annotation processor **run on any standard Java developer tool** running **JDK1.8+** incl. Does **not** require plugins to ***work nicely with IDE's** (as long as they offer the usual standard annotation processor support).
++ Outputs concise, ***modern and nicely formated Java 7+ source code** as if written by hand.
 + Generated code has **no runtime dependencies** on VALJOGen!
 + Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.
 
