@@ -14,17 +14,18 @@ The project consist of 4 modules:
 #1. VALJOGen FEATURES
 
 + Can generate **mutable or immutable value objects** with **auto-implemented getters and setters from interfaces**.
-+ Support for auto-implementing factory methods, constructors, Object.**hashCode**, Object.**equals*, Object.**toString*, Comparable.**compareTo**, **Serializable** etc.
++ Support for auto-implementing factory methods, constructors, Object.**hashCode**, Object.**equals**, Object.**toString*, Comparable.**compareTo**, **Serializable** etc.
 + **Extremely customizable** code output. You can change every aspect for the generated class and even add your own code using [StringTemplate 4](http://www.stringtemplate.org) based custom templates.
 + Great support for **immutable objects**, including final fields and immutable setters that return new instances.
 + Support for guards (checks) against null arguments, synchronized/unsynchronized mutable objects, custom getter/setter prefixes, injection of base class and extra interfaces into implementation etc.
-+ The annotation processor **run on any standard Java developer tool** running **JDK1.8+** incl. Does **not** require plugins to ***work nicely with IDE's** (as long as they offer the usual standard annotation processor support).
++ The annotation processor **run on any standard Java developer tool** running **JDK1.8+** incl. Does not require plugins to **work nicely with IDE's** (as long as they offer the usual standard annotation processor support).
 + Outputs concise, ***modern and nicely formated Java 7+ source code** as if written by hand.
 + Generated code has **no runtime dependencies** on VALJOGen!
 + Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.
 
-*Compared to other tools like for example [projectlombok] (http://projectlombok.org/) VALJOGen is much more customizable, more powerfull and less intrusive. VALJOGen it does not move/mess around with your code, does not introduce runtime dependencies
-into your code and just works with any standard Java tools including IDE's. Finally, unlike projectlombok, it use standard API's (no hacks) so there is much less risk of problems when a new JDK or IDE is released.*
+*Compared to other tools like for example [projectlombok] (http://projectlombok.org/) VALJOGen is much **more customizable, more powerfull, less intrusive and offer less integration problems**. VALJOGen does not
+move/mess around with your code, does not introduce runtime dependencies into your code and just works with any standard Java tools including IDE's. Finally, unlike projectlombok, it use standard API's (no hacks)
+so there is much less risk of problems when a new JDK or IDE is released.*
 
 #2. HOW TO USE VALJOGen IN YOUR PROJECTS:
 
@@ -32,12 +33,14 @@ The VALJOGen annotationprocessor is standard since Java 6 and may be used with a
 
 #3. HOW TO EXTEND VALJOGen AND CONTRIBUTE YOUR CHANGES:
 
-Contributors and contributions are welcome. [Refer to guide](CONTRIBUTING.md).
+Contributors and contributions are welcome. [Refer to the contribution guide](CONTRIBUTING.md).
 
 #4. KNOWN ISSUES:
 - Maven does not always detect correctly when to rebuild after changes in templates. Do a `"mvn clean"` if this happens.
 - Generated code only get the correct method parameter names if you add the "-parameters" option to javac.
-- Some configuration options are not yet finished. See javadocs for details.
+- No support (yet) for generic wildcards and overloaded custom methods.
+- No support for non-default base class constructors.
+- Support for XML/JSON serialization should be easier.
 
 #5. RELEVANT LITTERATURE ABOUT JAVA VALUE OBJECTS:
 - http://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html
