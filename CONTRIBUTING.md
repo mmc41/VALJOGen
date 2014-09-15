@@ -4,7 +4,7 @@ Contributing to VALJOGen
 Contributors and contributions are welcome. Here is a quick guide.
 
 #1. Implementation details for the project.
-See [readme in annotaton processor project](../../tree/master/valjogen-processor/README.md) for implementation details.
+See [readme in annotaton processor project](../../blob/master/valjogen-processor/README.md) for implementation details.
 
 In addition these two 2 eclipse plugins may be useful to update readme pages in GitHub Flavored Markdown (`.md`):
 
