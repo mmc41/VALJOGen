@@ -6,10 +6,10 @@ VALue Java Objects Generator (VALJOGen)
 The VALJOGen project can be used to generate Java 7/8+ style value classes from annotated Java interfaces.
 
 The project consist of 4 modules:
-- Annotations (all source-level, with no dependencies). It's jar file is not normally used by 3rd party projects unless one want to compile code using the annotations without the annotation processor.
+- Annotations (all source-level, with no dependencies). It's jar file is not normally used by 3rd party projects unless one want to compile code using the annotations without the annotation processor. For details refer to the extensive JavaDoc comments on the [annotation sources](valjogen-annotations/src/main/java/com/fortyoneconcepts/valjogen/annotations).
 - The annotation processor and related tests. It's jar file embeds all annotations along with a few dependencies.
 - Integration tests.
-- Examples
+- Examples. Where to look for detailed examples of how to use some of the more powerful features of the annotation processor.
 
 #1. VALJOGen FEATURES
 
@@ -19,11 +19,11 @@ The project consist of 4 modules:
 + Great support for **immutable objects**, including final fields and immutable setters that return new instances.
 + Support for guards (checks) against null arguments, synchronized/unsynchronized mutable objects, custom getter/setter prefixes, injection of base class and extra interfaces into implementation etc.
 + The annotation processor **run on any standard Java developer tool** running **JDK1.8+** incl. Does not require plugins to **work nicely with IDE's** (as long as they offer the usual standard annotation processor support).
-+ Outputs concise, ***modern and nicely formated Java 7+ source code** as if written by hand.
++ Outputs concise, **modern and nicely formated Java 7+ source code** as if written by hand.
 + Generated code has **no runtime dependencies** on VALJOGen!
 + Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.
 
-*Compared to other tools like for example [projectlombok] (http://projectlombok.org/) VALJOGen is much **more customizable, more powerfull, less intrusive and offer less integration problems**. VALJOGen does not
+*Compared to other tools like for example [projectlombok] (http://projectlombok.org/) VALJOGen is much more customizable, more powerfull, less intrusive and offer less integration problems. VALJOGen does not
 move/mess around with your code, does not introduce runtime dependencies into your code and just works with any standard Java tools including IDE's. Finally, unlike projectlombok, it use standard API's (no hacks)
 so there is much less risk of problems when a new JDK or IDE is released.*
 
