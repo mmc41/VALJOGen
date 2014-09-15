@@ -11,7 +11,7 @@
 */
 
 @class.before_instance_members() ::= <<
-private volatile int cachedHashCode = 0;
+private volatile transient int cachedHashCode = 0;
 >>
 
 @method_hashCode.preamble() ::= <<

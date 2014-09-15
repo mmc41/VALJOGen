@@ -9,7 +9,7 @@ are available in the seperate integration test project.
 - Install JDK 1.8+
 - Install Maven 3.2.0+
 
-Then execute a `"mvn package" ` on command line to compile project and run tests.
+Then execute a `"mvn package"` on command line to compile project and run tests.
 
 #Optional setup for eclipse
 1. Install Eclipse Luna 4.4+
@@ -32,5 +32,4 @@ Then execute a `"mvn package" ` on command line to compile project and run tests
 - [StringTemplate](http://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation) - For maintaining template group files.
 - [Debugging Annotation Processors if debuging junit tests is not enough](http://www.pingtimeout.fr/2012/10/debugging-annotation-processor-in-every.html)
 
-#Author and contact info
-**Morten M. Christensen, [valjogen (AT) 41concepts |dot| com](http://http://www.41concepts.com)**
+/ Morten M. Christensen, 41concepts (http://www.41concepts.com)

@@ -5,5 +5,4 @@ VALue Java Objects Generator (VALJOGen) - Annotations
 This moddule only contains source-level annotations for VALJOGen. It has NO dependencies. Included in annotation processor jar so not normally used by 3rd party projects
 unless one want to compile code using the annotations without the annotation processor.
 
-#Author and contact info
-**Morten M. Christensen, [valjogen (AT) 41concepts |dot| com](http://www.41concepts.com)**
+/ Morten M. Christensen, 41concepts (http://www.41concepts.com)

@@ -296,7 +296,7 @@ public @interface VALJOConfigure
 	*
 	* @return Log level
 	*/
-    String logLevel() default "WARNING"; // "WARNING"; // INFO
+    String logLevel() default "INFO"; // "WARNING"; // INFO
 
     /**
 	* Experimental debugging feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are

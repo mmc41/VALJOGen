@@ -3,6 +3,8 @@
 */
 package com.fortyoneconcepts.valjogen.test.input;
 
+import java.util.Map;
+
 import com.fortyoneconcepts.valjogen.annotations.*;
 
 @VALJOGenerate

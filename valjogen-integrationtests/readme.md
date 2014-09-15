@@ -8,5 +8,4 @@ it is assumed there is an regression error. If this is not the case the golden m
 
 In addition this project also checks some of the generated source files for additonal correctness using the nl.jqno.equalsverifier tool.
 
-#Author and contact info
-**Morten M. Christensen, [valjogen (AT) 41concepts |dot| com](http://www.41concepts.com)**
+/ Morten M. Christensen, 41concepts (http://www.41concepts.com)

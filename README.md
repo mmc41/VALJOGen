@@ -3,74 +3,36 @@ VALue Java Objects Generator (VALJOGen)
 
 #0. About VALJOGen
 
-The VALJOGen project can be used to generate Java 8+ style value classes from annotated Java interfaces.
+The VALJOGen project can be used to generate Java 7/8+ style value classes from annotated Java interfaces.
 
-The project consist of 3 modules:
+The project consist of 4 modules:
 - Annotations (all source-level, with no dependencies). It's jar file is not normally used by 3rd party projects unless one want to compile code using the annotations without the annotation processor.
 - The annotation processor and related tests. It's jar file embeds all annotations along with a few dependencies.
 - Integration tests.
+- Examples
 
-#1. HOW TO USE VALJOGen IN YOUR PROJECTS:
+#1. VALJOGen FEATURES
 
-VALJOGen annotations are source-level and needed by compiler only. There are no-runtime dependencies and no libraries that you need to add to your
-classpath at runtime (unless you explicitly add references yourself to 3rd party code). You do need to add the VALJOGen annotationprocessor jar
-to your compile path though.
++ Can generate mutable or immutable value objects with auto-implemented getters and setters from interfaces.
++ Support for auto-implementing factory methods, constructors, Object.hashCode, Object.equals, Object.toString, Comparable.compareTo, Serializable etc.
++ Extremely customizable code output. You can change every aspect for the generated class and even add your own code using [StringTemplate 4](www.stringtemplate.org) based custom templates.
++ Great support for immutable objects, including final fields and immutable setters that return new instances.
++ Support for checks against null arguments, synchronized/unsynchronized mutable objects, custom getter/setter prefixes, injection of base class and extra interfaces into implementation etc.
++ Works on any standard compliant Java developer tool running JDK1.8+. Does **not** require plugins to work nicely with IDE's (as long as they offer the usual standard annotation processor support).
++ Outputs concise, modern and nicely formated Java 7+ source code as if written by hand.
++ **No** runtime dependencies in generated code!
++ Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.
 
-VALJOGen uses standard Java annotation processors (`JSR 269`) and should work any Java tool running `JDK 1.8+`. Below are listed some ways of using VALJOGen with porpular
-tools (do replace *XXX* with latest version)
+*Compared to other tools like for example [projectlombok] (http://projectlombok.org/) VALJOGen is much more customizable. In addition it does not mess around with your code, does not introduce runtime dependencies
+into your code and VALJOGen just works with any standard tool including IDE's (and unlike projectlombok it use standard API's so there is much less risk of problems when a new JDK is released).*
 
-Here is a simple example of how to use a VALJOGen annotation to generate source code for a Java Value Class called MySimpleImpl:
+#2. HOW TO USE VALJOGen IN YOUR PROJECTS:
 
-```java
-import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
+The VALJOGen annotationprocessor is standard since Java 6 and may be used with any standard-complient JDK1.8+ based tool like javac, eclipse, maven etc. Refer to the [getting started document](GETSTARTED.md) for more information.
 
-@VALJOGenerate("MySimpleImpl")
-public interface SimpleInterface
-{
-    public Object getObject();
-    public String getString();
-}
-```
+#3. HOW TO EXTEND VALJOGen AND CONTRIBUTE YOUR CHANGES:
 
-##Adding VALJOGen annotationprocessor to JavaC compiler:
-
-```Bash
-javac -cp valjogen-annotationprocessor-*XXX*.jar -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
-```
-
-##Adding VALJOGen annotationprocessor to Maven:
-
-Use `Maven 3.2.0` or later and add the dependency (*NOTE: THIS IS FOR THE FUTURE - PROJECT ARTIFACTS ARE NOT IN MAVEN CENTRAL YET*):
-
-```Xml
-<dependency>
-    <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
-    <artifactId>valjogen-annotationprocessor</artifactId>
-    <version>*XXX*</version>
-</dependency>
-```
-
-##Adding VALJOGen annotationprocessor to Eclipse:
-
-```
-Open Window > Preferences > Maven > Annotation processing or right-click on your project > Properties > Maven > Annotation processing to select the Annotation Processing strategy of your choice.
-```
-
-##Adding VALJOGen annotationprocessor to Eclipse using Maven *(CURRENTLY UNTESTED)*:
-
-1. Install Eclipse Luna 4.4+
-2. Install Eclipse plugin m2e (from eclipses build-in "Luna" update site)
-3. Install jbosstools's m2e-apt plugin from (from update site "http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt")
-
-#3. HOW TO EXTEND/MODIFY/MAINTAIN VALJOGen:
-
-See readme in annotaton processor project for implementation details.
-
-In addition, to update readme pages in GitHub Flavored Markdown (`.md`) format use these 2 eclipse plugins:
-
-- GitHub Flavored Markdown viewer: https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/
-- Markdown editor: http://www.winterwell.com/software/updatesite/
-
+Contributors and contributions are welcome. [Here](CONTRIBUTING.md)  Here is a quick guide.
 
 #4. KNOWN ISSUES:
 - Maven does not always detect correctly when to rebuild after changes in templates. Do a `"mvn clean"` if this happens.
@@ -87,5 +49,8 @@ In addition, to update readme pages in GitHub Flavored Markdown (`.md`) format u
 #6. LICENSE
 - See [LICENSE file](./LICENSE).
 
-#Author and contact info
-**Morten M. Christensen, [valjogen (AT) 41concepts |dot| com](http://www.41concepts.com)**
+#7. SUPPORT
+- Free [Google group discussions] (http://groups.google.com/group/valjogen)
+- Paid email support : valjogen (AT) 41concepts |dot| com
+
+/ Morten M. Christensen, 41concepts (http://www.41concepts.com)

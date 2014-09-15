@@ -93,10 +93,34 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	}
 
 	@Test
-	public void testGenricMutableGetter() throws Exception
+	public void testGenricGetter() throws Exception
 	{
 		Output output = produceOutput(GenericInterface.class);
 
 		assertContainsWithWildcards("public final GT getGt() { return gt; }", output.code);
+	}
+
+	@Test
+	public void testLocalGenricImmutableSetter() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithGenericMembers.class);
+
+		assertContainsWithWildcards("public final InterfaceWithGenericMembers setSet(final java.util.Set<String> set) { return new TestImpl(this.map, set); }", output.code);
+	}
+
+	@Test
+	public void testLocalGenricMutableSetter() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithGenericMembers.class);
+
+		assertContainsWithWildcards("public final void setMap(final java.util.Map<String,Object> map) { this.map=Objects.requireNonNull(map); }", output.code);
+	}
+
+	@Test
+	public void testLocalGenricGetter() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithGenericMembers.class);
+
+		assertContainsWithWildcards("public final java.util.Set<String> getSet() { return set; }", output.code);
 	}
 }
