@@ -133,6 +133,12 @@ public interface ConfigurationOptionKeys
 	 public static String setterPrefixes = "setterPrefixes";
 
 	 /**
+	 *
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#forceThisAsImmutableSetterReturnType
+	 */
+	 public static String forceThisAsImmutableSetterReturnType = "forceThisAsImmutableSetterReturnType";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#extraInterfaceNames
 	 */
 	 public static String extraInterfaceNames = "extraInterfaceNames";

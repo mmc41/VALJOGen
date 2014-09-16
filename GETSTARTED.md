@@ -31,7 +31,7 @@ Refer to the [examples project](valjogen-examples/readme.md) for a full list of 
 #1. Using VALJOGen with JavaC compiler:
 
 ```Bash
-javac -cp valjogen-annotationprocessor-*XXX*.jar -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+javac -cp valjogen-annotationprocessor-*XXX*.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
 #2. Using VALJOGen with Maven:
@@ -49,7 +49,7 @@ Use `Maven 3.2.0` or later and add the dependency (*NOTE: THIS IS FOR THE FUTURE
 #3. Using VALJOGen with Eclipse:
 
 ```
-Open Window > Preferences > Maven > Annotation processing or right-click on your project > Properties > Maven > Annotation processing to select the Annotation Processing strategy of your choice.
+In Eclipse open project Properties/Java Compiler/Annoation Processing and enable Annotation processing. Then add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directory for your project.
 ```
 
 ## Using VALJOGen with Eclipse and Maven *(CURRENTLY UNTESTED)*:

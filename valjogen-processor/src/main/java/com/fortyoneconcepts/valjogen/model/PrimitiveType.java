@@ -24,6 +24,12 @@ public final class PrimitiveType extends Type
 	}
 
 	@Override
+    public boolean isVoid()
+    {
+		return (qualifiedProtoTypicalTypeName.equals("void"));
+    }
+
+	@Override
 	public boolean isPrimitiveFloat() {
 		return (qualifiedProtoTypicalTypeName.equals("float"));
 	}

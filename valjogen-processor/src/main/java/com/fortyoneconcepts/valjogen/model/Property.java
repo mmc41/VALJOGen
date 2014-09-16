@@ -14,19 +14,22 @@ import java.util.*;
 public final class Property extends Method
 {
 	private final Member member;
+	private final Type overriddenReturnType;
 	private final PropertyKind kind;
 
-	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, List<Type> thrownTypes, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
+	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
 	{
 		super(clazz, accessLevel, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);
+		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
+	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
 	{
 		super(clazz, accessLevel, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);
+		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;
 	}
 
@@ -34,6 +37,11 @@ public final class Property extends Method
 	public boolean isFinal()
 	{
 		return getConfiguration().isFinalPropertiesEnabled();
+	}
+
+	public Type getOverriddenReturnType()
+	{
+		return overriddenReturnType;
 	}
 
 	public boolean isSynchronized()
@@ -74,7 +82,7 @@ public final class Property extends Method
 		sb.append("Property [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", accessLevel="+accessLevel+", member=" + member.getName() + ", propertyKind="+kind+", thrownTypes="+thrownTypes+", implementationInfo="+implementationInfo+"]");
+			sb.append(", accessLevel="+accessLevel+", member=" + member.getName() + ", propertyKind="+kind+", overriddenReturnType="+overriddenReturnType.toString(NO_DETAILS_LEVEL)+", thrownTypes="+thrownTypes+", implementationInfo="+implementationInfo+"]");
 
 		sb.append("]");
 

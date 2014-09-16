@@ -83,6 +83,8 @@ public final class STCodeWriter
 		st.add(mainTemplateArg, Objects.requireNonNull(clazz));
 
 		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
+		if (result==null)
+			throw new STException("Template rendering error : No output");
 
 		// Unfortunately, ST does not propagate exceptions so we have to do that.
 		Exception exception = lastException;

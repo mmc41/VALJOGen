@@ -133,6 +133,11 @@ public abstract class Type extends ModelBase
     	return false;
     }
 
+    public boolean isVoid()
+    {
+    	return false;
+    }
+
     public boolean isPrimitiveFloat()
     {
     	return false;

@@ -321,7 +321,7 @@ public final class ClazzFactory
 			          	   propertyMember = existingMember;
 			          	}
 
-			          	Property property = createValidatedProperty(clazz, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
+			          	Property property = createValidatedProperty(clazz, configuration, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
 
 			          	propertyMember.addPropertyMethod(property);
 			          	propertyMethods.add(property);
@@ -520,14 +520,16 @@ public final class ClazzFactory
 	}
 
 
-	private Property createValidatedProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
+	private Property createValidatedProperty(Clazz clazz, Configuration configuration, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
 	{
 		Property property;
 
 		String propertyName = m.getSimpleName().toString();
 
+      	Type overriddenReturnType = (configuration.isThisAsImmutableSetterReturnTypeEnabled() && propertyKind==PropertyKind.SETTER && !returnType.isVoid()) ? clazz : returnType;
+
 		if (parameters.size()==0) {
-			property=new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo);
+			property=new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo);
 		} else if (parameters.size()==1) {
 			Parameter parameter = parameters.get(0);
 
@@ -538,7 +540,7 @@ public final class ClazzFactory
 				parameter=parameter.setName(propertyMember.getName());
 			}
 
-			property = new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo, parameter);
+			property = new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo, parameter);
 		} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
 
 		return property;
@@ -623,6 +625,7 @@ public final class ClazzFactory
 			}
 
 			String returnTypeName = returnTypeMirror.toString();
+			// Type returnType = createType(clazz, allTypesByPrototypicalFullName, types, returnTypeMirror);
 
 			String declaredInterfaceTypeName = interfaceOrClassMirrorType.toString();
 			if (!returnTypeName.equals("void") && !returnTypeName.equals(declaredInterfaceTypeName) && !returnTypeName.equals(clazz.getQualifiedName())) {

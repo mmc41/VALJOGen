@@ -151,6 +151,11 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(setterPrefixes, configureAnnotation.setterPrefixes());
 	 }
 
+	 public boolean isThisAsImmutableSetterReturnTypeEnabled()
+	 {
+		 return getValue(forceThisAsImmutableSetterReturnType, configureAnnotation.forceThisAsImmutableSetterReturnType());
+	 }
+
 	 public String getBaseClazzName()
 	 {
 		 return getValue(baseClazzName, configureAnnotation.baseClazzName());

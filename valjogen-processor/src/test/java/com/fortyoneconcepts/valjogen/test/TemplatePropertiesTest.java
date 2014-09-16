@@ -9,6 +9,7 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
+import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase.Output;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -30,22 +31,30 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testPublicImmutableSetter() throws Exception
 	{
-		Output output = produceOutput(ImmutableInterface.class);
+		Output output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder, configureAnnotationBuilder.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
 
 		assertContainsWithWildcards("public * ImmutableInterface setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output.code);
 	}
 
 	@Test
-	public void testCustomSetterAndGetter() throws Exception
+	public void testPublicForcedImmutableSetter() throws Exception
+	{
+		Output output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder, configureAnnotationBuilder.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, true));
+
+		assertContainsWithWildcards("public * TestImpl setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output.code);
+	}
+
+	@Test
+	public void testSetterAndGetterWithCustomPrefixes() throws Exception
 	{
 		Output output = produceOutput(CustomNamedPropertiesInterface.class,
-				                      generateAnnotationBuilder.build(),
+				                      generateAnnotationBuilder,
 				                      configureAnnotationBuilder.add(ConfigurationOptionKeys.getterPrefixes, new String[] { "should"})
 				                      .add(ConfigurationOptionKeys.setterPrefixes, new String[] { "with"})
-				                      .build());
+				                      .add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
 
 		assertContainsWithWildcards("boolean shouldRequire() { return require; }", output.code);
-		assertContainsWithWildcards(CustomNamedPropertiesInterface.class.getSimpleName()+" withRequire(final boolean require) { return new CustomNamedPropertiesImpl(require); }", output.code);
+		assertContainsWithWildcards(CustomNamedPropertiesInterface.class.getSimpleName()+" withRequire(final boolean require) { return new TestImpl(require); }", output.code);
 	}
 
 	@Test
@@ -79,7 +88,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testGenricImmutableSetter() throws Exception
 	{
-		Output output = produceOutput(GenericInterface.class);
+		Output output = produceOutput(GenericInterface.class, generateAnnotationBuilder, configureAnnotationBuilder.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
 
 		assertContainsWithWildcards("public * GenericInterface<GT,ST,OT> setSt(final ST st) { return new TestImpl(this.gt, st, this.ot); }", output.code);
 	}
@@ -103,7 +112,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	@Test
 	public void testLocalGenricImmutableSetter() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithGenericMembers.class);
+		Output output = produceOutput(InterfaceWithGenericMembers.class, generateAnnotationBuilder, configureAnnotationBuilder.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
 
 		assertContainsWithWildcards("public final InterfaceWithGenericMembers setSet(final java.util.Set<String> set) { return new TestImpl(this.map, set); }", output.code);
 	}

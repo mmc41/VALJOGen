@@ -57,7 +57,7 @@ package <clazz.packageName>;
   <@before_instance_methods><@end>
   <method_this(clazz)>
 
-  <clazz.propertyMethods:property(); separator="\n\n">
+  <clazz.propertyMethods:{m | <(property(clazz, m))>}; separator="\n\n">
 
   <! Call template methods corresponding to prefixed method names !>
   <clazz.claimedImplementationMethods:{m | <(implementationMethod(m.name))(clazz, m)>}; separator="\n\n">

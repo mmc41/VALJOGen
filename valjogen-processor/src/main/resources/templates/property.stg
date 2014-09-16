@@ -4,21 +4,21 @@
 * This is a helper template group file that is responsible for generating properties (getters/setters).
 **/
 
-property(property) ::= <%
+property(clazz, property) ::= <%
 <if(property.getter)>
- <getter(property)>
+ <getter(clazz, property)>
 <elseif(property.setter)>
  <if(property.thisReturnType)>
-   <immutable_setter(property)>
+   <immutable_setter(clazz, property)>
  <else>
-  <mutable_setter(property)>
+  <mutable_setter(clazz, property)>
  <endif>
  <else>
   <! Error - Should not occur !>
  <endif>
 %>
 
-getter(property) ::= <<
+getter(clazz, property) ::= <<
 <@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
 public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
@@ -28,7 +28,7 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.proto
 }
 >>
 
-mutable_setter(property) ::= <<
+mutable_setter(clazz, property) ::= <<
 <@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
 public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
@@ -38,9 +38,9 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.proto
 }
 >>
 
-immutable_setter(property) ::= <<
+immutable_setter(clazz, property) ::= <<
 <@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
-public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+public <optFinal(property)><optSynchronized(property)><property.overriddenReturnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
  <@preamble><@end>
  <@postamble><@end>

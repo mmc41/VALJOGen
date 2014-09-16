@@ -208,6 +208,13 @@ public @interface VALJOConfigure
     String[] setterPrefixes() default { "set" };
 
 	/**
+	* Specifies if return type of immutable setters should be fixed to be the class itself (covariannce) instead of what interfaces declare. May be overruled by equivalent annotation processor key.
+	*
+	* @return True if return types of immutable setters should always be the implementation class.
+	*/
+    boolean forceThisAsImmutableSetterReturnType() default true;
+
+	/**
 	* Specifies if additional interfaces should be implemented to the generated class. May be overruled by equivalent annotation processor key.
 	*
 	* Hint: For generic interfaces using the macro <code>"$(This)"</code> for the generic qualifier is useful to refer to the name of the generated class. F.x.

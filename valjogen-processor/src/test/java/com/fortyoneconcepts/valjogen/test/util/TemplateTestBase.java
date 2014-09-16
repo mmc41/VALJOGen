@@ -108,6 +108,11 @@ public abstract class TemplateTestBase
 		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotation, false);
 	}
 
+	protected Output produceOutput(Class<?> sourceClass, AnnotationProxyBuilder<VALJOGenerate> generateAnnotationBuilder, AnnotationProxyBuilder<VALJOConfigure> configureAnnotationBuilder) throws Exception
+	{
+		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build(), false);
+	}
+
 	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception
 	{
 		return produceOutput(sourceClass, generateAnnotation, configureAnnotation, false);

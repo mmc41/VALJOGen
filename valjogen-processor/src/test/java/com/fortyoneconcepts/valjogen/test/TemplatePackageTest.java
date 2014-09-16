@@ -28,7 +28,6 @@ public class TemplatePackageTest extends TemplateTestBase
 	@Test
 	public void testInterfacePackageByDefault() throws Exception
 	{
-
 		Output output = produceOutput(ImmutableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.build());
 		assertContainsWithWildcards("package "+ImmutableInterface.class.getPackage().getName()+";", output.code);
 	}
