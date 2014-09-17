@@ -17,7 +17,6 @@ import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
 import com.fortyoneconcepts.valjogen.model.*;
-import com.fortyoneconcepts.valjogen.model.NoType;
 import com.fortyoneconcepts.valjogen.model.util.*;
 
 /***
@@ -30,13 +29,16 @@ import com.fortyoneconcepts.valjogen.model.util.*;
  *
  * @author mmc
  */
-public final class ClazzFactory
+public final class ModelBuilder
 {
 	// private final static Logger LOGGER = Logger.getLogger(ClazzFactory.class.getName());
 
 	private final Types types;
 	private final Elements elements;
 	private final DiagnosticMessageConsumer errorConsumer;
+	private final TypeElement masterInterfaceElement;
+	private final Configuration configuration;
+	private final ResourceLoader resourceLoader;
 	private final Map<String,Type> allTypesByPrototypicalFullName;
 
 	/**
@@ -50,17 +52,23 @@ public final class ClazzFactory
 	}
 
 	/**
-	 * Create an instance of this factory suitable for creating multiple classes.
+	 * Create an instance of this builder that can build the specified class and all dependencies.
 	 *
 	 * @param types Types helper from javax.lang.model
 	 * @param elements Elements helper from jacax.lang.model
 	 * @param errorConsumer Where to send errors.
+	 * @param masterInterfaceElement The interface that has been selected for code generation (by an annotation).
+	 * @param configuration Descripes the user-selected details about what should be generated (combination of annotation(s) and annotation processor setup).
+	 * @param resourceLoader What to call to get resource files
 	 */
-	public ClazzFactory(Types types, Elements elements, DiagnosticMessageConsumer errorConsumer)
+	public ModelBuilder(Types types, Elements elements, DiagnosticMessageConsumer errorConsumer, TypeElement masterInterfaceElement, Configuration configuration, ResourceLoader resourceLoader)
 	{
       this.types=types;
 	  this.elements=elements;
 	  this.errorConsumer=errorConsumer;
+	  this.masterInterfaceElement=masterInterfaceElement;
+	  this.configuration=configuration;
+	  this.resourceLoader=resourceLoader;
 	  this.allTypesByPrototypicalFullName = new HashMap<String, Type>();
 	}
 
@@ -77,18 +85,14 @@ public final class ClazzFactory
 	}
 
 	/**
-    * Create a Clazz model instance along with all its dependen model instancess by inspecting
+    * Create a Clazz model instance along with all its dependent model instances by inspecting
     * javax.lang.model metadata and the configuration provided by annotation(s) read by annotation processor.
-    *.
-	* @param masterInterfaceElement The interface that has been selected for code generation (by an annotation).
-	* @param configuration Descripes the user-selected details about what should be generated (combination of annotation(s) and annotation processor setup).
-	* @param resourceLoader What to call to get resource files
 	*
 	* @return A initialized Clazz which is a model for what our generated code should look like.
 	*
 	* @throws Exception if a fatal error has occured.
 	*/
-	public Clazz createClazz(TypeElement masterInterfaceElement, Configuration configuration, ResourceLoader resourceLoader) throws Exception
+	public Clazz buildCLazz() throws Exception
 	{
 		// Step 1 - Create clazz:
 		DeclaredType masterInterfaceDecl = (DeclaredType)masterInterfaceElement.asType();
@@ -96,7 +100,7 @@ public final class ClazzFactory
 		PackageElement sourcePackageElement = elements.getPackageOf(masterInterfaceElement);
 
 		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.toString();
-		String className = createQualifiedClassName(configuration, masterInterfaceElement.asType().toString(), sourceInterfacePackageName);
+		String className = createQualifiedClassName(masterInterfaceElement.asType().toString(), sourceInterfacePackageName);
 		String classPackage = NamesUtil.getPackageFromQualifiedName(className);
 
 		String classJavaDoc = elements.getDocComment(masterInterfaceElement);
@@ -110,9 +114,9 @@ public final class ClazzFactory
 			headerText=resourceLoader.getResourceAsText(headerFileName);
 		}
 
-		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText);
+		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText, (c) -> createHelperTypes(c));
 
-		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(masterInterfaceElement, configuration, classPackage);
+		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(classPackage);
 		if (baseClazzDeclaredMirrorType==null)
 			return null;
 
@@ -120,7 +124,7 @@ public final class ClazzFactory
 
 		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
 
-		List<DeclaredType> interfaceDeclaredMirrorTypes = createInterfaceDeclaredTypes(masterInterfaceElement, masterInterfaceDecl, ekstraInterfaceNames, classPackage);
+		List<DeclaredType> interfaceDeclaredMirrorTypes = createInterfaceDeclaredTypes(masterInterfaceDecl, ekstraInterfaceNames, classPackage);
 		List<DeclaredType> allInterfaceDeclaredMirrorTypes = interfaceDeclaredMirrorTypes.stream().flatMap(ie -> getDeclaredInterfacesWithAscendents(ie)).collect(Collectors.toList());
 
         // Step 2 - Init type part of clzzz:
@@ -172,16 +176,16 @@ public final class ClazzFactory
 
 		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming they all are.
 
-		executableElementsFromInterfaces.forEach(e -> processMethod(masterInterfaceElement, configuration, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, false));
-		executableElementsFromBaseClasses.forEach(e -> processMethod(masterInterfaceElement, configuration, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, true));
+		executableElementsFromInterfaces.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, false));
+		executableElementsFromBaseClasses.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, true));
 
 		if (statusHolder.encountedSynthesisedMembers)
 			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
 
-		List<Type> importTypes = createImportTypes(clazz, masterInterfaceElement, configuration, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes);
+		List<Type> importTypes = createImportTypes(clazz, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes);
 
 		List<Member> members = new ArrayList<Member>(membersByName.values());
-		List<Member> selectedComparableMembers = (clazz.isComparable() && configuration.isComparableEnabled()) ? getSelectedComparableMembers(masterInterfaceElement, configuration, membersByName, members) : Collections.emptyList();
+		List<Member> selectedComparableMembers = (clazz.isComparable() && configuration.isComparableEnabled()) ? getSelectedComparableMembers(membersByName, members) : Collections.emptyList();
 
 		if (clazz.isSerializable()) {
 			addMagicSerializationMethods(clazz, nonPropertyMethods);
@@ -203,9 +207,40 @@ public final class ClazzFactory
 		return clazz;
 	}
 
+	private HelperTypes createHelperTypes(Clazz clazz) throws Exception
+	{
+		com.fortyoneconcepts.valjogen.model.NoType noType = new com.fortyoneconcepts.valjogen.model.NoType(clazz);
+
+		Type voidType = new com.fortyoneconcepts.valjogen.model.PrimitiveType(clazz, "void");
+		allTypesByPrototypicalFullName.putIfAbsent("void", voidType);
+
+		TypeMirror javaLangObjectMirrorType = createTypeFromString("java.lang.Object");
+		ObjectType javaLangObjectType = (ObjectType)this.createType(clazz, javaLangObjectMirrorType);
+
+		TypeMirror serializableInterfaceMirrorType = createTypeFromString("java.io.Serializable");
+		ObjectType serializableInterfaceType = (ObjectType)this.createType(clazz, serializableInterfaceMirrorType);
+
+		TypeMirror externalizableInterfaceMirrorType = createTypeFromString("java.io.Externalizable");
+		ObjectType externalizableInterfaceType = (ObjectType)this.createType(clazz, externalizableInterfaceMirrorType);
+
+		TypeMirror comparableInterfaceMirrorType = createTypeFromString("java.lang.Comparable");
+		ObjectType comparableInterfaceType = (ObjectType)this.createType(clazz, comparableInterfaceMirrorType);
+
+		TypeMirror javaUtilArraysMirrorType = createTypeFromString("java.util.Arrays");
+		ObjectType javaUtilArraysType = (ObjectType)this.createType(clazz, javaUtilArraysMirrorType);
+
+		TypeMirror javaUtilObjectsMirrorType = createTypeFromString("java.util.Objects");
+		ObjectType javaUtilObjectsType = (ObjectType)this.createType(clazz, javaUtilObjectsMirrorType);
+
+		TypeMirror generatedAnnotationInterfaceMirrorType = createTypeFromString("javax.annotation.Generated");
+		Type generatedAnnotationInterfaceType = this.createType(clazz, generatedAnnotationInterfaceMirrorType);
+
+		return new HelperTypes(noType, javaLangObjectType, voidType, serializableInterfaceType, externalizableInterfaceType, comparableInterfaceType, javaUtilArraysType, javaUtilObjectsType, generatedAnnotationInterfaceType);
+	}
+
 	private void addMagicSerializationMethods(Clazz clazz, List<Method> nonPropertyMethods)
 	{
-		Type noType = new NoType(clazz);
+		Type noType = clazz.getHelperTypes().getNoType();
 
 		// Add : private Object readResolve() throws ObjectStreamException :
 		Method readResolve = new Method(clazz, AccessLevel.PRIVATE, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
@@ -230,7 +265,7 @@ public final class ClazzFactory
 		nonPropertyMethods.add(writeReplace);
 	}
 
-	private List<Member> getSelectedComparableMembers(TypeElement masterInterfaceElement, Configuration configuration, Map<String, Member> membersByName, List<Member> members) throws Exception
+	private List<Member> getSelectedComparableMembers(Map<String, Member> membersByName, List<Member> members) throws Exception
 	{
 		List<Member> comparableMembers;
 
@@ -267,8 +302,7 @@ public final class ClazzFactory
 		return elements.map(e -> new ExecutableElementAndDeclaredTypePair(interfaceOrClasMirrorType, e));
 	}
 
-	private void processMethod(TypeElement masterInterfaceElement, Configuration configuration,
-			                   Clazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods,	List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceOrClassMirrorType,
+	private void processMethod(Clazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods,	List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceOrClassMirrorType,
 			                   Set<String> implementedMethodNames, boolean implementedAlready)
 	{
 		try {
@@ -311,7 +345,7 @@ public final class ClazzFactory
 			    	propertyKind=PropertyKind.SETTER;
 
 				if (propertyKind!=null) {
-					Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceOrClassMirrorType, masterInterfaceElement, returnTypeMirror, params, paramTypes, configuration, m, propertyKind);
+					Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceOrClassMirrorType, returnTypeMirror, params, paramTypes, m, propertyKind);
 
 					if (propertyMember!=null) {
 			            final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
@@ -326,7 +360,7 @@ public final class ClazzFactory
 			          	   propertyMember = existingMember;
 			          	}
 
-			          	Property property = createValidatedProperty(clazz, configuration, statusHolder, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
+			          	Property property = createValidatedProperty(clazz, statusHolder, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
 
 			          	propertyMember.addPropertyMethod(property);
 			          	propertyMethods.add(property);
@@ -411,7 +445,7 @@ public final class ClazzFactory
 			   Stream<? extends TypeMirror> interfaceTypesWithAscendantsTypeMirrors = getSuperTypesWithAncestors(interfaceSuperTypeMirrors);
 			   interfaceTypesWithAscendants = interfaceTypesWithAscendantsTypeMirrors.map(t -> createType(clazz, t)).collect(Collectors.toSet());
 		   } else {
-			   baseClazzType=new NoType(clazz);
+			   baseClazzType=new com.fortyoneconcepts.valjogen.model.NoType(clazz);
 			   interfaceTypes=Collections.emptyList();
 			   interfaceTypesWithAscendants=Collections.emptySet();
 		   }
@@ -438,19 +472,30 @@ public final class ClazzFactory
 		return Stream.concat(superTypes.stream(), superTypes.stream().flatMap(type -> getSuperTypesWithAncestors(types.directSupertypes(type))));
 	}
 
-	private DeclaredType createBaseClazzDeclaredType(TypeElement masterInterfaceElement, Configuration configuration, String clazzPackage) throws Exception
+	private DeclaredType createBaseClazzDeclaredType(String clazzPackage) throws Exception
 	{
 		String baseClazzName = configuration.getBaseClazzName();
 		if (baseClazzName==null || baseClazzName.isEmpty())
 			baseClazzName=ConfigurationDefaults.RootObject;
 
-		return createDeclaredTypeFromString(masterInterfaceElement, baseClazzName, clazzPackage);
+		return createDeclaredTypeFromString(baseClazzName, clazzPackage);
 	}
 
-	private DeclaredType createDeclaredTypeFromString(TypeElement masterInterfaceElement, String name, String clazzPackage) throws Exception
+	private TypeMirror createTypeFromString(String qualifiedName) throws Exception
+	{
+		TypeElement element = elements.getTypeElement(qualifiedName);
+		if (element==null) {
+			errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.ClassNotFound, qualifiedName));
+			return null; // Abort.
+		}
+
+		return element.asType();
+	}
+
+	private DeclaredType createDeclaredTypeFromString(String name, String clazzPackage) throws Exception
 	{
 		String nameWithoutGenerics = NamesUtil.stripGenericQualifier(name);
-		nameWithoutGenerics = NamesUtil.ensureQualifedName(nameWithoutGenerics, clazzPackage);
+		nameWithoutGenerics = clazzPackage!=null ? NamesUtil.ensureQualifedName(nameWithoutGenerics, clazzPackage) : null;
 
 		TypeElement element = elements.getTypeElement(nameWithoutGenerics);
 		if (element==null) {
@@ -485,7 +530,7 @@ public final class ClazzFactory
 		}
 	}
 
-	private List<Type> createImportTypes(Clazz clazz, TypeElement masterInterfaceElement, Configuration configuration, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes) throws Exception
+	private List<Type> createImportTypes(Clazz clazz, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes) throws Exception
 	{
 		List<Type> importTypes = new ArrayList<Type>();
 		for (DeclaredType implementedInterfaceDeclaredType : implementedDecalredInterfaceTypes)
@@ -506,7 +551,7 @@ public final class ClazzFactory
 		return importTypes;
 	}
 
-	private List<DeclaredType> createInterfaceDeclaredTypes(TypeElement masterInterfaceElement, DeclaredType masterInterfaceType, String[] ekstraInterfaceNames, String clazzPackage) throws Exception
+	private List<DeclaredType> createInterfaceDeclaredTypes(DeclaredType masterInterfaceType, String[] ekstraInterfaceNames, String clazzPackage) throws Exception
 	{
 		List<DeclaredType> interfaceElements = new ArrayList<DeclaredType>();
 		interfaceElements.add(masterInterfaceType);
@@ -515,7 +560,7 @@ public final class ClazzFactory
 			String ekstraInterfaceName = ekstraInterfaceNames[i];
 			if (!ekstraInterfaceName.isEmpty())
 			{
-				DeclaredType extraDeclaredType = createDeclaredTypeFromString(masterInterfaceElement, ekstraInterfaceName, clazzPackage);
+				DeclaredType extraDeclaredType = createDeclaredTypeFromString(ekstraInterfaceName, clazzPackage);
 				interfaceElements.add(extraDeclaredType);
 			}
 		}
@@ -523,7 +568,7 @@ public final class ClazzFactory
 	}
 
 
-	private Property createValidatedProperty(Clazz clazz, Configuration configuration, StatusHolder statusHolder, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
+	private Property createValidatedProperty(Clazz clazz, StatusHolder statusHolder, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
 	{
 		Property property;
 
@@ -570,7 +615,7 @@ public final class ClazzFactory
 		return result;
 	}
 
-	private String createQualifiedClassName(Configuration configuration, String qualifedInterfaceName, String sourcePackageName)
+	private String createQualifiedClassName(String qualifedInterfaceName, String sourcePackageName)
 	{
 		String className = configuration.getName();
 		if (className==null || className.isEmpty())
@@ -605,9 +650,9 @@ public final class ClazzFactory
 
 	}
 
-	private Member createPropertyMemberIfValidProperty(Clazz clazz, DeclaredType interfaceOrClassMirrorType, TypeElement interfaceElement,
+	private Member createPropertyMemberIfValidProperty(Clazz clazz, DeclaredType interfaceOrClassMirrorType,
 			                                           TypeMirror returnTypeMirror, List<? extends VariableElement> setterParams, List<? extends TypeMirror> setterParamTypes,
-			                                           Configuration configuration, ExecutableElement methodElement, PropertyKind kind) throws Exception
+			                                           ExecutableElement methodElement, PropertyKind kind) throws Exception
 	{
 		TypeMirror propertyTypeMirror;
 

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
@@ -17,8 +18,6 @@ import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
  */
 public class ObjectType extends Type
 {
-	protected HelperTypes helperTypes;
-
 	protected List<Type> genericTypeArguments;
 	protected Type baseClazzType;
 	protected List<Type> interfaceTypes;
@@ -43,13 +42,12 @@ public class ObjectType extends Type
 		this.baseClazzType = Objects.requireNonNull(baseClazz);
 		this.interfaceTypes=Objects.requireNonNull(superInterfaces);
 		this.interfaceTypesWithAscendants=Objects.requireNonNull(superInterfacesWithAncestors);
-		this.helperTypes=clazzUsingType.getHelperTypes();
 	}
 
 	/**
      * Nb. Post-constructor for what this type is based on such as supertypes. This method must be called for the type to be fully initialized. Nb. Subclasses of this class may
      * require additional post-constructors to be called. Must be called only once.
-     *
+	 *
 	 * @param baseClazzType Base class of this type if any (NoType if no base class exist).
 	 * @param interfaceTypes Direct super-interfaces of this type.
 	 * @param interfaceTypesWithAscendants All ancestor interfaces of this type.
@@ -142,7 +140,7 @@ public class ObjectType extends Type
 	{
 		assert initializedType : "Type initialization missing";
 
-		Type serializableType = helperTypes.getSerializableInterfaceType();
+		Type serializableType = getHelperTypes().getSerializableInterfaceType();
 		if (this.equals(serializableType))
 			return true;
 		else return interfaceTypesWithAscendants.contains(serializableType);

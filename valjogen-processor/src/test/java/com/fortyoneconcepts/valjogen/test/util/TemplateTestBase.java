@@ -30,7 +30,7 @@ import com.fortyoneconcepts.valjogen.model.Configuration;
 import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
-import com.fortyoneconcepts.valjogen.processor.ClazzFactory;
+import com.fortyoneconcepts.valjogen.processor.ModelBuilder;
 import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
 import com.google.testing.compile.CompilationRule;
@@ -131,7 +131,7 @@ public abstract class TemplateTestBase
 		List<String> warnings = new ArrayList<String>();
 		List<String> errors = new ArrayList<String>();
 
-		ClazzFactory clazzFactory = new ClazzFactory(types, elements,  (megElement, kind, message) ->
+		ModelBuilder clazzFactory = new ModelBuilder(types, elements,  (megElement, kind, message) ->
 		  {
 			if (kind==Kind.ERROR) {
 			  errors.add(message);
@@ -143,9 +143,9 @@ public abstract class TemplateTestBase
 			  warnings.add(message);
 			  LOGGER.warning(message);
 			} else LOGGER.info(message);
-		  });
+		  }, interfaceElement, configuration, resourceLoader);
 
-		Clazz clazz = clazzFactory.createClazz(interfaceElement, configuration, resourceLoader);
+		Clazz clazz = clazzFactory.buildCLazz();
 
 		LOGGER.info(() -> "VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
 

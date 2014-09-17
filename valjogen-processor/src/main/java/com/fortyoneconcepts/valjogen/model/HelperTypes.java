@@ -7,17 +7,34 @@ package com.fortyoneconcepts.valjogen.model;
  * to get a name that correctly refers to the java class. This name may be qualified or unqualified
  * depending on if an import has been made.
  *
- * TODO: Cache these as singletons.
- *
  * @author mmc
  */
 public class HelperTypes
 {
-	private final Clazz clazz;
+	private final NoType noType;
+	private final ObjectType javaLangObjectType;
+	private final Type voidType;
+	private final ObjectType serializableInterfaceType;
+	private final ObjectType externalizableInterfaceType;
+	private final ObjectType comparableInterfaceType;
+	private final ObjectType javaUtilArraysType;
+	private final ObjectType javaUtilObjectsInterfaceType;
+	private final Type generatedAnnotationType;
 
-	public HelperTypes(Clazz clazz)
+	public HelperTypes(NoType noType, ObjectType javaLangObjectType, Type voidType,
+			           ObjectType serializableInterfaceType, ObjectType externalizableInterfaceType,
+			           ObjectType comparableInterfaceType, ObjectType javaUtilArraysType, ObjectType javaUtilObjectsInterfaceType,
+			           Type generatedAnnotationType)
 	{
-		this.clazz=clazz;
+		this.noType=noType;
+		this.javaLangObjectType=javaLangObjectType;
+		this.voidType=voidType;
+		this.serializableInterfaceType=serializableInterfaceType;
+		this.externalizableInterfaceType=externalizableInterfaceType;
+		this.comparableInterfaceType=comparableInterfaceType;
+		this.javaUtilArraysType=javaUtilArraysType;
+		this.javaUtilObjectsInterfaceType=javaUtilObjectsInterfaceType;
+		this.generatedAnnotationType=generatedAnnotationType;
 	}
 
 	/**
@@ -25,15 +42,15 @@ public class HelperTypes
 	*/
 	public NoType getNoType()
 	{
-		return new NoType(clazz);
+		return noType;
     }
 
 	/**
 	* @return The Type object for {@link java.lang.Object}
 	*/
-	public Type getJavaLangObjectType()
+	public ObjectType getJavaLangObjectType()
 	{
-		return new ObjectType(clazz, "java.lang.Object");
+		return javaLangObjectType;
     }
 
 	/**
@@ -41,47 +58,47 @@ public class HelperTypes
 	*/
 	public Type getVoidType()
 	{
-		return new ObjectType(clazz, "void");
+		return voidType;
     }
 
 	/**
 	* @return The Type object for {@link java.io.Serializable}
 	*/
-	public Type getSerializableInterfaceType()
+	public ObjectType getSerializableInterfaceType()
 	{
-		return new ObjectType(clazz, "java.io.Serializable");
+		return serializableInterfaceType;
     }
 
 	/**
 	* @return The Type object for {@link java.io.Externalizable}
 	*/
-	public Type getExternalizableInterfaceType()
+	public ObjectType getExternalizableInterfaceType()
 	{
-		return new ObjectType(clazz, "java.io.Externalizable");
+		return externalizableInterfaceType;
     }
 
 	/**
-	* @return The Type object for {@link java.lang.Comparable}
+	* @return The (non-generic) Type object for {@link java.lang.Comparable}
 	*/
-	public Type getComparableInterfaceType() // TODO: Parameterize ???
+	public ObjectType getComparableInterfaceType()
 	{
-		return new ObjectType(clazz, "java.lang.Comparable<T>");
+		return comparableInterfaceType;
     }
 
 	/**
 	* @return The Type object for {@link java.util.Arrays}
 	*/
-	public Type getJavaUtilArrays()
+	public ObjectType getJavaUtilArrays()
 	{
-		return new ObjectType(clazz, "java.util.Arrays");
+		return javaUtilArraysType;
 	}
 
 	/**
 	* @return The Type object for {@link java.util.Objects}
 	*/
-	public Type getJavaUtilObjects()
+	public ObjectType getJavaUtilObjects()
 	{
-		return new ObjectType(clazz, "java.util.Objects");
+		return javaUtilObjectsInterfaceType;
 	}
 
 	/**
@@ -89,7 +106,7 @@ public class HelperTypes
 	*/
 	public Type getGeneratedAnnotation()
 	{
-		return new ObjectType(clazz, "javax.annotation.Generated");
+		return generatedAnnotationType;
 	}
 
 	@Override

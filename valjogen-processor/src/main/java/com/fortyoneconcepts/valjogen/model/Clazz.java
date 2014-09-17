@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
+import com.fortyoneconcepts.valjogen.model.util.ThrowingFunction;
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
@@ -14,7 +15,7 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 /**
  * Information about the java "class" that need to be generated. Refers to other model elements like members, properties, methods, types etc.
  *
- * Fully independent of javax.model.* classes even though {@link com.fortyoneconcepts.valjogen.processor.ClazzFactory} is the primary
+ * Fully independent of javax.model.* classes even though {@link com.fortyoneconcepts.valjogen.processor.ModelBuilder} is the primary
  * way to create Clazz instances from javax.model.* classes (provided by an annotation processor).
  *
  * @author mmc
@@ -27,6 +28,7 @@ public final class Clazz extends ObjectType implements Model
 	private final String qualifiedMaster;
 	private final String javaDoc;
 	private final String fileHeaderText;
+	private final HelperTypes helperTypes;
 
 	private List<Type> importTypes;
 	private List<Member> members;
@@ -45,12 +47,13 @@ public final class Clazz extends ObjectType implements Model
 	 * @param qualifiedMaster The fill name of the item this class was generated from.
 	 * @param javaDoc JavaDoc if any.
 	 * @param fileHeaderText Text to output as header for file(s).
+	 * @param helperFactoryMethod Method that can generate helper types for this class.
+	 * @throws Exception Exception if could not construct clazz.
 	 */
-	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText)
+	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<Clazz, HelperTypes> helperFactoryMethod) throws Exception
 	{
 		super(qualifiedClassName);
 		super.clazzUsingType=this;
-		super.helperTypes = new HelperTypes(this);
 
 		this.configuration = Objects.requireNonNull(configuration);
 		this.qualifiedMaster = qualifiedMaster;
@@ -66,6 +69,7 @@ public final class Clazz extends ObjectType implements Model
 		this.members = new ArrayList<Member>();
 		this.importTypes = new ArrayList<Type>();
 
+		this.helperTypes=helperFactoryMethod.apply(this);
 		initializedContent=false;
 	}
 
@@ -117,7 +121,6 @@ public final class Clazz extends ObjectType implements Model
 	/**
      * Nb. Post-constructor for what is inside the class such as methods, members etc. + imports. Both this method and the super class'es {@link ObjectType#initType}
      * methods must be called for the class to be fully initialized and ready for use. Must be called only once.
-     *
 	 * @param members Member variables for class.
 	 * @param properties Property methods for class.
 	 * @param nonPropertyMethods Other methods for class.

@@ -157,9 +157,9 @@ public class AnnotationProcessor extends AbstractProcessor
 			LOGGER.fine(() -> "Using resourceloader: "+resourceLoader);
 		}
 
-		ClazzFactory clazzFactory = new ClazzFactory(types, elements, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement));
+		ModelBuilder clazzFactory = new ModelBuilder(types, elements, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement), element, configuration, resourceLoader);
 
-		Clazz clazz = clazzFactory.createClazz(element, configuration, resourceLoader);
+		Clazz clazz = clazzFactory.buildCLazz();
 		if (clazz==null)
 			return;
 
