@@ -9,6 +9,4 @@ public abstract class ModelBase implements Model
 	{
 		return toString(0);
 	}
-
-	public abstract String toString(int level);
 }

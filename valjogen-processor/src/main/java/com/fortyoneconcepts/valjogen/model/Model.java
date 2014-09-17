@@ -57,4 +57,15 @@ public interface Model
 	{
 		return getConfiguration().getSuggestedVariablesPrefix();
 	}
+
+	/**
+	 * Special (safe) version of toString that guards against infinite loops.
+	 * Called by default toString() method so there is no need to call this
+	 * directly by clients.
+	 *
+	 * @param level The internal recursion level.
+	 *
+	 * @return String representation of model.
+	 */
+	 String toString(int level);
 }

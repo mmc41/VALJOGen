@@ -10,7 +10,7 @@ import java.util.Objects;
  *
  * @author mmc
  */
-public class Parameter implements Model
+public class Parameter extends ModelBase
 {
 	private final Clazz clazz;
 	private final String paramName;
@@ -62,7 +62,7 @@ public class Parameter implements Model
 	}
 
 	@Override
-	public String toString() {
+	public String toString(int level) {
 		return "Parameter [name=" + paramName + ", type=" + type.getPrototypicalQualifiedName() + "]";
 	}
 }

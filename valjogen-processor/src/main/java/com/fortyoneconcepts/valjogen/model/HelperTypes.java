@@ -1,15 +1,14 @@
 package com.fortyoneconcepts.valjogen.model;
 
 /**
- * Contains definitions of (external) java classes that templates may refer to. Instead of hardcoding
- * a named reference to a java class like "java.util.Objects" use the corresponding method
- * getJavaUtilObjects to return the type and then call the name property on that type
- * to get a name that correctly refers to the java class. This name may be qualified or unqualified
- * depending on if an import has been made.
+ * Contains definitions of (external) java classes that templates may refer to. Instead of hardcoding a named reference to a java class
+ * like "java.util.Objects" use the corresponding method getJavaUtilObjects to return the type and then call the name property on that
+ * type to get a name that correctly refers to the java class. The names returned from the types may then be qualified or unqualified
+ * automatically depending on if an import has been made.
  *
  * @author mmc
  */
-public class HelperTypes
+public final class HelperTypes
 {
 	private final NoType noType;
 	private final ObjectType javaLangObjectType;
