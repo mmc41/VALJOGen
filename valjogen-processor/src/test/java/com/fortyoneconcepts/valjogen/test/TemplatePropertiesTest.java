@@ -9,7 +9,6 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
-import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase.Output;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -131,5 +130,16 @@ public class TemplatePropertiesTest extends TemplateTestBase
 		Output output = produceOutput(InterfaceWithGenericMembers.class);
 
 		assertContainsWithWildcards("public final java.util.Set<String> getSet() { return set; }", output.code);
+	}
+
+	@Test
+	public void testPropertiesFromExtraInterfaces() throws Exception
+	{
+		Output output = produceOutput(EmptyInterface.class, generateAnnotationBuilder, configureAnnotationBuilder
+				.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] { ImmutableInterface.class.getName() })
+				.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
+
+		assertContainsWithWildcards("public * ImmutableInterface setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output.code);
+		assertContainsWithWildcards("public final Object getObjectValue() { return objectValue; }", output.code);
 	}
 }

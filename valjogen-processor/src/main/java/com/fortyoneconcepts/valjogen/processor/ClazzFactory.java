@@ -165,7 +165,8 @@ public final class ClazzFactory
 
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
 		// Currently it is assmued that all methods from base classes are implemented already - this does no take abstract base classes into account.
-		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming.
+
+		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming they all are.
 
 		executableElementsFromInterfaces.forEach(e -> processMethod(types, elements, masterInterfaceElement, configuration, errorConsumer, allTypesByPrototypicalFullName, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, false));
 		executableElementsFromBaseClasses.forEach(e -> processMethod(types, elements, masterInterfaceElement, configuration, errorConsumer, allTypesByPrototypicalFullName, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, true));
@@ -634,10 +635,10 @@ public final class ClazzFactory
 				return null;
 			}
 
-			propertyTypeMirror=setterParamTypes.get(0); // setterParams.get(0).asType();
+			propertyTypeMirror=setterParamTypes.get(0);
 			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyTypeMirror), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
 		} else {
-			return null; // Not a proeprty.
+			return null; // Not a property.
 		}
 	}
 
