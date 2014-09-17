@@ -34,14 +34,10 @@ public final class ClazzFactory
 {
 	// private final static Logger LOGGER = Logger.getLogger(ClazzFactory.class.getName());
 
-	private static ClazzFactory instance = null;
-
-	public static synchronized ClazzFactory getInstance() {
-	    if(instance == null) {
-	        instance = new ClazzFactory();
-	    }
-	    return instance;
-	}
+	private final Types types;
+	private final Elements elements;
+	private final DiagnosticMessageConsumer errorConsumer;
+	private final Map<String,Type> allTypesByPrototypicalFullName;
 
 	/**
 	 * Contains various data that streams need to manipulate and this needs to be accessed by reference.
@@ -53,7 +49,20 @@ public final class ClazzFactory
 		public boolean encountedSynthesisedMembers = false;
 	}
 
-	private ClazzFactory() {}
+	/**
+	 * Create an instance of this factory suitable for creating multiple classes.
+	 *
+	 * @param types Types helper from javax.lang.model
+	 * @param elements Elements helper from jacax.lang.model
+	 * @param errorConsumer Where to send errors.
+	 */
+	public ClazzFactory(Types types, Elements elements, DiagnosticMessageConsumer errorConsumer)
+	{
+      this.types=types;
+	  this.elements=elements;
+	  this.errorConsumer=errorConsumer;
+	  this.allTypesByPrototypicalFullName = new HashMap<String, Type>();
+	}
 
 	private static class ExecutableElementAndDeclaredTypePair
 	{
@@ -69,25 +78,20 @@ public final class ClazzFactory
 
 	/**
     * Create a Clazz model instance along with all its dependen model instancess by inspecting
-    * javax.model metadata and the configuration provided by annotation(s) read by annotation processor.
-    *
-	* @param types Utility instance provided by javax.lang.model framework.
-	* @param elements Utility instance provided by javax.lang.model framework.
+    * javax.lang.model metadata and the configuration provided by annotation(s) read by annotation processor.
+    *.
 	* @param masterInterfaceElement The interface that has been selected for code generation (by an annotation).
 	* @param configuration Descripes the user-selected details about what should be generated (combination of annotation(s) and annotation processor setup).
-	* @param errorConsumer Where to report errors and warning
 	* @param resourceLoader What to call to get resource files
 	*
 	* @return A initialized Clazz which is a model for what our generated code should look like.
 	*
 	* @throws Exception if a fatal error has occured.
 	*/
-	public Clazz createClazz(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, ResourceLoader resourceLoader) throws Exception
+	public Clazz createClazz(TypeElement masterInterfaceElement, Configuration configuration, ResourceLoader resourceLoader) throws Exception
 	{
 		// Step 1 - Create clazz:
 		DeclaredType masterInterfaceDecl = (DeclaredType)masterInterfaceElement.asType();
-
-		Map<String,Type> allTypesByPrototypicalFullName = new HashMap<String, Type>();
 
 		PackageElement sourcePackageElement = elements.getPackageOf(masterInterfaceElement);
 
@@ -108,28 +112,28 @@ public final class ClazzFactory
 
 		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText);
 
-		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(elements, types, masterInterfaceElement, configuration, errorConsumer, classPackage);
+		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(masterInterfaceElement, configuration, classPackage);
 		if (baseClazzDeclaredMirrorType==null)
 			return null;
 
-		List<DeclaredType> allBaseClassDeclaredMirrorTypes =  getSuperTypesWithAscendents(types, baseClazzDeclaredMirrorType).collect(Collectors.toList());
+		List<DeclaredType> allBaseClassDeclaredMirrorTypes =  getSuperTypesWithAscendents(baseClazzDeclaredMirrorType).collect(Collectors.toList());
 
 		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
 
-		List<DeclaredType> interfaceDeclaredMirrorTypes = createInterfaceDeclaredTypes(elements, types, masterInterfaceElement, masterInterfaceDecl, ekstraInterfaceNames, errorConsumer, classPackage);
-		List<DeclaredType> allInterfaceDeclaredMirrorTypes = interfaceDeclaredMirrorTypes.stream().flatMap(ie -> getDeclaredInterfacesWithAscendents(types, ie)).collect(Collectors.toList());
+		List<DeclaredType> interfaceDeclaredMirrorTypes = createInterfaceDeclaredTypes(masterInterfaceElement, masterInterfaceDecl, ekstraInterfaceNames, classPackage);
+		List<DeclaredType> allInterfaceDeclaredMirrorTypes = interfaceDeclaredMirrorTypes.stream().flatMap(ie -> getDeclaredInterfacesWithAscendents(ie)).collect(Collectors.toList());
 
         // Step 2 - Init type part of clzzz:
 		List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();
 
-	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, types, t)).collect(Collectors.toList());
+	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, t)).collect(Collectors.toList());
 
 		// List<GenericParameter> genericParameters = masterInterfaceElement.getTypeParameters().stream().map(p -> createGenericParameter(clazz, allTypesByPrototypicalFullName, types, p)).collect(Collectors.toList());
 
-		Type baseClazzType = createType(clazz, allTypesByPrototypicalFullName, types, baseClazzDeclaredMirrorType);
+		Type baseClazzType = createType(clazz, baseClazzDeclaredMirrorType);
 
-		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toList());
-		Set<Type> interfaceTypesWithAscendants = allInterfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toSet());
+		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, ie)).collect(Collectors.toList());
+		Set<Type> interfaceTypesWithAscendants = allInterfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, ie)).collect(Collectors.toSet());
 
 		clazz.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, typeArgTypes);
 
@@ -168,19 +172,19 @@ public final class ClazzFactory
 
 		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming they all are.
 
-		executableElementsFromInterfaces.forEach(e -> processMethod(types, elements, masterInterfaceElement, configuration, errorConsumer, allTypesByPrototypicalFullName, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, false));
-		executableElementsFromBaseClasses.forEach(e -> processMethod(types, elements, masterInterfaceElement, configuration, errorConsumer, allTypesByPrototypicalFullName, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, true));
+		executableElementsFromInterfaces.forEach(e -> processMethod(masterInterfaceElement, configuration, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, false));
+		executableElementsFromBaseClasses.forEach(e -> processMethod(masterInterfaceElement, configuration, clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, true));
 
 		if (statusHolder.encountedSynthesisedMembers)
 			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
 
-		List<Type> importTypes = createImportTypes(clazz, allTypesByPrototypicalFullName, types, elements, masterInterfaceElement, configuration, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes, errorConsumer);
+		List<Type> importTypes = createImportTypes(clazz, masterInterfaceElement, configuration, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes);
 
 		List<Member> members = new ArrayList<Member>(membersByName.values());
-		List<Member> selectedComparableMembers = (clazz.isComparable() && configuration.isComparableEnabled()) ? getSelectedComparableMembers(masterInterfaceElement, configuration, errorConsumer, membersByName, members) : Collections.emptyList();
+		List<Member> selectedComparableMembers = (clazz.isComparable() && configuration.isComparableEnabled()) ? getSelectedComparableMembers(masterInterfaceElement, configuration, membersByName, members) : Collections.emptyList();
 
 		if (clazz.isSerializable()) {
-			addMagicSerializationMethods(clazz, nonPropertyMethods, allTypesByPrototypicalFullName);
+			addMagicSerializationMethods(clazz, nonPropertyMethods);
 		}
 
 		for (Method method : nonPropertyMethods)
@@ -199,7 +203,7 @@ public final class ClazzFactory
 		return clazz;
 	}
 
-	private void addMagicSerializationMethods(Clazz clazz, List<Method> nonPropertyMethods, Map<String, Type> allTypesByPrototypicalFullName)
+	private void addMagicSerializationMethods(Clazz clazz, List<Method> nonPropertyMethods)
 	{
 		Type noType = new NoType(clazz);
 
@@ -226,7 +230,7 @@ public final class ClazzFactory
 		nonPropertyMethods.add(writeReplace);
 	}
 
-	private List<Member> getSelectedComparableMembers(TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, Map<String, Member> membersByName, List<Member> members) throws Exception
+	private List<Member> getSelectedComparableMembers(TypeElement masterInterfaceElement, Configuration configuration, Map<String, Member> membersByName, List<Member> members) throws Exception
 	{
 		List<Member> comparableMembers;
 
@@ -263,7 +267,7 @@ public final class ClazzFactory
 		return elements.map(e -> new ExecutableElementAndDeclaredTypePair(interfaceOrClasMirrorType, e));
 	}
 
-	private void processMethod(Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, Map<String, Type> allTypesByPrototypicalFullName,
+	private void processMethod(TypeElement masterInterfaceElement, Configuration configuration,
 			                   Clazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods,	List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceOrClassMirrorType,
 			                   Set<String> implementedMethodNames, boolean implementedAlready)
 	{
@@ -274,12 +278,12 @@ public final class ClazzFactory
 
 			ExecutableType executableMethodMirrorType = (ExecutableType)types.asMemberOf(interfaceOrClassMirrorType, m);
 
-			Type declaringType = createType(clazz, allTypesByPrototypicalFullName, types, interfaceOrClassMirrorType);
+			Type declaringType = createType(clazz, interfaceOrClassMirrorType);
 
 			String methodName = m.getSimpleName().toString();
 
 			TypeMirror returnTypeMirror = executableMethodMirrorType.getReturnType();
-			Type returnType = createType(clazz, allTypesByPrototypicalFullName, types, returnTypeMirror);
+			Type returnType = createType(clazz, returnTypeMirror);
 
 			List<? extends VariableElement> params =  m.getParameters();
 			List<? extends TypeMirror> paramTypes = executableMethodMirrorType.getParameterTypes();
@@ -288,12 +292,12 @@ public final class ClazzFactory
 				throw new Exception("Internal error - Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
 
 			List<? extends TypeMirror> thrownTypeMirrors = executableMethodMirrorType.getThrownTypes();
-			List<Type> thrownTypes = thrownTypeMirrors.stream().map(ie -> createType(clazz, allTypesByPrototypicalFullName, types, ie)).collect(Collectors.toList());
+			List<Type> thrownTypes = thrownTypeMirrors.stream().map(ie -> createType(clazz, ie)).collect(Collectors.toList());
 
 			List<Parameter> parameters = new ArrayList<Parameter>();
 			for (int i=0; i<params.size(); ++i)
 			{
-				Parameter param = createParameter(types, elements, allTypesByPrototypicalFullName, clazz, params.get(i), paramTypes.get(i));
+				Parameter param = createParameter(clazz, params.get(i), paramTypes.get(i));
 				parameters.add(param);
 			}
 
@@ -307,7 +311,7 @@ public final class ClazzFactory
 			    	propertyKind=PropertyKind.SETTER;
 
 				if (propertyKind!=null) {
-					Member propertyMember = createPropertyMemberIfValidProperty(clazz, allTypesByPrototypicalFullName, types, interfaceOrClassMirrorType, masterInterfaceElement, returnTypeMirror, params, paramTypes, configuration, m, propertyKind, errorConsumer);
+					Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceOrClassMirrorType, masterInterfaceElement, returnTypeMirror, params, paramTypes, configuration, m, propertyKind);
 
 					if (propertyMember!=null) {
 			            final Member existingMember = membersByName.putIfAbsent(propertyMember.getName(), propertyMember);
@@ -322,7 +326,7 @@ public final class ClazzFactory
 			          	   propertyMember = existingMember;
 			          	}
 
-			          	Property property = createValidatedProperty(clazz, configuration, allTypesByPrototypicalFullName, statusHolder, types, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
+			          	Property property = createValidatedProperty(clazz, configuration, statusHolder, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
 
 			          	propertyMember.addPropertyMethod(property);
 			          	propertyMethods.add(property);
@@ -349,23 +353,21 @@ public final class ClazzFactory
 		}
 	}
 
-	private Parameter createParameter(Types types, Elements elements, Map<String, Type> allTypesByPrototypicalFullName, Clazz clazz, VariableElement param, TypeMirror paramType)
+	private Parameter createParameter(Clazz clazz, VariableElement param, TypeMirror paramType)
 	{
 		String name = param.getSimpleName().toString();
-		return new Parameter(clazz, createType(clazz, allTypesByPrototypicalFullName, types, paramType), name);
+		return new Parameter(clazz, createType(clazz, paramType), name);
 	}
 
 	/**
 	 * Create a new type or reuse existing if already created in order to save memoery and processing time.
 	 *
 	 * @param clazz The class that directly or indirectly references the type
-	 * @param allTypesByPrototypicalFullName Pool of previously created types used to avoid duplicates.
-	 * @param typeMirrorTypes javax.model helper class
 	 * @param mirrorType corresponding javax.model type.
 	 *
 	 * @return A new or resued Type instance.
 	 */
-	private Type createType(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types typeMirrorTypes, TypeMirror mirrorType)
+	private Type createType(Clazz clazz, TypeMirror mirrorType)
 	{
 		String typeName = mirrorType.toString();
 
@@ -387,7 +389,7 @@ public final class ClazzFactory
 		} else if (mirrorType.getKind()==TypeKind.ARRAY) {
 		   ArrayType arrayType = (ArrayType)mirrorType;
 		   TypeMirror componentTypeMirror = arrayType.getComponentType();
-	       Type componentType = createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, componentTypeMirror);
+	       Type componentType = createType(clazz, componentTypeMirror);
 	       newType=new com.fortyoneconcepts.valjogen.model.ArrayType(clazz, typeName, componentType);
 	       existingType=allTypesByPrototypicalFullName.put(typeName, newType);
 		} else {
@@ -395,19 +397,19 @@ public final class ClazzFactory
   	       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
 		   existingType=allTypesByPrototypicalFullName.put(typeName, newType);
 
-		   List<? extends TypeMirror> directSuperTypeMirrors = typeMirrorTypes.directSupertypes(mirrorType);
+		   List<? extends TypeMirror> directSuperTypeMirrors = types.directSupertypes(mirrorType);
 
 		   Type baseClazzType;
 		   List<Type> interfaceTypes;
 		   Set<Type> interfaceTypesWithAscendants;
 		   if (directSuperTypeMirrors.size()>0) {
 			   TypeMirror baseClazzTypeMirror = directSuperTypeMirrors.get(0);
-			   baseClazzType = createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, baseClazzTypeMirror);
+			   baseClazzType = createType(clazz, baseClazzTypeMirror);
 
 			   List<? extends TypeMirror> interfaceSuperTypeMirrors = directSuperTypeMirrors.size()>1 ? directSuperTypeMirrors.subList(1, directSuperTypeMirrors.size()-1) : Collections.emptyList();
-			   interfaceTypes = interfaceSuperTypeMirrors.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toList());
-			   Stream<? extends TypeMirror> interfaceTypesWithAscendantsTypeMirrors = getSuperTypesWithAncestors(typeMirrorTypes, interfaceSuperTypeMirrors);
-			   interfaceTypesWithAscendants = interfaceTypesWithAscendantsTypeMirrors.map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toSet());
+			   interfaceTypes = interfaceSuperTypeMirrors.stream().map(t -> createType(clazz, t)).collect(Collectors.toList());
+			   Stream<? extends TypeMirror> interfaceTypesWithAscendantsTypeMirrors = getSuperTypesWithAncestors(interfaceSuperTypeMirrors);
+			   interfaceTypesWithAscendants = interfaceTypesWithAscendantsTypeMirrors.map(t -> createType(clazz, t)).collect(Collectors.toSet());
 		   } else {
 			   baseClazzType=new NoType(clazz);
 			   interfaceTypes=Collections.emptyList();
@@ -420,7 +422,7 @@ public final class ClazzFactory
 
 			   List<? extends TypeMirror> genericTypeMirrorArguments = declaredType.getTypeArguments();
 
-			   genericTypeArguments = genericTypeMirrorArguments.stream().map(t -> createType(clazz, allTypesByPrototypicalFullName, typeMirrorTypes, t)).collect(Collectors.toList());
+			   genericTypeArguments = genericTypeMirrorArguments.stream().map(t -> createType(clazz, t)).collect(Collectors.toList());
 		   }
 
 		   newObjectType.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, genericTypeArguments);
@@ -431,21 +433,21 @@ public final class ClazzFactory
 		return newType;
 	}
 
-	private Stream<? extends TypeMirror> getSuperTypesWithAncestors(Types typeMirrorTypes, List<? extends TypeMirror> superTypes)
+	private Stream<? extends TypeMirror> getSuperTypesWithAncestors(List<? extends TypeMirror> superTypes)
 	{
-		return Stream.concat(superTypes.stream(), superTypes.stream().flatMap(type -> getSuperTypesWithAncestors(typeMirrorTypes, typeMirrorTypes.directSupertypes(type))));
+		return Stream.concat(superTypes.stream(), superTypes.stream().flatMap(type -> getSuperTypesWithAncestors(types.directSupertypes(type))));
 	}
 
-	private DeclaredType createBaseClazzDeclaredType(Elements elements, Types types, TypeElement masterInterfaceElement, Configuration configuration, DiagnosticMessageConsumer errorConsumer, String clazzPackage) throws Exception
+	private DeclaredType createBaseClazzDeclaredType(TypeElement masterInterfaceElement, Configuration configuration, String clazzPackage) throws Exception
 	{
 		String baseClazzName = configuration.getBaseClazzName();
 		if (baseClazzName==null || baseClazzName.isEmpty())
 			baseClazzName=ConfigurationDefaults.RootObject;
 
-		return createDeclaredTypeFromString(elements, types, masterInterfaceElement, errorConsumer, baseClazzName, clazzPackage);
+		return createDeclaredTypeFromString(masterInterfaceElement, baseClazzName, clazzPackage);
 	}
 
-	private DeclaredType createDeclaredTypeFromString(Elements elements, Types types, TypeElement masterInterfaceElement, DiagnosticMessageConsumer errorConsumer, String name, String clazzPackage) throws Exception
+	private DeclaredType createDeclaredTypeFromString(TypeElement masterInterfaceElement, String name, String clazzPackage) throws Exception
 	{
 		String nameWithoutGenerics = NamesUtil.stripGenericQualifier(name);
 		nameWithoutGenerics = NamesUtil.ensureQualifedName(nameWithoutGenerics, clazzPackage);
@@ -483,13 +485,13 @@ public final class ClazzFactory
 		}
 	}
 
-	private List<Type> createImportTypes(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types types, Elements elements, TypeElement masterInterfaceElement, Configuration configuration, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes, DiagnosticMessageConsumer errorConsumer) throws Exception
+	private List<Type> createImportTypes(Clazz clazz, TypeElement masterInterfaceElement, Configuration configuration, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes) throws Exception
 	{
 		List<Type> importTypes = new ArrayList<Type>();
 		for (DeclaredType implementedInterfaceDeclaredType : implementedDecalredInterfaceTypes)
-		  importTypes.add(createType(clazz, allTypesByPrototypicalFullName, types, implementedInterfaceDeclaredType));
+		  importTypes.add(createType(clazz, implementedInterfaceDeclaredType));
 
-		importTypes.add(createType(clazz, allTypesByPrototypicalFullName, types, baseClazzDeclaredType));
+		importTypes.add(createType(clazz, baseClazzDeclaredType));
 
 		for (String importName : configuration.getImportClasses())
 		{
@@ -497,14 +499,14 @@ public final class ClazzFactory
 			if (importElement==null) {
 				errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.ImportTypeNotFound, importName));
 			} else {
-			   Type importElementType = createType(clazz, allTypesByPrototypicalFullName, types, importElement.asType());
+			   Type importElementType = createType(clazz, importElement.asType());
 			   importTypes.add(importElementType);
 			}
 		}
 		return importTypes;
 	}
 
-	private List<DeclaredType> createInterfaceDeclaredTypes(Elements elements, Types types, TypeElement masterInterfaceElement, DeclaredType masterInterfaceType, String[] ekstraInterfaceNames, DiagnosticMessageConsumer errorConsumer, String clazzPackage) throws Exception
+	private List<DeclaredType> createInterfaceDeclaredTypes(TypeElement masterInterfaceElement, DeclaredType masterInterfaceType, String[] ekstraInterfaceNames, String clazzPackage) throws Exception
 	{
 		List<DeclaredType> interfaceElements = new ArrayList<DeclaredType>();
 		interfaceElements.add(masterInterfaceType);
@@ -513,7 +515,7 @@ public final class ClazzFactory
 			String ekstraInterfaceName = ekstraInterfaceNames[i];
 			if (!ekstraInterfaceName.isEmpty())
 			{
-				DeclaredType extraDeclaredType = createDeclaredTypeFromString(elements, types, masterInterfaceElement, errorConsumer, ekstraInterfaceName, clazzPackage);
+				DeclaredType extraDeclaredType = createDeclaredTypeFromString(masterInterfaceElement, ekstraInterfaceName, clazzPackage);
 				interfaceElements.add(extraDeclaredType);
 			}
 		}
@@ -521,7 +523,7 @@ public final class ClazzFactory
 	}
 
 
-	private Property createValidatedProperty(Clazz clazz, Configuration configuration, Map<String,Type> allTypesByPrototypicalFullName, StatusHolder statusHolder, Types types, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
+	private Property createValidatedProperty(Clazz clazz, Configuration configuration, StatusHolder statusHolder, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
 	{
 		Property property;
 
@@ -587,15 +589,15 @@ public final class ClazzFactory
 		return className;
 	}
 
-	private Stream<DeclaredType> getDeclaredInterfacesWithAscendents(Types types, DeclaredType classOrInterfaceType)
+	private Stream<DeclaredType> getDeclaredInterfacesWithAscendents(DeclaredType classOrInterfaceType)
 	{
 		TypeElement classOrInterfaceElement = (TypeElement)classOrInterfaceType.asElement();
 		return Stream.concat(classOrInterfaceElement.getInterfaces().stream()
 				             .map(t -> (DeclaredType)t)
-				             .flatMap(z -> getDeclaredInterfacesWithAscendents(types, z)), Stream.of(classOrInterfaceType));
+				             .flatMap(z -> getDeclaredInterfacesWithAscendents(z)), Stream.of(classOrInterfaceType));
 	}
 
-	private Stream<DeclaredType> getSuperTypesWithAscendents(Types types, DeclaredType classOrInterfaceType)
+	private Stream<DeclaredType> getSuperTypesWithAscendents(DeclaredType classOrInterfaceType)
 	{
 		List<? extends TypeMirror> superTypes = types.directSupertypes(classOrInterfaceType);
 		Stream<DeclaredType> superTypesAsDeclaredTypes = superTypes.stream().map(t -> (DeclaredType)t);
@@ -603,9 +605,9 @@ public final class ClazzFactory
 
 	}
 
-	private Member createPropertyMemberIfValidProperty(Clazz clazz, Map<String,Type> allTypesByPrototypicalFullName, Types types, DeclaredType interfaceOrClassMirrorType, TypeElement interfaceElement,
+	private Member createPropertyMemberIfValidProperty(Clazz clazz, DeclaredType interfaceOrClassMirrorType, TypeElement interfaceElement,
 			                                           TypeMirror returnTypeMirror, List<? extends VariableElement> setterParams, List<? extends TypeMirror> setterParamTypes,
-			                                           Configuration configuration, ExecutableElement methodElement, PropertyKind kind, DiagnosticMessageConsumer errorConsumer) throws Exception
+			                                           Configuration configuration, ExecutableElement methodElement, PropertyKind kind) throws Exception
 	{
 		TypeMirror propertyTypeMirror;
 
@@ -617,7 +619,7 @@ public final class ClazzFactory
 			}
 
 			propertyTypeMirror = returnTypeMirror;
-			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyTypeMirror), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
+			return new Member(clazz, createType(clazz, propertyTypeMirror), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
 		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -636,7 +638,7 @@ public final class ClazzFactory
 			}
 
 			propertyTypeMirror=setterParamTypes.get(0);
-			return new Member(clazz, createType(clazz, allTypesByPrototypicalFullName, types, propertyTypeMirror), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
+			return new Member(clazz, createType(clazz, propertyTypeMirror), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
 		} else {
 			return null; // Not a property.
 		}

@@ -55,7 +55,6 @@ public abstract class TemplateTestBase
 
 	private Types types;
 	private Elements elements;
-	private ClazzFactory clazzFactory;
 
 	protected AnnotationProxyBuilder<VALJOGenerate> generateAnnotationBuilder;
 	protected AnnotationProxyBuilder<VALJOConfigure> configureAnnotationBuilder;
@@ -80,8 +79,6 @@ public abstract class TemplateTestBase
 
 		generateAnnotationBuilder = new AnnotationProxyBuilder<VALJOGenerate>(VALJOGenerate.class);
 		configureAnnotationBuilder = new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class);
-
-		clazzFactory = Objects.requireNonNull(ClazzFactory.getInstance());
 
 		configurationOptions = new HashMap<String,String>();
 	}
@@ -134,7 +131,7 @@ public abstract class TemplateTestBase
 		List<String> warnings = new ArrayList<String>();
 		List<String> errors = new ArrayList<String>();
 
-		Clazz clazz = clazzFactory.createClazz(types, elements, interfaceElement, configuration, (megElement, kind, message) ->
+		ClazzFactory clazzFactory = new ClazzFactory(types, elements,  (megElement, kind, message) ->
 		  {
 			if (kind==Kind.ERROR) {
 			  errors.add(message);
@@ -146,9 +143,9 @@ public abstract class TemplateTestBase
 			  warnings.add(message);
 			  LOGGER.warning(message);
 			} else LOGGER.info(message);
-		  },
-		  resourceLoader
-		);
+		  });
+
+		Clazz clazz = clazzFactory.createClazz(interfaceElement, configuration, resourceLoader);
 
 		LOGGER.info(() -> "VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
 
