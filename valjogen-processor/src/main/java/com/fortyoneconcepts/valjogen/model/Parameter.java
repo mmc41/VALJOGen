@@ -15,12 +15,14 @@ public class Parameter extends ModelBase
 	private final Clazz clazz;
 	private final String paramName;
 	private final Type type;
+	private final Type erasedParamType;
 
-	public Parameter(Clazz clazz, Type paramType, String paramName)
+	public Parameter(Clazz clazz, Type paramType, Type erasedParamType, String paramName)
 	{
 		this.clazz=Objects.requireNonNull(clazz);
 		this.paramName=Objects.requireNonNull(paramName);
 		this.type=Objects.requireNonNull(paramType);
+		this.erasedParamType=Objects.requireNonNull(erasedParamType);
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class Parameter extends ModelBase
 
 	public Parameter setName(String newParamName)
 	{
-		return new Parameter(clazz, type, newParamName);
+		return new Parameter(clazz, type, erasedParamType, newParamName);
 	}
 
 	public Type getType()
@@ -61,8 +63,13 @@ public class Parameter extends ModelBase
 	    return type;
 	}
 
+	public Type getErasedType()
+	{
+	    return erasedParamType;
+	}
+
 	@Override
 	public String toString(int level) {
-		return "Parameter [name=" + paramName + ", type=" + type.getPrototypicalQualifiedName() + "]";
+		return "Parameter [name=" + paramName + ", type=" + type.getPrototypicalQualifiedName() + ", erasedType=" + erasedParamType.getPrototypicalQualifiedName() +"]";
 	}
 }

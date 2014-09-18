@@ -60,7 +60,7 @@ package <clazz.packageName>;
   <clazz.propertyMethods:{m | <(property(clazz, m))>}; separator="\n\n">
 
   <! Call template methods corresponding to prefixed method names !>
-  <clazz.claimedImplementationMethods:{m | <(implementationMethod(m.name))(clazz, m)>}; separator="\n\n">
+  <clazz.claimedImplementationMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n">
   <@after_instance_methods><@end>
 }
 >>

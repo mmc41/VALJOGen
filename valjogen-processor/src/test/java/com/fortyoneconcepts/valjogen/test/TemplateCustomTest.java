@@ -64,7 +64,7 @@ public class TemplateCustomTest extends TemplateTestBase
 	{
 		Output output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
 				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_serializable.stg")
-				                                                   .add(ConfigurationOptionKeys.implementedMethodNames, new String[] {"validateObject", "writeObject", "writeReplace", "readObject", "readResolve", "readObjectNoData"} ).build());
+				                                                   .add(ConfigurationOptionKeys.implementedMethodNames, new String[] {"validateObject", "writeObject(java.io.ObjectOutputStream)", "writeReplace", "readObject(java.io.ObjectInputStream)", "readResolve()", "readObjectNoData()"} ).build());
 
 		assertContainsWithWildcards("public void validateObject() throws java.io.InvalidObjectException {", output.code);
 		assertContainsWithWildcards("private Object readResolve() throws java.io.ObjectStreamException {", output.code);
@@ -72,5 +72,54 @@ public class TemplateCustomTest extends TemplateTestBase
 		assertContainsWithWildcards("private Object writeReplace() throws java.io.ObjectStreamException {", output.code);
 		assertContainsWithWildcards("private void readObject(final java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {", output.code);
 		assertContainsWithWildcards("private void readObjectNoData() throws java.io.ObjectStreamException {", output.code);
+	}
+
+	@Test
+	public void testCustomWithWildcards() throws Exception
+	{
+		Output output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
+				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_serializable.stg")
+				                                                   .add(ConfigurationOptionKeys.implementedMethodNames, new String[] {"*", "*(*)"} ).build());
+
+		assertContainsWithWildcards("public void validateObject() throws java.io.InvalidObjectException {", output.code);
+		assertContainsWithWildcards("private Object readResolve() throws java.io.ObjectStreamException {", output.code);
+		assertContainsWithWildcards("private void writeObject(final java.io.ObjectOutputStream out) throws java.io.IOException {", output.code);
+		assertContainsWithWildcards("private Object writeReplace() throws java.io.ObjectStreamException {", output.code);
+		assertContainsWithWildcards("private void readObject(final java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {", output.code);
+		assertContainsWithWildcards("private void readObjectNoData() throws java.io.ObjectStreamException {", output.code);
+	}
+
+	@Test
+	public void testCustomOverloadSingleMethod() throws Exception
+	{
+		Output output = produceOutput(OverloadedInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
+				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_overload.stg")
+				                                                   .add(ConfigurationOptionKeys.implementedMethodNames, new String[] {"customMethod(String,int)" } ).build());
+
+		assertContainsWithWildcards("OverloadedInterface customMethod(final String stringValue, final int intValue) {", output.code);
+	}
+
+	@Test
+	public void testCustomOverloadSingleArgMethods() throws Exception
+	{
+		Output output = produceOutput(OverloadedInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
+				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_overload.stg")
+				                                                   .add(ConfigurationOptionKeys.implementedMethodNames, new String[] {"customMethod(*)" } ).build());
+
+		assertNotContainsWithWildcards("OverloadedInterface customMethod(final String stringValue, final int intValue) {", output.code);
+		assertContainsWithWildcards("public void customMethod(final int intValue) {", output.code);
+		assertContainsWithWildcards("public void customMethod(final String stringValue) {", output.code);
+	}
+
+	@Test
+	public void testMethodWildWithSingleArgMethods() throws Exception
+	{
+		Output output = produceOutput(OverloadedInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
+				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_overload.stg")
+				                                                   .add(ConfigurationOptionKeys.implementedMethodNames, new String[] {"*(*)" } ).build());
+
+		assertNotContainsWithWildcards("OverloadedInterface customMethod(final String stringValue, final int intValue) {", output.code);
+		assertContainsWithWildcards("public void customMethod(final int intValue) {", output.code);
+		assertContainsWithWildcards("public void customMethod(final String stringValue) {", output.code);
 	}
 }

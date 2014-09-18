@@ -51,7 +51,7 @@ import javax.annotation.Generated;
 @method_this.annotations() ::= <%
 // Inserted constructor annotation stuff here.
 %>
-@method_equals.annotations() ::= <%
+@method_equals_Object.annotations() ::= <%
 // Inserted equals annotation stuff here.
 %>
 @method_hashCode.annotations() ::= <%
@@ -61,7 +61,7 @@ import javax.annotation.Generated;
 // Inserted toString annotation stuff here.
 %>
 
-@method_compareTo.annotations() ::= <%
+@method_compareTo_T.annotations() ::= <%
 // Inserted compareTo annotation stuff here.
 %>
 @getter.annotations() ::= <%
@@ -92,7 +92,7 @@ import javax.annotation.Generated;
 @method_this.preamble() ::= <%
 // Inserted constructor preamble stuff here.
 %>
-@method_equals.preamble() ::= <%
+@method_equals_Object.preamble() ::= <%
 // Inserted equals preamble stuff here.
 %>
 @method_hashCode.preamble() ::= <%
@@ -101,7 +101,7 @@ import javax.annotation.Generated;
 @method_toString.preamble() ::= <%
 // Inserted toString preamble stuff here.
 %>
-@method_compareTo.preamble() ::= <%
+@method_compareTo_T.preamble() ::= <%
 // Inserted compareTo preamble stuff here.
 %>
 
@@ -120,7 +120,7 @@ import javax.annotation.Generated;
 @method_this.postamble() ::= <%
 // Inserted constructor postamble stuff here.
 %>
-@method_equals.postamble() ::= <%
+@method_equals_Object.postamble() ::= <%
 // Inserted equals postamble stuff here.
 %>
 @method_hashCode.postamble() ::= <%
@@ -129,7 +129,7 @@ import javax.annotation.Generated;
 @method_toString.postamble() ::= <%
 // Inserted toString postamble stuff here.
 %>
-@method_compareTo.postamble() ::= <%
+@method_compareTo_T.postamble() ::= <%
 // Inserted compareTo postamble stuff here.
 %>
 
@@ -145,7 +145,7 @@ import javax.annotation.Generated;
 @immutable_setter.javadoc() ::= <%
 // Inserted immutable setter javadoc stuff here.
 %>
-@method_equals.javadoc() ::= <%
+@method_equals_Object.javadoc() ::= <%
 // Inserted equals javadoc stuff here.
 %>
 @method_hashCode.javadoc() ::= <%
@@ -154,7 +154,7 @@ import javax.annotation.Generated;
 @method_toString.javadoc() ::= <%
 // Inserted toString javadoc stuff here.
 %>
-@method_compareTo.javadoc() ::= <%
+@method_compareTo_T.javadoc() ::= <%
 // Inserted compareTo javadoc stuff here.
 %>
 
@@ -166,8 +166,8 @@ import javax.annotation.Generated;
 
 @method_hashCode.returnvalue() ::= <%4242%>
 
-@method_equals.returnvalue() ::= <%!(!<@super.returnvalue()>)%>
+@method_equals_Object.returnvalue() ::= <%!(!<@super.returnvalue()>)%>
 
 @method_toString.returnvalue() ::= <%"dummyValue"%>
 
-@method_compareTo.returnvalue() ::= <%9999%>
+@method_compareTo_T.returnvalue() ::= <%9999%>

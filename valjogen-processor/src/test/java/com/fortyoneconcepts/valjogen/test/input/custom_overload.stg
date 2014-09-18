@@ -1,0 +1,31 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*
+* Note that the template here is for testing only - it produce code that make little sense (but can compile).
+*/
+
+method_customMethod_int(clazz, method) ::= <<
+@Override
+<declare_method(clazz, method)>
+{
+ return this;
+}
+>>
+
+method_customMethod_String(clazz, method) ::= <<
+@Override
+<declare_method(clazz, method)>
+{
+ return this;
+}
+>>
+
+method_customMethod_String_int(clazz, method) ::= <<
+@Override
+<declare_method(clazz, method)>
+{
+ return this;
+}
+>>
+
+

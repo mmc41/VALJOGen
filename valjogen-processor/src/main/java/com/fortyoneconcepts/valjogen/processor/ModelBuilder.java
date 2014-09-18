@@ -16,6 +16,8 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
+import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
+
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.*;
 
@@ -152,13 +154,13 @@ public final class ModelBuilder
 
 		// TODO: Consider adding type argument signatures to support overloading.
 		if (clazz.isComparable() && configuration.isComparableEnabled())
-			implementedMethodNames.add("compareTo");
+			implementedMethodNames.add("compareTo(*)");
 		if (configuration.isHashEnabled())
-			implementedMethodNames.add("hashCode");
+			implementedMethodNames.add("hashCode()");
 		if (configuration.isEqualsEnabled())
-			implementedMethodNames.add("equals");
+			implementedMethodNames.add("equals(Object)");
 		if (configuration.isToStringEnabled())
-			implementedMethodNames.add("toString");
+			implementedMethodNames.add("toString()");
 
 		// Collect all members, property methods and non-property methods from interfaces paired with the interface they belong to:
 		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromInterfaces = allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
@@ -191,20 +193,50 @@ public final class ModelBuilder
 			addMagicSerializationMethods(clazz, nonPropertyMethods);
 		}
 
+		claimAndVerifyMethods(nonPropertyMethods, implementedMethodNames, propertyMethods);
+
+		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers);
+
+		return clazz;
+	}
+
+	private void claimAndVerifyMethods(List<Method> nonPropertyMethods, Set<String> implementedMethodNames, List<Property> propertyMethods) throws Exception
+	{
+		Set<String> unusedMethodNames = new HashSet<String>(implementedMethodNames);
+
+		// When we claim methods we need to start matchning with exact specifiers first since we need to watch if any are unused.
+		List<String> orderedImplementedMethodNamesWithNonWildcardsFirst = new ArrayList<String>(implementedMethodNames);
+		orderedImplementedMethodNamesWithNonWildcardsFirst.sort((s1, s2) -> {
+			if (s1.contains("*") && !s2.contains("*"))
+				return 1;
+			else if (!s1.contains("*") && s2.contains("*"))
+				return -1;
+			else return s1.compareTo(s2);
+		});
+
 		for (Method method : nonPropertyMethods)
 		{
-			if (implementedMethodNames.contains(method.getName()))
-				method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
+			String name = method.getOverloadName();
+			for (String claimedImplementedName : orderedImplementedMethodNamesWithNonWildcardsFirst)
+			{
+				if (matchingOverloads(claimedImplementedName, name, true)) {
+					if (!hasWilcard(claimedImplementedName))
+						unusedMethodNames.remove(claimedImplementedName);
+
+					method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
+					break;
+				}
+			}
 		}
+
+		List<String> unusedNonWildCardNames = unusedMethodNames.stream().filter(name -> !hasWilcard(name)).collect(Collectors.toList());
+		for (String name : unusedNonWildCardNames)
+		  errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.UNKNOWN_METHOD, name));
 
 		for (Method method : propertyMethods)
 		{
 			method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
 		}
-
-		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers);
-
-		return clazz;
 	}
 
 	private HelperTypes createHelperTypes(Clazz clazz) throws Exception
@@ -247,7 +279,8 @@ public final class ModelBuilder
 		nonPropertyMethods.add(readResolve);
 
 		// Add private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException :
-		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, new ObjectType(clazz, "java.io.ObjectInputStream"), "in"));
+		ObjectType inputStreamType = new ObjectType(clazz, "java.io.ObjectInputStream");
+		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, inputStreamType, inputStreamType, "in"));
 		Method readObject = new Method(clazz, AccessLevel.PRIVATE, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { new ObjectType(clazz, "java.io.IOException"), new ObjectType(clazz, "java.lang.ClassNotFoundException") }), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
 		nonPropertyMethods.add(readObject);
 
@@ -256,7 +289,8 @@ public final class ModelBuilder
 		nonPropertyMethods.add(readObjectNoData);
 
 		// Add : private void writeObject (ObjectOutputStream out) throws IOException :
-		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, new ObjectType(clazz, "java.io.ObjectOutputStream"), "out"));
+		ObjectType objectOutputStreamType = new ObjectType(clazz, "java.io.ObjectOutputStream");
+		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, objectOutputStreamType, objectOutputStreamType, "out"));
 		Method writeObject = new Method(clazz, AccessLevel.PRIVATE, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList(new ObjectType(clazz, "java.io.IOException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
 		nonPropertyMethods.add(writeObject);
 
@@ -390,7 +424,7 @@ public final class ModelBuilder
 	private Parameter createParameter(Clazz clazz, VariableElement param, TypeMirror paramType)
 	{
 		String name = param.getSimpleName().toString();
-		return new Parameter(clazz, createType(clazz, paramType), name);
+		return new Parameter(clazz, createType(clazz, paramType), createType(clazz, param.asType()), name);
 	}
 
 	/**

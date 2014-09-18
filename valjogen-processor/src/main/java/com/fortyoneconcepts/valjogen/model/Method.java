@@ -3,7 +3,10 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 /***
  * Meta-information about a method that should be generated (implemented).
@@ -92,6 +95,48 @@ public class Method extends ModelBase
 	public String getName()
 	{
 		return methodName;
+	}
+
+	/**
+	 * Return The name of the method with unqualified type names in parenthesis. All type names are unqualified so not guarenteed to be unique.
+	 *
+	 * @return The string suitable for overload resolution.
+	 */
+	public String getOverloadName()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(methodName);
+		sb.append("(");
+		sb.append(parameters.stream().map(p -> {
+		  String name = p.getErasedType().getQualifiedName();
+		  return getUnqualifiedName(name);
+		}).collect(Collectors.joining(",")));
+		sb.append(")");
+
+		return sb.toString();
+	}
+
+	/**
+	 * Return The name of the method followed by underscore seperated unqualified type names in parenthesis. All type names are unqualified so not guarenteed to be unique.
+	 *
+	 * @return The string with the name of the template that corresponds to the method.
+	 */
+	public String getTemplateName()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("method_");
+		sb.append(methodName);
+		if (parameters.size()>0) {
+			sb.append("_");
+			sb.append(parameters.stream().map(p -> {
+			  String name = p.getErasedType().getQualifiedName();
+			  return getUnqualifiedName(name);
+			}).collect(Collectors.joining("_")));
+		}
+
+		return sb.toString();
 	}
 
 	public List<Parameter> getParameters()

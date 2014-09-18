@@ -20,7 +20,7 @@ method_readResolve(clazz, method) ::= <<
 }
 >>
 
-method_writeObject(clazz, method) ::= <<
+method_writeObject_ObjectOutputStream(clazz, method) ::= <<
 <declare_method(clazz, method)>
 {
  // writeObject stuff here
@@ -35,7 +35,7 @@ method_writeReplace(clazz, method) ::= <<
 }
 >>
 
-method_readObject(clazz, method) ::= <<
+method_readObject_ObjectInputStream(clazz, method) ::= <<
 <declare_method(clazz, method)>
 {
  // readObject stuff here
@@ -48,3 +48,18 @@ method_readObjectNoData(clazz, method) ::= <<
  // readObjectNoData stuff here
 }
 >>
+
+method_clone(clazz, method) ::= <<
+<declare_method(clazz, method)>
+{
+ // clone stuff here
+}
+>>
+
+method_finalize(clazz, method) ::= <<
+<declare_method(clazz, method)>
+{
+ // finalize stuff here
+}
+>>
+

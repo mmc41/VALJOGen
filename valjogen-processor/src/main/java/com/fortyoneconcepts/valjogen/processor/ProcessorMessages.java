@@ -25,4 +25,6 @@ public interface ProcessorMessages
   public static final String NotAllMembersAreComparable="Implementation for %s is comparable but not all members are comparable and which members to use are not specifed. Non comparable-members will be omitted in compareTo method";
 
   public static final String SucessMsg="Sucessfully generated file %s";
+
+  public static final String UNKNOWN_METHOD = "Unknown/undeclared method %s";
 }

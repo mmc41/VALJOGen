@@ -171,4 +171,60 @@ public class NamesUtil
 		  return wrapper;
 	  else throw new IllegalArgumentException("Type "+typeName+" is not a primitive type");
 	}
+
+	public static boolean hasWilcard(String wildcardSpecifier)
+	{
+	  return wildcardSpecifier.contains("*");
+	}
+
+	/**
+	 * Check if two overload names wtih optional * wildcards except of method name or a type paramter match. Use same format as {@link com.fortyoneconcepts.valjogen.model.Method#getOverloadName}
+	 *
+	 * @param overloadNamesSpecifier1
+	 * @param overloadNamesSpecifier2
+	 * @param ignoreAllPackages True all if packages should be ignored in comparison, false if only java.lang packages should be ignored.
+	 *
+	 * @return True if mathes.
+	 */
+	public static boolean matchingOverloads(String overloadNamesSpecifier1, String overloadNamesSpecifier2, boolean ignoreAllPackages)
+	{
+		overloadNamesSpecifier1=overloadNamesSpecifier1.trim();
+		overloadNamesSpecifier2=overloadNamesSpecifier2.trim();
+
+		int nameQualifierPos1 = overloadNamesSpecifier1.indexOf("(");
+		int nameQualifierPos2 = overloadNamesSpecifier2.indexOf("(");
+
+		String name1 = nameQualifierPos1>=0 ? overloadNamesSpecifier1.substring(0, nameQualifierPos1) : overloadNamesSpecifier1;
+		String name2 = nameQualifierPos2>=0 ? overloadNamesSpecifier2.substring(0, nameQualifierPos2) : overloadNamesSpecifier2;
+
+		if (!name1.equals("*") && !name2.equals("*") && !name1.endsWith(name2))
+			return false;
+
+		String nameTypes1String=nameQualifierPos1>=0 ? overloadNamesSpecifier1.substring(nameQualifierPos1+1, overloadNamesSpecifier1.length()-1) : "";
+		String[] nameTypes1 = !nameTypes1String.isEmpty() ? nameTypes1String.split(",") : new String[0];
+
+		String nameTypes2String = nameQualifierPos2>=0 ? overloadNamesSpecifier2.substring(nameQualifierPos2+1, overloadNamesSpecifier2.length()-1) : "";
+		String[] nameTypes2 = !nameTypes2String.isEmpty() ? nameTypes2String.split(",") : new String[0];
+
+		if (nameTypes1.length!=nameTypes2.length)
+			return false;
+
+
+		String defaultPackage = "java.lang";
+		for (int i=0; i<nameTypes1.length; ++i)
+		{
+			String type1 = nameTypes1[i].trim();
+			if (ignoreAllPackages || hasPackage(type1, defaultPackage))
+				type1=getUnqualifiedName(type1);
+
+			String type2 = nameTypes2[i].trim();
+			if (ignoreAllPackages || hasPackage(type2, defaultPackage))
+				type2=getUnqualifiedName(type2);
+
+			if (!type1.equals("*") && !type2.equals("*") && !type1.equals(type2))
+				return false;
+		}
+
+		return true;
+	}
 }

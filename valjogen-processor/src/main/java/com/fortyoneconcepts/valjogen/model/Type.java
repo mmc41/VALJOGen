@@ -76,7 +76,7 @@ public abstract class Type extends ModelBase
 	}
 
 	/**
-	 * Returns a simple type name without package and without any generic parts. I.e. no &lt;T&gt; suffix.
+	 * Returns a simple type name without package unless nedded and without any generic parts. I.e. no &lt;T&gt; suffix.
 	 *
 	 * @return The simple type name
 	 */
@@ -95,7 +95,7 @@ public abstract class Type extends ModelBase
 	}
 
 	/**
-	 * Returns a type name but without package in front. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
+	 * Returns a simple type name without package unless nedded. For generic types this is prototypical. I.e. ClassName&lt;T&gt;
 	 *
 	 * @return The prototypical type name without any package.
 	 */

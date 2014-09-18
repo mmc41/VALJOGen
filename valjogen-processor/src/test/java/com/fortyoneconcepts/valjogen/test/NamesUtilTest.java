@@ -140,4 +140,58 @@ public class NamesUtilTest
 		String[] qualifiers = NamesUtil.getGenericQualifierNames("test.GenericInterface");
 		Assert.assertArrayEquals("Class name not constructed correctly", new String[] {}, qualifiers);
 	}
+
+	@Test
+	public void testMatchingOverloadsNoArgs()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test()", "test()", false));
+	}
+
+	@Test
+	public void testMatchingOverloadsNoArgsOmitParenthesis()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test", "test()", false));
+	}
+
+	@Test
+	public void testMatchingOverloadsWithArgs()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test(int,String)", "test(int,String)", false));
+	}
+
+	@Test
+	public void testMatchingOverloadsWithJavaLangPrefix()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test(String)", "test(java.lang.String)", false));
+	}
+
+	@Test
+	public void testMatchingOverloadsWithWildcards()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test(*,String)", "test(int,*)", false));
+	}
+
+	@Test
+	public void testNotMatchingOverloadsWithMethodWildcards()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("*(*,*)", "test(int,String)", false));
+	}
+
+	@Test
+	public void testNotMatchingOverloadsWithArgumentWildcards()
+	{
+		Assert.assertFalse(NamesUtil.matchingOverloads("test(int,Double)", "test(int,String)", false));
+	}
+
+	@Test
+	public void testNotMatchingDifferentNumberArgsOverloads()
+	{
+		Assert.assertFalse(NamesUtil.matchingOverloads("*(*,*)", "test(int)", false));
+	}
+
+	@Test
+	public void testNotMatchingDifferentNumberArgsOverloads2()
+	{
+		Assert.assertFalse(NamesUtil.matchingOverloads("*(*)", "test()", false));
+	}
 }
