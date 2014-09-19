@@ -109,9 +109,10 @@ public class AnnotationProcessor extends AbstractProcessor
 					if (options==null)
 						options=Collections.emptyMap();
 
+					String masterInterfaceName = e.asType().toString();
 					Configuration configuration = optConfigureConfiguration!=null
-							                      ? new Configuration(annotationGenerate, optConfigureConfiguration, optLocale, options)
-					                              :  new Configuration(annotationGenerate, optLocale, options);
+							                      ? new Configuration(masterInterfaceName, annotationGenerate, optConfigureConfiguration, optLocale, options)
+					                              :  new Configuration(masterInterfaceName, annotationGenerate, optLocale, options);
 
 			        // Know that we know what proper log level to set, do set it correctly.
 				    parentLogger.setLevel(configuration.getLogLevel());

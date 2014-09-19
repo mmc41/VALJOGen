@@ -91,6 +91,25 @@ public class TemplateClassTest extends TemplateTestBase
 		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<String>", output.code);
 	}
 
+	@Test
+	public void testClassAnntations() throws Exception
+	{
+		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
+				                                                .add(ConfigurationOptionKeys.clazzAnnotations,  new String[] { "@Generated", "@javax.annotation.Resource"})
+				                                                .build());
+
+		assertContainsWithWildcards("@Generated @javax.annotation.Resource public final class TestImpl", output.code);
+	}
+
+	@Test
+	public void testClassJavaDoc() throws Exception
+	{
+		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
+				                                                .add(ConfigurationOptionKeys.clazzJavaDoc,  "class javaDoc here")
+				                                                .build());
+
+		assertContains("/** class javaDoc here */", output.code);
+	}
 
 	@Test
 	public void testExtraGenericThisInterface() throws Exception

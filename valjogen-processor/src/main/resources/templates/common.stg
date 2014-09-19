@@ -88,3 +88,5 @@ other_instance_get_member_value(other, member) ::= <%
 formalParameter(member) ::= <%
 final <member.type.prototypicalName> <member.name>
 %>
+
+annotation(a) ::= <% <a> %>

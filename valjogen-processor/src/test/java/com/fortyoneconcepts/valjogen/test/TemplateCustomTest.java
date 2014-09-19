@@ -28,7 +28,7 @@ public class TemplateCustomTest extends TemplateTestBase
 				                                                     .add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"})
 				                                                     .add(ConfigurationOptionKeys.customTemplateFileName, "custom_template.stg").build());
 
-		String[] searchStrings = { "generated", "class annotation", "import",
+		String[] searchStrings = { "class annotation", "import",
 				                   "class javadoc", "getter javadoc", "mutable setter javadoc", "immutable setter javadoc", "equals javadoc", "hashCode javadoc", "toString javadoc", "compareTo javadoc",
 				                   "before static members", "after static members",
 				                   "before instance members", "after instance members",
@@ -36,6 +36,7 @@ public class TemplateCustomTest extends TemplateTestBase
 				                   "before instance methods", "after instance methods",
 				                   "member mutableObject annotation",
 				                   "constructor annotation", "factory annotation",
+				                   "constructor arguments", "factory arguments",
 				                   "equals annotation", "hashCode annotation", "toString annotation", "compareTo annotation", "getter getMutableObject annotation", "immutable setter setImmutableObject annotation", "mutable setter setMutableObject annotation",
 				                   "constructor preamble", "factory preamble",
 				                   "equals preamble", "hashCode preamble", "toString preamble", "compareTo preamble", "getter getMutableObject preamble", "immutable setter setImmutableObject preamble", "mutable setter setMutableObject preamble",

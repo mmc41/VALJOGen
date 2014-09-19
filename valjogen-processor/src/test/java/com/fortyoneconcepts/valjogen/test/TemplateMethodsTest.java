@@ -9,6 +9,7 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
+import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase.Output;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -82,5 +83,25 @@ public class TemplateMethodsTest extends TemplateTestBase
 		Output output = produceOutput(InterfaceWithDefaultMethod.class);
 
 		assertNotContainsWithWildcards("getDefMethod", output.code);
+	}
+
+	@Test
+	public void testConstructorAnntations() throws Exception
+	{
+		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
+				                                                .add(ConfigurationOptionKeys.constructorAnnotations,  new String[] { "@Generated", "@javax.annotation.Resource"})
+				                                                .build());
+
+		assertContainsWithWildcards("@Generated @javax.annotation.Resource private TestImpl", output.code);
+	}
+
+	@Test
+	public void testFactoryMethodAnntations() throws Exception
+	{
+		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
+				                                                .add(ConfigurationOptionKeys.factoryMethodAnnotations,  new String[] { "@Generated", "@javax.annotation.Resource"})
+				                                                .build());
+
+		assertContainsWithWildcards("@Generated @javax.annotation.Resource public static TestImpl valueOf", output.code);
 	}
 }

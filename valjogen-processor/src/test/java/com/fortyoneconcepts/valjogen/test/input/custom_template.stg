@@ -9,9 +9,6 @@ import java.util.*;
 import javax.annotation.Generated;
 // Inserted import stuff here.
 %>
-@class.generated() ::= <%
-// Inserted generated stuff here.
-%>
 @class.annotations() ::= <%
 // Inserted class annotation stuff here.
 %>
@@ -103,6 +100,13 @@ import javax.annotation.Generated;
 %>
 @method_compareTo_T.preamble() ::= <%
 // Inserted compareTo preamble stuff here.
+%>
+
+@method_valueOf.arguments() ::= <%
+/* Inserted factory arguments stuff here.*/<@super.arguments()>
+%>
+@method_this.arguments() ::= <%
+/* Inserted constructor arguments stuff here.*/<@super.arguments()>
 %>
 
 @getter.postamble() ::= <%

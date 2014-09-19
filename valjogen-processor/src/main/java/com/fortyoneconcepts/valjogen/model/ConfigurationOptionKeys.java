@@ -109,6 +109,26 @@ public interface ConfigurationOptionKeys
 	 public static String ignoreMalformedProperties = "ignoreMalformedProperties";
 
 	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#clazzJavaDoc
+	 */
+	 public static String clazzJavaDoc = "clazzJavaDoc";
+
+	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#clazzAnnotations
+	 */
+	 public static String clazzAnnotations = "clazzAnnotations";
+
+	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#constructorAnnotations
+	 */
+	 public static String constructorAnnotations = "constructorAnnotations";
+
+	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#factoryMethodAnnotations
+	 */
+	 public static String factoryMethodAnnotations = "factoryMethodAnnotations";
+
+	 /**
 	 *
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOGenerate#name
 	 */

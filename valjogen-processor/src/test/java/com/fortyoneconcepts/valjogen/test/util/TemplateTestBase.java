@@ -117,7 +117,7 @@ public abstract class TemplateTestBase
 
 	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation, boolean allowErrors) throws Exception
 	{
-		Configuration configuration = new Configuration(generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
+		Configuration configuration = new Configuration(sourceClass.getCanonicalName(), generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
 		 // Know that we know what proper log level to set, do set it correctly.
 	    parentLogger.setLevel(configuration.getLogLevel());

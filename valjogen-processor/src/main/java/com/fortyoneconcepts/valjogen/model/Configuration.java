@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -21,24 +22,39 @@ import com.fortyoneconcepts.valjogen.model.util.ThisReference;
  */
 public final class Configuration implements ConfigurationOptionKeys
 {
+	 private final String sourceElementName;
 	 private final VALJOGenerate generateAnnotation;
 	 private final VALJOConfigure configureAnnotation;
 	 private final Locale optDefaultLocale;
 	 private final Map<String,String> options;
 	 private final Date processorExecutionDate;
 
-	 public Configuration(VALJOGenerate annotation, Locale optDefaultLocale, Map<String,String> options)
+	 @SuppressWarnings("serial")
+	 private final HashMap<String, Supplier<String>> macros = new HashMap<String, Supplier<String>>() {{
+		 put(ConfigurationMacros.NotApplicableMacro, () -> null);
+		 put(ConfigurationMacros.GeneratedClassNameMacro, () -> ThisReference.class.getName());
+		 put(ConfigurationMacros.MasterInterfaceMacro, () -> getSourceElementName());
+		 put(ConfigurationMacros.ExecutionDateMacro, () -> String.format("%tFT%<tRZ", getExecutionDate()));
+	 }};
+
+	 public Configuration(String sourceElementName, VALJOGenerate annotation, Locale optDefaultLocale, Map<String,String> options)
 	 {
-		 this(annotation, new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build(), optDefaultLocale, options);
+		 this(sourceElementName, annotation, new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build(), optDefaultLocale, options);
 	 }
 
-	 public Configuration(VALJOGenerate annotation, VALJOConfigure configureAnnotation, Locale optDefaultLocale, Map<String,String> options)
+	 public Configuration(String sourceElementName, VALJOGenerate annotation, VALJOConfigure configureAnnotation, Locale optDefaultLocale, Map<String,String> options)
 	 {
+		 this.sourceElementName=sourceElementName;
 		 this.generateAnnotation=Objects.requireNonNull(annotation);
 		 this.configureAnnotation=Objects.requireNonNull(configureAnnotation);
 		 this.optDefaultLocale=optDefaultLocale;
 		 this.options=Objects.requireNonNull(options);
 		 this.processorExecutionDate=new Date();
+	 }
+
+	 public String getSourceElementName()
+	 {
+		 return sourceElementName;
 	 }
 
 	 public Date getExecutionDate()
@@ -216,6 +232,26 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getValue(customTemplateFileName, configureAnnotation.customTemplateFileName());
 	 }
 
+	 public String getClazzJavaDoc()
+	 {
+		 return getValue(clazzJavaDoc, configureAnnotation.clazzJavaDoc());
+	 }
+
+	 public String[] getClazzAnnotations()
+	 {
+		 return getValue(clazzAnnotations, configureAnnotation.clazzAnnotations());
+	 }
+
+	 public String[] getConstructorAnnotations()
+	 {
+		 return getValue(constructorAnnotations, configureAnnotation.constructorAnnotations());
+	 }
+
+	 public String[] getFactoryMethodAnnotations()
+	 {
+		 return getValue(factoryMethodAnnotations, configureAnnotation.factoryMethodAnnotations());
+	 }
+
 	 public Level getLogLevel()
 	 {
 		 String level = getValue(logLevel, configureAnnotation.logLevel());
@@ -239,10 +275,25 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 private String preformMagicReplacements(String rawValue)
 	 {
-		if (rawValue==null || rawValue.equals(ConfigurationDefaults.NotApplicable))
+		if (rawValue==null) // || rawValue.equals(ConfigurationMacros.NotApplicableMacro))
 			return null;
 
-		return rawValue.replace(ConfigurationDefaults.GeneratedClassNameReference, ThisReference.class.getName());
+		String value = rawValue;
+		for (Map.Entry<String, Supplier<String>> entry : macros.entrySet()) {
+			String key = entry.getKey();
+			String replacement = entry.getValue().get();
+			if (value.equals(key)) {
+			  value=replacement;
+			  break;
+			}
+			else if (replacement!=null)
+			  value=value.replace(key, replacement);
+		}
+
+		if (value!=null && value.matches("[^\\$]*\\$\\(.*"))
+			 throw new IllegalArgumentException("Unknown macros in "+rawValue);
+
+		return value;
 	 }
 
 	 private String[] preformMagicReplacements(String[] rawValues)
@@ -282,7 +333,7 @@ public final class Configuration implements ConfigurationOptionKeys
 			 return preformMagicReplacements(defaultValue);
 
 		 value=value.trim();
-		 if (value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
+		 if (value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))
 			 return defaultValue;
 
 		 return value.split(",");
@@ -291,7 +342,7 @@ public final class Configuration implements ConfigurationOptionKeys
 	 private boolean getValue(String optionKey, boolean defaultValue)
 	 {
 		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
-		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))
 		   return defaultValue;
 		 if (value.equalsIgnoreCase("false"))
 			 return false;
@@ -304,7 +355,7 @@ public final class Configuration implements ConfigurationOptionKeys
 	 private int getValue(String optionKey, int defaultValue)
 	 {
 		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
-		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))
 		   return defaultValue;
 
 		 try {
@@ -318,7 +369,7 @@ public final class Configuration implements ConfigurationOptionKeys
 	 private long getValue(String optionKey, long defaultValue)
 	 {
 		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
-		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationDefaults.NotApplicable))
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))
 		   return defaultValue;
 
 		 try {

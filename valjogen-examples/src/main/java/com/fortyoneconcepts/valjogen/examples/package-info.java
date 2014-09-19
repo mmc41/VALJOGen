@@ -9,6 +9,6 @@
  *
  * @author mmc
  */
-@VALJOConfigure(getterPrefixes={"is", "get", "has"}, ensureNotNullEnabled=false)
+//@VALJOConfigure(getterPrefixes={"is", "get", "has"}, ensureNotNullEnabled=false)
 package com.fortyoneconcepts.valjogen.examples;
-import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
+//import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;

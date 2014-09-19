@@ -33,7 +33,7 @@ import java.lang.annotation.*;
 public @interface VALJOGenerate
 {
 	/**
-	* Simple name or fully qualified name of generated class. If name is not specified (set to N/A then a reasonable class name will
+	* Simple name or fully qualified name of generated class. If name is not specified (set to $(N/A) then a reasonable class name will
 	* be generated automatically.
 	*
 	* May also (as all other annotated values) be overruled globally with equivalent annotation processor key
@@ -41,5 +41,5 @@ public @interface VALJOGenerate
 	*
 	* @return The short name or fully qualified name of the generated class.
 	*/
-    String name() default "N/A";
+    String name() default "$(N/A)";
 }
