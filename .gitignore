@@ -2,6 +2,7 @@
 .project
 .settings
 LICENSE
-README.md
+*.md
+*.md.html
 pom.xml
-valjogen*
+valjogen-*/
