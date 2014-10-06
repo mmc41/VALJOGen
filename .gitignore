@@ -7,5 +7,5 @@
 target/
 *.iml
 .idea/
-experiments/
+sitedeploy/
 .README.md.html
