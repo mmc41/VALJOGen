@@ -1,3 +1,7 @@
+---
+title: VALue Java Objects Generator (VALJOGen)
+---
+
 VALue Java Objects Generator (VALJOGen)
 =======================================
 
