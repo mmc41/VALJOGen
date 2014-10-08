@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+
+# A few helpful tips about the Rules file:
+#
+# * The string given to #compile and #route are matching patterns for
+#   identifiers--not for paths. Therefore, you can’t match on extension.
+#
+# * The order of rules is important: for each item, only the first matching
+#   rule is applied.
+#
+# * Item identifiers start and end with a slash (e.g. “/about/” for the file
+#   “content/about.html”). To select all children, grandchildren, … of an
+#   item, use the pattern “/about/*/”; “/about/*” will also select the parent,
+#   because “*” matches zero or more characters.
+
+#include ExamplesHelper
+
+currentPath = File.dirname(File.expand_path(__FILE__))
+
+preprocess do
+  relExampleSourcesPath = '../valjogen-examples/src/main/java/com/fortyoneconcepts/valjogen/examples/'
+  exampleSourcesPath = File.absolute_path(File.join(currentPath, relExampleSourcesPath))
+
+  relExampleOutputPath = '../valjogen-examples/target/generated-sources/annotations'
+  exampleOutputsPath = File.absolute_path(File.join(currentPath, relExampleOutputPath))
+  
+  raise "Could not file source folder with examples '"+exampleSourcesPath+"'" if !File.exist?(exampleSourcesPath) 
+  raise "Could not file target folder with generated output '"+exampleOutputsPath+"' (forgot to build example project?)" if !File.exist?(exampleOutputsPath) 
+    
+  exampleSourcesHash = ExamplesHelper::get_example_files(exampleSourcesPath)
+  exampleOutputsHash = ExamplesHelper::get_example_files(exampleOutputsPath)
+    
+  items << Nanoc::Item.new(
+    ExamplesHelper::generate_example_markdown(exampleSourcesHash, exampleOutputsHash),
+    { :extension => "md", :title => "Examples" },
+    "/examples",
+    { :binary => false } )
+end
+
+passthrough '/images/*/'
+passthrough '/css/*/'
+passthrough '/js/*/'
+
+compile '*' do
+  if item[:extension] == 'md'
+    filter :footer_remove
+    filter :kramdown, :input => :GFM, :coderay_line_numbers => nil
+    filter :jumbotron
+    filter :fixlinks
+    layout 'default'
+    #filter :relativize_paths, :type => :html
+  elsif item[:extension] == 'css'
+    # don’t filter stylesheets
+  elsif item[:extension] == 'js'
+    # don’t filter javascript
+  elsif item.binary?
+    # don’t filter binary items
+  else
+    filter :erb
+    layout 'default'
+    filter :relativize_paths, :type => :html
+  end
+end
+
+route '/fonts/*/' do
+  # /fonts/foo-eot/ -> /fonts/foo.eot
+  item.identifier.sub(/-[^-]+$/, '.') + item[:extension]
+end
+
+# Write main readme item as index page
+route 'README' do
+  '/index.html'
+end
+
+route '*' do
+  if item[:extension] == 'css'
+    # Write item with identifier /foo/ to /foo.css
+    item.identifier.chop + '.css'
+  elsif item[:extension] == 'js'
+    # Write item with identifier /foo/ to /foo.js
+    item.identifier.chop + '.js'
+  elsif item.binary?
+    # Write item with identifier /foo/ to /foo.ext
+    item.identifier.chop + '.' + item[:extension]
+  else
+    # Write item with identifier /foo/ to /foo.html
+    item.identifier.chop.downcase + '.html'
+  end
+end
+
+layout '*', :erb

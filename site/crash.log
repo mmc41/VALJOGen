@@ -1,0 +1,225 @@
+Crashlog created at 2014-10-08 18:25:07 +0200
+
+===== MESSAGE:
+
+SyntaxError: lib/examples_helper.rb:32: syntax error, unexpected '<', expecting keyword_end
+    <ul id="ProjectSubmenu">
+     ^
+lib/examples_helper.rb:33: syntax error, unexpected '<'
+        <li><a href="/projects/markdow...
+         ^
+lib/examples_helper.rb:33: syntax error, unexpected tIDENTIFIER, expecting keyword_end
+...ref="/projects/markdown/" title="Markdown Project Page">Main...
+...                               ^
+lib/examples_helper.rb:33: unknown regexp option - l
+lib/examples_helper.rb:34: syntax error, unexpected '<'
+        <li><a href="/projects/markdow...
+         ^
+lib/examples_helper.rb:34: syntax error, unexpected tIDENTIFIER, expecting keyword_end
+...projects/markdown/basics" title="Markdown Basics">Basics</a>...
+...                               ^
+lib/examples_helper.rb:34: unknown regexp option - l
+lib/examples_helper.rb:35: syntax error, unexpected '<'
+        <li><a class="selected" title=...
+         ^
+lib/examples_helper.rb:35: syntax error, unexpected tIDENTIFIER, expecting keyword_end
+...  <li><a class="selected" title="Markdown Syntax Documentati...
+...                               ^
+lib/examples_helper.rb:35: unknown regexp option - l
+lib/examples_helper.rb:36: syntax error, unexpected '<'
+        <li><a href="/projects/markdow...
+         ^
+lib/examples_helper.rb:36: syntax error, unexpected tIDENTIFIER, expecting keyword_end
+...rojects/markdown/license" title="Pricing and License Informa...
+...                               ^
+lib/examples_helper.rb:36: unknown regexp option - l
+lib/examples_helper.rb:37: syntax error, unexpected '<'
+        <li><a href="/projects/markdow...
+         ^
+lib/examples_helper.rb:37: syntax error, unexpected tIDENTIFIER, expecting keyword_end
+...projects/markdown/dingus" title="Online Markdown Web Form">D...
+...                               ^
+lib/examples_helper.rb:37: unknown regexp option - l
+lib/examples_helper.rb:38: syntax error, unexpected '<'
+    </ul>
+     ^
+lib/examples_helper.rb:59: unknown regexp options - cd
+lib/examples_helper.rb:61: syntax error, unexpected tXSTRING_BEG, expecting keyword_end
+      examples << "```"+@syntax[extension]
+                    ^
+lib/examples_helper.rb:63: syntax error, unexpected tXSTRING_BEG, expecting keyword_end
+      examples << "```"+newline
+                     ^
+lib/examples_helper.rb:73: syntax error, unexpected '<', expecting ']'
+        links << "[<code>"+refName+"</code>](#"+link+")"
+                    ^
+lib/examples_helper.rb:90: unknown regexp options - cd
+premature end of char-class: /code>](#"+link+")"
+      end
+    
+      examples << "*See also:* "+links.join(', ')+newline unless links.empty?
+    
+      examples << newline
+    
+      # Output:
+      if (extension=='.java')
+        clazzName = File.basename( name, ".*" )
+        output = outputExamplesHash.find {|outputName, outputContent| Regexp.new('@Generated\(.*\"[^\"]*com.fortyoneconcepts.valjogen.examples.'+clazzName+'(<.+>)?\"\.*\)').match(outputContent) }
+        #raise "Could not find output for source file '"+name+"'" if !output
+
+        if (output)
+           (outputName, outputContent) = output
+           outputExtension=File.extname(outputName).downcase
+         
+           sourceLink = "[<code>"+name+"</
+lib/examples_helper.rb:90: syntax error, unexpected ']'
+...Link = "[<code>"+name+"</code>](#"+get_source_link_id(name)+...
+...                               ^
+lib/examples_helper.rb:107: syntax error, unexpected keyword_end, expecting end-of-input
+
+===== COMPILATION STACK:
+
+  (empty)
+
+===== STACK TRACE:
+
+  0. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/base/source_data/code_snippet.rb:36:in `eval'
+  1. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/base/source_data/code_snippet.rb:36:in `load'
+  2. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/base/source_data/site.rb:321:in `block in load_code_snippets'
+  3. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/base/source_data/site.rb:321:in `each'
+  4. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/base/source_data/site.rb:321:in `load_code_snippets'
+  5. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/base/source_data/site.rb:242:in `load'
+  6. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/command_runner.rb:63:in `load_site'
+  7. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/commands/compile.rb:392:in `run'
+  8. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/command_runner.rb:14:in `block in call'
+  9. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/error_handler.rb:74:in `handle_while'
+  10. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/error_handler.rb:26:in `handle_while'
+  11. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/command_runner.rb:13:in `call'
+  12. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib/cri/command_dsl.rb:223:in `block in runner'
+  13. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib/cri/command.rb:298:in `call'
+  14. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib/cri/command.rb:298:in `run_this'
+  15. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib/cri/command.rb:251:in `run'
+  16. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/commands/nanoc.rb:39:in `block in define'
+  17. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib/cri/command.rb:298:in `call'
+  18. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib/cri/command.rb:298:in `run_this'
+  19. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib/cri/command.rb:251:in `run'
+  20. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli.rb:59:in `block in run'
+  21. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/error_handler.rb:74:in `handle_while'
+  22. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli/error_handler.rb:26:in `handle_while'
+  23. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib/nanoc/cli.rb:57:in `run'
+  24. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/bin/nanoc:25:in `<top (required)>'
+  25. /usr/bin/nanoc:23:in `load'
+
+===== VERSION INFORMATION:
+
+nanoc 3.7.3 © 2007-2014 Denis Defreyne.
+Running ruby 2.0.0 (2014-05-08) on universal.x86_64-darwin13 with RubyGems 2.0.14.
+
+===== SYSTEM INFORMATION:
+
+Darwin iMac2013.local 13.4.0 Darwin Kernel Version 13.4.0: Sun Aug 17 19:50:11 PDT 2014; root:xnu-2422.115.4~1/RELEASE_X86_64 x86_64
+
+===== INSTALLED GEMS:
+
+  CFPropertyList 2.2.0, 2.2.8
+  adsf 1.2.0
+  bigdecimal 1.2.0, 1.2.5
+  coderay 1.1.0
+  colored 1.2
+  cri 2.6.1
+  io-console 0.4.2
+  json 1.7.7, 1.8.1
+  kramdown 1.4.2
+  libxml-ruby 2.6.0, 2.7.0
+  mini_portile 0.6.0
+  minitest 4.3.2, 5.4.1
+  nanoc 3.7.3
+  nokogiri 1.5.6
+  power_assert 0.1.3
+  psych 2.0.0, 2.0.6
+  rack 1.5.2
+  rake 0.9.6, 10.3.2
+  rdoc 4.0.0, 4.1.2
+  sqlite3 1.3.7, 1.3.9
+  test-unit 2.0.0.0, 3.0.1
+
+===== ENVIRONMENT:
+
+AMAZON_ACCESS_KEY_ID => "181197YT2RA5WKZNCC02"
+AMAZON_SECRET_ACCESS_KEY => "iLWB8LACyVpM++FK0IhvGAka6yHVicYVZGHpGahx"
+ANDROID_NDK_HOME => "/Applications/DevelopmentTools/android-ndk-r8e"
+ANDROID_SDK_HOME => "/Applications/DevelopmentTools/adt-bundle-mac-x86_64-20130522/sdk"
+ANTLR_HOME => "/Users/shared/Java/libs/antlr3"
+ANT_HOME => "/Users/shared/Java/libs/apache-ant-1.8.2"
+ANT_OPTS => "-server -XX:+CMSClassUnloadingEnabled -XX:+UseParallelGC -Dcom.sun.tools.xjc.Options.findServices=true -Xmx1024m"
+ASPECTJ_HOME => "/Users/shared/Java/libs/aspectj"
+AWS_HOME => "/Users/mmc/.awsbytbolignu"
+Apple_PubSub_Socket_Render => "/tmp/launch-wmWNmg/Render"
+COMMONS_HTTPCLIENT_HOME => "/Users/shared/Java/libs/commons-httpclient-3.1"
+COMMONS_NET_HOME => "/Users/shared/Java/libs/commons-net-1.4.1"
+EC2_AMITOOL_HOME => "/usr/local/ec2-ami-tools"
+EC2_CERT => "/Users/mmc/.awsbytbolignu/cert-FXMN55V5LWWGOG5CIZJUEFHYFXJPEO62.pem"
+EC2_HOME => "/usr/local/ec2-api-tools-1.3-36506"
+EC2_KEYPAIR_NAME => "ec2-mmckeypair"
+EC2_PRIVATE_KEY => "/Users/mmc/.awsbytbolignu/pk-FXMN55V5LWWGOG5CIZJUEFHYFXJPEO62.pem"
+EDITOR => "pico"
+GIT_HOME => "/usr/local/git"
+GLASSFISH_HOME => "/Users/shared/Java/glassfishv3"
+GROOVY_HOME => "/Users/shared/Java/libs/groovy-1.6.3"
+HOME => "/Users/mmc"
+JAKARTA_ORO_HOME => "/Users/shared/Java/libs/jakarta-oro-2.0.8"
+JAVALIBS_HOME => "/Users/shared/Java/libs"
+JAVA_HOME => "/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home"
+JRUBY_HOME => "/Users/shared/Java/libs/jruby-1.5.0"
+KARAF_HOME => "/Users/shared/Java/libs/apache-karaf-2.3.2"
+LANG => "en_US.UTF-8"
+LC_ALL => "en_US.UTF-8"
+LC_CTYPE => "UTF-8"
+LOGNAME => "mmc"
+M2_HOME => "/Users/shared/Java/libs/apache-maven-3.2.2"
+MAVEN_HOME => "/Users/shared/Java/libs/apache-maven-3.2.2"
+MAVEN_OPTS => "-Xmx1048m"
+MYSQLJDBC_HOME => "/Users/shared/Java/libs/mysql-connector-java-5.1.6"
+OLDPWD => "/Users/mmc/repos/VALJOGen"
+PATH => "/usr/local/bin:/usr/local/git/bin:/usr/local/Cellar/ruby/1.9.3-p374/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/bin:/Users/shared/Java/libs/apache-ant-1.8.2/bin:/Users/shared/Java/glassfishv3/bin:/Users/shared/Java/libs/apache-maven-3.2.2/bin:/Users/shared/Java/libs/scala-2.10.2/bin:/Users/shared/Java/libs/aspectj/bin:/usr/local/ec2-api-tools-1.3-36506/bin:/usr/local/ec2-ami-tools/bin:/Users/shared/Java/libs/groovy-1.6.3/bin:/Users/Shared/Java/sonar-2.0.1/bin/macosx-universal-64:/Applications/DevelopmentTools/adt-bundle-mac-x86_64-20130522/sdk/tools:/Applications/DevelopmentTools/adt-bundle-mac-x86_64-20130522/sdk/platform-tools:/Applications/DevelopmentTools/android-ndk-r8e/:/Users/shared/Java/libs/apache-karaf-2.3.2/bin:/Users/shared/Java/libs/sbt/bin:/opt/subversion/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/local/MacGPG2/bin"
+PS1 => "\\[\\e]2;\\u@\\H \\a\\e[34;3m\\]\\w: \\[\\e[0m\\]"
+PWD => "/Users/mmc/repos/VALJOGen/site"
+RUBY_HOME => "/usr/local/Cellar/ruby/1.9.3-p374"
+SBT_HOME => "/Users/shared/Java/libs/sbt"
+SCALA_HOME => "/Users/shared/Java/libs/scala-2.10.2"
+SECURITYSESSIONID => "186a4"
+SHELL => "/bin/bash"
+SHLVL => "1"
+SOLR_HOME => "/Users/shared/Java/libs/apache-solr-1.2.0"
+SONAR_HOME => "/Users/Shared/Java/sonar-2.0.1"
+SPRING_HOME => "/Users/shared/Java/libs/spring-framework-3.0.0.M1"
+SSH_AUTH_SOCK => "/tmp/launch-dTyubX/Listeners"
+STRINGTEMPLATE_HOME => "/Users/shared/Java/libs/stringtemplate-3.1"
+TERM => "xterm-256color"
+TERM_PROGRAM => "Apple_Terminal"
+TERM_PROGRAM_VERSION => "326"
+TERM_SESSION_ID => "C7A60C70-94D0-41CF-A65C-F051C4BA079F"
+TMPDIR => "/var/folders/36/cnxydhhj4r19hrb_gw8bq75w0000gp/T/"
+USER => "mmc"
+_ => "/usr/bin/nanoc"
+__CF_USER_TEXT_ENCODING => "0x1F6:0:0"
+__CHECKFIX1436934 => "1"
+
+===== LOAD PATHS:
+
+  0. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib
+  1. /Library/Ruby/Gems/2.0.0/gems/colored-1.2/lib
+  2. /Library/Ruby/Gems/2.0.0/gems/cri-2.6.1/lib
+  3. /Library/Ruby/Gems/2.0.0/gems/nanoc-3.7.3/lib
+  4. /Library/Ruby/Gems/2.0.0/gems/psych-2.0.6/lib
+  5. /Library/Ruby/Site/2.0.0
+  6. /Library/Ruby/Site/2.0.0/x86_64-darwin13
+  7. /Library/Ruby/Site/2.0.0/universal-darwin13
+  8. /Library/Ruby/Site
+  9. /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/vendor_ruby/2.0.0
+  10. /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/vendor_ruby/2.0.0/x86_64-darwin13
+  11. /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/vendor_ruby/2.0.0/universal-darwin13
+  12. /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/vendor_ruby
+  13. /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/2.0.0
+  14. /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/2.0.0/x86_64-darwin13
+  15. /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/2.0.0/universal-darwin13
