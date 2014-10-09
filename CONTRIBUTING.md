@@ -1,9 +1,13 @@
-Contributing to VALJOGen
-========================
+<a name="jumbotron-start"/>
 
-Contributors and contributions are welcome. Here is a quick guide.
+# Contributing to VALJOGen
 
-# 1. Implementation details for the project.
+Contributors and contributions are welcome. Here is a quick guide *(DOCUMENT IS WORK IN PROGRESS)*.
+<br/>
+
+<a name="jumbotron-end"/>
+
+## 1. Implementation details for the project.
 See [readme in annotaton processor project](../../blob/master/valjogen-processor/README.md) for implementation details.
 
 In addition these two 2 eclipse plugins may be useful to update readme pages in GitHub Flavored Markdown (`.md`):
@@ -11,7 +15,7 @@ In addition these two 2 eclipse plugins may be useful to update readme pages in 
 - GitHub Flavored Markdown viewer: https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/
 - Markdown editor: http://www.winterwell.com/software/updatesite/
 
-# 2. Cloning and change procedure.
+## 2. Cloning and change procedure.
 Here is a quick guide.
 
 Fork, then clone the repo:
@@ -26,7 +30,7 @@ Make your change. Add documentation and tests for your change. Make ALL the test
 
     mvn test
 
-# 3. Getting your changes accepted.
+## 3. Getting your changes accepted.
 
 Push to your fork and submit a [pull request](https://help.github.com/articles/using-pull-requests). I will then look at your changes
 and promote them if I agree. If your work is good and we agree on the overall goal, design and code conventions, then you can also

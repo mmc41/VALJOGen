@@ -9,3 +9,6 @@ target/
 .idea/
 sitedeploy/
 .README.md.html
+site/crash.log
+site/output/
+tmp/

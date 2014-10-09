@@ -15,7 +15,7 @@ module ExamplesHelper
       end
       
       # No need to supply copyright as we supply this in the site.
-      content=content.gsub(/\\*[^C]*Copyright[^*]*\*\//, '')
+      content=content.sub(/\/*[^C]*Copyright[^*]*\*\//, '')
       
       result[name]=content
     end
@@ -35,8 +35,14 @@ module ExamplesHelper
     orderedSrcHash.each do |name, content|
         extension=File.extname(name).downcase
         raise "Unknown source file extension "+extension if (!@syntax[extension] || !@headings[extension])
-    
-        examples << "- [<code>"+name+"</code>](#"+get_source_link_id(name)+")"+newline+newline
+        initialJavadocExp = /\/\*\*(\*|\r|\n\s)*([^\.]+\.?)(.|\r|\n)*\*\//.match(content)
+            
+        examples << "- [<code>"+name+"</code>](#"+get_source_link_id(name)+")"
+        if (initialJavadocExp)
+          description=initialJavadocExp.captures[1].gsub("\*", " ").strip
+          examples << " - " + description
+        end
+        examples << newline+newline
     end
     
     examples << newline
@@ -46,7 +52,9 @@ module ExamplesHelper
     # Examples:
     orderedSrcHash.each do |name, content|
       extension=File.extname(name).downcase
-      raise "Unknown source file extension "+extension if (!@syntax[extension] || !@headings[extension])
+      
+      # Bug workaround where javadoc comment begin gets deleted by markdown sometimes (part 1)
+      content=content.sub("/\*\*", " /**")
       
       # Example:
       examples << "## "+@headings[extension]+": <code>"+name+"</code>"

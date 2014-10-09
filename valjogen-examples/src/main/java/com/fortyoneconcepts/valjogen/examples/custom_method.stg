@@ -1,8 +1,8 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-/*
-* This example shows how to implement a custom method declared in the interface. First it overrides StringTemplate regions to
+/**
+* This custom template shows how to implement a custom method declared in the interface. First it overrides StringTemplate regions to
 * add a variable holding a time then it modifies the constructor and setter to update the time of change. Finally, a new method
 * is added to return the time as declared in the interface.
 *

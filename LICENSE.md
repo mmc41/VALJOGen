@@ -1,7 +1,7 @@
 VALJOGen - Copyright 2014 by 41concepts Aps (www.41concepts.com). All rights reserved.
 
-Title to copyright in this Work (software, examples and associated documentation)
-shall at all times remain with 41concepts and LICENSEE agrees to preserve same.
+Title to copyright - and related trademarks - of this Work (software, examples and associated 
+documentation) shall at all times remain with 41concepts and LICENSEE agrees to preserve same.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -16,23 +16,22 @@ modification, are permitted provided that the following conditions are met:
 * The name of 41concepts or the author(s) may not be used in advertising or
   publicity pertaining to distribution of the Work (except from the required
   acknowledgement detailed below below). All work derived from this software should
-  specificly acknowledge the source with the following statement as part of their
+  specifically acknowledge the source with the following statement as part of their
   own documentation (in the readme if such exist):
 
-  "This work benefitted from VALJOGen software developed
-   by 41concepts (www.41concepts.com)."
+  **"This work benefitted from VALJOGen software developed by
+     41concepts (www.41concepts.com)."**
 
-* If You(*) institute litigation against any entity (including a
+* If You(\*) institute litigation against any entity (including a
   cross-claim or counterclaim in a lawsuit) alleging that the Work
   or a Contribution incorporated within the Work constitutes direct
   or contributory patent, copyright or trademark infringement, then
   any rights/permission granted to You under this License shall terminate
-  as of the date such litigation is filed. Any attempts by You(*) to tradmark
-  "VALJOGen" shall likewise immediately terminate your rights under this license
+  as of the date such litigation is filed.
 
-  Where You (*) includes you, your company/organisation, sister company/organisation,
+  Where You (\*) includes you, your company/organisation, sister company/organisation,
   parent company/organisation, child company/organisation, or any company/organisation
-  that you have direct or indirect control of).
+  that you are directly or indirectly associated with.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE

@@ -5,6 +5,9 @@ package com.fortyoneconcepts.valjogen.examples;
 
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
+/**
+* Example that shows how to control the name of the generated implementation class.
+*/
 @VALJOGenerate(name="SimpleInterfaceImpl")
 public interface SimpleInterfaceWithNamedOutput
 {
