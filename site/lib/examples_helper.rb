@@ -2,6 +2,7 @@ module ExamplesHelper
   @syntax = { ".java" => "java", ".stg" => "", ".txt" => "" }
   @headings = { ".java" => "Source example", ".stg" => "Custom template example", ".txt" => "Custom header example" }
   
+  # get hash of files and their content that exist at path
   def get_example_files(path)
     result = Hash.new 
     
@@ -31,7 +32,7 @@ module ExamplesHelper
 
     # Index:
     examples << "**EXAMPLES INDEX:**"+newline+newline
-    orderedSrcHash = srcExamplesHash.sort_by { |name, content| [File.extname(name).downcase, name.downcase] }
+    orderedSrcHash = srcExamplesHash.sort_by { |name, content| [File.extname(name).downcase, get_example_index(content), name.downcase] }
     orderedSrcHash.each do |name, content|
         extension=File.extname(name).downcase
         raise "Unknown source file extension "+extension if (!@syntax[extension] || !@headings[extension])
@@ -52,9 +53,6 @@ module ExamplesHelper
     # Examples:
     orderedSrcHash.each do |name, content|
       extension=File.extname(name).downcase
-      
-      # Bug workaround where javadoc comment begin gets deleted by markdown sometimes (part 1)
-      content=content.sub("/\*\*", " /**")
       
       # Example:
       examples << "## "+@headings[extension]+": <code>"+name+"</code>"
@@ -110,6 +108,18 @@ module ExamplesHelper
     examples
  end
  
+ # Get index from source code comment in VALJOGen annotations of format "Example xxx". 
+ def get_example_index(src)
+   regEx=src.match('@VALJO[^\(]*\([^)]*comment="Example (\d*)"[^)]*\)')
+   if (regEx)
+     indexStr=regEx.captures[0]
+     indexStr.to_i
+   else
+     9999
+   end
+ end
+ 
+ # Get ID that markdown has assigned automatically to filename topic.
  def get_source_link_id(filename)
    extension=File.extname(filename).downcase
    (@headings[extension]+" code"+filename+"code").downcase.gsub(" ", "-").gsub(/[^A-Za-z0-9-]/,"")

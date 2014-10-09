@@ -13,7 +13,7 @@ Here is a simple example of how to use a VALJOGen annotation to generate source 
 ```java
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
- /**
+/**
 * Example that shows how to control the name of the generated implementation class.
 */
 @VALJOGenerate(name="SimpleInterfaceImpl")

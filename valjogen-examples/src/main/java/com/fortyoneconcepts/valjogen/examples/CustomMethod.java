@@ -10,8 +10,8 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * Example that shows how to apply a custom template implementing a custom method.
 * Example also shows how to make the generated mutable class thread safe.
 */
-@VALJOGenerate
-@VALJOConfigure(customTemplateFileName="custom_method.stg", implementedMethodNames={"nanoLastUpdated"}, synchronizedAccessEnabled=true, comment="Example 9")
+@VALJOGenerate(comment="Example 9")
+@VALJOConfigure(customTemplateFileName="custom_method.stg", implementedMethodNames={"nanoLastUpdated"}, synchronizedAccessEnabled=true)
 public interface CustomMethod
 {
 	public String getName();

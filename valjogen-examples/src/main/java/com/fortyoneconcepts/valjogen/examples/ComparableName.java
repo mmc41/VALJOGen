@@ -13,8 +13,8 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * hardcode the implementation class name. Notice also how a certain ordering for the compareTo implementation is specified (instead of the default
 * which is in order of declaration of the properties in the interface).
 */
-@VALJOGenerate
-@VALJOConfigure(extraInterfaceNames={ "java.lang.Comparable<$(This)>" }, comparableMembers= {"lastName", "firstName" }, comment="Example 6")
+@VALJOGenerate(comment="Example 6")
+@VALJOConfigure(extraInterfaceNames={ "java.lang.Comparable<$(This)>" }, comparableMembers= {"lastName", "firstName" })
 public interface ComparableName
 {
 	public String getFirstName();

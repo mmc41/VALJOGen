@@ -41,15 +41,6 @@ class FixLinksHtmlFilter < Nanoc::Filter
   end
 end
 
-# Removes the extra space in front of javadoc comment that needs to be inserted in order to avoid markdown eating comment start. 
-class JavadocBugfixHtmlFilter < Nanoc::Filter
-  identifier :javadocprefixbugfix
-
-  def run(content, params={})
-    content.gsub(/ (<span style="[^\"]*">\/\*\*)/, '\\1')
-  end
-end
-
 # Inserts links to javadoc for annotations in html 
 class InsertJavaDocApiLinksHtmlFilter < Nanoc::Filter
   identifier :insert_javadocapi_links

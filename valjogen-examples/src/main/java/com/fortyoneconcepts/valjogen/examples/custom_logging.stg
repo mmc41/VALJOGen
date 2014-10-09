@@ -10,7 +10,7 @@
 * stringtemplate arguments of the template they are called from and how <@super.imports()> are used to refer to the
 * region's orginal content.
 *
-* NOTE 1: The import could also have been done easier VALJOConfigure annotation's importClasses option - this is just an alternative.
+* NOTE 1: The import could also have been done easier with VALJOConfigure's importClasses option - this is just an alternative.
 */
 
 <@class.imports() ::= <<
