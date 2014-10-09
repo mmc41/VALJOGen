@@ -1,1 +1,1 @@
-/* This is a sample header file for VALJOGen examples */
+/* This is a sample header for VALJOGen examples provided by the file "Header.txt" and configured by "package-info.java" */

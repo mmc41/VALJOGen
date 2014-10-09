@@ -330,6 +330,13 @@ public @interface VALJOConfigure
     String customTemplateFileName() default "$(N/A)";
 
     /**
+     * Specifies if annotation processor should warn about parameter names that are synthesised because -parameter option is missing.
+     *
+     * @return True if annotation processor should warn about missing -parameter option.
+     */
+    boolean warnAboutSynthesisedNames() default true;
+
+    /**
 	* Specifies the {@link java.util.logging.Level} log level to use inside the annotation processor. Set this to INFO or FINE to inspect model instances,
 	* inspect output or to help track errors inside the processor. Set to WARNING otherwise.
 	*
@@ -347,4 +354,11 @@ public @interface VALJOConfigure
 	* @return True if annotation processor should open StringTemplagte's STViz Gui explorer during code generation phase.
 	*/
     boolean debugStringTemplates() default false;
+
+    /**
+	* An option user supplied comment. Not normally used but could be in a custom template or by a build tool.
+	*
+	* @return An optional comment.
+	*/
+    public String comment() default "$(N/A)";
 }

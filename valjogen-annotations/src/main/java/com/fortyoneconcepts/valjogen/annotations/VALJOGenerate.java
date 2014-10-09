@@ -42,4 +42,11 @@ public @interface VALJOGenerate
 	* @return The short name or fully qualified name of the generated class.
 	*/
     String name() default "$(N/A)";
+
+    /**
+	* An option user supplied comment. Not normally used but could be in a custom template or by a build tool.
+	*
+	* @return An optional comment.
+	*/
+    public String comment() default "$(N/A)";
 }

@@ -11,7 +11,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * Example also shows how to make the generated mutable class thread safe.
 */
 @VALJOGenerate
-@VALJOConfigure(customTemplateFileName="custom_method.stg", implementedMethodNames={"nanoLastUpdated"}, synchronizedAccessEnabled=true)
+@VALJOConfigure(customTemplateFileName="custom_method.stg", implementedMethodNames={"nanoLastUpdated"}, synchronizedAccessEnabled=true, comment="Example 9")
 public interface CustomMethod
 {
 	public String getName();

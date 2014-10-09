@@ -81,6 +81,7 @@ public abstract class TemplateTestBase
 		configureAnnotationBuilder = new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class);
 
 		configurationOptions = new HashMap<String,String>();
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.warnAboutSynthesisedNames, "false");
 	}
 
 	public final class Output
@@ -98,24 +99,24 @@ public abstract class TemplateTestBase
 	}
 
 	protected Output produceOutput(Class<?> sourceClass) throws Exception {
-		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build(), false);
+		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build(), false, false);
 	}
 
 	protected Output produceOutput(Class<?> sourceClass, VALJOConfigure configureAnnotation) throws Exception {
-		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotation, false);
+		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotation, false, false);
 	}
 
 	protected Output produceOutput(Class<?> sourceClass, AnnotationProxyBuilder<VALJOGenerate> generateAnnotationBuilder, AnnotationProxyBuilder<VALJOConfigure> configureAnnotationBuilder) throws Exception
 	{
-		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build(), false);
+		return produceOutput(sourceClass, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.build(), false, false);
 	}
 
 	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation) throws Exception
 	{
-		return produceOutput(sourceClass, generateAnnotation, configureAnnotation, false);
+		return produceOutput(sourceClass, generateAnnotation, configureAnnotation, false, false);
 	}
 
-	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation, boolean allowErrors) throws Exception
+	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation, boolean allowErrors, boolean suppressWarnings) throws Exception
 	{
 		Configuration configuration = new Configuration(sourceClass.getCanonicalName(), generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
@@ -141,7 +142,9 @@ public abstract class TemplateTestBase
 			  }
 			} else if (kind==Kind.WARNING || kind==Kind.MANDATORY_WARNING) {
 			  warnings.add(message);
-			  LOGGER.warning(message);
+
+			  if (!suppressWarnings)
+			    LOGGER.warning(message);
 			} else LOGGER.info(message);
 		  }, interfaceElement, configuration, resourceLoader);
 

@@ -3,7 +3,7 @@ class FooterRemoveMarkdownFilter < Nanoc::Filter
   identifier :footer_remove
 
   def run(content, params={})
-    content.gsub(/^\/[^\r\n]+$/, '')
+    content.gsub(/^\/[^\*][^\r\n]+$/, '')
   end
 end
 

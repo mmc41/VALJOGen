@@ -89,12 +89,12 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 public int getLineWidth()
 	 {
-		 return getValue(lineWidth, configureAnnotation.lineWidth());
+		 return getIntValue(lineWidth, configureAnnotation.lineWidth());
 	 }
 
 	 public String getClazzScope()
 	 {
-		 return getValue(clazzScope, configureAnnotation.clazzScope());
+		 return getStringValue(clazzScope, configureAnnotation.clazzScope());
 	 }
 
 	 public boolean hasEmptyClazzScope()
@@ -104,87 +104,87 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 public boolean isFinalMembersEnabled()
 	 {
-		 return getValue(finalMembersEnabled, configureAnnotation.finalMembersEnabled());
+		 return getBooleanValue(finalMembersEnabled, configureAnnotation.finalMembersEnabled());
 	 }
 
 	 public boolean isFinalClassEnabled()
 	 {
-		 return getValue(finalClassEnabled, configureAnnotation.finalClassEnabled());
+		 return getBooleanValue(finalClassEnabled, configureAnnotation.finalClassEnabled());
 	 }
 
 	 public boolean isFinalPropertiesEnabled()
 	 {
-		 return getValue(finalPropertiesEnabled, configureAnnotation.finalPropertiesEnabled());
+		 return getBooleanValue(finalPropertiesEnabled, configureAnnotation.finalPropertiesEnabled());
 	 }
 
 	 public boolean isStaticFactoryMethodEnabled()
 	 {
-		 return getValue(staticFactoryMethodEnabled, configureAnnotation.staticFactoryMethodEnabled());
+		 return getBooleanValue(staticFactoryMethodEnabled, configureAnnotation.staticFactoryMethodEnabled());
 	 }
 
 	 public boolean isEnsureNotNullEnabled()
 	 {
-		 return getValue(ensureNotNullEnabled, configureAnnotation.ensureNotNullEnabled());
+		 return getBooleanValue(ensureNotNullEnabled, configureAnnotation.ensureNotNullEnabled());
 	 }
 
 	 public boolean isSynchronizedAccessEnabled()
 	 {
-		 return getValue(synchronizedAccessEnabled, configureAnnotation.synchronizedAccessEnabled());
+		 return getBooleanValue(synchronizedAccessEnabled, configureAnnotation.synchronizedAccessEnabled());
 	 }
 
 	 public boolean isMalformedPropertiesIgnored()
 	 {
-		 return getValue(ignoreMalformedProperties, configureAnnotation.ignoreMalformedProperties());
+		 return getBooleanValue(ignoreMalformedProperties, configureAnnotation.ignoreMalformedProperties());
 	 }
 
 	 public String getPackage()
 	 {
-	    return getValue(outputPackage, configureAnnotation.outputPackage());
+	    return getStringValue(outputPackage, configureAnnotation.outputPackage());
 	 }
 
 	 public String getName()
 	 {
-         return getValue(name, generateAnnotation.name());
+         return getStringValue(name, generateAnnotation.name());
 	 }
 
 	 public String[] getImportClasses()
 	 {
-		 return getValue(importClasses, configureAnnotation.importClasses());
+		 return getStringArrayValue(importClasses, configureAnnotation.importClasses());
 	 }
 
 	 public String[] getExtraInterfaces()
 	 {
-		 return getValue(extraInterfaceNames, configureAnnotation.extraInterfaceNames());
+		 return getStringArrayValue(extraInterfaceNames, configureAnnotation.extraInterfaceNames());
 	 }
 
 	 public String[] getGetterPrefixes()
 	 {
-		 return getValue(getterPrefixes, configureAnnotation.getterPrefixes());
+		 return getStringArrayValue(getterPrefixes, configureAnnotation.getterPrefixes());
 	 }
 
 	 public String[] getSetterPrefixes()
 	 {
-		 return getValue(setterPrefixes, configureAnnotation.setterPrefixes());
+		 return getStringArrayValue(setterPrefixes, configureAnnotation.setterPrefixes());
 	 }
 
 	 public boolean isThisAsImmutableSetterReturnTypeEnabled()
 	 {
-		 return getValue(forceThisAsImmutableSetterReturnType, configureAnnotation.forceThisAsImmutableSetterReturnType());
+		 return getBooleanValue(forceThisAsImmutableSetterReturnType, configureAnnotation.forceThisAsImmutableSetterReturnType());
 	 }
 
 	 public String getBaseClazzName()
 	 {
-		 return getValue(baseClazzName, configureAnnotation.baseClazzName());
+		 return getStringValue(baseClazzName, configureAnnotation.baseClazzName());
 	 }
 
 	 public String getSuggestedVariablesPrefix()
 	 {
-		 return getValue(suggestedVariablesPrefix, configureAnnotation.suggestedVariablesPrefix());
+		 return getStringValue(suggestedVariablesPrefix, configureAnnotation.suggestedVariablesPrefix());
 	 }
 
 	 public long getSerialVersionUID()
 	 {
-		 return getValue(serialVersionUID, configureAnnotation.serialVersionUID());
+		 return getLongValue(serialVersionUID, configureAnnotation.serialVersionUID());
 	 }
 
 	 public boolean getSerialVersionUIDSpecified()
@@ -194,67 +194,72 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 public boolean isEqualsEnabled()
 	 {
-		 return getValue(equalsEnabled, configureAnnotation.equalsEnabled());
+		 return getBooleanValue(equalsEnabled, configureAnnotation.equalsEnabled());
 	 }
 
 	 public boolean isHashEnabled()
 	 {
-		 return getValue(hashEnabled, configureAnnotation.hashEnabled());
+		 return getBooleanValue(hashEnabled, configureAnnotation.hashEnabled());
 	 }
 
 	 public boolean isComparableEnabled()
 	 {
-		 return getValue(comparableEnabled, configureAnnotation.comparableEnabled());
+		 return getBooleanValue(comparableEnabled, configureAnnotation.comparableEnabled());
 	 }
 
 	 public String[] getComparableMembers()
 	 {
-		 return getValue(comparableMembers, configureAnnotation.comparableMembers());
+		 return getStringArrayValue(comparableMembers, configureAnnotation.comparableMembers());
 	 }
 
 	 public boolean isToStringEnabled()
 	 {
-		 return getValue(toStringEnabled, configureAnnotation.toStringEnabled());
+		 return getBooleanValue(toStringEnabled, configureAnnotation.toStringEnabled());
 	 }
 
 	 public boolean isInsertInheritDocOnMethodsEnabled()
 	 {
-		 return getValue(insertInheritDocOnMethodsEnabled, configureAnnotation.insertInheritDocOnMethodsEnabled());
+		 return getBooleanValue(insertInheritDocOnMethodsEnabled, configureAnnotation.insertInheritDocOnMethodsEnabled());
 	 }
 
 	 public String getHeaderFileName()
 	 {
-		 return getValue(headerFileName, configureAnnotation.headerFileName());
+		 return getStringValue(headerFileName, configureAnnotation.headerFileName());
 	 }
 
 	 public String getCustomTemplateFileName()
 	 {
-		 return getValue(customTemplateFileName, configureAnnotation.customTemplateFileName());
+		 return getStringValue(customTemplateFileName, configureAnnotation.customTemplateFileName());
 	 }
 
 	 public String getClazzJavaDoc()
 	 {
-		 return getValue(clazzJavaDoc, configureAnnotation.clazzJavaDoc());
+		 return getStringValue(clazzJavaDoc, configureAnnotation.clazzJavaDoc());
 	 }
 
 	 public String[] getClazzAnnotations()
 	 {
-		 return getValue(clazzAnnotations, configureAnnotation.clazzAnnotations());
+		 return getStringArrayValue(clazzAnnotations, configureAnnotation.clazzAnnotations());
 	 }
 
 	 public String[] getConstructorAnnotations()
 	 {
-		 return getValue(constructorAnnotations, configureAnnotation.constructorAnnotations());
+		 return getStringArrayValue(constructorAnnotations, configureAnnotation.constructorAnnotations());
 	 }
 
 	 public String[] getFactoryMethodAnnotations()
 	 {
-		 return getValue(factoryMethodAnnotations, configureAnnotation.factoryMethodAnnotations());
+		 return getStringArrayValue(factoryMethodAnnotations, configureAnnotation.factoryMethodAnnotations());
+	 }
+
+	 public boolean isWarningAboutSynthesisedNamesEnabled()
+	 {
+		 return getBooleanValue(warnAboutSynthesisedNames, configureAnnotation.warnAboutSynthesisedNames());
 	 }
 
 	 public Level getLogLevel()
 	 {
-		 String level = getValue(logLevel, configureAnnotation.logLevel());
+		 String level = getStringValue(logLevel, configureAnnotation.logLevel());
 		 if (level!=null)
 			 return Level.parse(level);
 		 return Level.ALL;
@@ -262,20 +267,25 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 public boolean isDebugStringTemplatesEnabled()
 	 {
-		 return getValue(debugStringTemplates, configureAnnotation.debugStringTemplates());
+		 return getBooleanValue(debugStringTemplates, configureAnnotation.debugStringTemplates());
 	 }
 
 	 public Set<String> getImplementedMethodNames()
 	 {
-		 String[] names = getValue(implementedMethodNames, configureAnnotation.implementedMethodNames());
+		 String[] names = getStringArrayValue(implementedMethodNames, configureAnnotation.implementedMethodNames());
 		 return new HashSet<String>(Arrays.asList(names));
+	 }
+
+	 public String getComment()
+	 {
+		 return getStringValue(comment, generateAnnotation.comment(), configureAnnotation.comment());
 	 }
 
 	 // ---- Internal helpers -----
 
 	 private String preformMagicReplacements(String rawValue)
 	 {
-		if (rawValue==null) // || rawValue.equals(ConfigurationMacros.NotApplicableMacro))
+		if (rawValue==null)
 			return null;
 
 		String value = rawValue;
@@ -313,12 +323,14 @@ public final class Configuration implements ConfigurationOptionKeys
 		return values.toArray(new String[values.size()]);
 	 }
 
-	 private String getValue(String optionKey, String rawDefaultValue)
+	 private String getStringValue(String optionKey, String ... rawDefaultValues)
 	 {
 		 String value = preformMagicReplacements(options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey));
 
-		 if (value==null || value.length() == 0 || value.trim().length() == 0)
-			 value=preformMagicReplacements(rawDefaultValue);
+		 if (value==null || value.length() == 0 || value.trim().length() == 0) {
+			 for (int i=0; i < rawDefaultValues.length && value==null; i++)
+			  value=preformMagicReplacements(rawDefaultValues[i]);
+		 }
 
 		 if (value!=null)
   		     value=value.trim();
@@ -326,7 +338,7 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return value;
 	 }
 
-	 private String[] getValue(String optionKey, String[] defaultValue)
+	 private String[] getStringArrayValue(String optionKey, String[] defaultValue)
 	 {
 		 String value = preformMagicReplacements(options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey));
 		 if (value==null)
@@ -339,7 +351,7 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return value.split(",");
 	 }
 
-	 private boolean getValue(String optionKey, boolean defaultValue)
+	 private boolean getBooleanValue(String optionKey, boolean defaultValue)
 	 {
 		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
 		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))
@@ -352,7 +364,7 @@ public final class Configuration implements ConfigurationOptionKeys
 		 throw new IllegalArgumentException("Option value "+value+" for key "+optionKey+" must be a boolean value");
 	 }
 
-	 private int getValue(String optionKey, int defaultValue)
+	 private int getIntValue(String optionKey, int defaultValue)
 	 {
 		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
 		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))
@@ -366,7 +378,7 @@ public final class Configuration implements ConfigurationOptionKeys
 		 }
 	 }
 
-	 private long getValue(String optionKey, long defaultValue)
+	 private long getLongValue(String optionKey, long defaultValue)
 	 {
 		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
 		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))

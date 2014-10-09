@@ -14,7 +14,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * which is in order of declaration of the properties in the interface).
 */
 @VALJOGenerate
-@VALJOConfigure(extraInterfaceNames={ "java.lang.Comparable<$(This)>" }, comparableMembers= {"lastName", "firstName" })
+@VALJOConfigure(extraInterfaceNames={ "java.lang.Comparable<$(This)>" }, comparableMembers= {"lastName", "firstName" }, comment="Example 6")
 public interface ComparableName
 {
 	public String getFirstName();

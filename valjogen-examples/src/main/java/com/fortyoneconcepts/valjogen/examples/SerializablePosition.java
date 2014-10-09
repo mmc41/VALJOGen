@@ -9,7 +9,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 /**
 * Example that shows how to specify serialization ID for serialiable classes.
 */
-@VALJOGenerate
+@VALJOGenerate(comment="Example 5")
 @VALJOConfigure(serialVersionUID=42)
 public interface SerializablePosition extends java.io.Serializable
 {

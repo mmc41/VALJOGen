@@ -183,6 +183,11 @@ public interface ConfigurationOptionKeys
 	 */
      public static String customTemplateFileName = "customTemplateFileName";
 
+	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#warnAboutSynthesisedNames
+	 */
+     public static String warnAboutSynthesisedNames = "warnAboutSynthesisedNames";
+
      /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#logLevel
 	 */
@@ -199,4 +204,10 @@ public interface ConfigurationOptionKeys
 	 * Path entries must be absolute and point to existing readable directories.
 	 */
 	 public static String SOURCEPATH = "SOURCEPATH";
+
+     /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#comment
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOGenerate#comment
+	 */
+     public static String comment = "comment";
 }

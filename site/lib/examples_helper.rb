@@ -58,14 +58,14 @@ module ExamplesHelper
       
       # Example:
       examples << "## "+@headings[extension]+": <code>"+name+"</code>"
-      examples << newline
-      examples << "```"+@syntax[extension]
+      examples << newline+newline
+      examples << "```"+@syntax[extension]+newline
       examples << content+newline
       examples << "```"+newline
       examples << newline
     
       # References:
-      references=(srcExamplesHash.select{|refName, refContent| content.include?('"'+refName+'"') || refContent.include?('"'+name+'"') }) || {}
+      references=(srcExamplesHash.select{|refName, refContent| refName!=name && (content.include?('"'+refName+'"') || refContent.include?('"'+name+'"')) }) || {}
       orderedReferences = references.sort_by { |refName, refContent| [File.extname(refName).downcase, refName.downcase] }
     
       links=[]

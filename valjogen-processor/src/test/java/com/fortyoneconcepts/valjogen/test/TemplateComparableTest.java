@@ -23,7 +23,7 @@ public class TemplateComparableTest extends TemplateTestBase
 	@Test
 	public void testAutoComparable() throws Exception
 	{
-		Output output = produceOutput(ComparableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true).add(ConfigurationOptionKeys.comparableMembers, new String[] { }) .build());
+		Output output = produceOutput(ComparableInterface.class, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true).add(ConfigurationOptionKeys.comparableMembers, new String[] { }).build(), false, true);
 
 		assertContainsWithWildcards("public int compareTo(final ComparableInterface *) { ", output.code);
 		assertContainsWithWildcards("if ((_result=Integer.compare(intValue, arg0.getIntValue()))!=0) return _result; if ((_result=stringValue.compareTo(arg0.getStringValue()))!=0) return _result;", output.code);
@@ -45,7 +45,7 @@ public class TemplateComparableTest extends TemplateTestBase
 	@Test
 	public void testIllegalSpecificComparable() throws Exception
 	{
-		Output output = produceOutput(ComparableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true).add(ConfigurationOptionKeys.comparableMembers, new String[] { "unknownMemberName" }) .build(), true);
+		Output output = produceOutput(ComparableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableEnabled, true).add(ConfigurationOptionKeys.comparableMembers, new String[] { "unknownMemberName" }) .build(), true, false);
 
 		Assert.assertTrue("Single error about unknown member expected", output.errors.size()==1 && output.errors.get(0).contains("Could not find member unknownMemberName"));
 	}

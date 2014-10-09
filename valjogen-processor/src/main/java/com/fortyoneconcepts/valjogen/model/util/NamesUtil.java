@@ -180,8 +180,8 @@ public class NamesUtil
 	/**
 	 * Check if two overload names wtih optional * wildcards except of method name or a type paramter match. Use same format as {@link com.fortyoneconcepts.valjogen.model.Method#getOverloadName}
 	 *
-	 * @param overloadNamesSpecifier1
-	 * @param overloadNamesSpecifier2
+	 * @param overloadNamesSpecifier1 First name specifier
+	 * @param overloadNamesSpecifier2 Second name specifier
 	 * @param ignoreAllPackages True all if packages should be ignored in comparison, false if only java.lang packages should be ignored.
 	 *
 	 * @return True if mathes.

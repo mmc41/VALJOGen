@@ -12,7 +12,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * @param <TLeft> First object type in pair.
 * @param <TRight> Second object type in pair.
 */
-@VALJOGenerate
+@VALJOGenerate(comment="Example 3")
 public interface MutablePair<TLeft, TRight>
 {
 	public TLeft getLeft();

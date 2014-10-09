@@ -7,8 +7,10 @@ import com.fortyoneconcepts.valjogen.annotations.*;
 
 /**
 * Simplest possible example that generates a default value object containing a hello message.
+*
+* NOTE: Comments are entirely optional but used for the websites documentation backend.
 */
-@VALJOGenerate
+@VALJOGenerate(comment="Example 1")
 public interface Hello
 {
 	public String getHelloMessage();
