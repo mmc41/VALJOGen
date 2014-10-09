@@ -23,10 +23,18 @@ class FixLinksHtmlFilter < Nanoc::Filter
   identifier :fixlinks
   def run(content, params={})
     content=content.gsub(/<a\shref="([\w\-\/]*).(m|M)(d|D)">/, '<a href="\\1.html">')
-    content=content.gsub(/<a\shref=".*valjogen-processor\/README\.(html|md)">/, '<a href="processor-README.html">')
-    content=content.gsub(/<a\shref=".*valjogen-examples\/README\.(html|md)">/, '<a href="examples-README.html">')
-    content=content.gsub(/<a\shref=".*valjogen-integrationtests\/README\.(html|md)">/, '<a href="integrationtests-README.html">')
-    content=content.gsub(/<a\shref=".*valjogen-annotations\/README\.(html|md)">/, '<a href="annotations-README.html">')
+    
+    # TODO: Rewrite into more general replacements
+    content=content.gsub(/<a\shref=".*valjogen-processor\/README\.(html|md)">/, '<a href="processor-readme.html">')
+    content=content.gsub(/<a\shref=".*valjogen-examples\/README\.(html|md)">/, '<a href="examples-readme.html">')
+    content=content.gsub(/<a\shref=".*valjogen-integrationtests\/README\.(html|md)">/, '<a href="integrationtests-readme.html">')
+    content=content.gsub(/<a\shref=".*valjogen-annotations\/README\.(html|md)">/, '<a href="annotations-readme.html">')
+    content=content.gsub(/"GETSTARTED.(html|md)"/, '"getstarted.html"')
+    content=content.gsub(/"CONTRIBUTING.(html|md)"/, '"contributing.html"')
+    content=content.gsub(/"INDEX.(html|md)"/, '"index.html"')
+    content=content.gsub(/"INDEX.(html|md)"/, '"index.html"')
+    content=content.gsub(/"LICENSE.(html|md)"/, '"license.html"')
+    
     content=content.gsub('<a href="src/main/java/com/fortyoneconcepts/valjogen/examples">', '<a href="http://github.com/41concepts/VALJOGen/tree/master/valjogen-examples/src/main/java/com/fortyoneconcepts/valjogen/examples">')
     content=content.gsub('<a href="valjogen-annotations/src/main/java/com/fortyoneconcepts/valjogen/annotations">', '<a href="http://github.com/41concepts/VALJOGen/tree/master/valjogen-annotations/src/main/java/com/fortyoneconcepts/valjogen/annotations">')
     content
