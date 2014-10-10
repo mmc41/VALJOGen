@@ -61,14 +61,11 @@ public class BasicClazz extends ObjectType {
 			throw new IllegalStateException("Clazz content already initialized");
 
         this.members=Objects.requireNonNull(members);
-
         this.properties=Objects.requireNonNull(properties);
-
         this.methods=Objects.requireNonNull(nonPropertyMethods);
 
         initializedContent=true;
 	}
-
 
 	@Override
 	public BasicClazz getClazz()

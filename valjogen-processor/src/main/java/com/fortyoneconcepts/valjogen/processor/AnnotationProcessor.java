@@ -162,7 +162,7 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		ModelBuilder clazzFactory = new ModelBuilder(types, elements, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement), element, configuration, resourceLoader, templates);
 
-		Clazz clazz = clazzFactory.buildCLazz();
+		Clazz clazz = clazzFactory.buildNewCLazz();
 		if (clazz==null)
 			return;
 

@@ -151,7 +151,7 @@ public abstract class TemplateTestBase
 			} else LOGGER.info(message);
 		  }, interfaceElement, configuration, resourceLoader, templates);
 
-		Clazz clazz = clazzFactory.buildCLazz();
+		Clazz clazz = clazzFactory.buildNewCLazz();
 
 		LOGGER.info(() -> "VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
 

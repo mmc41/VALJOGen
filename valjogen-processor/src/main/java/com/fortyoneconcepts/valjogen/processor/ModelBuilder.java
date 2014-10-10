@@ -19,6 +19,8 @@ import javax.tools.Diagnostic.Kind;
 // import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 
+
+
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.*;
 
@@ -34,7 +36,7 @@ import com.fortyoneconcepts.valjogen.model.util.*;
  */
 public final class ModelBuilder
 {
-	// private final static Logger LOGGER = Logger.getLogger(ClazzFactory.class.getName());
+	// private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
 
 	/**
 	 * Methods that are not called dynamically but (currently) implemented in a special way by the templates.
@@ -101,14 +103,14 @@ public final class ModelBuilder
 	}
 
 	/**
-    * Create a Clazz model instance along with all its dependent model instances by inspecting
+    * Create a Clazz model instance representing a class to be generated along with all its dependent model instances by inspecting
     * javax.lang.model metadata and the configuration provided by annotation(s) read by annotation processor.
 	*
 	* @return A initialized Clazz which is a model for what our generated code should look like.
 	*
 	* @throws Exception if a fatal error has occured.
 	*/
-	public Clazz buildCLazz() throws Exception
+	public Clazz buildNewCLazz() throws Exception
 	{
 		// Step 1 - Create clazz:
 		DeclaredType masterInterfaceDecl = (DeclaredType)masterInterfaceElement.asType();
@@ -146,14 +148,14 @@ public final class ModelBuilder
         // Step 2 - Init type part of clzzz:
 		List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();
 
-	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, t)).collect(Collectors.toList());
+	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, t, DetailLevel.Low)).collect(Collectors.toList());
 
 		// List<GenericParameter> genericParameters = masterInterfaceElement.getTypeParameters().stream().map(p -> createGenericParameter(clazz, allTypesByPrototypicalFullName, types, p)).collect(Collectors.toList());
 
-		Type baseClazzType = createType(clazz, baseClazzDeclaredMirrorType);
+		Type baseClazzType = createType(clazz, baseClazzDeclaredMirrorType, DetailLevel.Low);
 
-		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, ie)).collect(Collectors.toList());
-		Set<Type> interfaceTypesWithAscendants = allInterfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, ie)).collect(Collectors.toSet());
+		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toList());
+		Set<Type> interfaceTypesWithAscendants = allInterfaceDeclaredMirrorTypes.stream().map(ie -> createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toSet());
 
 		clazz.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, typeArgTypes);
 
@@ -196,7 +198,7 @@ public final class ModelBuilder
 		List<Member> selectedComparableMembers = clazz.isComparable() ? getSelectedComparableMembers(membersByName, members) : Collections.emptyList();
 
 		if (clazz.isSerializable()) {
-			addMagicSerializationMethods(clazz, nonPropertyMethods);
+			nonPropertyMethods.addAll(createMagicSerializationMethods(clazz));
 		}
 
 		claimAndVerifyMethods(nonPropertyMethods, implementedMethodNames, propertyMethods);
@@ -205,6 +207,16 @@ public final class ModelBuilder
 
 		return clazz;
 	}
+
+	/**
+    * Create a basic Clazz model instance for an existing class along with all its dependent model instances by inspecting
+    * javax.lang.model metadata.
+	*
+	* return A initialized basic Clazz for an existing.
+	*
+	* hrows Exception if a fatal error has occured.
+	*/
+
 
 	private void claimAndVerifyMethods(List<Method> nonPropertyMethods, Set<String> implementedMethodNames, List<Property> propertyMethods) throws Exception
 	{
@@ -245,56 +257,66 @@ public final class ModelBuilder
 		allTypesByPrototypicalFullName.putIfAbsent("void", voidType);
 
 		TypeMirror javaLangObjectMirrorType = createTypeFromString("java.lang.Object");
-		ObjectType javaLangObjectType = (ObjectType)this.createType(clazz, javaLangObjectMirrorType);
+		ObjectType javaLangObjectType = (ObjectType)createType(clazz, javaLangObjectMirrorType, DetailLevel.Low);
 
 		TypeMirror serializableInterfaceMirrorType = createTypeFromString("java.io.Serializable");
-		ObjectType serializableInterfaceType = (ObjectType)this.createType(clazz, serializableInterfaceMirrorType);
+		ObjectType serializableInterfaceType = (ObjectType)createType(clazz, serializableInterfaceMirrorType, DetailLevel.Low);
 
 		TypeMirror externalizableInterfaceMirrorType = createTypeFromString("java.io.Externalizable");
-		ObjectType externalizableInterfaceType = (ObjectType)this.createType(clazz, externalizableInterfaceMirrorType);
+		ObjectType externalizableInterfaceType = (ObjectType)createType(clazz, externalizableInterfaceMirrorType, DetailLevel.Low);
 
 		TypeMirror comparableInterfaceMirrorType = createTypeFromString("java.lang.Comparable");
-		ObjectType comparableInterfaceType = (ObjectType)this.createType(clazz, comparableInterfaceMirrorType);
+		ObjectType comparableInterfaceType = (ObjectType)createType(clazz, comparableInterfaceMirrorType, DetailLevel.Low);
 
 		TypeMirror javaUtilArraysMirrorType = createTypeFromString("java.util.Arrays");
-		ObjectType javaUtilArraysType = (ObjectType)this.createType(clazz, javaUtilArraysMirrorType);
+		ObjectType javaUtilArraysType = (ObjectType)createType(clazz, javaUtilArraysMirrorType, DetailLevel.Low);
 
 		TypeMirror javaUtilObjectsMirrorType = createTypeFromString("java.util.Objects");
-		ObjectType javaUtilObjectsType = (ObjectType)this.createType(clazz, javaUtilObjectsMirrorType);
+		ObjectType javaUtilObjectsType = (ObjectType)createType(clazz, javaUtilObjectsMirrorType, DetailLevel.Low);
 
 		TypeMirror generatedAnnotationInterfaceMirrorType = createTypeFromString("javax.annotation.Generated");
-		Type generatedAnnotationInterfaceType = this.createType(clazz, generatedAnnotationInterfaceMirrorType);
+		Type generatedAnnotationInterfaceType = createType(clazz, generatedAnnotationInterfaceMirrorType, DetailLevel.Low);
 
 		return new HelperTypes(noType, javaLangObjectType, voidType, serializableInterfaceType, externalizableInterfaceType, comparableInterfaceType, javaUtilArraysType, javaUtilObjectsType, generatedAnnotationInterfaceType);
 	}
 
-	private void addMagicSerializationMethods(BasicClazz clazz, List<Method> nonPropertyMethods)
+	private List<Method> createMagicSerializationMethods(BasicClazz clazz) throws Exception
 	{
+		List<Method> newMethods = new ArrayList<>();
+
 		Type noType = clazz.getHelperTypes().getNoType();
 
+		TypeMirror ioExceptionMirrorType = createTypeFromString("java.io.IOException");
+		TypeMirror objectInputStreamMirrorType = createTypeFromString("java.io.ObjectInputStream");
+		TypeMirror objectOutputStreamMirrorType = createTypeFromString("java.io.ObjectOutputStream");
+		TypeMirror objectStreamExceptionMirrorType = createTypeFromString("java.io.ObjectStreamException");
+		TypeMirror classNotFoundExceptionMirrorType = createTypeFromString("java.lang.ClassNotFoundException");
+
 		// Add : private Object readResolve() throws ObjectStreamException :
-		Method readResolve = new Method(clazz, AccessLevel.PRIVATE, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
-		nonPropertyMethods.add(readResolve);
+		Method readResolve = new Method(clazz, AccessLevel.PRIVATE, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		newMethods.add(readResolve);
 
 		// Add private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException :
-		ObjectType inputStreamType = new ObjectType(clazz, "java.io.ObjectInputStream");
+		ObjectType inputStreamType = (ObjectType)createType(clazz, objectInputStreamMirrorType, DetailLevel.Low);
 		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, inputStreamType, inputStreamType, "in"));
-		Method readObject = new Method(clazz, AccessLevel.PRIVATE, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { new ObjectType(clazz, "java.io.IOException"), new ObjectType(clazz, "java.lang.ClassNotFoundException") }), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
-		nonPropertyMethods.add(readObject);
+		Method readObject = new Method(clazz, AccessLevel.PRIVATE, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { (ObjectType)createType(clazz, ioExceptionMirrorType, DetailLevel.Low), (ObjectType)createType(clazz, classNotFoundExceptionMirrorType, DetailLevel.Low) }), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		newMethods.add(readObject);
 
 		// Add private void readObjectNoData() throws InvalidObjectException
-		Method readObjectNoData = new Method(clazz, AccessLevel.PRIVATE, noType, "readObjectNoData", clazz.getHelperTypes().getVoidType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
-		nonPropertyMethods.add(readObjectNoData);
+		Method readObjectNoData = new Method(clazz, AccessLevel.PRIVATE, noType, "readObjectNoData", clazz.getHelperTypes().getVoidType(), Collections.emptyList(), Collections.singletonList((ObjectType)createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		newMethods.add(readObjectNoData);
 
 		// Add : private void writeObject (ObjectOutputStream out) throws IOException :
-		ObjectType objectOutputStreamType = new ObjectType(clazz, "java.io.ObjectOutputStream");
+		ObjectType objectOutputStreamType = (ObjectType)createType(clazz, objectOutputStreamMirrorType, DetailLevel.Low);
 		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, objectOutputStreamType, objectOutputStreamType, "out"));
-		Method writeObject = new Method(clazz, AccessLevel.PRIVATE, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList(new ObjectType(clazz, "java.io.IOException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
-		nonPropertyMethods.add(writeObject);
+		Method writeObject = new Method(clazz, AccessLevel.PRIVATE, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList((ObjectType)createType(clazz, ioExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		newMethods.add(writeObject);
 
 		// Add : private Object writeReplace() throws ObjectStreamException :
-		Method writeReplace = new Method(clazz, AccessLevel.PRIVATE, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList(new ObjectType(clazz, "java.io.ObjectStreamException")), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
-		nonPropertyMethods.add(writeReplace);
+		Method writeReplace = new Method(clazz, AccessLevel.PRIVATE, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		newMethods.add(writeReplace);
+
+		return newMethods;
 	}
 
 	private List<Member> getSelectedComparableMembers(Map<String, Member> membersByName, List<Member> members) throws Exception
@@ -344,12 +366,12 @@ public final class ModelBuilder
 
 			ExecutableType executableMethodMirrorType = (ExecutableType)types.asMemberOf(interfaceOrClassMirrorType, m);
 
-			Type declaringType = createType(clazz, interfaceOrClassMirrorType);
+			Type declaringType = createType(clazz, interfaceOrClassMirrorType, DetailLevel.Low);
 
 			String methodName = m.getSimpleName().toString();
 
 			TypeMirror returnTypeMirror = executableMethodMirrorType.getReturnType();
-			Type returnType = createType(clazz, returnTypeMirror);
+			Type returnType = createType(clazz, returnTypeMirror, DetailLevel.Low);
 
 			List<? extends VariableElement> params =  m.getParameters();
 			List<? extends TypeMirror> paramTypes = executableMethodMirrorType.getParameterTypes();
@@ -358,7 +380,7 @@ public final class ModelBuilder
 				throw new Exception("Internal error - Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
 
 			List<? extends TypeMirror> thrownTypeMirrors = executableMethodMirrorType.getThrownTypes();
-			List<Type> thrownTypes = thrownTypeMirrors.stream().map(ie -> createType(clazz, ie)).collect(Collectors.toList());
+			List<Type> thrownTypes = thrownTypeMirrors.stream().map(ie -> createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toList());
 
 			List<Parameter> parameters = new ArrayList<Parameter>();
 			for (int i=0; i<params.size(); ++i)
@@ -422,7 +444,7 @@ public final class ModelBuilder
 	private Parameter createParameter(BasicClazz clazz, VariableElement param, TypeMirror paramType)
 	{
 		String name = param.getSimpleName().toString();
-		return new Parameter(clazz, createType(clazz, paramType), createType(clazz, param.asType()), name);
+		return new Parameter(clazz, createType(clazz, paramType, DetailLevel.Low), createType(clazz, param.asType(), DetailLevel.Low), name);
 	}
 
 	/**
@@ -433,7 +455,7 @@ public final class ModelBuilder
 	 *
 	 * @return A new or resued Type instance.
 	 */
-	private Type createType(BasicClazz clazz, TypeMirror mirrorType)
+	private Type createType(BasicClazz clazz, TypeMirror mirrorType, DetailLevel detailLevel)
 	{
 		String typeName = mirrorType.toString();
 
@@ -455,7 +477,7 @@ public final class ModelBuilder
 		} else if (mirrorType.getKind()==TypeKind.ARRAY) {
 		   ArrayType arrayType = (ArrayType)mirrorType;
 		   TypeMirror componentTypeMirror = arrayType.getComponentType();
-	       Type componentType = createType(clazz, componentTypeMirror);
+	       Type componentType = createType(clazz, componentTypeMirror, detailLevel);
 	       newType=new com.fortyoneconcepts.valjogen.model.ArrayType(clazz, typeName, componentType);
 	       existingType=allTypesByPrototypicalFullName.put(typeName, newType);
 		} else {
@@ -463,40 +485,45 @@ public final class ModelBuilder
   	       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
 		   existingType=allTypesByPrototypicalFullName.put(typeName, newType);
 
-		   List<? extends TypeMirror> directSuperTypeMirrors = types.directSupertypes(mirrorType);
-
-		   Type baseClazzType;
-		   List<Type> interfaceTypes;
-		   Set<Type> interfaceTypesWithAscendants;
-		   if (directSuperTypeMirrors.size()>0) {
-			   TypeMirror baseClazzTypeMirror = directSuperTypeMirrors.get(0);
-			   baseClazzType = createType(clazz, baseClazzTypeMirror);
-
-			   List<? extends TypeMirror> interfaceSuperTypeMirrors = directSuperTypeMirrors.size()>1 ? directSuperTypeMirrors.subList(1, directSuperTypeMirrors.size()-1) : Collections.emptyList();
-			   interfaceTypes = interfaceSuperTypeMirrors.stream().map(t -> createType(clazz, t)).collect(Collectors.toList());
-			   Stream<? extends TypeMirror> interfaceTypesWithAscendantsTypeMirrors = getSuperTypesWithAncestors(interfaceSuperTypeMirrors);
-			   interfaceTypesWithAscendants = interfaceTypesWithAscendantsTypeMirrors.map(t -> createType(clazz, t)).collect(Collectors.toSet());
-		   } else {
-			   baseClazzType=new com.fortyoneconcepts.valjogen.model.NoType(clazz);
-			   interfaceTypes=Collections.emptyList();
-			   interfaceTypesWithAscendants=Collections.emptySet();
-		   }
-
-		   List<Type> genericTypeArguments = Collections.emptyList();
-		   if (mirrorType instanceof DeclaredType) {
-			   DeclaredType declaredType = (DeclaredType)mirrorType;
-
-			   List<? extends TypeMirror> genericTypeMirrorArguments = declaredType.getTypeArguments();
-
-			   genericTypeArguments = genericTypeMirrorArguments.stream().map(t -> createType(clazz, t)).collect(Collectors.toList());
-		   }
-
-		   newObjectType.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, genericTypeArguments);
+		   initObjectType(clazz, mirrorType, detailLevel, newObjectType);
 		}
 
 		assert existingType==null : "Should not overwrite existing type in pool";
 
 		return newType;
+	}
+
+	private void initObjectType(BasicClazz clazz, TypeMirror mirrorType, DetailLevel detailLevel, ObjectType newObjectType)
+	{
+	   List<? extends TypeMirror> directSuperTypeMirrors = types.directSupertypes(mirrorType);
+
+	   Type baseClazzType;
+	   List<Type> interfaceTypes;
+	   Set<Type> interfaceTypesWithAscendants;
+	   if (directSuperTypeMirrors.size()>0) {
+		   TypeMirror baseClazzTypeMirror = directSuperTypeMirrors.get(0);
+		   baseClazzType = createType(clazz, baseClazzTypeMirror, detailLevel);
+
+		   List<? extends TypeMirror> interfaceSuperTypeMirrors = directSuperTypeMirrors.size()>1 ? directSuperTypeMirrors.subList(1, directSuperTypeMirrors.size()-1) : Collections.emptyList();
+		   interfaceTypes = interfaceSuperTypeMirrors.stream().map(t -> createType(clazz, t, detailLevel)).collect(Collectors.toList());
+		   Stream<? extends TypeMirror> interfaceTypesWithAscendantsTypeMirrors = getSuperTypesWithAncestors(interfaceSuperTypeMirrors);
+		   interfaceTypesWithAscendants = interfaceTypesWithAscendantsTypeMirrors.map(t -> createType(clazz, t, detailLevel)).collect(Collectors.toSet());
+	   } else {
+		   baseClazzType=new com.fortyoneconcepts.valjogen.model.NoType(clazz);
+		   interfaceTypes=Collections.emptyList();
+		   interfaceTypesWithAscendants=Collections.emptySet();
+	   }
+
+	   List<Type> genericTypeArguments = Collections.emptyList();
+	   if (mirrorType instanceof DeclaredType) {
+		   DeclaredType declaredType = (DeclaredType)mirrorType;
+
+		   List<? extends TypeMirror> genericTypeMirrorArguments = declaredType.getTypeArguments();
+
+		   genericTypeArguments = genericTypeMirrorArguments.stream().map(t -> createType(clazz, t, detailLevel)).collect(Collectors.toList());
+	   }
+
+	   newObjectType.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, genericTypeArguments);
 	}
 
 	private Stream<? extends TypeMirror> getSuperTypesWithAncestors(List<? extends TypeMirror> superTypes)
@@ -566,9 +593,9 @@ public final class ModelBuilder
 	{
 		List<Type> importTypes = new ArrayList<Type>();
 		for (DeclaredType implementedInterfaceDeclaredType : implementedDecalredInterfaceTypes)
-		  importTypes.add(createType(clazz, implementedInterfaceDeclaredType));
+		  importTypes.add(createType(clazz, implementedInterfaceDeclaredType, DetailLevel.Low));
 
-		importTypes.add(createType(clazz, baseClazzDeclaredType));
+		importTypes.add(createType(clazz, baseClazzDeclaredType, DetailLevel.Low));
 
 		for (String importName : configuration.getImportClasses())
 		{
@@ -576,7 +603,7 @@ public final class ModelBuilder
 			if (importElement==null) {
 				errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.ImportTypeNotFound, importName));
 			} else {
-			   Type importElementType = createType(clazz, importElement.asType());
+			   Type importElementType = createType(clazz, importElement.asType(), DetailLevel.Low);
 			   importTypes.add(importElementType);
 			}
 		}
@@ -696,7 +723,7 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror = returnTypeMirror;
-			return new Member(clazz, createType(clazz, propertyTypeMirror), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
+			return new Member(clazz, createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
 		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -715,7 +742,7 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror=setterParamTypes.get(0);
-			return new Member(clazz, createType(clazz, propertyTypeMirror), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
+			return new Member(clazz, createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
 		} else {
 			return null; // Not a property.
 		}
