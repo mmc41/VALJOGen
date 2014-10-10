@@ -1,7 +1,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 /**
- * Contains definitions of (external) java classes that templates may refer to. Instead of hardcoding a named reference to a java class
+ * Contains definitions of (external) java classes so templates can easily refer to them. Instead of hardcoding a named reference to a java class
  * like "java.util.Objects" use the corresponding method getJavaUtilObjects to return the type and then call the name property on that
  * type to get a name that correctly refers to the java class. The names returned from the types may then be qualified or unqualified
  * automatically depending on if an import has been made.
@@ -18,12 +18,15 @@ public final class HelperTypes
 	private final ObjectType comparableInterfaceType;
 	private final ObjectType javaUtilArraysType;
 	private final ObjectType javaUtilObjectsInterfaceType;
+	private final ObjectType inputStreamType;
+	private final ObjectType objectOutputStreamType;
+
 	private final Type generatedAnnotationType;
 
 	public HelperTypes(NoType noType, ObjectType javaLangObjectType, Type voidType,
 			           ObjectType serializableInterfaceType, ObjectType externalizableInterfaceType,
 			           ObjectType comparableInterfaceType, ObjectType javaUtilArraysType, ObjectType javaUtilObjectsInterfaceType,
-			           Type generatedAnnotationType)
+			           Type generatedAnnotationType, ObjectType inputStreamType, ObjectType objectOutputStreamType)
 	{
 		this.noType=noType;
 		this.javaLangObjectType=javaLangObjectType;
@@ -34,6 +37,8 @@ public final class HelperTypes
 		this.javaUtilArraysType=javaUtilArraysType;
 		this.javaUtilObjectsInterfaceType=javaUtilObjectsInterfaceType;
 		this.generatedAnnotationType=generatedAnnotationType;
+		this.inputStreamType=inputStreamType;
+		this.objectOutputStreamType=objectOutputStreamType;
 	}
 
 	/**
@@ -106,6 +111,22 @@ public final class HelperTypes
 	public Type getGeneratedAnnotation()
 	{
 		return generatedAnnotationType;
+	}
+
+	/**
+	* @return The Type object for {@link java.io.ObjectOutputStream}
+	*/
+	public ObjectType getOutputStreamType()
+	{
+		return objectOutputStreamType;
+	}
+
+	/**
+	* @return The Type object for {@link java.io.ObjectInputStream}
+	*/
+	public ObjectType getInputStreamType()
+	{
+		return inputStreamType;
 	}
 
 	@Override

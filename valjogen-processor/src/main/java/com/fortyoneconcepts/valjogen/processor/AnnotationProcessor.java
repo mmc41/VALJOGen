@@ -160,7 +160,11 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		STTemplates templates = new STTemplates(resourceLoader, configuration);
 
-		ModelBuilder clazzFactory = new ModelBuilder(types, elements, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement), element, configuration, resourceLoader, templates);
+		ModelBuilder clazzFactory = new ModelBuilder(types, elements, (msgElement, kind, err) -> {
+			if (msgElement!=null)
+				messager.printMessage(kind, err, msgElement);
+			else messager.printMessage(kind, err);
+		}, element, configuration, resourceLoader, templates);
 
 		Clazz clazz = clazzFactory.buildNewCLazz();
 		if (clazz==null)
