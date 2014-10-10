@@ -9,7 +9,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate
-@VALJOConfigure(customTemplateFileName="custom_serializable.stg")
+@VALJOConfigure(customJavaTemplateFileName="custom_serializable.stg")
 public interface SerializableInterface extends java.io.Serializable, ObjectInputValidation
 {
 	public int getIntValue();

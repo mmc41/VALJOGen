@@ -26,7 +26,7 @@ public class TemplateCustomTest extends TemplateTestBase
 	{
 		Output output = produceOutput(CustomTemplateInterface.class, configureAnnotationBuilder
 				                                                     .add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"})
-				                                                     .add(ConfigurationOptionKeys.customTemplateFileName, "custom_template.stg").build());
+				                                                     .add(ConfigurationOptionKeys.customJavaTemplateFileName, "custom_template.stg").build());
 
 		String[] searchStrings = { "class annotation", "import",
 				                   "class javadoc", "getter javadoc", "mutable setter javadoc", "immutable setter javadoc", "equals javadoc", "hashCode javadoc", "toString javadoc", "compareTo javadoc",
@@ -52,7 +52,7 @@ public class TemplateCustomTest extends TemplateTestBase
 	{
 		Output output = produceOutput(CustomTemplateInterface.class, configureAnnotationBuilder
 				                                                     .add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"})
-				                                                     .add(ConfigurationOptionKeys.customTemplateFileName, "custom_template.stg").build());
+				                                                     .add(ConfigurationOptionKeys.customJavaTemplateFileName, "custom_template.stg").build());
 
 		String[] searchStrings = { "4242", "!(!", "\"dummyValue\"", "9999", "(null)", "(this)" };
 
@@ -64,7 +64,7 @@ public class TemplateCustomTest extends TemplateTestBase
 	public void testCustomSerializableWithCustomMethods() throws Exception
 	{
 		Output output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
-				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_serializable.stg")
+				                                                   .add(ConfigurationOptionKeys.customJavaTemplateFileName, "custom_serializable.stg")
 				                                                   .build());
 
 		assertContainsWithWildcards("public void validateObject() throws java.io.InvalidObjectException {", output.code);
@@ -79,7 +79,7 @@ public class TemplateCustomTest extends TemplateTestBase
 	public void testCustomMethodsWildOverloads() throws Exception
 	{
 		Output output = produceOutput(OverloadedInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
-				                                                   .add(ConfigurationOptionKeys.customTemplateFileName, "custom_overload.stg").build());
+				                                                   .add(ConfigurationOptionKeys.customJavaTemplateFileName, "custom_overload.stg").build());
 
 		assertContainsWithWildcards("OverloadedInterface customMethod(final String stringValue, final int intValue) {", output.code);
 		assertContainsWithWildcards("public void customMethod(final int intValue) {", output.code);

@@ -222,9 +222,9 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getStringValue(headerFileName, configureAnnotation.headerFileName());
 	 }
 
-	 public String getCustomTemplateFileName()
+	 public String getCustomJavaTemplateFileName()
 	 {
-		 return getStringValue(customTemplateFileName, configureAnnotation.customTemplateFileName());
+		 return getStringValue(customJavaTemplateFileName, configureAnnotation.customJavaTemplateFileName());
 	 }
 
 	 public String getClazzJavaDoc()

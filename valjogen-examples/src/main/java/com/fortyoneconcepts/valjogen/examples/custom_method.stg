@@ -7,7 +7,7 @@
 * is added to return the time as declared in the interface.
 *
 * The custom template for the method must have a specific name of "method_"+specifier and the template must be configured by
-* the VALJOConfigure annotation. See javadoc on VALJOConfigure#customTemplateFileName for details about this. Also refer to
+* the VALJOConfigure annotation. See javadoc on VALJOConfigure#customJavaTemplateFileName for details about this. Also refer to
 * javadocs in the com.fortyoneconcepts.valjogen.model packakge for template arguments clazz of type Clazz and method of type Method.
 *
 * Refer to the *.stg files in the source for how to find the refered regions and for descriptions of the used sub-template

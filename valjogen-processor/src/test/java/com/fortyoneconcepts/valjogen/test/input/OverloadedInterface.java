@@ -7,7 +7,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate
-@VALJOConfigure(customTemplateFileName="custom_overload.stg")
+@VALJOConfigure(customJavaTemplateFileName="custom_overload.stg")
 public interface OverloadedInterface
 {
 	public void customMethod(int intValue);

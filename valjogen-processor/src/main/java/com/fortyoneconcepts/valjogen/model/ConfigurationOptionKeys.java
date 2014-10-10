@@ -169,9 +169,9 @@ public interface ConfigurationOptionKeys
      public static String headerFileName = "headerFileName";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#customTemplateFileName
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#customJavaTemplateFileName
 	 */
-     public static String customTemplateFileName = "customTemplateFileName";
+     public static String customJavaTemplateFileName = "customJavaTemplateFileName";
 
 	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#warnAboutSynthesisedNames

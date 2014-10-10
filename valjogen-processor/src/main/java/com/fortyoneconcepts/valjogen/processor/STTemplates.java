@@ -40,7 +40,7 @@ public final class STTemplates
 	{
 		STGroup defaultGroup = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
 
-		String customTemplateFileName = cfg.getCustomTemplateFileName();
+		String customTemplateFileName = cfg.getCustomJavaTemplateFileName();
 
 
 		if (customTemplateFileName!=null)

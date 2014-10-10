@@ -22,7 +22,7 @@ import java.lang.annotation.*;
  * a seperate {@link VALJOGenerate} annotation. This other annotation is also used to specify what name the generated class should have.
  * </p>
  * <p>
- * For advanced customization do refer to the customTemplateFileName option. This is the ultimate <i>swiss army knife</i> that lets you change and extend <b>everything</b> you want. It is a bit more difficult to use then other features though so look at the other options first.
+ * For advanced customization do refer to the customJavaTemplateFileName option. This is the ultimate <i>swiss army knife</i> that lets you change and extend <b>everything</b> you want. It is a bit more difficult to use then other features though so look at the other options first.
  * </p>
  *  * All string properties recognize the following macros:<p>
  * <code>$(This)</code> which resolves to the fully qualified name of the generated class. The macro can be especially useful when implementing the Comparable interface using the extraInterfaceNames option.<p>
@@ -302,7 +302,7 @@ public @interface VALJOConfigure
 	*
 	* @return Filename of string template group file.
 	*/
-    String customTemplateFileName() default "$(N/A)";
+    String customJavaTemplateFileName() default "$(N/A)";
 
     /**
     * Specifies if the annotation processor should warn about parameter names that are synthesised because -parameter option is missing.
