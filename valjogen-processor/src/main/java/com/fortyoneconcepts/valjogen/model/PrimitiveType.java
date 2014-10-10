@@ -7,7 +7,7 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public final class PrimitiveType extends Type
 {
-	public PrimitiveType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
+	public PrimitiveType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
 		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 	}
@@ -44,6 +44,12 @@ public final class PrimitiveType extends Type
     {
   		return TypeCategory.PRIMITIVE;
     }
+
+	@Override
+	public boolean isInImportScope()
+	{
+		return true;
+	}
 
 	@Override
 	public String toString(int level) {

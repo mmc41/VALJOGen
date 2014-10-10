@@ -17,7 +17,7 @@ public final class Property extends Method
 	private final Type overriddenReturnType;
 	private final PropertyKind kind;
 
-	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
+	public Property(BasicClazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
 	{
 		super(clazz, accessLevel, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);
@@ -25,7 +25,7 @@ public final class Property extends Method
 		this.kind=kind;
 	}
 
-	public Property(Clazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
+	public Property(BasicClazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
 	{
 		super(clazz, accessLevel, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, implementationInfo);
 		this.member=Objects.requireNonNull(member);

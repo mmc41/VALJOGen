@@ -8,7 +8,7 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public class NoType extends Type
 {
-	public NoType(Clazz clazzUsingType)
+	public NoType(BasicClazz clazzUsingType)
 	{
 		super(clazzUsingType, "NONE");
 	}
@@ -23,5 +23,11 @@ public class NoType extends Type
 	public String toString(int level)
 	{
 		return "<NONE>";
+	}
+
+	@Override
+	public boolean isInImportScope()
+	{
+		return true;
 	}
 }

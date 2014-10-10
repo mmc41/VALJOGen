@@ -11,7 +11,7 @@ public final class ArrayType extends Type
 {
 	private final Type componentType;
 
-	public ArrayType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
+	public ArrayType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type componentType)
 	{
 		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 		this.componentType=Objects.requireNonNull(componentType);
@@ -39,6 +39,12 @@ public final class ArrayType extends Type
     {
   		return TypeCategory.ARRAY;
     }
+
+	@Override
+	public boolean isInImportScope()
+	{
+		return componentType.isInImportScope();
+	}
 
 	@Override
 	public int hashCode() {

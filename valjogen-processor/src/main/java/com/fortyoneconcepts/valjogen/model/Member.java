@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
  */
 public final class Member extends ModelBase
 {
-	private final Clazz clazz;
+	private final BasicClazz clazz;
 	private final String name;
 	private final Type type;
 	private List<Property> properties;
 
-	public Member(Clazz clazz, Type type, String name)
+	public Member(BasicClazz clazz, Type type, String name)
 	{
 		this.clazz=Objects.requireNonNull(clazz);
 		this.type=Objects.requireNonNull(type);
@@ -39,7 +39,7 @@ public final class Member extends ModelBase
 	}
 
 	@Override
-	public Clazz getClazz()
+	public BasicClazz getClazz()
 	{
 		return clazz;
 	}

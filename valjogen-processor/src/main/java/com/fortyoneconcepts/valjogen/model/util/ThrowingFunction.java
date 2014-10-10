@@ -1,5 +1,13 @@
 package com.fortyoneconcepts.valjogen.model.util;
 
+/**
+ * Similar to java.util.Function but with apply that allows for Exceptions
+ *
+ * @author mmc
+ *
+ * @param <T> Argument
+ * @param <R> Result.
+ */
 @FunctionalInterface
 public interface ThrowingFunction<T, R>
 {

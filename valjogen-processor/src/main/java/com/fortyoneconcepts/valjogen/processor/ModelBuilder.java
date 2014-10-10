@@ -18,6 +18,7 @@ import javax.tools.Diagnostic.Kind;
 
 // import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
+
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.*;
 
@@ -236,7 +237,7 @@ public final class ModelBuilder
 		}
 	}
 
-	private HelperTypes createHelperTypes(Clazz clazz) throws Exception
+	private HelperTypes createHelperTypes(BasicClazz clazz) throws Exception
 	{
 		com.fortyoneconcepts.valjogen.model.NoType noType = new com.fortyoneconcepts.valjogen.model.NoType(clazz);
 
@@ -267,7 +268,7 @@ public final class ModelBuilder
 		return new HelperTypes(noType, javaLangObjectType, voidType, serializableInterfaceType, externalizableInterfaceType, comparableInterfaceType, javaUtilArraysType, javaUtilObjectsType, generatedAnnotationInterfaceType);
 	}
 
-	private void addMagicSerializationMethods(Clazz clazz, List<Method> nonPropertyMethods)
+	private void addMagicSerializationMethods(BasicClazz clazz, List<Method> nonPropertyMethods)
 	{
 		Type noType = clazz.getHelperTypes().getNoType();
 
@@ -333,7 +334,7 @@ public final class ModelBuilder
 		return elements.map(e -> new ExecutableElementAndDeclaredTypePair(interfaceOrClasMirrorType, e));
 	}
 
-	private void processMethod(Clazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods,	List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceOrClassMirrorType,
+	private void processMethod(BasicClazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods,	List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceOrClassMirrorType,
 			                   boolean implementedAlready)
 	{
 		try {
@@ -418,7 +419,7 @@ public final class ModelBuilder
 		}
 	}
 
-	private Parameter createParameter(Clazz clazz, VariableElement param, TypeMirror paramType)
+	private Parameter createParameter(BasicClazz clazz, VariableElement param, TypeMirror paramType)
 	{
 		String name = param.getSimpleName().toString();
 		return new Parameter(clazz, createType(clazz, paramType), createType(clazz, param.asType()), name);
@@ -432,7 +433,7 @@ public final class ModelBuilder
 	 *
 	 * @return A new or resued Type instance.
 	 */
-	private Type createType(Clazz clazz, TypeMirror mirrorType)
+	private Type createType(BasicClazz clazz, TypeMirror mirrorType)
 	{
 		String typeName = mirrorType.toString();
 
@@ -561,7 +562,7 @@ public final class ModelBuilder
 		}
 	}
 
-	private List<Type> createImportTypes(Clazz clazz, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes) throws Exception
+	private List<Type> createImportTypes(BasicClazz clazz, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes) throws Exception
 	{
 		List<Type> importTypes = new ArrayList<Type>();
 		for (DeclaredType implementedInterfaceDeclaredType : implementedDecalredInterfaceTypes)
@@ -599,7 +600,7 @@ public final class ModelBuilder
 	}
 
 
-	private Property createValidatedProperty(Clazz clazz, StatusHolder statusHolder, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
+	private Property createValidatedProperty(BasicClazz clazz, StatusHolder statusHolder, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
 	{
 		Property property;
 
@@ -625,7 +626,7 @@ public final class ModelBuilder
 		return property;
 	}
 
-	private List<Type> filterImportTypes(Clazz clazz, List<Type> importTypes)
+	private List<Type> filterImportTypes(BasicClazz clazz, List<Type> importTypes)
 	{
 		List<Type> result = new ArrayList<Type>();
 
@@ -681,7 +682,7 @@ public final class ModelBuilder
 
 	}
 
-	private Member createPropertyMemberIfValidProperty(Clazz clazz, DeclaredType interfaceOrClassMirrorType,
+	private Member createPropertyMemberIfValidProperty(BasicClazz clazz, DeclaredType interfaceOrClassMirrorType,
 			                                           TypeMirror returnTypeMirror, List<? extends VariableElement> setterParams, List<? extends TypeMirror> setterParamTypes,
 			                                           ExecutableElement methodElement, PropertyKind kind) throws Exception
 	{

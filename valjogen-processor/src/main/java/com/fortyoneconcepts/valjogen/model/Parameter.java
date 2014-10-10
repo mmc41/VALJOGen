@@ -12,12 +12,12 @@ import java.util.Objects;
  */
 public class Parameter extends ModelBase
 {
-	private final Clazz clazz;
+	private final BasicClazz clazz;
 	private final String paramName;
 	private final Type type;
 	private final Type erasedParamType;
 
-	public Parameter(Clazz clazz, Type paramType, Type erasedParamType, String paramName)
+	public Parameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName)
 	{
 		this.clazz=Objects.requireNonNull(clazz);
 		this.paramName=Objects.requireNonNull(paramName);
@@ -38,7 +38,7 @@ public class Parameter extends ModelBase
 	}
 
 	@Override
-	public Clazz getClazz()
+	public BasicClazz getClazz()
 	{
 		return clazz;
 	}

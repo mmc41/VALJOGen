@@ -4,9 +4,6 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
-import java.util.stream.Stream;
-
-import static java.util.stream.Stream.*;
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 /**
@@ -17,7 +14,7 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  */
 public abstract class Type extends ModelBase
 {
-	protected Clazz clazzUsingType; // May be set by subclass immediately after constructor but not changed afterwards.
+	protected BasicClazz clazzUsingType; // May be set by subclass immediately after constructor but not changed afterwards.
 	protected final String qualifiedProtoTypicalTypeName;
 
 	protected Type(String qualifiedProtoTypicalTypeName)
@@ -26,7 +23,7 @@ public abstract class Type extends ModelBase
 		this.clazzUsingType = null; // Must be set manually after constructor.
 	}
 
-	protected Type(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
+	protected Type(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
 		this.clazzUsingType = Objects.requireNonNull(clazzUsingType);
 		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
@@ -45,7 +42,7 @@ public abstract class Type extends ModelBase
 	}
 
 	@Override
-	public Clazz getClazz()
+	public BasicClazz getClazz()
 	{
 		return clazzUsingType.getClazz();
 	}
@@ -76,22 +73,22 @@ public abstract class Type extends ModelBase
 	}
 
 	/**
+	 * Checks if the type is in scope of the class being generated taking imports and default packages etc. into account (so it can be used without qualification).
+	 *
+	 * @return True if type is in scope of the generated class and its imported classes/pacakges.
+	 */
+	public abstract boolean isInImportScope();
+
+	/**
 	 * Returns a simple type name without package unless nedded and without any generic parts. I.e. no &lt;T&gt; suffix.
 	 *
 	 * @return The simple type name
 	 */
 	public String getName()
 	{
-		String qualifiedName = getQualifiedName();
-
-		if (hasPackage(qualifiedName,"java.lang") || hasPackage(qualifiedName,getClazz().getPackageName()))
-			return getUnqualifiedName(qualifiedName);
-
-		Stream<String> classesInScope = concat(getClazz().getImportTypes().stream().map(t -> t.getQualifiedName()), of(getClazz().getQualifiedName()));
-		if (classesInScope.anyMatch(name -> qualifiedName.equals(name)))
-			return getUnqualifiedName(qualifiedName);
-
-		return qualifiedName;
+		if (isInImportScope())
+			return getUnqualifiedName(getQualifiedName());
+		else return getQualifiedName();
 	}
 
 	/**
@@ -101,19 +98,11 @@ public abstract class Type extends ModelBase
 	 */
 	public String getPrototypicalName()
 	{
-		String qualifiedPrototypicalName = getPrototypicalQualifiedName();
-		String qualifiedName = stripGenericQualifier(qualifiedPrototypicalName);
+		// TODO: unqualify generic arguments also if these are in scope:
 
-		// TODO: Remove unqualify generic arguments also:
-
-		if (hasPackage(qualifiedPrototypicalName,"java.lang") || hasPackage(qualifiedPrototypicalName,getClazz().getPackageName()))
-			return getUnqualifiedName(qualifiedPrototypicalName);
-
-		Stream<String> classesInScope = concat(getClazz().getImportTypes().stream().map(t -> t.getQualifiedName()), of(getClazz().getQualifiedName()));
-		if (classesInScope.anyMatch(name -> qualifiedName.equals(name)))
-			return getUnqualifiedName(qualifiedPrototypicalName);
-
-		return qualifiedPrototypicalName;
+		if (isInImportScope())
+			return getUnqualifiedName(getPrototypicalQualifiedName());
+		else return getPrototypicalQualifiedName();
 	}
 
 	public String getWrapperName()

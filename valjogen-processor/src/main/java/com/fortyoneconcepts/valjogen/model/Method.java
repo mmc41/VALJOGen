@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class Method extends ModelBase
 {
-	protected final Clazz clazz;
+	protected final BasicClazz clazz;
 	protected final AccessLevel accessLevel;
 	protected final Type declaringType;
 	protected final String methodName;
@@ -25,7 +25,7 @@ public class Method extends ModelBase
 	protected final Type returnType;
 	protected ImplementationInfo implementationInfo;
 
-	public Method(Clazz clazz, AccessLevel accessLevel, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, ImplementationInfo implementationInfo)
+	public Method(BasicClazz clazz, AccessLevel accessLevel, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, ImplementationInfo implementationInfo)
 	{
 	    this.clazz = Objects.requireNonNull(clazz);
 	    this.accessLevel = Objects.requireNonNull(accessLevel);
@@ -51,7 +51,7 @@ public class Method extends ModelBase
 	}
 
 	@Override
-	public Clazz getClazz()
+	public BasicClazz getClazz()
 	{
 		return clazz;
 	}

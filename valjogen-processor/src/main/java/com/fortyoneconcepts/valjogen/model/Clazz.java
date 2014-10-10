@@ -10,8 +10,6 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 import com.fortyoneconcepts.valjogen.model.util.ThrowingFunction;
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
-import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
-
 /**
  * Information about the java "class" that need to be generated. Refers to other model elements like members, properties, methods, types etc.
  *
@@ -20,23 +18,13 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  *
  * @author mmc
  */
-public final class Clazz extends ObjectType implements Model
+public final class Clazz extends BasicClazz implements Model
 {
-	private final Configuration configuration;
-
-	private final String packageName;
 	private final String qualifiedMaster;
 	private final String javaDoc;
 	private final String fileHeaderText;
-	private final HelperTypes helperTypes;
-
 	private List<Type> importTypes;
-	private List<Member> members;
 	private List<Member> chosenComparableMembers;
-	private List<Property> properties;
-	private List<Method> methods;
-
-	private boolean initializedContent;
 
 	/**
 	 * Constructs a prelimiary Clazz instance from a configuration with only a few values such as name specificed in advanced. After constructing the instance, the various
@@ -50,55 +38,23 @@ public final class Clazz extends ObjectType implements Model
 	 * @param helperFactoryMethod Method that can generate helper types for this class.
 	 * @throws Exception Exception if could not construct clazz.
 	 */
-	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<Clazz, HelperTypes> helperFactoryMethod) throws Exception
+	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception
 	{
-		super(qualifiedClassName);
+		super(configuration, qualifiedClassName, helperFactoryMethod);
 		super.clazzUsingType=this;
 
-		this.configuration = Objects.requireNonNull(configuration);
 		this.qualifiedMaster = qualifiedMaster;
 		this.interfaceTypes = new ArrayList<Type>();
 		this.baseClazzType = new NoType(this);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.fileHeaderText = Objects.requireNonNull(fileHeaderText);
 
-		this.packageName = getPackageFromQualifiedName(qualifiedClassName);
-
-		this.properties = new ArrayList<Property>();
-		this.methods = new ArrayList<Method>();
-		this.members = new ArrayList<Member>();
 		this.importTypes = new ArrayList<Type>();
-
-		this.helperTypes=helperFactoryMethod.apply(this);
-		initializedContent=false;
 	}
 
 	public String getMasterName()
 	{
 		return NamesUtil.getUnqualifiedName(qualifiedMaster);
-	}
-
-	@Override
-	public Configuration getConfiguration()
-	{
-		return configuration;
-	}
-
-	@Override
-	public String getPackageName() {
-		return packageName;
-	}
-
-	@Override
-	public Clazz getClazz()
-	{
-		return this;
-	}
-
-	@Override
-	public HelperTypes getHelperTypes()
-	{
-		return helperTypes;
 	}
 
 	public String getFileHeaderText()
@@ -107,20 +63,21 @@ public final class Clazz extends ObjectType implements Model
 	}
 
 	@Override
-	public boolean initialized()
-	{
-		return initializedType && initializedContent;
-	}
-
-	@Override
 	public boolean isThisType()
 	{
 		return true;
 	}
 
+	@Override
+	public boolean isInImportScope()
+	{
+		return true;
+	}
+
 	/**
-     * Nb. Post-constructor for what is inside the class such as methods, members etc. + imports. Both this method and the super class'es {@link ObjectType#initType}
+     * Nb. Post-constructor for what is inside the class such as methods, members etc. + imports. Calls super class'es initContent internally Both this method and the ancestor class'es {@link ObjectType#initType}
      * methods must be called for the class to be fully initialized and ready for use. Must be called only once.
+     *
 	 * @param members Member variables for class.
 	 * @param properties Property methods for class.
 	 * @param nonPropertyMethods Other methods for class.
@@ -129,45 +86,15 @@ public final class Clazz extends ObjectType implements Model
 	 */
 	public void initContent(List<Member> members, List<Property> properties, List<Method> nonPropertyMethods, List<Type> importTypes, List<Member> chosenComparableMembers)
 	{
-		if (initializedContent)
-			throw new IllegalStateException("Clazz content already initialized");
+		super.initContent(members, properties, nonPropertyMethods);
 
 		this.importTypes=Objects.requireNonNull(importTypes);
-
-        this.members=Objects.requireNonNull(members);
         this.chosenComparableMembers = Objects.requireNonNull(chosenComparableMembers);
-
-        this.properties=Objects.requireNonNull(properties);
-
-        this.methods=Objects.requireNonNull(nonPropertyMethods);
-
-        initializedContent=true;
-	}
-
-	public boolean hasGenericQualifier()
-	{
-		return !getGenericQualifierText().isEmpty();
-	}
-
-	public String getGenericQualifierText()
-	{
-		return getGenericQualifier(qualifiedProtoTypicalTypeName);
 	}
 
 	public String getJavaDoc()
 	{
 		return javaDoc;
-	}
-
-	public boolean isFinal()
-	{
-		return !isAbstract() && getConfiguration().isFinalClassEnabled();
-	}
-
-	public boolean isAbstract()
-	{
-		assert initialized() : "Class initialization missing";
-		return !methods.stream().allMatch(m -> m.implementationInfo!=ImplementationInfo.IMPLEMENTATION_MISSING);
 	}
 
 	public boolean isSynchronized()
@@ -176,46 +103,10 @@ public final class Clazz extends ObjectType implements Model
 		return getConfiguration().isSynchronizedAccessEnabled() &&  members.stream().anyMatch(member -> !member.isFinal());
 	}
 
-	public boolean hasPrimitiveMembers()
-	{
-		assert initialized() : "Class initialization missing";
-		return members.stream().anyMatch(m -> m.getType().isPrimitive());
-	}
-
-	public boolean hasArrayMembers()
-	{
-		assert initialized() : "Class initialization missing";
-		return members.stream().anyMatch(m -> m.getType().isArray());
-	}
-
 	public List<Member> getChosenComparableMembers()
 	{
 		assert initialized() : "Class initialization missing";
 		return chosenComparableMembers;
-	}
-
-	public List<Member> getMembers()
-	{
-		assert initialized() : "Class initialization missing";
-		return members;
-	}
-
-	public boolean hasAnyMembers()
-	{
-		assert initialized() : "Class initialization missing";
-		return !members.isEmpty();
-	}
-
-	public List<Property> getPropertyMethods()
-	{
-		assert initialized() : "Class initialization missing";
-		return properties;
-	}
-
-	public List<Method> getMethods()
-	{
-		assert initialized() : "Class initialization missing";
-		return methods;
 	}
 
 	public List<Method> getClaimedImplementationMethods()

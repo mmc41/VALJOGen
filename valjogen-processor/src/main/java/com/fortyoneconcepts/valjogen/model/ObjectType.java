@@ -1,12 +1,15 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
@@ -24,7 +27,7 @@ public class ObjectType extends Type
 
 	protected boolean initializedType;
 
-	public ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName)
+	public ObjectType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
 		this(clazzUsingType, qualifiedProtoTypicalTypeName, new NoType(clazzUsingType), Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
 	}
@@ -34,7 +37,7 @@ public class ObjectType extends Type
 		super(qualifiedProtoTypicalTypeName);  // All fields must be set manually after constructor.
 	}
 
-	private ObjectType(Clazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type baseClazz, List<Type> superInterfaces, Set<Type> superInterfacesWithAncestors, List<Type> genericTypeArguments)
+	private ObjectType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type baseClazz, List<Type> superInterfaces, Set<Type> superInterfacesWithAncestors, List<Type> genericTypeArguments)
 	{
 		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 		this.genericTypeArguments=genericTypeArguments;
@@ -70,6 +73,30 @@ public class ObjectType extends Type
 	public boolean initialized()
 	{
 		return initializedType;
+	}
+
+	@Override
+	public boolean isInImportScope()
+	{
+		String qualifiedName =  getQualifiedName();
+
+		if (hasPackage(qualifiedName, "java.lang"))
+				return true;
+
+		BasicClazz _clazz = getClazz();
+		if (_clazz instanceof Clazz)
+		{
+			Clazz clazz = (Clazz)_clazz;
+
+			if (hasPackage(qualifiedName, getClazz().getPackageName()))
+			    return true;
+
+			Stream<String> classesInScope = concat(clazz.getImportTypes().stream().map(t -> t.getQualifiedName()), of(getClazz().getQualifiedName()));
+			if (classesInScope.anyMatch(name -> qualifiedName.equals(name)))
+				return true;
+		}
+
+		return false;
 	}
 
 	public Type getBaseClazzType()

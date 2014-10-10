@@ -42,11 +42,11 @@ public interface Model
 	}
 
 	/**
-	 * Get the class that this model is a part of.
+	 * Get the class that this model is used in.
 	 *
 	 * @return The class that this model is a part of.
 	 */
-	public Clazz getClazz();
+	public BasicClazz getClazz();
 
 	/**
 	 * Prefix for (auto-generated) local variables.
