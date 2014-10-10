@@ -34,7 +34,7 @@ public @interface VALJOGenerate
 {
 	/**
 	* Simple name or fully qualified name of generated class. If name is not specified (set to $(N/A) then a reasonable class name will
-	* be generated automatically.
+	* be generated automatically. If name is present but is unqualifed a package name will be supplied automatically from the associcated interface.
 	*
 	* May also (as all other annotated values) be overruled globally with equivalent annotation processor key
 	* (even though it is generally a bad idea because of name clashes when generating multiple classes).
@@ -44,7 +44,9 @@ public @interface VALJOGenerate
     String name() default "$(N/A)";
 
     /**
-	* An option user supplied comment. Not used by default but could potentially be used in a custom template or by a build tool.
+	* An optional user supplied comment. Not used for anything by default but could potentially be used in a custom template or by a build tool. It is up to you what to use this option for.
+	*
+	* This comment if present takes precedence over any similar comment specified on other VALJOGen annotations.
 	*
 	* @return An optional comment.
 	*/

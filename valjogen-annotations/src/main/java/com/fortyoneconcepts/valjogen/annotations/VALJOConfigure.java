@@ -267,19 +267,21 @@ public @interface VALJOConfigure
 	* for this processor for how to work with the models available from a template. For details about the model see refer to javadoc or source for the <b>com.fortyoneconcepts.valjogen.model.*</b>
 	* classes in the annotation processor tool.
 	* <p>
-	* Preferably consider overriding declared ST regions like for example <code>&lt;{@literal @}preamble&gt;</code> to change output rather then overriding existing templates. This should reduce
-	* maintaince problems for future updates. ST requires regions to be prefixed with the template method they are declared in, so to add code in beginning of the equals method, add a
+	* Preferably consider overriding declared ST regions like for example <code>&lt;{@literal @}preamble&gt;</code> to change output rather then overriding existing templates in your ST file. This
+	* should reduce maintaince problems for future updates. ST requires regions to be prefixed with the template method they are declared in, so to add code in beginning of the equals method, add a
 	* ST file with a template rule like this:
 	* <pre><code>
 	* {@literal @}<span class="st-identifier">method_equals</span>.<span class="st-identifier">preamble</span>() ::= &lt;&lt; <span class="free-comment">// initial method code here.</span> &gt;&gt;
 	* </code></pre>
 	* <p>
-	* When you need to add new java methods, add a template named <code>method_<i>specifier</i></code> with the template arguments <code>clazz</code> and <code>method</code>. The specifier is the java method name followed by underscore seperated, unqualified type arguments
-	* with a leading underscore before first argument (if present). For example to generate the method "void f()" create a template named <code>method_f</code>" and to generate the method "double f(String arg, int value)" create a template named <code>method_f_String_int</code>".
-	* The require custom method arguments are of type Clazz and Method in the com.fortyoneconcepts.valjogen.model package. Refer to the JavaDoc for these for details.
+	* When you need to generate code for new java methods implementations, first make sure the method signature is declared in one of its interfaces, then add a template named <code>method_<i>specifier</i></code>
+	* with the template arguments <code>clazz</code> and <code>method</code> in your ST group file. The specifier is the java method name followed by underscore seperated, unqualified type arguments with a leading underscore
+	* before first argument (if present). For example to generate the method "void f()" create a template named <code>method_f</code>" and to generate the method "double f(String arg, int value)"
+	* create a template named <code>method_f_String_int</code>". The require custom method arguments are of type Clazz and Method in the com.fortyoneconcepts.valjogen.model package. Refer to the JavaDoc for these for details.
 	*
 	* The example shown below shows how the main part of the equals method might be defined. Refer to the ST <a href="http://github.com/41concepts/VALJOGen/blob/master/valjogen-processor/src/main/resources/templates/equals.stg" target="_blank">source file for the equals method</a>
-	* for the complete and present source code. Note how getters in the model is accessed (with getter prefixes stripped) to facilitate the generation of the method according of the actal class members, method arguments etc.
+	* for the complete and present source code. In any case it is a good idea to study the template sources and example templates for tips about how to write custom templates. Note how getters in the model
+	* is accessed (with getter prefixes stripped) to facilitate the generation of the method according of the actal class members, method arguments etc.
 	* <pre><code>
 	* <span class="st-identifier">method_equals</span>(<span class="st-identifier">clazz</span>, <span class="st-identifier">method</span>) ::= &lt;&lt;
 	*  &lt;<span class="st-identifier">declare_method</span>(<span class="st-identifier">clazz</span>, <span class="st-identifier">method</span>)&gt;
@@ -338,7 +340,7 @@ public @interface VALJOConfigure
     String localeTag() default "en-US";
 
     /**
-	* An option user supplied comment. Not used by default but could potentially be used in a custom template or by a build tool.
+	* An optional user supplied comment. Not used for anything by default but could potentially be used in a custom template or by a build tool. It is up to you what to use this option for.
 	*
 	* @return An optional comment.
 	*/
