@@ -36,58 +36,6 @@ public final class STTemplates
 	private final STGroup group;
 	private final Set<String> templateMethodNames;
 
-	/*
-	private Set<String> specialMethods = new HashSet<String>(Arrays.asList("method_valueOf", "method_this"));
-
-	@SuppressWarnings("serial")
-	private static final Map<String , String> METHOD_SORT_RANK = new HashMap<String , String>() {{
-	    put("method_valueOf",                            "0010"); // Presently unused - special method so not inserted dynamically.
-	    put("method_this",                               "0020"); // Presently unused - special method so not inserted dynamically.
-
-	    put("method_readObjectNoData",                   "0800");
-	    put("method_readObject_ObjectInputStream",       "0810");
-	    put("method_readResolve",                        "0820");
-	    put("method_validateObject",                     "0830");
-	    put("method_writeObject_ObjectOutputStream",     "0840");
-	    put("method_writeReplace",                       "0850");
-
-	    put("method_readExternal_ObjectInput",           "0860");
-	    put("method_writeExternal_ObjectOutput",         "0870");
-
-	    put("method_hashCode",                           "1000");
-	    put("method_equals_Object",                      "1010");
-	    put("method_compareTo_T",                        "1020");
-
-	    put("method_finalize",                           "1030");
-	    put("method_clone",                              "1030");
-
-	    put("method_toString",                           "2000");
-	}};
-
-
-	 * allback if not mentioned in METHOD_SORT_RANK.
-
-	private static final String UNKNOWN_METHOD_SORT_RANK = "100";
-
-
-	 * Comparator that makes sure methods have a persistent total ordering with respect to sort rank and lexical order.
-
-	private static final Comparator<String> compareMethodNames = new Comparator<String>()
-	{
-		@Override
-		public int compare(String o1, String o2) {
-			int result = getSortRank(o1).compareTo(getSortRank(o2));
-			if (result==0)
-				result=o1.compareTo(o2);
-			return result;
-		}
-
-		private String getSortRank(String methodName)
-		{
-			return METHOD_SORT_RANK.getOrDefault(methodName, UNKNOWN_METHOD_SORT_RANK);
-		}
-	};
-*/
 	public STTemplates(ResourceLoader resourceLoader, Configuration cfg) throws Exception
 	{
 		STGroup defaultGroup = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
@@ -110,7 +58,6 @@ public final class STTemplates
 
 		Set<String> templateNames = getAllTemplateNames(group);
 
-		// Extract method names but make sure special methods (incl. overridden special methods) are excluded in all cases:
 		templateMethodNames = Collections.unmodifiableSet(templateNames.stream().filter(n -> n.startsWith(method_prefix)).map(n -> templateNameToMethodName(n)).collect(Collectors.toSet()));
 
         if (LOGGER.isLoggable(Level.FINE))
@@ -129,7 +76,7 @@ public final class STTemplates
 	}
 
 	/**
-	 * Return all template method names (build-in and custom) supplied by template group files except for special methods that are handled internally.
+	 * Return all template method names (build-in and custom) supplied by template group files
 	 *
 	 * @return List of normal template method names.
 	 */
