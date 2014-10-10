@@ -6,12 +6,12 @@
 * add a variable holding a time then it modifies the constructor and setter to update the time of change. Finally, a new method
 * is added to return the time as declared in the interface.
 *
-* The custom template for the method must have a name of "method_"+the-name-of-the-method and the arguments clazz and model.
-* The custom template is called automatically if @VALJOConfigure annotation implementedMethodNames contains the name of
-* the method ("nanoLastUpdated").
+* The custom template for the method must have a specific name of "method_"+specifier and the template must be configured by
+* the VALJOConfigure annotation. See javadoc on VALJOConfigure#customTemplateFileName for details about this. Also refer to
+* javadocs in the com.fortyoneconcepts.valjogen.model packakge for template arguments clazz of type Clazz and method of type Method.
 *
 * Refer to the *.stg files in the source for how to find the refered regions and for descriptions of the used sub-template
-* declare_method that helps with generating the correct declaration.
+* declare_method that can help with generating the correct declaration.
 *
 */
 

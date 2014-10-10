@@ -33,6 +33,7 @@ import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.processor.ModelBuilder;
 import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
+import com.fortyoneconcepts.valjogen.processor.STTemplates;
 import com.google.testing.compile.CompilationRule;
 
 /**
@@ -129,6 +130,8 @@ public abstract class TemplateTestBase
 		String sourcePackageElementPath = packageElement.toString().replace('.', '/');
 		ResourceLoader resourceLoader = new ResourceLoader(TestClassConstants.relSourcePath, sourcePackageElementPath);
 
+		STTemplates templates = new STTemplates(resourceLoader, configuration);
+
 		List<String> warnings = new ArrayList<String>();
 		List<String> errors = new ArrayList<String>();
 
@@ -146,15 +149,15 @@ public abstract class TemplateTestBase
 			  if (!suppressWarnings)
 			    LOGGER.warning(message);
 			} else LOGGER.info(message);
-		  }, interfaceElement, configuration, resourceLoader);
+		  }, interfaceElement, configuration, resourceLoader, templates);
 
 		Clazz clazz = clazzFactory.buildCLazz();
 
 		LOGGER.info(() -> "VALJOGen ClazzFactory GENERATED CLAZZ MODEL INSTANCE: "+System.lineSeparator()+clazz.toString());
 
-		STCodeWriter codeWriter = new STCodeWriter(resourceLoader);
+		STCodeWriter writer = new STCodeWriter(clazz, configuration, templates);
 
-		String output = codeWriter.outputClass(clazz, configuration);
+		String output = writer.outputClass();
 
 		Assert.assertNotNull("template output should not be null", output);
 

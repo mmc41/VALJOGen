@@ -53,6 +53,7 @@ method_clone(clazz, method) ::= <<
 <declare_method(clazz, method)>
 {
  // clone stuff here
+ return null;
 }
 >>
 

@@ -11,8 +11,7 @@ import java.lang.annotation.*;
  * unless affected interfaces also has a {@link VALJOGenerate} annotation. All options may be overruled by setting identically named qualified key/values
  * in the annotation processor using the <b>-A</b>com.fortyoneconcepts.valjogen.<i>optionName</i>=<i>value</i> option to javac. Indeed some details like logLevel
  * are usally better specified as a runtime option instead of hardcoding in the source using this annotation.
- * <p>
- * <b>Usage example (package-info.java):</b></p>
+ * <p><b>Usage example (package-info.java):</b></p>
  * <pre><code>
  *<span class="identifier">{@literal @}VALJOConfigure</span>(<span class="identifier">outputPackage</span>=<span class="string">"test.impl"</span>, <span class="identifier">baseClazzName</span>=<span class="string">"test.CommonBaseClass"</span>)
  * <span class="keyword">package</span> <span class="identifier">test</span>;
@@ -21,8 +20,11 @@ import java.lang.annotation.*;
  * The above code will instruct the VALJOGen annotation processor to have generated value object classes from interfaces in this package belong to
  * the "test.impl" package and to inherit from a common base class with qualified name "test.CommonBaseClass". Note that generation requires
  * a seperate {@link VALJOGenerate} annotation. This other annotation is also used to specify what name the generated class should have.
+ * </p>
  * <p>
- * All string properties recognize the following macros:<p>
+ * For advanced customization do refer to the customTemplateFileName option. This is the ultimate <i>swiss army knife</i> that lets you change and extend <b>everything</b> you want. It is a bit more difficult to use then other features though so look at the other options first.
+ * </p>
+ *  * All string properties recognize the following macros:<p>
  * <code>$(This)</code> which resolves to the fully qualified name of the generated class. The macro can be especially useful when implementing the Comparable interface using the extraInterfaceNames option.<p>
  * <code>$(IThis)</code> which resolves to the the fully qualified name of the interface that is used for generation.<p>
  * <code>$(ExecutionDate)</code> which resolves to the the time the annotation processes ran.<p>
@@ -50,16 +52,7 @@ public @interface VALJOConfigure
 	*/
     String clazzScope() default "public";
 
-	/**
-	*  Experimental IETF BCP 47 language tag string descripting internal locale to use for annotation processor. May be overruled by equivalent annotation processor key.
-	*
-	*  @return Internal language tag describing locale to use for annotation processor.
-	*
-	*  @see java.util.Locale#forLanguageTag
-	*/
-    String localeTag() default "en-US";
-
-	/**
+    /**
 	* Linewidth for generated code. 0 if unlimited. May be overruled by equivalent annotation processor key.
 	*
 	* @return line width to use when generating output.
@@ -148,16 +141,7 @@ public @interface VALJOConfigure
 	boolean hashEnabled() default true;
 
 	/**
-	* Specifies if compareTo implementation should be generated for classes that directly or indirectly implement the {@link Comparable} interface. May be overruled by equivalent annotation processor key.
-	*
-	* @see VALJOConfigure#extraInterfaceNames for how to make the implementation class implement Comparable with regard to itself.
-	* @see VALJOConfigure#comparableMembers For how to specify which members to check for in the implemenation.
-	* @return True if a comparable method should be generated for classes that implement the {@link Comparable} interface.
-	*/
-	boolean comparableEnabled() default true;
-
-	/**
-	* Ordered names of members to use in a compareTo implementation and in which order. If left unspecified all members in declaration order is assumed. May be overruled by equivalent annotation processor key.
+	* For classes that implement the {@link Comparable} interface this is the ordered names of members to use in a compareTo implementation. If left unspecified all members in declaration order is assumed. May be overruled by equivalent annotation processor key.
 	*
 	* @return Array of names of all members to use in compareTo method and in specified order.
 	*/
@@ -270,17 +254,6 @@ public @interface VALJOConfigure
     String headerFileName() default "$(N/A)";
 
     /**
-	* Specifies name followed by comma seperated, unqualified type arguments in parenthesis for each of custom methods that will be implemented by the generated class using a custom template.
-	* For example to specify the method "void f(String arg)" write the specifier "f(String)".
-	*
-	* Required when adding new methods in a custom template. May be overruled by equivalent annotation processor key.
-	*
-	* @see VALJOConfigure#customTemplateFileName
-	* @return Array of names of implemented (custom) methods.
-	*/
-    String[] implementedMethodNames() default {};
-
-    /**
 	* This is the <b>ultimate customization power feature</b> as it allows all aspects of the generated class to be changed or extended. To enable this feature supply the name of a UTF-8 formatted
 	* StringTemplate 4 (ST) group file that should be used. It can be bit more difficult to use compared to other features of this tool, so do look at the other options first.
 	* <p>
@@ -301,9 +274,12 @@ public @interface VALJOConfigure
 	* {@literal @}<span class="st-identifier">method_equals</span>.<span class="st-identifier">preamble</span>() ::= &lt;&lt; <span class="free-comment">// initial method code here.</span> &gt;&gt;
 	* </code></pre>
 	* <p>
-	* When you need to add new java methods, do add a template called <code>method_<i>methodname</i></code>. As an example it is shown below how the main part of the equals method is defined at the time of this
-	* documentation. Refer to the ST <a href="http://github.com/41concepts/VALJOGen/blob/master/valjogen-processor/src/main/resources/templates/equals.stg" target="_blank">source file for the equals method</a>
-	* for the complete source code. Note how getters in the model is accessed (with getter prefixes stripped) to facilitate the generation of the method according of the actal class members, method arguments etc.
+	* When you need to add new java methods, add a template named <code>method_<i>specifier</i></code> with the template arguments <code>clazz</code> and <code>method</code>. The specifier is the java method name followed by underscore seperated, unqualified type arguments
+	* with a leading underscore before first argument (if present). For example to generate the method "void f()" create a template named <code>method_f</code>" and to generate the method "double f(String arg, int value)" create a template named <code>method_f_String_int</code>".
+	* The require custom method arguments are of type Clazz and Method in the com.fortyoneconcepts.valjogen.model package. Refer to the JavaDoc for these for details.
+	*
+	* The example shown below shows how the main part of the equals method might be defined. Refer to the ST <a href="http://github.com/41concepts/VALJOGen/blob/master/valjogen-processor/src/main/resources/templates/equals.stg" target="_blank">source file for the equals method</a>
+	* for the complete and present source code. Note how getters in the model is accessed (with getter prefixes stripped) to facilitate the generation of the method according of the actal class members, method arguments etc.
 	* <pre><code>
 	* <span class="st-identifier">method_equals</span>(<span class="st-identifier">clazz</span>, <span class="st-identifier">method</span>) ::= &lt;&lt;
 	*  &lt;<span class="st-identifier">declare_method</span>(<span class="st-identifier">clazz</span>, <span class="st-identifier">method</span>)&gt;
@@ -318,22 +294,19 @@ public @interface VALJOConfigure
 	*  }
 	* &gt;&gt;
 	* </code></pre>
-	* <p>
-	* When adding new methods of your own, do remember to add the methods to the option <b>implementedMethodNames</b> to ensure your new template is called! This also means the method is taken into account
-	* when deciding if the generated class should be abstract or not.
-	* <p>
+	*
 	* This file name may be overruled by equivalent annotation processor key.
 	* <p>
-	* @see VALJOConfigure#implementedMethodNames
+	*
 	* @return Filename of string template group file.
 	*/
     String customTemplateFileName() default "$(N/A)";
 
     /**
-     * Specifies if annotation processor should warn about parameter names that are synthesised because -parameter option is missing.
-     *
-     * @return True if annotation processor should warn about missing -parameter option.
-     */
+    * Specifies if the annotation processor should warn about parameter names that are synthesised because -parameter option is missing.
+    *
+    * @return True if annotation processor should warn about missing -parameter option.
+    */
     boolean warnAboutSynthesisedNames() default true;
 
     /**
@@ -355,10 +328,19 @@ public @interface VALJOConfigure
 	*/
     boolean debugStringTemplates() default false;
 
+	/**
+	*  Experimental IETF BCP 47 language tag string descripting internal locale to use for annotation processor. Has undefined behavior. May be overruled by equivalent annotation processor key.
+	*
+	*  @return Internal language tag describing locale to use for annotation processor.
+	*
+	*  @see java.util.Locale#forLanguageTag
+	*/
+    String localeTag() default "en-US";
+
     /**
-	* An option user supplied comment. Not normally used but could be in a custom template or by a build tool.
+	* An option user supplied comment. Not used by default but could potentially be used in a custom template or by a build tool.
 	*
 	* @return An optional comment.
 	*/
-    public String comment() default "$(N/A)";
+    String comment() default "$(N/A)";
 }

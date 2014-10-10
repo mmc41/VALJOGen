@@ -1,7 +1,5 @@
 package com.fortyoneconcepts.valjogen.model;
 
-import com.fortyoneconcepts.valjogen.annotations.*;
-
 /**
  * Defaults and values with special meaning used for configuration and annotations.
  *

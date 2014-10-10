@@ -3,8 +3,6 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -28,24 +26,23 @@ public final class STCodeWriter
 {
 	private final static Logger LOGGER = Logger.getLogger(STCodeWriter.class.getName());
 
-	private static final String mainTemplateFile = "templates/main.stg";
 	private static final String mainTemplate = "class";
 	private static final String mainTemplateArg = "clazz";
 
-	private static final char delimiterStartChar = '<';
-	private static final char delimiterStopChar = '>';
-
-	private final ResourceLoader resourceLoader;
-
 	private RuntimeException lastException;
+	private final Clazz clazz;
+	private final STTemplates stTemplates;
+	private final Configuration cfg;
 
-	public STCodeWriter(ResourceLoader resourceLoader)
+	public STCodeWriter(Clazz clazz, Configuration cfg, STTemplates stTemplates)
 	{
-		this.resourceLoader=resourceLoader;
+		this.stTemplates=stTemplates;
+		this.clazz=clazz;
+		this.cfg=cfg;
 		this.lastException=null;
 	}
 
-	public String outputClass(Clazz clazz, Configuration cfg) throws Exception
+	public String outputClass() throws Exception
 	{
 		lastException = null;
 
@@ -54,23 +51,7 @@ public final class STCodeWriter
 		STGroup.verbose = LOGGER.isLoggable(Level.FINE);
 		STGroup.trackCreationEvents = cfg.isDebugStringTemplatesEnabled();
 
-		STGroup defaultGroup = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
-
-		String customTemplateFileName = cfg.getCustomTemplateFileName();
-
-		STGroup group;
-		if (customTemplateFileName!=null)
-		{
-			URI uri = resourceLoader.getFileResourceAsURL(customTemplateFileName);
-			URL url = uri.toURL();
-
-			group = new STGroupFile(url, "UTF8", delimiterStartChar, delimiterStopChar);
-			group.importTemplates(defaultGroup);
-
-			LOGGER.info(() -> "Added custom sub-template: "+customTemplateFileName+" from "+url.toString());
-		} else {
-			group = defaultGroup;
-		}
+		STGroup group = stTemplates.getSTGroup();
 
 		group.registerModelAdaptor(Model.class, new STCustomModelAdaptor());
 

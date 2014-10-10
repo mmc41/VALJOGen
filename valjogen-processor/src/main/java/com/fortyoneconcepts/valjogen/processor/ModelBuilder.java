@@ -16,7 +16,7 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
-import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
+// import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.*;
@@ -35,12 +35,23 @@ public final class ModelBuilder
 {
 	// private final static Logger LOGGER = Logger.getLogger(ClazzFactory.class.getName());
 
+	/**
+	 * Methods that are not called dynamically but (currently) implemented in a special way by the templates.
+	 */
+	private Set<String> specialMethods = new HashSet<String>(Arrays.asList("valueOf()", "this()"));
+
+	/**
+	 * Methods that may or may not be implemented (no warnings issued if supplied but not implemented).
+	 */
+	private Set<String> optionalMethods = new HashSet<String>(Arrays.asList("compareTo(T)"));
+
 	private final Types types;
 	private final Elements elements;
 	private final DiagnosticMessageConsumer errorConsumer;
 	private final TypeElement masterInterfaceElement;
 	private final Configuration configuration;
 	private final ResourceLoader resourceLoader;
+	private final STTemplates templates;
 	private final Map<String,Type> allTypesByPrototypicalFullName;
 
 	/**
@@ -62,8 +73,9 @@ public final class ModelBuilder
 	 * @param masterInterfaceElement The interface that has been selected for code generation (by an annotation).
 	 * @param configuration Descripes the user-selected details about what should be generated (combination of annotation(s) and annotation processor setup).
 	 * @param resourceLoader What to call to get resource files
+	 * @param templates StringTemplate templates holder used to reflect on what methods are supplied.
 	 */
-	public ModelBuilder(Types types, Elements elements, DiagnosticMessageConsumer errorConsumer, TypeElement masterInterfaceElement, Configuration configuration, ResourceLoader resourceLoader)
+	public ModelBuilder(Types types, Elements elements, DiagnosticMessageConsumer errorConsumer, TypeElement masterInterfaceElement, Configuration configuration, ResourceLoader resourceLoader, STTemplates templates)
 	{
       this.types=types;
 	  this.elements=elements;
@@ -71,6 +83,7 @@ public final class ModelBuilder
 	  this.masterInterfaceElement=masterInterfaceElement;
 	  this.configuration=configuration;
 	  this.resourceLoader=resourceLoader;
+	  this.templates=templates;
 	  this.allTypesByPrototypicalFullName = new HashMap<String, Type>();
 	}
 
@@ -150,17 +163,9 @@ public final class ModelBuilder
 
 		final StatusHolder statusHolder = new StatusHolder();
 
-		Set<String> implementedMethodNames = configuration.getImplementedMethodNames();
+		Set<String> implementedMethodNames = templates.getTemplateMethodNames();
 
-		// TODO: Consider adding type argument signatures to support overloading.
-		if (clazz.isComparable() && configuration.isComparableEnabled())
-			implementedMethodNames.add("compareTo(*)");
-		if (configuration.isHashEnabled())
-			implementedMethodNames.add("hashCode()");
-		if (configuration.isEqualsEnabled())
-			implementedMethodNames.add("equals(Object)");
-		if (configuration.isToStringEnabled())
-			implementedMethodNames.add("toString()");
+				//configuration.getImplementedMethodNames();
 
 		// Collect all members, property methods and non-property methods from interfaces paired with the interface they belong to:
 		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromInterfaces = allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
@@ -178,8 +183,8 @@ public final class ModelBuilder
 
 		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming they all are.
 
-		executableElementsFromInterfaces.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, false));
-		executableElementsFromBaseClasses.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, implementedMethodNames, true));
+		executableElementsFromInterfaces.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, false));
+		executableElementsFromBaseClasses.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, true));
 
 		if (statusHolder.encountedSynthesisedMembers && configuration.isWarningAboutSynthesisedNamesEnabled())
 			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
@@ -187,7 +192,7 @@ public final class ModelBuilder
 		List<Type> importTypes = createImportTypes(clazz, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes);
 
 		List<Member> members = new ArrayList<Member>(membersByName.values());
-		List<Member> selectedComparableMembers = (clazz.isComparable() && configuration.isComparableEnabled()) ? getSelectedComparableMembers(membersByName, members) : Collections.emptyList();
+		List<Member> selectedComparableMembers = clazz.isComparable() ? getSelectedComparableMembers(membersByName, members) : Collections.emptyList();
 
 		if (clazz.isSerializable()) {
 			addMagicSerializationMethods(clazz, nonPropertyMethods);
@@ -204,24 +209,13 @@ public final class ModelBuilder
 	{
 		Set<String> unusedMethodNames = new HashSet<String>(implementedMethodNames);
 
-		// When we claim methods we need to start matchning with exact specifiers first since we need to watch if any are unused.
-		List<String> orderedImplementedMethodNamesWithNonWildcardsFirst = new ArrayList<String>(implementedMethodNames);
-		orderedImplementedMethodNamesWithNonWildcardsFirst.sort((s1, s2) -> {
-			if (s1.contains("*") && !s2.contains("*"))
-				return 1;
-			else if (!s1.contains("*") && s2.contains("*"))
-				return -1;
-			else return s1.compareTo(s2);
-		});
-
 		for (Method method : nonPropertyMethods)
 		{
 			String name = method.getOverloadName();
-			for (String claimedImplementedName : orderedImplementedMethodNamesWithNonWildcardsFirst)
+			for (String claimedImplementedName : implementedMethodNames)
 			{
-				if (matchingOverloads(claimedImplementedName, name, true)) {
-					if (!hasWilcard(claimedImplementedName))
-						unusedMethodNames.remove(claimedImplementedName);
+				if (name.equals(claimedImplementedName)) {
+					unusedMethodNames.remove(claimedImplementedName);
 
 					method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
 					break;
@@ -229,9 +223,12 @@ public final class ModelBuilder
 			}
 		}
 
-		List<String> unusedNonWildCardNames = unusedMethodNames.stream().filter(name -> !hasWilcard(name)).collect(Collectors.toList());
-		for (String name : unusedNonWildCardNames)
-		  errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.UNKNOWN_METHOD, name));
+		for (String name : unusedMethodNames) {
+		  boolean optional = (optionalMethods.contains(name));
+		  boolean special = (specialMethods.contains(name));
+		  if (!optional && !special)
+		    errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.UNKNOWN_METHOD, name));
+		}
 
 		for (Method method : propertyMethods)
 		{
@@ -307,7 +304,7 @@ public final class ModelBuilder
 		if (comparableMemberNames.length==0)
 		{
 			comparableMembers=members.stream().filter(m -> m.getType().isComparable()).collect(Collectors.toList());
-			if (configuration.isComparableEnabled() && comparableMembers.size()!=members.size())
+			if (comparableMembers.size()!=members.size())
 			{
 				errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.NotAllMembersAreComparable, masterInterfaceElement.toString()));
 			}
@@ -337,7 +334,7 @@ public final class ModelBuilder
 	}
 
 	private void processMethod(Clazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods,	List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceOrClassMirrorType,
-			                   Set<String> implementedMethodNames, boolean implementedAlready)
+			                   boolean implementedAlready)
 	{
 		try {
 			String javaDoc = elements.getDocComment(m);

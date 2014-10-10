@@ -19,7 +19,7 @@ property(clazz, property) ::= <%
 %>
 
 getter(clazz, property) ::= <<
-<@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
+<@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<@end>
 public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
  <@preamble><@end>
@@ -29,7 +29,7 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.proto
 >>
 
 mutable_setter(clazz, property) ::= <<
-<@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
+<@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<@end>
 public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
  <@preamble><@end>
@@ -39,7 +39,7 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.proto
 >>
 
 immutable_setter(clazz, property) ::= <<
-<@javadoc><methodJavaDoc(property)><@end><@annotations>@Override<@end>
+<@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<@end>
 public <optFinal(property)><optSynchronized(property)><property.overriddenReturnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
 {
  <@preamble><@end>

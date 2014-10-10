@@ -44,9 +44,9 @@ public @interface VALJOGenerate
     String name() default "$(N/A)";
 
     /**
-	* An option user supplied comment. Not normally used but could be in a custom template or by a build tool.
+	* An option user supplied comment. Not used by default but could potentially be used in a custom template or by a build tool.
 	*
 	* @return An optional comment.
 	*/
-    public String comment() default "$(N/A)";
+    String comment() default "$(N/A)";
 }

@@ -84,11 +84,6 @@ public interface ConfigurationOptionKeys
 	 public static String hashEnabled = "hashEnabled";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#comparableEnabled
-	 */
-	 public static String comparableEnabled = "comparableEnabled";
-
-	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#comparableMembers
 	 */
 	 public static String comparableMembers = "comparableMembers";
@@ -162,11 +157,6 @@ public interface ConfigurationOptionKeys
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#extraInterfaceNames
 	 */
 	 public static String extraInterfaceNames = "extraInterfaceNames";
-
-	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#extraInterfaceNames
-	 */
-	 public static String implementedMethodNames = "implementedMethodNames";
 
 	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#baseClazzName

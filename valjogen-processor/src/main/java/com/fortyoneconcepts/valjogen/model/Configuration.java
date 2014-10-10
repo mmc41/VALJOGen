@@ -202,11 +202,6 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getBooleanValue(hashEnabled, configureAnnotation.hashEnabled());
 	 }
 
-	 public boolean isComparableEnabled()
-	 {
-		 return getBooleanValue(comparableEnabled, configureAnnotation.comparableEnabled());
-	 }
-
 	 public String[] getComparableMembers()
 	 {
 		 return getStringArrayValue(comparableMembers, configureAnnotation.comparableMembers());
@@ -268,12 +263,6 @@ public final class Configuration implements ConfigurationOptionKeys
 	 public boolean isDebugStringTemplatesEnabled()
 	 {
 		 return getBooleanValue(debugStringTemplates, configureAnnotation.debugStringTemplates());
-	 }
-
-	 public Set<String> getImplementedMethodNames()
-	 {
-		 String[] names = getStringArrayValue(implementedMethodNames, configureAnnotation.implementedMethodNames());
-		 return new HashSet<String>(Arrays.asList(names));
 	 }
 
 	 public String getComment()

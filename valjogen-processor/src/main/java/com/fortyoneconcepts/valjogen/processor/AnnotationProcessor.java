@@ -158,7 +158,9 @@ public class AnnotationProcessor extends AbstractProcessor
 			LOGGER.fine(() -> "Using resourceloader: "+resourceLoader);
 		}
 
-		ModelBuilder clazzFactory = new ModelBuilder(types, elements, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement), element, configuration, resourceLoader);
+		STTemplates templates = new STTemplates(resourceLoader, configuration);
+
+		ModelBuilder clazzFactory = new ModelBuilder(types, elements, (msgElement, kind, err) -> messager.printMessage(kind, err, msgElement), element, configuration, resourceLoader, templates);
 
 		Clazz clazz = clazzFactory.buildCLazz();
 		if (clazz==null)
@@ -170,11 +172,11 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		JavaFileObject target = filer.createSourceFile(fileName, element);
 
-		STCodeWriter writer = new STCodeWriter(resourceLoader);
+		STCodeWriter writer = new STCodeWriter(clazz, configuration, templates);
 
 		try (PrintWriter targetWriter = new PrintWriter(target.openWriter()))
 		{
-			String output = writer.outputClass(clazz, configuration);
+			String output = writer.outputClass();
 			if (output!=null)
 			{
 			  targetWriter.write(output);
