@@ -11,10 +11,7 @@ import com.fortyoneconcepts.valjogen.model.util.ThrowingFunction;
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /**
- * Information about the java "class" that need to be generated. Refers to other model elements like members, properties, methods, types etc.
- *
- * Fully independent of javax.model.* classes even though {@link com.fortyoneconcepts.valjogen.processor.ModelBuilder} is the primary
- * way to create Clazz instances from javax.model.* classes (provided by an annotation processor).
+ * Information about the java "class" that need to be generated. Together with its supertypes it refers to other model elements like members, properties, methods, types etc.
  *
  * @author mmc
  */

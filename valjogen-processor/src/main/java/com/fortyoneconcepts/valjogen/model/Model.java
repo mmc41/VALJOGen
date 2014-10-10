@@ -67,5 +67,5 @@ public interface Model
 	 *
 	 * @return String representation of model.
 	 */
-	 String toString(int level);
+	String toString(int level);
 }

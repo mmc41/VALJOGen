@@ -20,7 +20,7 @@ public abstract class Type extends ModelBase
 	protected Type(String qualifiedProtoTypicalTypeName)
 	{
 		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
-		this.clazzUsingType = null; // Must be set manually after constructor.
+		this.clazzUsingType = null; // Must be set manually after constructor by subclass.
 	}
 
 	protected Type(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName)
@@ -47,6 +47,11 @@ public abstract class Type extends ModelBase
 		return clazzUsingType.getClazz();
 	}
 
+	/**
+	 * Returns type package name of the type.
+	 *
+	 * @return The package name of the type.
+	 */
 	@Override
 	public String getPackageName()
 	{
@@ -105,6 +110,11 @@ public abstract class Type extends ModelBase
 		else return getPrototypicalQualifiedName();
 	}
 
+	/**
+	 * Return the name of the type when represented as an object. Only yields a different name for primitives.
+	 *
+	 * @return The wrapped type name or just type name if no wrapper exist.
+	 */
 	public String getWrapperName()
 	{
 	    if (isPrimitive())
@@ -112,6 +122,11 @@ public abstract class Type extends ModelBase
 	    else return getName();
 	}
 
+	/**
+	 * Checks if the type is java.lang.Object
+	 *
+	 * @return True if the type represents java.lang.Object
+	 */
 	public boolean isRootObject()
 	{
 	    return false;
@@ -162,11 +177,21 @@ public abstract class Type extends ModelBase
 		return false;
 	}
 
+	/**
+	* Returns if the type is a generated type (Clazz)
+	*
+	* @return True if this type is the one being generated.
+	*/
 	public boolean isThisType()
 	{
 		return false;
 	}
 
+	/**
+	* Returns this overall category (kind) of type this type is.
+	*
+	* @return The type category.
+	*/
     public abstract TypeCategory getTypeCategory();
 
 	@Override
