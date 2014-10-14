@@ -43,9 +43,15 @@ public class Method extends DefinitionBase
 	private static EnumSet<Modifier> defaultModifiers(Configuration cfg)
 	{
 		EnumSet<Modifier> overrideMethodModifiers;
-		if (cfg.isFinalMethodsEnabled())
-			overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
-		else overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC);
+		if (cfg.isFinalMethodsEnabled()) {
+			if (cfg.isSynchronizedAccessEnabled())
+				overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.SYNCHRONIZED);
+			else overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
+		} else {
+			if (cfg.isSynchronizedAccessEnabled())
+				overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED);
+			else overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC);
+		}
 		return overrideMethodModifiers;
 	}
 
@@ -67,7 +73,8 @@ public class Method extends DefinitionBase
 
 	public boolean isThisReturnType()
 	{
-		return clazz.getInterfaceTypes().stream().anyMatch(t -> t.equals(returnType));
+		boolean thisReturnType = clazz.getInterfaceTypes().stream().anyMatch(t -> t.equals(returnType));
+		return thisReturnType;
 	}
 
 	public Type getReturnType()

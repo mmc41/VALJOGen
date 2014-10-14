@@ -65,7 +65,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.insertInheritDocOnMethodsEnabled, "true");
 		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards("{@inheritDoc}*public final int getIntValue()", output.code);
+		assertContainsWithWildcards("{@inheritDoc}*public *int getIntValue()", output.code);
 	}
 
 	@Test

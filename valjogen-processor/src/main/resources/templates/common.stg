@@ -3,22 +3,6 @@
 *
 * This is a helper template group file that provides various utility templates.
 **/
-optFinal(model) ::= <%
-<if(model.final)>final<\ ><endif>
-%>
-
-optSynchronized(propertyOrClass) ::= <%
-<if(propertyOrClass.synchronized)>synchronized<\ ><endif>
-%>
-
-optAbstract(clazz) ::= <%
-<if(clazz.abstract)>abstract<\ ><endif>
-%>
-
-optScope(clazz) ::= <%
-<if(!clazz.configuration.emptyClazzScope)><clazz.configuration.clazzScope><\ ><endif>
-%>
-
 optBaseClass(clazz) ::= <%
 <if(!clazz.baseClazzType.rootObject)> extends <clazz.baseClazzType.name><endif>
 %>

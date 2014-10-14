@@ -31,7 +31,7 @@ package <clazz.packageName>;
 
 <@javadoc><if(clazz.configuration.clazzJavaDoc)>/** <clazz.configuration.clazzJavaDoc> */<endif><@end>
 <@annotations><clazz.configuration.clazzAnnotations:annotation(); wrap, anchor, separator="\n"><@end>
-<optScope(clazz)><optFinal(clazz)><optAbstract(clazz)>class <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceTypes:{ _i |<_i.prototypicalName>}; wrap, anchor, separator=", ">
+<[clazz.modifiers:{m | <m>}, "class"]; separator=" "> <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceTypes:{ _i |<_i.prototypicalName>}; wrap, anchor, separator=", ">
 {
   <! Static class members: !>
   <@before_class_members><@end>
@@ -72,7 +72,7 @@ import <type.qualifiedName>;
 /** Generate a class instance member **/
 member(member) ::= <<
 <@javadoc><@end><@annotations><@end><\\>
-<internalLevel(member.clazz)><optFinal(member)><member.type.prototypicalName> <member.name>;
+<[member.modifiers:{m | <m>}, member.type.prototypicalName]; separator=" "> <member.name>;
 >>
 
 /** Generate constructor **/

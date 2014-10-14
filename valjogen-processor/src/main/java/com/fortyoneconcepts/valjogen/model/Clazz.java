@@ -25,6 +25,7 @@ public final class Clazz extends BasicClazz implements Model
 	private List<Property> properties;
 	private List<Type> importTypes;
 	private List<Member> chosenComparableMembers;
+	private EnumSet<Modifier> modifiers;
 
 	/**
 	 * Constructs a prelimiary Clazz instance from a configuration with only a few values such as name specificed in advanced. After constructing the instance, the various
@@ -51,6 +52,7 @@ public final class Clazz extends BasicClazz implements Model
 		this.fileHeaderText = Objects.requireNonNull(fileHeaderText);
 
 		this.importTypes = new ArrayList<Type>();
+		this.modifiers=EnumSet.noneOf(Modifier.class);
 	}
 
 	@Override
@@ -63,6 +65,12 @@ public final class Clazz extends BasicClazz implements Model
 	public Clazz getGeneratedClazz()
 	{
 		return this;
+	}
+
+	@Override
+	public EnumSet<Modifier> getModifiers()
+	{
+		return modifiers;
 	}
 
 	@Override
@@ -96,14 +104,22 @@ public final class Clazz extends BasicClazz implements Model
 	 * @param methods Non-property methods for class.
 	 * @param importTypes Types to be imported for class.
 	 * @param chosenComparableMembers Members to be used for compareToOperation
+	 * @param modifiers The modifiers to use for code generation (NB: This is not declared modifiers for there are none for a class to be generated)
 	 */
-	public void initContent(List<Member> members, List<Property> properties, List<Method> methods, List<Type> importTypes, List<Member> chosenComparableMembers)
+	public void initContent(List<Member> members, List<Property> properties, List<Method> methods, List<Type> importTypes, List<Member> chosenComparableMembers, EnumSet<Modifier> modifiers)
 	{
 		super.initContent(members, methods, EnumSet.noneOf(Modifier.class));
 
         this.properties=Objects.requireNonNull(properties);
 		this.importTypes=Objects.requireNonNull(importTypes);
         this.chosenComparableMembers = Objects.requireNonNull(chosenComparableMembers);
+
+        if (modifiers==null) {
+        	if (isAbstract())
+    			this.modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT);
+    		else
+    			this.modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
+        } else this.modifiers=modifiers;
 	}
 
 	public String getJavaDoc()

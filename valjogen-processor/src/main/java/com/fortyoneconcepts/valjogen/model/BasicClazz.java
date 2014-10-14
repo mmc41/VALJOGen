@@ -115,10 +115,6 @@ public class BasicClazz extends ObjectType implements Definition {
 		return getGenericQualifier(qualifiedProtoTypicalTypeName);
 	}
 
-	public boolean isFinal() {
-		return !isAbstract() && getConfiguration().isFinalClassEnabled();
-	}
-
 	public boolean isAbstract() {
 		assert initialized() : "Class initialization missing";
 		return !methods.stream().allMatch(m -> m.implementationInfo!=ImplementationInfo.IMPLEMENTATION_MISSING);

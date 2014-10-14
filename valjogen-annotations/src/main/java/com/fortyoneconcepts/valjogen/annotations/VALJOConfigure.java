@@ -46,11 +46,13 @@ public @interface VALJOConfigure
     String outputPackage() default "$(N/A)";
 
 	/**
-	* Access modifier for generated class. May be overruled by equivalent annotation processor key.
+	* Explicitly defined modifiers such as PUBLIC, PROTECTED, PRIVATE, FINAL or ABSTRACT to set in generated class.
+	* If none are present they will be auto-generated with a preference for PUBLIC FINAL or PUBLIC ABSTRACT classes.
+	* May be overruled by equivalent annotation processor key.
 	*
-	* @return Access modifier.
+	* @return Modifiers to apply to the generated class.
 	*/
-    String clazzScope() default "public";
+    String[] clazzModifiers() default {};
 
     /**
 	* Linewidth for generated code. 0 if unlimited. May be overruled by equivalent annotation processor key.
@@ -60,25 +62,18 @@ public @interface VALJOConfigure
     int lineWidth() default -1;
 
 	/**
-	* Specifies if generated members should be final if possible. May be overruled by equivalent annotation processor key.
+	* Specifies if generated members and method parameters should be final if possible. May be overruled by equivalent annotation processor key.
 	*
-	* @return True if generated members are prefered to be final.
+	* @return True if generated members and method parameters are prefered to be final.
 	*/
-    boolean finalMembersEnabled() default true;
+    boolean finalMembersAndParametersEnabled() default true;
 
 	/**
-	* Specifies if generated classes should be final if possible. May be overruled by equivalent annotation processor key.
-	*
-	* @return True if generated classes are prefered to be final.
-	*/
-    boolean finalClassEnabled() default true;
-
-	/**
-	* Specifies if generated methods (incl. property methods) should be final if possible. May be overruled by equivalent annotation processor key.
+	* Specifies if generated methods (incl. property methods) should be final. May be overruled by equivalent annotation processor key.
 	*
 	* @return True if generated methods are prefered to be final
 	*/
-	boolean finalMethodsEnabled() default true;
+	boolean finalMethodsEnabled() default false;
 
 	/**
 	* Specifies assignments to local variables should guard against null. May be overruled by equivalent annotation processor key.

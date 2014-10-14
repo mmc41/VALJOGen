@@ -52,9 +52,9 @@ public class TemplateClassTest extends TemplateTestBase
 	@Test
 	public void testPrivateClassCanBeSet() throws Exception
 	{
-		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.clazzScope, "private");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.clazzModifiers, "PRIVATE");
 		Output output = produceOutput(ImmutableInterface.class);
-		assertContainsWithWildcards("private * class "+generatedClassName, output.code);
+		assertContainsWithWildcards("private *class "+generatedClassName, output.code);
 	}
 
 	@Test

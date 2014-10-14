@@ -92,24 +92,32 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getIntValue(lineWidth, configureAnnotation.lineWidth());
 	 }
 
-	 public String getClazzScope()
+	 public EnumSet<Modifier> getClazzModifiers()
 	 {
-		 return getStringValue(clazzScope, configureAnnotation.clazzScope());
+		 String[] modifierStrings = getStringArrayValue(clazzModifiers, configureAnnotation.clazzModifiers());
+		 if (modifierStrings.length==0)
+			 return null;
+
+		 Set<Modifier> modifers = new HashSet<Modifier>();
+		 for (String modifierString : modifierStrings) {
+			 Modifier modifier;
+
+			 try {
+			   modifier = Enum.valueOf(Modifier.class, modifierString.toUpperCase());
+			 } catch (IllegalArgumentException e)
+			 {
+				 throw new IllegalArgumentException("Option value "+modifierString+" for key "+clazzModifiers+" must be a known modifier string", e);
+			 }
+
+		      modifers.add(modifier);
+		 }
+
+		 return modifers.size()>0 ? EnumSet.copyOf(modifers) : EnumSet.noneOf(Modifier.class);
 	 }
 
-	 public boolean hasEmptyClazzScope()
+	 public boolean isFinalMembersAndParametersEnabled()
 	 {
-		 return getClazzScope().length()==0;
-	 }
-
-	 public boolean isFinalMembersEnabled()
-	 {
-		 return getBooleanValue(finalMembersEnabled, configureAnnotation.finalMembersEnabled());
-	 }
-
-	 public boolean isFinalClassEnabled()
-	 {
-		 return getBooleanValue(finalClassEnabled, configureAnnotation.finalClassEnabled());
+		 return getBooleanValue(finalMembersAndParametersEnabled, configureAnnotation.finalMembersAndParametersEnabled());
 	 }
 
 	 public boolean isFinalMethodsEnabled()

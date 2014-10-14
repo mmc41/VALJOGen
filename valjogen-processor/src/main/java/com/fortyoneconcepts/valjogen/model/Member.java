@@ -15,18 +15,12 @@ public final class Member extends DefinitionBase implements TypedModel
 {
 	private final Type type;
 	private List<Property> properties;
-	private EnumSet<Modifier> modifiers;
 
 	public Member(BasicClazz clazz, Type type, String name, EnumSet<Modifier> declaredModifiers)
 	{
 		super(clazz, name, declaredModifiers);
 		this.type=Objects.requireNonNull(type);
 		this.properties=new LinkedList<Property>();
-
-		HashSet<Modifier> _modifiers = new HashSet<>(declaredModifiers);
-		if (clazz.getConfiguration().isFinalMembersEnabled())
-			_modifiers.add(Modifier.FINAL);
-		modifiers=_modifiers.size()>0 ? EnumSet.copyOf(_modifiers) : EnumSet.noneOf(Modifier.class);
 	}
 
 	@Override
@@ -44,7 +38,11 @@ public final class Member extends DefinitionBase implements TypedModel
 	@Override
 	public EnumSet<Modifier> getModifiers()
 	{
-		return modifiers;
+		if (clazz.getConfiguration().isFinalMembersAndParametersEnabled() && !isMutable()) {
+			return clazz.isFinal() ? EnumSet.of(Modifier.PRIVATE, Modifier.FINAL) : EnumSet.of(Modifier.PROTECTED, Modifier.FINAL);
+		} else {
+			return clazz.isFinal() ? EnumSet.of(Modifier.PRIVATE) : EnumSet.of(Modifier.PROTECTED);
+		}
 	}
 
 	public Property getGetter()
@@ -56,9 +54,10 @@ public final class Member extends DefinitionBase implements TypedModel
 		return null;
 	}
 
-	public boolean isFinal()
+	public boolean isMutable()
 	{
-		return properties.stream().noneMatch(p -> p.isSetter() && !p.isThisReturnType()) && getConfiguration().isFinalMembersEnabled();
+		boolean mutable = properties.stream().anyMatch(p -> p.isSetter() && !p.isThisReturnType());
+		return mutable;
 	}
 
 	public boolean isEnsureNotNullEnabled()
@@ -122,7 +121,7 @@ public final class Member extends DefinitionBase implements TypedModel
 		sb.append("Member [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", name=" + name + ", type=" + type.getPrototypicalName() + ", properties=["+properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+", declaredModifiers="+declaredModifiers+", modifiers="+modifiers+"]");
+			sb.append(", name=" + name + ", type=" + type.getPrototypicalName() + ", properties=["+properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+", declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+", mutable="+isMutable()+"]");
 
 		sb.append("]");
 

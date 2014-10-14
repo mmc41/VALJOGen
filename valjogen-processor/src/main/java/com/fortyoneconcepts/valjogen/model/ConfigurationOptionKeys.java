@@ -24,19 +24,14 @@ public interface ConfigurationOptionKeys
 	 public static String lineWidth = "lineWidth";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#clazzScope
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#clazzModifiers
 	 */
-	 public static String clazzScope = "clazzScope";
+	 public static String clazzModifiers = "clazzModifiers";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalMembersEnabled
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalMembersAndParametersEnabled
 	 */
-	 public static String finalMembersEnabled = "finalMembersEnabled";
-
-	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalClassEnabled
-	 */
-	 public static String finalClassEnabled = "finalClassEnabled";
+	 public static String finalMembersAndParametersEnabled = "finalMembersAndParametersEnabled";
 
 	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalMethodsEnabled

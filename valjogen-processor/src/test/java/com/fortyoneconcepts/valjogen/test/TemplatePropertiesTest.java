@@ -85,6 +85,28 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	}
 
 	@Test
+	public void testSynchronizedMutableGetterAndSetter() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.synchronizedAccessEnabled, "true");
+
+		Output output = produceOutput(MutableInterface.class);
+
+		assertContainsWithWildcards("public *synchronized void setObjectValue(", output.code);
+		assertContainsWithWildcards("public *synchronized *getObjectValue(", output.code);
+	}
+
+	@Test
+	public void testUnSynchronizedMutableGetterAndSetter() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.synchronizedAccessEnabled, "false");
+
+		Output output = produceOutput(MutableInterface.class);
+
+		assertNotContainsWithWildcards("public *synchronized void setObjectValue(", output.code);
+		assertNotContainsWithWildcards("public *synchronized *getObjectValue(", output.code);
+	}
+
+	@Test
 	public void testGenricImmutableSetter() throws Exception
 	{
 		Output output = produceOutput(GenericInterface.class, generateAnnotationBuilder, configureAnnotationBuilder.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
@@ -97,7 +119,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	{
 		Output output = produceOutput(GenericInterface.class);
 
-		assertContainsWithWildcards("public final void setGt(final GT gt) { this.gt=Objects.requireNonNull(gt); }", output.code);
+		assertContainsWithWildcards("public *void setGt(final GT gt) { this.gt=Objects.requireNonNull(gt); }", output.code);
 	}
 
 	@Test
@@ -105,7 +127,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	{
 		Output output = produceOutput(GenericInterface.class);
 
-		assertContainsWithWildcards("public final GT getGt() { return gt; }", output.code);
+		assertContainsWithWildcards("public *GT getGt() { return gt; }", output.code);
 	}
 
 	@Test
@@ -113,7 +135,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	{
 		Output output = produceOutput(InterfaceWithGenericMembers.class, generateAnnotationBuilder, configureAnnotationBuilder.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
 
-		assertContainsWithWildcards("public final InterfaceWithGenericMembers setSet(final java.util.Set<String> set) { return new TestImpl(this.map, set); }", output.code);
+		assertContainsWithWildcards("public *InterfaceWithGenericMembers setSet(final java.util.Set<String> set) { return new TestImpl(this.map, set); }", output.code);
 	}
 
 	@Test
@@ -121,7 +143,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	{
 		Output output = produceOutput(InterfaceWithGenericMembers.class);
 
-		assertContainsWithWildcards("public final void setMap(final java.util.Map<String,Object> map) { this.map=Objects.requireNonNull(map); }", output.code);
+		assertContainsWithWildcards("public *void setMap(final java.util.Map<String,Object> map) { this.map=Objects.requireNonNull(map); }", output.code);
 	}
 
 	@Test
@@ -129,7 +151,7 @@ public class TemplatePropertiesTest extends TemplateTestBase
 	{
 		Output output = produceOutput(InterfaceWithGenericMembers.class);
 
-		assertContainsWithWildcards("public final java.util.Set<String> getSet() { return set; }", output.code);
+		assertContainsWithWildcards("public *java.util.Set<String> getSet() { return set; }", output.code);
 	}
 
 	@Test
@@ -140,6 +162,6 @@ public class TemplatePropertiesTest extends TemplateTestBase
 				.add(ConfigurationOptionKeys.forceThisAsImmutableSetterReturnType, false));
 
 		assertContainsWithWildcards("public * ImmutableInterface setObjectValue(final Object objectValue) { return new TestImpl(this.intValue, objectValue); }", output.code);
-		assertContainsWithWildcards("public final Object getObjectValue() { return objectValue; }", output.code);
+		assertContainsWithWildcards("public *Object getObjectValue() { return objectValue; }", output.code);
 	}
 }
