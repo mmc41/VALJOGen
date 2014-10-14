@@ -32,7 +32,7 @@ import com.google.testing.compile.JavaFileObjects;
  */
 public final class TestSupport
 {
-	// TODO: Move these two into build tool cfg:
+	// TODO: Move thesethis build tool cfg:
 
 	private static String classPathSourceCopyRelPath ="source"; // Source files copied to this dir in test output.
 

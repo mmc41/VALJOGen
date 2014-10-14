@@ -1,5 +1,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
+import java.util.Objects;
+
 /**
  * Specifies a non-exisisting type. Type of nothing.
  *
@@ -8,9 +10,19 @@ package com.fortyoneconcepts.valjogen.model;
  */
 public class NoType extends Type
 {
-	public NoType(BasicClazz clazzUsingType)
+	public NoType()
 	{
-		super(clazzUsingType, "NONE");
+		super(null, "NONE");
+	}
+
+	/**
+     * Nb. Post-constructor for this type. This method must be called for the type to be fully initialized.
+     *
+	 * @param clazzUsingType The class using this type.
+     */
+	public void init(BasicClazz clazzUsingType)
+	{
+		this.clazzUsingType=Objects.requireNonNull(clazzUsingType);
 	}
 
 	@Override

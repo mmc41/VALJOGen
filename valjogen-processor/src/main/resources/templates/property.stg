@@ -20,7 +20,7 @@ property(clazz, property) ::= <%
 
 getter(clazz, property) ::= <<
 <@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<@end>
-public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+<declare_property(clazz, property)>
 {
  <@preamble><@end>
  <@postamble><@end>
@@ -30,7 +30,7 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.proto
 
 mutable_setter(clazz, property) ::= <<
 <@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<@end>
-public <optFinal(property)><optSynchronized(property)><property.returnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+<declare_property(clazz, property)>
 {
  <@preamble><@end>
  this.<property.member.name>=<guard(property.member, property.parameter)>;
@@ -40,10 +40,17 @@ public <optFinal(property)><optSynchronized(property)><property.returnType.proto
 
 immutable_setter(clazz, property) ::= <<
 <@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<@end>
-public <optFinal(property)><optSynchronized(property)><property.overriddenReturnType.prototypicalName> <property.name>(<property.parameters:formalParameter(); wrap, anchor, separator=", ">)
+<declare_property(clazz, property)>
 {
  <@preamble><@end>
  <@postamble><@end>
  return <@returnvalue>new <clazz.prototypicalName>(<[property.member.otherMembersBeforeThis:{m | this.<m.name>}, property.parameter.name , property.member.otherMembersAfterThis:{m | this.<m.name>}]; wrap, anchor, separator=", ">)<@end>;
 }
 >>
+
+declare_property(clazz, property) ::= <%
+<property.modifiers:{m | <m>}; separator=" "> <property.overriddenReturnType.prototypicalName> <property.name>(<property.parameters:declare_parameter(); wrap, anchor, separator=", ">)
+<if(property.thrownTypes)>
+<\ >throws <property.thrownTypes:{m | <m.name>}; wrap, anchor, separator=", ">
+<endif>
+%>

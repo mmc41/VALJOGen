@@ -14,10 +14,10 @@ public final class ToStringUtil
 	 else return "["+c.stream().map(p -> "@"+Integer.toHexString(System.identityHashCode(p))).collect(Collectors.joining(", "))+"]";
  }
 
- public static String toString(Collection<? extends ModelBase> models, int level)
+ public static String toString(Collection<? extends ModelBase> models, String seperator, int level)
  {
 	 if (models==null)
 		 return "null";
-	 else return "["+models.stream().map(t -> t.toString(level)).collect(Collectors.joining(", "))+"]";
+	 else return "["+models.stream().map(t -> t.toString(level)).collect(Collectors.joining(seperator))+"]";
  }
 }

@@ -13,47 +13,40 @@ import java.util.stream.Collectors;
  *
  * @author mmc
  */
-public class Method extends ModelBase
+public class Method extends DefinitionBase
 {
-	protected final BasicClazz clazz;
-	protected final AccessLevel accessLevel;
 	protected final Type declaringType;
-	protected final String methodName;
 	protected final List<Parameter> parameters;
 	protected final List<Type> thrownTypes;
 	protected final String javaDoc;
 	protected final Type returnType;
+	protected final EnumSet<Modifier> modifiers;
 	protected ImplementationInfo implementationInfo;
 
-	public Method(BasicClazz clazz, AccessLevel accessLevel, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, ImplementationInfo implementationInfo)
+	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
 	{
-	    this.clazz = Objects.requireNonNull(clazz);
-	    this.accessLevel = Objects.requireNonNull(accessLevel);
+	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration()), implementationInfo);
+	}
+
+	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo)
+	{
+	    super(clazz, methodName, declaredModifiers);
 	    this.declaringType = Objects.requireNonNull(declaringType);
-		this.methodName = Objects.requireNonNull(methodName);
 		this.parameters = Objects.requireNonNull(parameters);
 		this.thrownTypes = Objects.requireNonNull(thrownTypes);
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.returnType = Objects.requireNonNull(returnType);
+		this.modifiers = modifiers;
 		this.implementationInfo = implementationInfo;
 	}
 
-	@Override
-	public Configuration getConfiguration()
+	private static EnumSet<Modifier> defaultModifiers(Configuration cfg)
 	{
-		return clazz.getConfiguration();
-	}
-
-	@Override
-	public HelperTypes getHelperTypes()
-	{
-		return clazz.getHelperTypes();
-	}
-
-	@Override
-	public BasicClazz getClazz()
-	{
-		return clazz;
+		EnumSet<Modifier> overrideMethodModifiers;
+		if (cfg.isFinalMethodsEnabled())
+			overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
+		else overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC);
+		return overrideMethodModifiers;
 	}
 
 	@Override
@@ -72,16 +65,6 @@ public class Method extends ModelBase
 		this.implementationInfo=implementationInfo;
 	}
 
-	public AccessLevel getAccessLevel()
-	{
-		return accessLevel;
-	}
-
-	public boolean isFinal()
-	{
-		return false;
-	}
-
 	public boolean isThisReturnType()
 	{
 		return clazz.getInterfaceTypes().stream().anyMatch(t -> t.equals(returnType));
@@ -92,9 +75,15 @@ public class Method extends ModelBase
 		return returnType;
 	}
 
-	public String getName()
+	public Type getDeclaringType()
 	{
-		return methodName;
+		return declaringType;
+	}
+
+	@Override
+	public EnumSet<Modifier> getModifiers()
+	{
+		return modifiers;
 	}
 
 	/**
@@ -106,7 +95,7 @@ public class Method extends ModelBase
 	{
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(methodName);
+		sb.append(name);
 		sb.append("(");
 		sb.append(parameters.stream().map(p -> {
 		  String name = p.getErasedType().getQualifiedName();
@@ -115,6 +104,22 @@ public class Method extends ModelBase
 		sb.append(")");
 
 		return sb.toString();
+	}
+
+	/**
+	 * Return The name of the method with unqualified type names in parenthesis. All type names are unqualified so not guarenteed to be unique.
+	 *
+	 * @param overLoadName The overload name to compare with
+	 *
+	 * @return The string suitable for overload resolution.
+	 */
+	public boolean hasOverLoadName(String overLoadName)
+	{
+		if (this.getName().contains("compareTo"))
+			System.out.println("got here");
+
+		boolean same = this.getOverloadName().equals(overLoadName);
+		return same;
 	}
 
 	/**
@@ -127,7 +132,7 @@ public class Method extends ModelBase
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("method_");
-		sb.append(methodName);
+		sb.append(name);
 		if (parameters.size()>0) {
 			sb.append("_");
 			sb.append(parameters.stream().map(p -> {
@@ -162,7 +167,13 @@ public class Method extends ModelBase
 		sb.append("Method [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", accessLevel="+accessLevel+", declaringType="+declaringType.getName()+", methodName=" + getName() + ", parameters="+parameters+", returnType="+returnType.getName() + ", thrownTypes="+thrownTypes+", implementationInfo="+implementationInfo+"]");
+			sb.append(", declaringType="+declaringType.getName()+", methodName=" + getName() +
+					  ", parameters=["+parameters.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
+					  ", returnType="+returnType.getPrototypicalName() +
+					  ", thrownTypes=["+thrownTypes.stream().map(t -> t.getPrototypicalName()).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
+					  ", declaredModifiers="+declaredModifiers+
+					  ", modifiers="+modifiers+
+					  ", implementationInfo="+implementationInfo+"]");
 
 		sb.append("]");
 

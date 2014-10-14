@@ -62,14 +62,14 @@ method_<javaName>
 %>
 
 declare_method(clazz, method) ::= <%
-<m.accessLevel> <optSynchronized(clazz)><method.returnType.name> <method.name>(<method.parameters:declare_parameter(); wrap, anchor, separator=", ">)
+<method.modifiers:{m | <m>}; separator=" "> <method.returnType.prototypicalName> <method.name>(<method.parameters:declare_parameter(); wrap, anchor, separator=", ">)
 <if(method.thrownTypes)>
 <\ >throws <method.thrownTypes:{m | <m.name>}; wrap, anchor, separator=", ">
 <endif>
 %>
 
 declare_parameter(param) ::= <<
-final <param.type.name> <param.name>
+<[param.modifiers:{m | <m>}, param.type.prototypicalName]; separator=" "> <param.name>
 >>
 
 other_instance_get_member_value(other, member) ::= <%
@@ -84,8 +84,8 @@ other_instance_get_member_value(other, member) ::= <%
 <endif>
 %>
 
-/** Generate a formal parameter for a method: **/
-formalParameter(member) ::= <%
+/** Generate a formal parameter for a method based on a member: **/
+declare_parameter_from_member(member) ::= <%
 final <member.type.prototypicalName> <member.name>
 %>
 

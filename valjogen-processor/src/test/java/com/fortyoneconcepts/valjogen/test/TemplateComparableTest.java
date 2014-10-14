@@ -25,7 +25,7 @@ public class TemplateComparableTest extends TemplateTestBase
 	{
 		Output output = produceOutput(ComparableInterface.class, generateAnnotationBuilder.add(ConfigurationOptionKeys.name, generatedPackageName+"."+generatedClassName).build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableMembers, new String[] { }).build(), false, true);
 
-		assertContainsWithWildcards("public int compareTo(final ComparableInterface *) { ", output.code);
+		assertContainsWithWildcards("int compareTo(final ComparableInterface *) { ", output.code);
 		assertContainsWithWildcards("if ((_result=Integer.compare(intValue, arg0.getIntValue()))!=0) return _result; if ((_result=stringValue.compareTo(arg0.getStringValue()))!=0) return _result;", output.code);
 
 		Assert.assertTrue("Single warning about not all members being comparable expected", output.warnings.size()==1 && output.warnings.get(0).contains("not all members are comparable"));
@@ -36,7 +36,7 @@ public class TemplateComparableTest extends TemplateTestBase
 	{
 		Output output = produceOutput(ComparableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.comparableMembers, new String[] { "stringValue", "intValue" }) .build());
 
-		assertContainsWithWildcards("public int compareTo(final ComparableInterface *) { ", output.code);
+		assertContainsWithWildcards("int compareTo(final ComparableInterface *) { ", output.code);
 		assertContainsWithWildcards("if ((_result=stringValue.compareTo(arg0.getStringValue()))!=0) return _result; if ((_result=Integer.compare(intValue, arg0.getIntValue()))!=0) return _result;", output.code);
 
 		Assert.assertEquals("no warnings expected", 0, output.warnings.size());
@@ -55,9 +55,16 @@ public class TemplateComparableTest extends TemplateTestBase
 	{
 		Output output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<$(This)>"}).build());
 		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<"+generatedClassName+">", output.code);
-		assertContainsWithWildcards("public int compareTo(final TestImpl *) { ", output.code);
+		assertContainsWithWildcards("int compareTo(final TestImpl *) { ", output.code);
 		assertContainsWithWildcards("if ((_result=Long.compare(baseValue, arg0.baseValue))!=0) return _result;", output.code);
 
 		Assert.assertEquals("no warnings expected", 0, output.warnings.size());
+	}
+
+	@Test
+	public void testNotComparableIfProvidedByBaseClass() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName()).build());
+		assertNotContainsWithWildcards("int compareTo(", output.code);
 	}
 }

@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /***
  * Meta-information about a property setter/getter method that should be generated (implemented).
@@ -17,26 +18,20 @@ public final class Property extends Method
 	private final Type overriddenReturnType;
 	private final PropertyKind kind;
 
-	public Property(BasicClazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind,String javaDoc, ImplementationInfo implementationInfo)
+	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
 	{
-		super(clazz, accessLevel, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, implementationInfo);
+		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, declaredModifiers, implementationInfo);
 		this.member=Objects.requireNonNull(member);
 		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;
 	}
 
-	public Property(BasicClazz clazz, AccessLevel accessLevel, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, ImplementationInfo implementationInfo, Parameter parameter)
+	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, Parameter parameter)
 	{
-		super(clazz, accessLevel, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, implementationInfo);
+		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, declaredModifiers, implementationInfo);
 		this.member=Objects.requireNonNull(member);
 		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;
-	}
-
-	@Override
-	public boolean isFinal()
-	{
-		return getConfiguration().isFinalPropertiesEnabled();
 	}
 
 	public Type getOverriddenReturnType()
@@ -82,7 +77,13 @@ public final class Property extends Method
 		sb.append("Property [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", accessLevel="+accessLevel+", member=" + member.getName() + ", propertyKind="+kind+", overriddenReturnType="+overriddenReturnType.toString(NO_DETAILS_LEVEL)+", thrownTypes="+thrownTypes+", implementationInfo="+implementationInfo+"]");
+			sb.append(", member=" + member.getName() +
+					  ", propertyKind="+kind+
+					  ", overriddenReturnType="+overriddenReturnType.toString(NO_DETAILS_LEVEL)+
+  					  ", thrownTypes=["+thrownTypes.stream().map(t -> t.getPrototypicalName()).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
+					  ", declaredModifiers="+declaredModifiers+
+					  ", modifiers="+modifiers+
+					  ", implementationInfo="+implementationInfo+"]");
 
 		sb.append("]");
 

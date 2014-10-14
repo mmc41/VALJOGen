@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.processor;
+package com.fortyoneconcepts.valjogen.processor.builders;
 
 import java.beans.Introspector;
 import java.util.*;
@@ -16,7 +16,13 @@ import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
 import com.fortyoneconcepts.valjogen.model.*;
+import com.fortyoneconcepts.valjogen.model.Modifier;
+import com.fortyoneconcepts.valjogen.model.NoType;
 import com.fortyoneconcepts.valjogen.model.util.*;
+import com.fortyoneconcepts.valjogen.processor.DiagnosticMessageConsumer;
+import com.fortyoneconcepts.valjogen.processor.ProcessorMessages;
+import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
+import com.fortyoneconcepts.valjogen.processor.STTemplates;
 
 /***
  * This class is responsible for transforming data in the javax.lang.model.* format to our own valjogen models.
@@ -26,6 +32,8 @@ import com.fortyoneconcepts.valjogen.model.util.*;
  * - Types are about the statically defined type constraints of the program, i.e. types, generic type parameters, generic type wildcards (Everything that is part of Java's type declarations before type erasure).
  * - Mirror objects is where you can see the reflection of the object, thus seperating queries from the internal structure. This allows reflectiong on stuff that has not been loaded.
  *
+ * Nb: Instances of this class is not multi-thread safe. Create a new for each thread.
+ *
  * @author mmc
  */
 public final class ModelBuilder
@@ -33,14 +41,17 @@ public final class ModelBuilder
 	// private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
 
 	/**
-	 * Methods that are not called dynamically but (currently) implemented in a special way by the templates.
+	 * Controls when corresponding available ST template methods should be called.
 	 */
-	private Set<String> specialMethods = new HashSet<String>(Arrays.asList("valueOf()", "this()"));
-
-	/**
-	 * Methods that may or may not be implemented (no warnings issued if supplied but not implemented).
-	 */
-	private Set<String> optionalMethods = new HashSet<String>(Arrays.asList("compareTo(T)"));
+	@SuppressWarnings("serial")
+	private static final HashMap<String, Predicate4<Configuration, Clazz, List<Method>, List<Member>>> templateMethodConditions = new HashMap<String, Predicate4<Configuration, Clazz, List<Method>, List<Member>>>() {{
+		 put("hashCode()", (cfg, clazz, methods, members) -> cfg.isHashEnabled());
+		 put("equals(Object)", (cfg, clazz, methods, members) -> cfg.isEqualsEnabled());
+		 put("toString()", (cfg, clazz, methods, members) -> cfg.isToStringEnabled());
+		 put("compareTo(T)", (cfg, clazz, methods, members) -> clazz.isComparable() && !implementationExists(clazz, "compareTo", methods));
+		 put("valueOf()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.
+		 put("this()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.*/
+	}};
 
 	private final TypeBuilder typeBuilder;
 
@@ -51,15 +62,33 @@ public final class ModelBuilder
 	private final Configuration configuration;
 	private final ResourceLoader resourceLoader;
 	private final STTemplates templates;
+	private final NoType noType;
 
 	/**
 	 * Contains various data that streams need to manipulate and this needs to be accessed by reference.
 	 *
 	 * @author mmc
 	 */
-	private class StatusHolder
+	private final class StatusHolder
 	{
 		public boolean encountedSynthesisedMembers = false;
+	}
+
+	/**
+	 * Pair class for types and their elements.
+	 *
+	 * @author mmc
+	 */
+	private final class ExecutableElementAndDeclaredTypePair
+	{
+		public final DeclaredType interfaceDecl;
+		public final ExecutableElement executableElement;
+
+		public ExecutableElementAndDeclaredTypePair(DeclaredType interfaceDecl, ExecutableElement executableElement)
+		{
+			this.interfaceDecl=interfaceDecl;
+			this.executableElement=executableElement;
+		}
 	}
 
 	/**
@@ -82,19 +111,8 @@ public final class ModelBuilder
 	  this.configuration=configuration;
 	  this.resourceLoader=resourceLoader;
 	  this.templates=templates;
-	  this.typeBuilder=new TypeBuilder(types, elements, errorConsumer, masterInterfaceElement);
-	}
-
-	private static class ExecutableElementAndDeclaredTypePair
-	{
-		public final DeclaredType interfaceDecl;
-		public final ExecutableElement executableElement;
-
-		public ExecutableElementAndDeclaredTypePair(DeclaredType interfaceDecl, ExecutableElement executableElement)
-		{
-			this.interfaceDecl=interfaceDecl;
-			this.executableElement=executableElement;
-		}
+	  this.noType=new NoType();
+	  this.typeBuilder=new TypeBuilder(types, elements, errorConsumer, masterInterfaceElement, configuration, noType);
 	}
 
 	/**
@@ -127,9 +145,10 @@ public final class ModelBuilder
 			headerText=resourceLoader.getResourceAsText(headerFileName);
 		}
 
-		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText, (c) -> typeBuilder.createHelperTypes(c));
+		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText, (c) -> typeBuilder.createHelperTypes(c), noType);
+		noType.init(clazz);
 
-		DeclaredType baseClazzDeclaredMirrorType = createBaseClazzDeclaredType(classPackage);
+		DeclaredType baseClazzDeclaredMirrorType = typeBuilder.createBaseClazzDeclaredType(classPackage);
 		if (baseClazzDeclaredMirrorType==null)
 			return null;
 
@@ -147,12 +166,12 @@ public final class ModelBuilder
 
 		// List<GenericParameter> genericParameters = masterInterfaceElement.getTypeParameters().stream().map(p -> createGenericParameter(clazz, allTypesByPrototypicalFullName, types, p)).collect(Collectors.toList());
 
-		Type baseClazzType = typeBuilder.createType(clazz, baseClazzDeclaredMirrorType, DetailLevel.Low);
+		Type baseClazzType = typeBuilder.createType(clazz, baseClazzDeclaredMirrorType, DetailLevel.High);
 
 		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toList());
-		Set<Type> interfaceTypesWithAscendants = allInterfaceDeclaredMirrorTypes.stream().map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toSet());
+		Set<Type> superTypesWithAscendants = concat(allInterfaceDeclaredMirrorTypes.stream(), allBaseClassDeclaredMirrorTypes.stream()).map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toSet());
 
-		clazz.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, typeArgTypes);
+		clazz.initType(baseClazzType, interfaceTypes, superTypesWithAscendants, typeArgTypes);
 
 		// Step 3 - Init content part of clazz:
 		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
@@ -161,19 +180,16 @@ public final class ModelBuilder
 
 		final StatusHolder statusHolder = new StatusHolder();
 
-		Set<String> implementedMethodNames = templates.getTemplateMethodNames();
-
-				//configuration.getImplementedMethodNames();
-
 		// Collect all members, property methods and non-property methods from interfaces paired with the interface they belong to:
 		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromInterfaces = allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
-			Set<Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.PRIVATE) && !modifiers.contains(Modifier.FINAL);
+			Set<javax.lang.model.element.Modifier> modifiers = m.getModifiers();
+			return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
 		})));
 
 		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromBaseClasses = allBaseClassDeclaredMirrorTypes.stream().flatMap(b -> toExecutableElementAndDeclaredTypePair(b, b.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
-			Set<Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.PRIVATE) && !modifiers.contains(Modifier.FINAL);
+			Set<javax.lang.model.element.Modifier> modifiers = m.getModifiers();
+			return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
+			//return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
 		})));
 
 		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
@@ -196,53 +212,43 @@ public final class ModelBuilder
 			nonPropertyMethods.addAll(createMagicSerializationMethods(clazz));
 		}
 
-		claimAndVerifyMethods(nonPropertyMethods, implementedMethodNames, propertyMethods);
+		Set<String> applicableTemplateImplementedMethodNames = templates.getAllTemplateMethodNames().stream().filter(n -> {
+			Predicate4<Configuration, Clazz, List<Method>, List<Member>> predicate = templateMethodConditions.get(n);
+			return predicate!=null ? predicate.test(clazz.getConfiguration(), clazz, nonPropertyMethods, members) : true;
+		}).collect(Collectors.toSet());
+
+		claimAndVerifyMethods(nonPropertyMethods, propertyMethods, applicableTemplateImplementedMethodNames);
 
 		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers);
 
 		return clazz;
 	}
 
-	/*
-	*
-    * Create a basic Clazz model instance for an existing class along with all its dependent model instances by inspecting
-    * javax.lang.model metadata.
-	*
-	* return A initialized basic Clazz for an existing.
-	*
-	* hrows Exception if a fatal error has occured.
-	*/
-    // TODO make:
-
-
-	private void claimAndVerifyMethods(List<Method> nonPropertyMethods, Set<String> implementedMethodNames, List<Property> propertyMethods) throws Exception
+	private void claimAndVerifyMethods(List<Method> nonPropertyMethods, List<Property> propertyMethods, Set<String> applicableTemplateImplementedMethodNames) throws Exception
 	{
-		Set<String> unusedMethodNames = new HashSet<String>(implementedMethodNames);
+		Set<String> unusedMethodNames = new HashSet<String>(applicableTemplateImplementedMethodNames);
 
 		for (Method method : nonPropertyMethods)
 		{
 			String name = method.getOverloadName();
-			for (String claimedImplementedName : implementedMethodNames)
+			for (String templateMethodName : applicableTemplateImplementedMethodNames)
 			{
-				if (name.equals(claimedImplementedName)) {
-					unusedMethodNames.remove(claimedImplementedName);
+				if (name.equals(templateMethodName)) {
+					unusedMethodNames.remove(templateMethodName);
 
-					method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
+					method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
 					break;
 				}
 			}
 		}
 
 		for (String name : unusedMethodNames) {
-		  boolean optional = (optionalMethods.contains(name));
-		  boolean special = (specialMethods.contains(name));
-		  if (!optional && !special)
 		    errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.UNKNOWN_METHOD, name));
 		}
 
 		for (Method method : propertyMethods)
 		{
-			method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT);
+			method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
 		}
 	}
 
@@ -259,26 +265,34 @@ public final class ModelBuilder
 		ObjectType inputStreamType = clazz.getHelperTypes().getInputStreamType();
 		ObjectType objectOutputStreamType = clazz.getHelperTypes().getOutputStreamType();
 
+		EnumSet<Modifier> declaredMethodModifiers=EnumSet.of(Modifier.PRIVATE);
+		EnumSet<Modifier> methodModifiers;
+		if (configuration.isFinalMethodsEnabled())
+			methodModifiers = EnumSet.of(Modifier.PRIVATE, Modifier.FINAL);
+		else methodModifiers = EnumSet.of(Modifier.PRIVATE);
+
+		EnumSet<Modifier> declaredParamModifiers = EnumSet.noneOf(Modifier.class);
+
 		// Add : private Object readResolve() throws ObjectStreamException :
-		Method readResolve = new Method(clazz, AccessLevel.PRIVATE, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		Method readResolve = new Method(clazz, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC);
 		newMethods.add(readResolve);
 
 		// Add private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException :
-		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, inputStreamType, inputStreamType, "in"));
-		Method readObject = new Method(clazz, AccessLevel.PRIVATE, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { (ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low), (ObjectType)typeBuilder.createType(clazz, classNotFoundExceptionMirrorType, DetailLevel.Low) }), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, inputStreamType, inputStreamType, "in", declaredParamModifiers));
+		Method readObject = new Method(clazz, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { (ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low), (ObjectType)typeBuilder.createType(clazz, classNotFoundExceptionMirrorType, DetailLevel.Low) }), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC);
 		newMethods.add(readObject);
 
 		// Add private void readObjectNoData() throws InvalidObjectException
-		Method readObjectNoData = new Method(clazz, AccessLevel.PRIVATE, noType, "readObjectNoData", clazz.getHelperTypes().getVoidType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		Method readObjectNoData = new Method(clazz, noType, "readObjectNoData", clazz.getHelperTypes().getVoidType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC);
 		newMethods.add(readObjectNoData);
 
 		// Add : private void writeObject (ObjectOutputStream out) throws IOException :
-		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, objectOutputStreamType, objectOutputStreamType, "out"));
-		Method writeObject = new Method(clazz, AccessLevel.PRIVATE, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList((ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, objectOutputStreamType, objectOutputStreamType, "out", declaredParamModifiers));
+		Method writeObject = new Method(clazz, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList((ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC);
 		newMethods.add(writeObject);
 
 		// Add : private Object writeReplace() throws ObjectStreamException :
-		Method writeReplace = new Method(clazz, AccessLevel.PRIVATE, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", ImplementationInfo.IMPLEMENTATION_MAGIC);
+		Method writeReplace = new Method(clazz, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC);
 		newMethods.add(writeReplace);
 
 		return newMethods;
@@ -349,9 +363,11 @@ public final class ModelBuilder
 			List<Parameter> parameters = new ArrayList<Parameter>();
 			for (int i=0; i<params.size(); ++i)
 			{
-				Parameter param = createParameter(clazz, params.get(i), paramTypes.get(i));
+				Parameter param = typeBuilder.createParameter(clazz, params.get(i), paramTypes.get(i));
 				parameters.add(param);
 			}
+
+			EnumSet<Modifier> declaredModifiers = typeBuilder.createModifierSet(m.getModifiers());
 
 			boolean validProperty = false;
 		    if (!m.isDefault() && !implementedAlready)
@@ -378,7 +394,7 @@ public final class ModelBuilder
 			          	   propertyMember = existingMember;
 			          	}
 
-			          	Property property = createValidatedProperty(clazz, statusHolder, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, ImplementationInfo.IMPLEMENTATION_MISSING);
+			          	Property property = createValidatedProperty(clazz, statusHolder, declaringType, m, returnType, parameters, thrownTypes, javaDoc, propertyKind, propertyMember, declaredModifiers, ImplementationInfo.IMPLEMENTATION_MISSING);
 
 			          	propertyMember.addPropertyMethod(property);
 			          	propertyMethods.add(property);
@@ -396,28 +412,13 @@ public final class ModelBuilder
 					implementationInfo=ImplementationInfo.IMPLEMENTATION_DEFAULT_PROVIDED;
 				else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;
 
-				nonPropertyMethods.add(new Method(clazz, AccessLevel.PUBLIC, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, implementationInfo));
+				nonPropertyMethods.add(new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo));
 			}
 		} catch (Exception e)
 		{
 			String location = m.getEnclosingElement().toString()+"."+m.getSimpleName().toString();
 			throw new RuntimeException("Failure during processing of "+location+" due to "+e.getMessage(), e);
 		}
-	}
-
-	private Parameter createParameter(BasicClazz clazz, VariableElement param, TypeMirror paramType)
-	{
-		String name = param.getSimpleName().toString();
-		return new Parameter(clazz, typeBuilder.createType(clazz, paramType, DetailLevel.Low), typeBuilder.createType(clazz, param.asType(), DetailLevel.Low), name);
-	}
-
-	private DeclaredType createBaseClazzDeclaredType(String clazzPackage) throws Exception
-	{
-		String baseClazzName = configuration.getBaseClazzName();
-		if (baseClazzName==null || baseClazzName.isEmpty())
-			baseClazzName=ConfigurationDefaults.RootObject;
-
-		return typeBuilder.createDeclaredTypeFromString(baseClazzName, clazzPackage);
 	}
 
 	private List<Type> createImportTypes(BasicClazz clazz, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes) throws Exception
@@ -441,7 +442,7 @@ public final class ModelBuilder
 		return importTypes;
 	}
 
-	private Property createValidatedProperty(BasicClazz clazz, StatusHolder statusHolder, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, ImplementationInfo implementationInfo)
+	private Property createValidatedProperty(BasicClazz clazz, StatusHolder statusHolder, Type declaringType, ExecutableElement m, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, PropertyKind propertyKind, Member propertyMember, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo)
 	{
 		Property property;
 
@@ -450,7 +451,7 @@ public final class ModelBuilder
       	Type overriddenReturnType = (configuration.isThisAsImmutableSetterReturnTypeEnabled() && propertyKind==PropertyKind.SETTER && !returnType.isVoid()) ? clazz : returnType;
 
 		if (parameters.size()==0) {
-			property=new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo);
+			property=new Property(clazz, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, modifiers, implementationInfo);
 		} else if (parameters.size()==1) {
 			Parameter parameter = parameters.get(0);
 
@@ -461,7 +462,7 @@ public final class ModelBuilder
 				parameter=parameter.setName(propertyMember.getName());
 			}
 
-			property = new Property(clazz, AccessLevel.PUBLIC, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, implementationInfo, parameter);
+			property = new Property(clazz, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, modifiers, implementationInfo, parameter);
 		} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
 
 		return property;
@@ -513,6 +514,8 @@ public final class ModelBuilder
 	{
 		TypeMirror propertyTypeMirror;
 
+		EnumSet<Modifier> modifiers = EnumSet.of(Modifier.PUBLIC);
+
 		if (kind==PropertyKind.GETTER) {
 			if (setterParams.size()!=0) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -521,7 +524,7 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror = returnTypeMirror;
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement));
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement), modifiers);
 		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -530,7 +533,6 @@ public final class ModelBuilder
 			}
 
 			String returnTypeName = returnTypeMirror.toString();
-			// Type returnType = typeBuilder.createType(clazz, allTypesByPrototypicalFullName, types, returnTypeMirror);
 
 			String declaredInterfaceTypeName = interfaceOrClassMirrorType.toString();
 			if (!returnTypeName.equals("void") && !returnTypeName.equals(declaredInterfaceTypeName) && !returnTypeName.equals(clazz.getQualifiedName())) {
@@ -540,7 +542,7 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror=setterParamTypes.get(0);
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement));
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement), modifiers);
 		} else {
 			return null; // Not a property.
 		}
@@ -565,6 +567,12 @@ public final class ModelBuilder
 		}
 
 		return name;
+	}
+
+
+	private static boolean implementationExists(Clazz clazz, String methodName, List<Method> methods)
+	{
+      return methods.stream().anyMatch(m -> m.getDeclaringType()!=clazz && m.getName().equals("compareTo") && !m.getDeclaredModifiers().contains(Modifier.STATIC) && !m.getDeclaredModifiers().contains(Modifier.ABSTRACT));
 	}
 
 	/*

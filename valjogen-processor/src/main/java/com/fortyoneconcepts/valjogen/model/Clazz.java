@@ -11,7 +11,8 @@ import com.fortyoneconcepts.valjogen.model.util.ThrowingFunction;
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /**
- * Information about the java "class" that need to be generated. Together with its supertypes it refers to other model elements like members, properties, methods, types etc.
+ * Information about the java "class" that need to be generated including additional information about methods that acts as properties.
+ * Together with its supertypes it refers to other model elements like members, properties, methods, types etc.
  *
  * @author mmc
  */
@@ -20,6 +21,8 @@ public final class Clazz extends BasicClazz implements Model
 	private final String qualifiedMaster;
 	private final String javaDoc;
 	private final String fileHeaderText;
+
+	private List<Property> properties;
 	private List<Type> importTypes;
 	private List<Member> chosenComparableMembers;
 
@@ -33,20 +36,39 @@ public final class Clazz extends BasicClazz implements Model
 	 * @param javaDoc JavaDoc if any.
 	 * @param fileHeaderText Text to output as header for file(s).
 	 * @param helperFactoryMethod Method that can generate helper types for this class.
+	 * @param noType Helper type that represents no-type.
 	 * @throws Exception Exception if could not construct clazz.
 	 */
-	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception
+	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod, NoType noType) throws Exception
 	{
-		super(configuration, qualifiedClassName, helperFactoryMethod);
+		super(null, configuration, qualifiedClassName, helperFactoryMethod, noType);
 		super.clazzUsingType=this;
 
 		this.qualifiedMaster = qualifiedMaster;
 		this.interfaceTypes = new ArrayList<Type>();
-		this.baseClazzType = new NoType(this);
+		this.baseClazzType = noType;
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.fileHeaderText = Objects.requireNonNull(fileHeaderText);
 
 		this.importTypes = new ArrayList<Type>();
+	}
+
+	@Override
+	public BasicClazz getClazz()
+	{
+		return this;
+	}
+
+	@Override
+	public Clazz getGeneratedClazz()
+	{
+		return this;
+	}
+
+	@Override
+	public boolean isThisType()
+	{
+		return true;
 	}
 
 	public String getMasterName()
@@ -57,12 +79,6 @@ public final class Clazz extends BasicClazz implements Model
 	public String getFileHeaderText()
 	{
 		return fileHeaderText;
-	}
-
-	@Override
-	public boolean isThisType()
-	{
-		return true;
 	}
 
 	@Override
@@ -77,14 +93,15 @@ public final class Clazz extends BasicClazz implements Model
      *
 	 * @param members Member variables for class.
 	 * @param properties Property methods for class.
-	 * @param nonPropertyMethods Other methods for class.
+	 * @param methods Non-property methods for class.
 	 * @param importTypes Types to be imported for class.
 	 * @param chosenComparableMembers Members to be used for compareToOperation
 	 */
-	public void initContent(List<Member> members, List<Property> properties, List<Method> nonPropertyMethods, List<Type> importTypes, List<Member> chosenComparableMembers)
+	public void initContent(List<Member> members, List<Property> properties, List<Method> methods, List<Type> importTypes, List<Member> chosenComparableMembers)
 	{
-		super.initContent(members, properties, nonPropertyMethods);
+		super.initContent(members, methods, EnumSet.noneOf(Modifier.class));
 
+        this.properties=Objects.requireNonNull(properties);
 		this.importTypes=Objects.requireNonNull(importTypes);
         this.chosenComparableMembers = Objects.requireNonNull(chosenComparableMembers);
 	}
@@ -100,6 +117,12 @@ public final class Clazz extends BasicClazz implements Model
 		return getConfiguration().isSynchronizedAccessEnabled() &&  members.stream().anyMatch(member -> !member.isFinal());
 	}
 
+
+	public List<Property> getPropertyMethods() {
+		assert initialized() : "Class initialization missing";
+		return properties;
+	}
+
 	public List<Member> getChosenComparableMembers()
 	{
 		assert initialized() : "Class initialization missing";
@@ -108,7 +131,7 @@ public final class Clazz extends BasicClazz implements Model
 
 	public List<Method> getClaimedImplementationMethods()
 	{
-		return methods.stream().filter(m -> m.implementationInfo==ImplementationInfo.IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT).collect(Collectors.toList());
+		return methods.stream().filter(m -> m.implementationInfo==ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT).collect(Collectors.toList());
 	}
 
 	public List<Type> getImportTypes()
@@ -145,16 +168,16 @@ public final class Clazz extends BasicClazz implements Model
 		if (level==0)
 		{
 			sb.append(" packageName=" + packageName + System.lineSeparator()
-					 +", base type=" + baseClazzType.toString(level+1)
+					 +", base type=" + baseClazzType.toString(level)
 					 + System.lineSeparator() + ", interface interfaceTypes=["
 					 + interfaceTypes.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+ System.lineSeparator()+ ", interfaceTypesWithAscendants=["
-					 + interfaceTypesWithAscendants.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator())) +"]"+ System.lineSeparator()
- 					 + ", importedTypes="+ToStringUtil.toString(importTypes,level+1)+System.lineSeparator()
-					 + ", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, level+1)+System.lineSeparator()
-					 + ", members="+ToStringUtil.toString(members, level+1)+System.lineSeparator()
-					 + ", properties=" + ToStringUtil.toString(properties,level+1)+System.lineSeparator()
-					 + ", methods="+ToStringUtil.toString(methods,level+1)+System.lineSeparator()
-					 + ", configuration="+configuration+"]"+System.lineSeparator());
+					 + superTypesWithAscendants.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator())) +"]"+ System.lineSeparator()
+ 					 + ", importedTypes="+ToStringUtil.toString(importTypes, ", ", level+1)+System.lineSeparator()
+					 + ", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, ", ", level+1)+System.lineSeparator()
+					 + ", members="+ToStringUtil.toString(members, System.lineSeparator(), level+1)+System.lineSeparator()
+					 + ", properties=" + ToStringUtil.toString(properties,System.lineSeparator(), level+1)+System.lineSeparator()
+					 + ", methods="+ToStringUtil.toString(methods,System.lineSeparator(), level+1)+System.lineSeparator()
+					 );
 		}
 
 		sb.append("]");

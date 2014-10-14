@@ -61,9 +61,10 @@ public class TemplateCustomTest extends TemplateTestBase
 	}
 
 	@Test
-	public void testCustomSerializableWithCustomMethods() throws Exception
+	public void testCustomSerializableWithCustomMethodsAndNonFinalMethods() throws Exception
 	{
 		Output output = produceOutput(SerializableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
+																   .add(ConfigurationOptionKeys.finalMethodsEnabled, false)
 				                                                   .add(ConfigurationOptionKeys.customJavaTemplateFileName, "custom_serializable.stg")
 				                                                   .build());
 
@@ -76,13 +77,13 @@ public class TemplateCustomTest extends TemplateTestBase
 	}
 
 	@Test
-	public void testCustomMethodsWildOverloads() throws Exception
+	public void testCustomMethodsWithOverloads() throws Exception
 	{
 		Output output = produceOutput(OverloadedInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 1)
 				                                                   .add(ConfigurationOptionKeys.customJavaTemplateFileName, "custom_overload.stg").build());
 
 		assertContainsWithWildcards("OverloadedInterface customMethod(final String stringValue, final int intValue) {", output.code);
-		assertContainsWithWildcards("public void customMethod(final int intValue) {", output.code);
-		assertContainsWithWildcards("public void customMethod(final String stringValue) {", output.code);
+		assertContainsWithWildcards("void customMethod(final int intValue) {", output.code);
+		assertContainsWithWildcards("void customMethod(final String stringValue) {", output.code);
 	}
 }

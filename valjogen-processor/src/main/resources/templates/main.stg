@@ -78,7 +78,7 @@ member(member) ::= <<
 /** Generate constructor **/
 method_this(clazz) ::= <<
 <@javadoc><@end><@annotations><clazz.configuration.constructorAnnotations:annotation(); wrap, anchor, separator="\n"><@end>
-<constructorLevel(clazz)><clazz.name>(<@arguments><clazz.members:formalParameter(); wrap, anchor, separator=", "><@end>)
+<constructorLevel(clazz)><clazz.name>(<@arguments><clazz.members:declare_parameter_from_member(); wrap, anchor, separator=", "><@end>)
 {
   <if(!clazz.baseClazzType.rootObject)>super();<endif>
   <@preamble><@end>
@@ -90,7 +90,7 @@ method_this(clazz) ::= <<
 /** Generate static factory method: **/
 method_valueOf(clazz) ::= <<
 <@javadoc><@end><@annotations><clazz.configuration.factoryMethodAnnotations:annotation(); wrap, anchor, separator="\n"><@end>
-public static <optGenericQualifier(clazz)><clazz.prototypicalName> valueOf(<@arguments><clazz.members:formalParameter(); wrap, anchor, separator=", "><@end>)
+public static <optGenericQualifier(clazz)><clazz.prototypicalName> valueOf(<@arguments><clazz.members:declare_parameter_from_member(); wrap, anchor, separator=", "><@end>)
 {
   <@preamble><@end>
   <clazz.prototypicalName> <uniqueVariableName(clazz,"instance")> = new <clazz.prototypicalName>(<clazz.members:{m | <m.name>}; wrap, anchor, separator=", ">);

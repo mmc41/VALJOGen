@@ -21,6 +21,7 @@ import javax.tools.JavaFileObject;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.*;
+import com.fortyoneconcepts.valjogen.processor.builders.ModelBuilder;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
@@ -119,6 +120,8 @@ public class AnnotationProcessor extends AbstractProcessor
 
 					String path = processingEnv.getOptions().getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.SOURCEPATH, optCtrDefaultSourcePath);
 					LOGGER.fine(() -> "GOT SOURCEPATH: "+path);
+
+					LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR CONFIGURATION "+System.lineSeparator()+configuration);
 
 					PackageElement packageElement = (PackageElement)(e.getEnclosingElement());
 					String sourcePackageElementPath = packageElement.toString().replace('.', '/');

@@ -42,11 +42,21 @@ public interface Model
 	}
 
 	/**
-	 * Get the class that this model is used in.
+	 * Get the (basic) class that this model is used in. Can be the generated class or another class the generated class depend on.
 	 *
 	 * @return The class that this model is a part of.
 	 */
 	public BasicClazz getClazz();
+
+	/**
+	 * Get the class that is being generated - the 'root' class of all basic clazzes in the dependency graph.
+	 *
+	 * @return The generated class.
+	 */
+	public default Clazz getGeneratedClazz()
+	{
+		return getClazz().getGeneratedClazz();
+	}
 
 	/**
 	 * Prefix for (auto-generated) local variables.

@@ -74,11 +74,11 @@ public @interface VALJOConfigure
     boolean finalClassEnabled() default true;
 
 	/**
-	* Specifies if generated property methods should be final if possible. May be overruled by equivalent annotation processor key.
+	* Specifies if generated methods (incl. property methods) should be final if possible. May be overruled by equivalent annotation processor key.
 	*
-	* @return True if generated properties are prefered to be final
+	* @return True if generated methods are prefered to be final
 	*/
-	boolean finalPropertiesEnabled() default true;
+	boolean finalMethodsEnabled() default true;
 
 	/**
 	* Specifies assignments to local variables should guard against null. May be overruled by equivalent annotation processor key.
@@ -319,7 +319,7 @@ public @interface VALJOConfigure
 	*
 	* @return Log level
 	*/
-    String logLevel() default "WARNING"; // "WARNING"; // INFO
+    String logLevel() default "INFO"; // "WARNING"; // INFO
 
     /**
 	* Experimental debugging feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are

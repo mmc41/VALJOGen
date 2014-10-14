@@ -3,6 +3,8 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -10,37 +12,22 @@ import java.util.Objects;
  *
  * @author mmc
  */
-public class Parameter extends ModelBase
+public class Parameter extends DefinitionBase implements TypedModel
 {
-	private final BasicClazz clazz;
-	private final String paramName;
 	private final Type type;
 	private final Type erasedParamType;
+	private EnumSet<Modifier> modifiers;
 
-	public Parameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName)
+	public Parameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers)
 	{
-		this.clazz=Objects.requireNonNull(clazz);
-		this.paramName=Objects.requireNonNull(paramName);
+		super(clazz, paramName, declaredModifiers);
 		this.type=Objects.requireNonNull(paramType);
 		this.erasedParamType=Objects.requireNonNull(erasedParamType);
-	}
 
-	@Override
-	public Configuration getConfiguration()
-	{
-		return clazz.getConfiguration();
-	}
-
-	@Override
-	public HelperTypes getHelperTypes()
-	{
-		return clazz.getHelperTypes();
-	}
-
-	@Override
-	public BasicClazz getClazz()
-	{
-		return clazz;
+		HashSet<Modifier> _modifiers = new HashSet<>(declaredModifiers);
+		//if (clazz.getConfiguration().is())
+		_modifiers.add(Modifier.FINAL);
+		modifiers=_modifiers.size()>0 ? EnumSet.copyOf(_modifiers) : EnumSet.noneOf(Modifier.class);
 	}
 
 	@Override
@@ -49,15 +36,23 @@ public class Parameter extends ModelBase
 		return clazz.getPackageName();
 	}
 
+	@Override
 	public String getName() {
-		return paramName;
+		return name;
+	}
+
+	@Override
+	public EnumSet<Modifier> getModifiers()
+	{
+		return modifiers;
 	}
 
 	public Parameter setName(String newParamName)
 	{
-		return new Parameter(clazz, type, erasedParamType, newParamName);
+		return new Parameter(clazz, type, erasedParamType, newParamName, declaredModifiers);
 	}
 
+	@Override
 	public Type getType()
 	{
 	    return type;
@@ -70,6 +65,6 @@ public class Parameter extends ModelBase
 
 	@Override
 	public String toString(int level) {
-		return "Parameter [name=" + paramName + ", type=" + type.getPrototypicalQualifiedName() + ", erasedType=" + erasedParamType.getPrototypicalQualifiedName() +"]";
+		return "Parameter [name=" + name + ", type=" + type.getPrototypicalQualifiedName() + ", erasedType=" + erasedParamType.getPrototypicalQualifiedName() +", declaredModifiers="+declaredModifiers+", modifiers="+modifiers+"]";
 	}
 }

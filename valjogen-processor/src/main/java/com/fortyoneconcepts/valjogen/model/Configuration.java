@@ -112,9 +112,9 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getBooleanValue(finalClassEnabled, configureAnnotation.finalClassEnabled());
 	 }
 
-	 public boolean isFinalPropertiesEnabled()
+	 public boolean isFinalMethodsEnabled()
 	 {
-		 return getBooleanValue(finalPropertiesEnabled, configureAnnotation.finalPropertiesEnabled());
+		 return getBooleanValue(finalMethodsEnabled, configureAnnotation.finalMethodsEnabled());
 	 }
 
 	 public boolean isStaticFactoryMethodEnabled()

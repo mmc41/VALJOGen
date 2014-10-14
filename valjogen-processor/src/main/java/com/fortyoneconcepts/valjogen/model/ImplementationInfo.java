@@ -18,9 +18,9 @@ public enum ImplementationInfo
 	IMPLEMENTATION_DEFAULT_PROVIDED,
 
 	/**
-	* Assumed implemented by generated class.
+	* Implemented by the object holding the method or at least assumed implemented by generated class if this is the object holding the method.
 	*/
-	IMPLEMENTATION_CLAIMED_BY_GENERATED_OBJECT,
+	IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT,
 
 	/**
 	* Synthetic method that belongs to no interface where implemention is optional (used for readResolve etc).

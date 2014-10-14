@@ -12,6 +12,7 @@ import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
+
 /**
  * Stubbed integration test of StringTemplate generation of code related to the methods (excl. properties) inside the class. See {@link TemplateTestBase} for general
  * words about template tests.

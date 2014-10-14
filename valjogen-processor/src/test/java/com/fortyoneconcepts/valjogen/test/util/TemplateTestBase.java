@@ -30,10 +30,10 @@ import com.fortyoneconcepts.valjogen.model.Configuration;
 import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
-import com.fortyoneconcepts.valjogen.processor.ModelBuilder;
 import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
 import com.fortyoneconcepts.valjogen.processor.STTemplates;
+import com.fortyoneconcepts.valjogen.processor.builders.ModelBuilder;
 import com.google.testing.compile.CompilationRule;
 
 /**
@@ -85,15 +85,22 @@ public abstract class TemplateTestBase
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.warnAboutSynthesisedNames, "false");
 	}
 
+	/**
+	* Contains the produced result including generated code, intermediate model representation, warnings and errors.
+	*
+	* @author mmc
+	*/
 	public final class Output
 	{
 		public final String code;
+		public final Clazz clazz;
 		public final List<String> warnings;
 		public final List<String> errors;
 
-		public Output(String code, List<String> warnings, List<String> errors)
+		public Output(String code, Clazz clazz, List<String> warnings, List<String> errors)
 		{
 			this.code=Objects.requireNonNull(code);
+			this.clazz=Objects.requireNonNull(clazz);
 			this.warnings=Objects.requireNonNull(warnings);
 			this.errors=Objects.requireNonNull(errors);
 		}
@@ -123,6 +130,8 @@ public abstract class TemplateTestBase
 
 		 // Know that we know what proper log level to set, do set it correctly.
 	    parentLogger.setLevel(configuration.getLogLevel());
+
+		LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR CONFIGURATION "+System.lineSeparator()+configuration);
 
 		TypeElement interfaceElement = elements.getTypeElement(sourceClass.getCanonicalName());
 		PackageElement packageElement = (PackageElement)(interfaceElement.getEnclosingElement());
@@ -168,6 +177,6 @@ public abstract class TemplateTestBase
 	    output=output.replaceAll("\\s+", " ");
 	    output=output.trim();
 
-		return new Output(output, warnings, errors);
+		return new Output(output, clazz, warnings, errors);
 	}
 }

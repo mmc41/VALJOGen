@@ -39,9 +39,9 @@ public interface ConfigurationOptionKeys
 	 public static String finalClassEnabled = "finalClassEnabled";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalPropertiesEnabled
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalMethodsEnabled
 	 */
-	 public static String finalPropertiesEnabled = "finalPropertiesEnabled";
+	 public static String finalMethodsEnabled = "finalMethodsEnabled";
 
 	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#staticFactoryMethodEnabled

@@ -17,15 +17,9 @@ public abstract class Type extends ModelBase
 	protected BasicClazz clazzUsingType; // May be set by subclass immediately after constructor but not changed afterwards.
 	protected final String qualifiedProtoTypicalTypeName;
 
-	protected Type(String qualifiedProtoTypicalTypeName)
+	protected Type(BasicClazz optClazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
-		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
-		this.clazzUsingType = null; // Must be set manually after constructor by subclass.
-	}
-
-	protected Type(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName)
-	{
-		this.clazzUsingType = Objects.requireNonNull(clazzUsingType);
+		this.clazzUsingType = optClazzUsingType; // Must be set manually after constructor by subclass if null.
 		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
 	}
 
@@ -44,7 +38,7 @@ public abstract class Type extends ModelBase
 	@Override
 	public BasicClazz getClazz()
 	{
-		return clazzUsingType.getClazz();
+		return clazzUsingType;
 	}
 
 	/**
@@ -173,6 +167,16 @@ public abstract class Type extends ModelBase
 	}
 
 	public boolean isComparable()
+	{
+		return false;
+	}
+
+	public DetailLevel getDetailLevel()
+	{
+		return DetailLevel.Low;
+	}
+
+	public boolean canBeMoreDetailed()
 	{
 		return false;
 	}

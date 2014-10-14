@@ -20,6 +20,7 @@ import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
  */
 public class TemplateClassTest extends TemplateTestBase
 {
+
 	@Test
 	public void testImmutableAsFinal() throws Exception
 	{
@@ -89,6 +90,13 @@ public class TemplateClassTest extends TemplateTestBase
 	{
 		Output output = produceOutput(InterfaceWithoutAnnotation.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.extraInterfaceNames, new String[] {"java.lang.Comparable<java.lang.String>"}).build());
 		assertContainsWithWildcards("class "+generatedClassName+" implements InterfaceWithoutAnnotation, Comparable<String>", output.code);
+	}
+
+	@Test
+	public void testInterfaceWithBaseClass() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName()).build());
+		assertContainsWithWildcards("class "+generatedClassName+" extends "+ComparableBaseClass.class.getSimpleName(), output.code);
 	}
 
 	@Test

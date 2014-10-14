@@ -58,7 +58,7 @@ public final class STTemplates
 
 		Set<String> templateNames = getAllTemplateNames(group);
 
-		templateMethodNames = Collections.unmodifiableSet(templateNames.stream().filter(n -> n.startsWith(method_prefix)).map(n -> templateNameToMethodName(n)).collect(Collectors.toSet()));
+		templateMethodNames = Collections.unmodifiableSet(Collections.unmodifiableSet(templateNames.stream().filter(n -> n.startsWith(method_prefix)).map(n -> templateNameToMethodName(n)).collect(Collectors.toSet())));
 
         if (LOGGER.isLoggable(Level.FINE))
           for (String templateName : templateMethodNames)
@@ -80,7 +80,7 @@ public final class STTemplates
 	 *
 	 * @return List of normal template method names.
 	 */
-	public Set<String> getTemplateMethodNames()
+	public Set<String> getAllTemplateMethodNames()
 	{
 		return templateMethodNames;
 	}

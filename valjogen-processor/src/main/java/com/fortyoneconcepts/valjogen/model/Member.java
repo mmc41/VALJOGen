@@ -11,37 +11,22 @@ import java.util.stream.Collectors;
  *
  * @author mmc
  */
-public final class Member extends ModelBase
+public final class Member extends DefinitionBase implements TypedModel
 {
-	private final BasicClazz clazz;
-	private final String name;
 	private final Type type;
 	private List<Property> properties;
+	private EnumSet<Modifier> modifiers;
 
-	public Member(BasicClazz clazz, Type type, String name)
+	public Member(BasicClazz clazz, Type type, String name, EnumSet<Modifier> declaredModifiers)
 	{
-		this.clazz=Objects.requireNonNull(clazz);
+		super(clazz, name, declaredModifiers);
 		this.type=Objects.requireNonNull(type);
-		this.name=Objects.requireNonNull(name);
 		this.properties=new LinkedList<Property>();
-	}
 
-	@Override
-	public Configuration getConfiguration()
-	{
-		return clazz.getConfiguration();
-	}
-
-	@Override
-	public HelperTypes getHelperTypes()
-	{
-		return clazz.getHelperTypes();
-	}
-
-	@Override
-	public BasicClazz getClazz()
-	{
-		return clazz;
+		HashSet<Modifier> _modifiers = new HashSet<>(declaredModifiers);
+		if (clazz.getConfiguration().isFinalMembersEnabled())
+			_modifiers.add(Modifier.FINAL);
+		modifiers=_modifiers.size()>0 ? EnumSet.copyOf(_modifiers) : EnumSet.noneOf(Modifier.class);
 	}
 
 	@Override
@@ -50,13 +35,16 @@ public final class Member extends ModelBase
 		return clazz.getPackageName();
 	}
 
-	public String getName() {
-		return name;
-	}
-
+	@Override
 	public Type getType()
 	{
 	    return type;
+	}
+
+	@Override
+	public EnumSet<Modifier> getModifiers()
+	{
+		return modifiers;
 	}
 
 	public Property getGetter()
@@ -134,7 +122,7 @@ public final class Member extends ModelBase
 		sb.append("Member [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", name=" + name + ", type=" + type.getName() + ", properties=["+properties.stream().map(p -> p.methodName).collect(Collectors.joining(", "))+"]");
+			sb.append(", name=" + name + ", type=" + type.getPrototypicalName() + ", properties=["+properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+", declaredModifiers="+declaredModifiers+", modifiers="+modifiers+"]");
 
 		sb.append("]");
 
