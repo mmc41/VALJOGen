@@ -129,7 +129,7 @@ public final class Member extends DefinitionBase implements TypedModel
 		sb.append("Member [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", name=" + name + ", type=" + type.getPrototypicalName() + ", properties=["+properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+", declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+", mutable="+isMutable()+"]");
+			sb.append(", name=" + name + ", type=" + type.getPrototypicalName() + ", declaringType="+clazz.getName()+", properties=["+properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+"], declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+", mutable="+isMutable()+"]");
 
 		sb.append("]");
 

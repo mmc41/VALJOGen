@@ -104,9 +104,9 @@ final class TypeBuilder
 			} else {
  	  	        ObjectType newObjectType;
  	  	        if (detailLevel==DetailLevel.High && (mirrorType instanceof DeclaredType)) {
-			  	   newType=newObjectType=new com.fortyoneconcepts.valjogen.model.BasicClazz(clazz, configuration, typeName, (c) -> clazz.getHelperTypes(), noType);
+			  	   newType=newObjectType=new com.fortyoneconcepts.valjogen.model.BasicClazz(clazz, configuration, typeName, (c) -> clazz.getHelperTypes());
 			    } else {
-			       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName, noType);
+			       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
 				}
 
 			    existingType=typePool.put(typeName, newType);
@@ -150,7 +150,7 @@ final class TypeBuilder
 		   genericTypeMirrorArguments=Collections.emptyList();
 	   }
 
-	   Type baseClazzType = baseClazzTypeMirror!=null ? createType(clazz, baseClazzTypeMirror, detailLevel) : noType;
+	   ObjectType baseClazzType = baseClazzTypeMirror!=null ? (ObjectType)createType(clazz, baseClazzTypeMirror, detailLevel) : noType;
 	   List<Type> interfaceTypes = interfaceSuperTypeMirrors.stream().map(t -> createType(clazz, t, detailLevel)).collect(Collectors.toList());
 	   Set<Type> interfaceTypesWithAscendants = allSuperTypesWithAscendantsTypeMirrors.stream().map(t -> createType(clazz, t, detailLevel)).collect(Collectors.toSet());
 	   List<Type> genericTypeArguments = genericTypeMirrorArguments.stream().map(t -> createType(clazz, t, detailLevel)).collect(Collectors.toList());
@@ -164,7 +164,7 @@ final class TypeBuilder
 
 		  Element newClazzElement=declaredType.asElement();
 
-		  Stream<ExecutableElement> executableElements = newClazzElement.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
+		  Stream<ExecutableElement> executableElements = newClazzElement.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD || m.getKind()==ElementKind.CONSTRUCTOR).map(m -> (ExecutableElement)m).filter(m -> {
 			Set<javax.lang.model.element.Modifier> modifiers = m.getModifiers();
 			return !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE);
 		  });
@@ -224,7 +224,13 @@ final class TypeBuilder
 		}
 
 		String javaDoc = "";
-		return new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+
+		Method newMethod;
+		if (BuilderUtil.isConstructor(methodName))
+		  newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+		else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+
+		return newMethod;
 	}
 
 	/**
@@ -305,7 +311,12 @@ final class TypeBuilder
 		if (baseClazzName==null || baseClazzName.isEmpty())
 			baseClazzName=ConfigurationDefaults.RootObject;
 
-		return createDeclaredTypeFromString(baseClazzName, clazzPackage);
+		DeclaredType result = createDeclaredTypeFromString(baseClazzName, clazzPackage);
+
+		if (result!=null && !BuilderUtil.isClass(result))
+			errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.NOT_A_CLASS, result.toString()));
+
+		return result;
 	}
 
 	TypeMirror createTypeFromString(String qualifiedName) throws Exception
@@ -368,6 +379,10 @@ final class TypeBuilder
 			{
 				DeclaredType extraDeclaredType = createDeclaredTypeFromString(ekstraInterfaceName, clazzPackage);
 				interfaceElements.add(extraDeclaredType);
+
+				if (!BuilderUtil.isInterface(extraDeclaredType))
+					errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.NOT_AN_INTERFACE, extraDeclaredType.toString()));
+
 			}
 		}
 		return interfaceElements;
@@ -388,16 +403,4 @@ final class TypeBuilder
 		return Stream.concat(superTypesAsDeclaredTypes, Stream.of(classOrInterfaceType));
 
 	}
-
-	static boolean isClass(TypeMirror typeMirror)
-	{
-		ElementKind kind = (typeMirror instanceof DeclaredType) ? ((DeclaredType) typeMirror).asElement().getKind() : ElementKind.OTHER;
-		return kind==ElementKind.CLASS || kind==ElementKind.ENUM;
-    }
-
-	static boolean isInterface(TypeMirror typeMirror)
-	{
-		ElementKind kind = (typeMirror instanceof DeclaredType) ? ((DeclaredType) typeMirror).asElement().getKind() : ElementKind.OTHER;
-        return kind == ElementKind.INTERFACE;
-    }
 }

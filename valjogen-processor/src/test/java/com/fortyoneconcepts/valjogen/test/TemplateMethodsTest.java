@@ -9,6 +9,7 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
+import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase.Output;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -21,6 +22,13 @@ import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
  */
 public class TemplateMethodsTest extends TemplateTestBase
 {
+	@Test
+	public void testCallsBaseClassConstructor() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName()).build());
+		assertContainsWithWildcards("class "+generatedClassName+" extends "+AbstractComparableBaseClass.class.getSimpleName(), output.code);
+	}
+
 	@Test
 	public void testGuardedConstructor() throws Exception
 	{

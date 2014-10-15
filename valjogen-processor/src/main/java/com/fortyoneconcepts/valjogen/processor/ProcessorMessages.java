@@ -27,4 +27,7 @@ public interface ProcessorMessages
   public static final String SucessMsg="Sucessfully generated file %s";
 
   public static final String UNKNOWN_METHOD = "Unknown/undeclared method %s";
+
+  public static final String NOT_A_CLASS = "%s is not a class type";
+  public static final String NOT_AN_INTERFACE = "%s is not an interface type";
 }

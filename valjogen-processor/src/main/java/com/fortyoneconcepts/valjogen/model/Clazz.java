@@ -37,17 +37,16 @@ public final class Clazz extends BasicClazz implements Model
 	 * @param javaDoc JavaDoc if any.
 	 * @param fileHeaderText Text to output as header for file(s).
 	 * @param helperFactoryMethod Method that can generate helper types for this class.
-	 * @param noType Helper type that represents no-type.
 	 * @throws Exception Exception if could not construct clazz.
 	 */
-	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod, NoType noType) throws Exception
+	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception
 	{
-		super(null, configuration, qualifiedClassName, helperFactoryMethod, noType);
+		super(null, configuration, qualifiedClassName, helperFactoryMethod);
 		super.clazzUsingType=this;
 
 		this.qualifiedMaster = qualifiedMaster;
 		this.interfaceTypes = new ArrayList<Type>();
-		this.baseClazzType = noType;
+		this.baseClazzType = null;
 		this.javaDoc = Objects.requireNonNull(javaDoc);
 		this.fileHeaderText = Objects.requireNonNull(fileHeaderText);
 
@@ -133,6 +132,10 @@ public final class Clazz extends BasicClazz implements Model
 		return getConfiguration().isSynchronizedAccessEnabled() &&  members.stream().anyMatch(member -> !member.isFinal());
 	}
 
+	public boolean isAbstract() {
+		assert initialized() : "Class initialization missing";
+		return !methods.stream().allMatch(m -> m.implementationInfo!=ImplementationInfo.IMPLEMENTATION_MISSING);
+	}
 
 	public List<Property> getPropertyMethods() {
 		assert initialized() : "Class initialization missing";

@@ -8,11 +8,11 @@ import java.util.Objects;
  * @author mmc
  *
  */
-public class NoType extends Type
+public class NoType extends ObjectType
 {
 	public NoType()
 	{
-		super(null, "NONE");
+		super(null, "");
 	}
 
 	/**

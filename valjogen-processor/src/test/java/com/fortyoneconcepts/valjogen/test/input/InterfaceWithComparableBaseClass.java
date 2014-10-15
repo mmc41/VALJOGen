@@ -9,11 +9,11 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate
-@VALJOConfigure(baseClazzName="com.fortyoneconcepts.valjogen.test.input.AbstractComparableBaseClass", comparableMembers="_float")
-public interface InterfaceWithAbstractComparableBaseClass
+@VALJOConfigure(baseClazzName="com.fortyoneconcepts.valjogen.test.input.ComparableBaseClass")
+public interface InterfaceWithComparableBaseClass
 {
 	public int getMyValue();
-	public InterfaceWithAbstractComparableBaseClass setMyValue(int myValue);
+	public InterfaceWithComparableBaseClass setMyValue(int myValue);
 
 	public List<Double> getMyDoubleList();
 }

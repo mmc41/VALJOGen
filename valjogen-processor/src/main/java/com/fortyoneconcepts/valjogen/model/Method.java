@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /***
- * Meta-information about a method that should be generated (implemented).
+ * Meta-information about an existing method or a method that should be generated (implemented).
  *
  * @author mmc
  */
@@ -70,6 +70,11 @@ public class Method extends DefinitionBase
 	public void setImplementationInfo(ImplementationInfo implementationInfo)
 	{
 		this.implementationInfo=implementationInfo;
+	}
+
+	public boolean isConstructor()
+	{
+		return false;
 	}
 
 	public boolean isThisReturnType()
@@ -172,7 +177,9 @@ public class Method extends DefinitionBase
 	{
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("Method [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+		String name = isConstructor() ? "Constructor" : "Method";
+
+		sb.append(name+" [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
 			sb.append(", declaringType="+declaringType.getName()+", methodName=" + getName() +

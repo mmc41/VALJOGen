@@ -21,22 +21,22 @@ import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 public class ObjectType extends Type
 {
 	protected List<Type> genericTypeArguments;
-	protected Type baseClazzType;
+	protected ObjectType baseClazzType;
 	protected List<Type> interfaceTypes;
 	protected Set<Type> superTypesWithAscendants;
 
 	protected boolean initializedType;
 
-	public ObjectType(BasicClazz optClazzUsingType, String qualifiedProtoTypicalTypeName, NoType noType)
+	public ObjectType(BasicClazz optClazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
-		this(optClazzUsingType, qualifiedProtoTypicalTypeName, noType, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
+		this(optClazzUsingType, qualifiedProtoTypicalTypeName, null, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
 	}
 
-	private ObjectType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName, Type baseClazz, List<Type> superInterfaces, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
+	private ObjectType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName, ObjectType baseClazz, List<Type> superInterfaces, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
 	{
 		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 		this.genericTypeArguments=genericTypeArguments;
-		this.baseClazzType = Objects.requireNonNull(baseClazz);
+		this.baseClazzType = baseClazz;
 		this.interfaceTypes= Objects.requireNonNull(superInterfaces);
 		this.superTypesWithAscendants= Objects.requireNonNull(superTypesWithAncestors);
 	}
@@ -50,7 +50,7 @@ public class ObjectType extends Type
 	 * @param superTypesWithAncestors All ancestor interfaces of this type.
 	 * @param genericTypeArguments Generic arguments of this type.
 	 */
-	public void initType(Type baseClazzType, List<Type> interfaceTypes, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
+	public void initType(ObjectType baseClazzType, List<Type> interfaceTypes, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
 	{
 		if (initializedType)
 			throw new IllegalStateException("Clazz type aspects already initialized");
@@ -100,7 +100,7 @@ public class ObjectType extends Type
 		return true;
 	}
 
-	public Type getBaseClazzType()
+	public ObjectType getBaseClazzType()
 	{
 		assert initializedType : "Type initialization missing";
 		return Objects.requireNonNull(baseClazzType);
@@ -122,6 +122,26 @@ public class ObjectType extends Type
 	{
 		assert initializedType : "Type initialization missing";
 		return genericTypeArguments==null ? Collections.emptyList() : genericTypeArguments;
+	}
+
+	public boolean hasPrimitiveMembers() {
+		return getMembers().stream().anyMatch(m -> m.getType().isPrimitive());
+	}
+
+	public boolean hasArrayMembers() {
+		return getMembers().stream().anyMatch(m -> m.getType().isArray());
+	}
+
+	public boolean hasAnyMembers() {
+		return !getMembers().isEmpty();
+	}
+
+	public List<Member> getMembers() {
+		return Collections.emptyList();
+	}
+
+	public List<Method> getMethods() {
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -201,7 +221,13 @@ public class ObjectType extends Type
 		sb.append("ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-		  sb.append("initialized="+initialized()+", qualifiedProtoTypicalTypeName = "+qualifiedProtoTypicalTypeName+ ", name="+getName()+", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, ", ", level+1)+", baseClass="+baseClazzType.toString(level+1)+", interfaceTypes="+ToStringUtil.toString(interfaceTypes, ", ", level+1));
+		  sb.append("initialized="+initialized()+
+				    ", qualifiedProtoTypicalTypeName = "+
+				    qualifiedProtoTypicalTypeName+ ", name="+
+				    getName()+", genericTypeArguments="+
+				    ToStringUtil.toString(genericTypeArguments, ", ", level+1)+System.lineSeparator()+
+				    ", baseClass="+baseClazzType.toString(level+1)+
+				    ", interfaceTypes="+ToStringUtil.toString(interfaceTypes, System.lineSeparator(), level+1));
 
 		sb.append("]");
 

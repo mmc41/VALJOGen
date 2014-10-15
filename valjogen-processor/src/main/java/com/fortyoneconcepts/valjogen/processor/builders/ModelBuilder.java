@@ -40,6 +40,8 @@ public final class ModelBuilder
 {
 	// private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
 
+	private static final String compareToOverloadName = "compareTo(T)";
+
 	/**
 	 * Controls when corresponding available ST template methods should be called.
 	 */
@@ -48,7 +50,7 @@ public final class ModelBuilder
 		 put("hashCode()", (cfg, clazz, methods, members) -> cfg.isHashEnabled());
 		 put("equals(Object)", (cfg, clazz, methods, members) -> cfg.isEqualsEnabled());
 		 put("toString()", (cfg, clazz, methods, members) -> cfg.isToStringEnabled());
-		 put("compareTo(T)", (cfg, clazz, methods, members) -> clazz.isComparable() && !instanceImplementationExists(clazz, "compareTo", methods));
+		 put(compareToOverloadName, (cfg, clazz, methods, members) -> mustImplementComparable(clazz, methods));
 		 put("valueOf()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.
 		 put("this()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.*/
 	}};
@@ -147,7 +149,7 @@ public final class ModelBuilder
 			headerText=resourceLoader.getResourceAsText(headerFileName);
 		}
 
-		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText, (c) -> typeBuilder.createHelperTypes(c), noType);
+		Clazz clazz = new Clazz(configuration, className, masterInterfaceElement.getQualifiedName().toString(), classJavaDoc, headerText, (c) -> typeBuilder.createHelperTypes(c));
 		noType.init(clazz);
 
 		DeclaredType baseClazzDeclaredMirrorType = typeBuilder.createBaseClazzDeclaredType(classPackage);
@@ -159,6 +161,7 @@ public final class ModelBuilder
 		String[] ekstraInterfaceNames = configuration.getExtraInterfaces();
 
 		List<DeclaredType> interfaceDeclaredMirrorTypes = typeBuilder.createInterfaceDeclaredTypes(masterInterfaceDecl, ekstraInterfaceNames, classPackage);
+
 		List<DeclaredType> allInterfaceDeclaredMirrorTypes = interfaceDeclaredMirrorTypes.stream().flatMap(ie -> typeBuilder.getDeclaredInterfacesWithAscendents(ie)).collect(Collectors.toList());
 		Set<DeclaredType> superTypesWithAscendantsMirrorTypes = concat(allInterfaceDeclaredMirrorTypes.stream(), allBaseClassDeclaredMirrorTypes.stream()).collect(Collectors.toSet());
 
@@ -167,7 +170,7 @@ public final class ModelBuilder
 
 	    List<Type> typeArgTypes = typeArgs.stream().map(t -> typeBuilder.createType(clazz, t, DetailLevel.Low)).collect(Collectors.toList());
 
-		Type baseClazzType = typeBuilder.createType(clazz, baseClazzDeclaredMirrorType, DetailLevel.High);
+		BasicClazz baseClazzType = (BasicClazz)typeBuilder.createType(clazz, baseClazzDeclaredMirrorType, DetailLevel.High);
 
 		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toList());
 		Set<Type> superTypesWithAscendants = superTypesWithAscendantsMirrorTypes.stream().map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toSet());
@@ -211,7 +214,6 @@ public final class ModelBuilder
 		List<Type> importTypes = createImportTypes(clazz, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes);
 
 		List<Member> members = new ArrayList<Member>(membersByName.values());
-		List<Member> selectedComparableMembers = clazz.isComparable() ? getSelectedComparableMembers(membersByName, members) : Collections.emptyList();
 
 		if (clazz.isSerializable()) {
 			nonPropertyMethods.addAll(createMagicSerializationMethods(clazz));
@@ -223,6 +225,10 @@ public final class ModelBuilder
 		}).collect(Collectors.toSet());
 
 		claimAndVerifyMethods(nonPropertyMethods, propertyMethods, applicableTemplateImplementedMethodNames);
+
+		boolean implementsComparable = mustImplementComparable(clazz, nonPropertyMethods);
+		Optional<Method> comparableMethodToImplement = implementsComparable ? nonPropertyMethods.stream().filter(m -> m.hasOverLoadName(compareToOverloadName) && m.getDeclaredModifiers().contains(Modifier.ABSTRACT)).findFirst() : Optional.empty();
+		List<Member> selectedComparableMembers = implementsComparable ? getSelectedComparableMembers(membersByName, members, comparableMethodToImplement.orElse(null)) : Collections.emptyList();
 
 		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers, configuration.getClazzModifiers());
 
@@ -303,8 +309,13 @@ public final class ModelBuilder
 		return newMethods;
 	}
 
-	private List<Member> getSelectedComparableMembers(Map<String, Member> membersByName, List<Member> members) throws Exception
+	private List<Member> getSelectedComparableMembers(Map<String, Member> membersByName, List<Member> members, Method comparableMethodToImplement) throws Exception
 	{
+		System.out.println("! comparableMethod = "+comparableMethodToImplement);
+
+		// TODO: Check if type of comparable argument suits our purpose and give warning/error otherwise if members are not accessible for type.
+		// Type comparableArgType = comparableMethodToImplement.getParameters().get(0).getType();
+
 		List<Member> comparableMembers;
 
 		String[] comparableMemberNames = configuration.getComparableMembers();
@@ -417,7 +428,12 @@ public final class ModelBuilder
 					implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
 				else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;
 
-				nonPropertyMethods.add(new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo));
+			    Method newMethod;
+			    if (BuilderUtil.isConstructor(methodName))
+			    	newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo);
+			    else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo);
+
+				nonPropertyMethods.add(newMethod);
 			}
 		} catch (Exception e)
 		{
@@ -574,19 +590,14 @@ public final class ModelBuilder
 		return name;
 	}
 
+	private static boolean mustImplementComparable(Clazz clazz,  List<Method> methods)
+	{
+		return clazz.isComparable() && !instanceImplementationExists(clazz, "compareTo", methods);
+	}
+
 
 	private static boolean instanceImplementationExists(Clazz clazz, String methodName, List<Method> methods)
 	{
       return methods.stream().anyMatch(m -> m.getDeclaringType()!=clazz && m.getName().equals("compareTo") && !m.getDeclaredModifiers().contains(Modifier.STATIC) && !m.getDeclaredModifiers().contains(Modifier.ABSTRACT));
 	}
-
-	/*
-	public static boolean isCallableConstructor(ExecutableElement constructor) {
-	 if (constructor.getModifiers().contains(Modifier.PRIVATE)) {
-	   return false;
-	 }
-
-	 TypeElement type = (TypeElement) constructor.getEnclosingElement();
-	 return type.getEnclosingElement().getKind() == ElementKind.PACKAGE || type.getModifiers().contains(Modifier.STATIC);
-	}*/
 }

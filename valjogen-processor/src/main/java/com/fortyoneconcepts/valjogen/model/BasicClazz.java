@@ -29,8 +29,8 @@ public class BasicClazz extends ObjectType implements Definition {
 
 	private boolean initializedContent;
 
-	public BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod, NoType noType) throws Exception {
-		super(optClazzUsingType, qualifiedProtoTypicalTypeName, noType);
+	public BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception {
+		super(optClazzUsingType, qualifiedProtoTypicalTypeName);
 		this.configuration = Objects.requireNonNull(configuration);
 		this.packageName = getPackageFromQualifiedName(qualifiedProtoTypicalTypeName);
 		this.helperTypes=helperFactoryMethod.apply(this);
@@ -115,34 +115,24 @@ public class BasicClazz extends ObjectType implements Definition {
 		return getGenericQualifier(qualifiedProtoTypicalTypeName);
 	}
 
-	public boolean isAbstract() {
-		assert initialized() : "Class initialization missing";
-		return !methods.stream().allMatch(m -> m.implementationInfo!=ImplementationInfo.IMPLEMENTATION_MISSING);
-	}
-
-	public boolean hasPrimitiveMembers() {
-		assert initialized() : "Class initialization missing";
-		return members.stream().anyMatch(m -> m.getType().isPrimitive());
-	}
-
-	public boolean hasArrayMembers() {
-		assert initialized() : "Class initialization missing";
-		return members.stream().anyMatch(m -> m.getType().isArray());
-	}
-
+	@Override
 	public List<Member> getMembers() {
 		assert initialized() : "Class initialization missing";
 		return members;
 	}
 
-	public boolean hasAnyMembers() {
-		assert initialized() : "Class initialization missing";
-		return !members.isEmpty();
-	}
-
+	@Override
 	public List<Method> getMethods() {
 		assert initialized() : "Class initialization missing";
 		return methods;
+	}
+
+	public List<Member> getMembersIncludingInherited() {
+		assert initialized() : "Class initialization missing";
+		List<Member> allMembers = new ArrayList<Member>();
+		allMembers.addAll(getBaseClazzType().getMembers());
+		allMembers.addAll(getMembers());
+		return allMembers;
 	}
 
 	@Override
