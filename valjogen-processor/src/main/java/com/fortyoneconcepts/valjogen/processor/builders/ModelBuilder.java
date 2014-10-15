@@ -48,7 +48,7 @@ public final class ModelBuilder
 		 put("hashCode()", (cfg, clazz, methods, members) -> cfg.isHashEnabled());
 		 put("equals(Object)", (cfg, clazz, methods, members) -> cfg.isEqualsEnabled());
 		 put("toString()", (cfg, clazz, methods, members) -> cfg.isToStringEnabled());
-		 put("compareTo(T)", (cfg, clazz, methods, members) -> clazz.isComparable() && !implementationExists(clazz, "compareTo", methods));
+		 put("compareTo(T)", (cfg, clazz, methods, members) -> clazz.isComparable() && !instanceImplementationExists(clazz, "compareTo", methods));
 		 put("valueOf()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.
 		 put("this()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.*/
 	}};
@@ -75,19 +75,21 @@ public final class ModelBuilder
 	}
 
 	/**
-	 * Pair class for types and their elements.
+	 * Executable elements (methods) along with their declared mirror types etc.
 	 *
 	 * @author mmc
 	 */
-	private final class ExecutableElementAndDeclaredTypePair
+	private final class ExecutableElementInfo
 	{
 		public final DeclaredType interfaceDecl;
 		public final ExecutableElement executableElement;
+		public ExecutableElementInfo optOverriddenBy;
 
-		public ExecutableElementAndDeclaredTypePair(DeclaredType interfaceDecl, ExecutableElement executableElement)
+		public ExecutableElementInfo(DeclaredType interfaceDecl, ExecutableElement executableElement)
 		{
 			this.interfaceDecl=interfaceDecl;
 			this.executableElement=executableElement;
+			this.optOverriddenBy=null;
 		}
 	}
 
@@ -158,18 +160,17 @@ public final class ModelBuilder
 
 		List<DeclaredType> interfaceDeclaredMirrorTypes = typeBuilder.createInterfaceDeclaredTypes(masterInterfaceDecl, ekstraInterfaceNames, classPackage);
 		List<DeclaredType> allInterfaceDeclaredMirrorTypes = interfaceDeclaredMirrorTypes.stream().flatMap(ie -> typeBuilder.getDeclaredInterfacesWithAscendents(ie)).collect(Collectors.toList());
+		Set<DeclaredType> superTypesWithAscendantsMirrorTypes = concat(allInterfaceDeclaredMirrorTypes.stream(), allBaseClassDeclaredMirrorTypes.stream()).collect(Collectors.toSet());
 
         // Step 2 - Init type part of clzzz:
 		List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();
 
 	    List<Type> typeArgTypes = typeArgs.stream().map(t -> typeBuilder.createType(clazz, t, DetailLevel.Low)).collect(Collectors.toList());
 
-		// List<GenericParameter> genericParameters = masterInterfaceElement.getTypeParameters().stream().map(p -> createGenericParameter(clazz, allTypesByPrototypicalFullName, types, p)).collect(Collectors.toList());
-
 		Type baseClazzType = typeBuilder.createType(clazz, baseClazzDeclaredMirrorType, DetailLevel.High);
 
 		List<Type> interfaceTypes = interfaceDeclaredMirrorTypes.stream().map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toList());
-		Set<Type> superTypesWithAscendants = concat(allInterfaceDeclaredMirrorTypes.stream(), allBaseClassDeclaredMirrorTypes.stream()).map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toSet());
+		Set<Type> superTypesWithAscendants = superTypesWithAscendantsMirrorTypes.stream().map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toSet());
 
 		clazz.initType(baseClazzType, interfaceTypes, superTypesWithAscendants, typeArgTypes);
 
@@ -181,24 +182,28 @@ public final class ModelBuilder
 		final StatusHolder statusHolder = new StatusHolder();
 
 		// Collect all members, property methods and non-property methods from interfaces paired with the interface they belong to:
-		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromInterfaces = allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
+		List<ExecutableElementInfo> executableElements = superTypesWithAscendantsMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
 			Set<javax.lang.model.element.Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
-		})));
+			return !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE);
+		}))).collect(Collectors.toList());
 
-		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromBaseClasses = allBaseClassDeclaredMirrorTypes.stream().flatMap(b -> toExecutableElementAndDeclaredTypePair(b, b.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
-			Set<javax.lang.model.element.Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
-			//return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
-		})));
+		// Check if any methods overrides other methods
+		for (ExecutableElementInfo e : executableElements)
+		{
+			if (e.executableElement.getModifiers().contains(javax.lang.model.element.Modifier.ABSTRACT)) {
+				Stream<ExecutableElementInfo> implementationCandidates = executableElements.stream().filter(other -> e.executableElement.getSimpleName().equals(other.executableElement.getSimpleName()) && !other.executableElement.getModifiers().contains(javax.lang.model.element.Modifier.ABSTRACT));
 
-		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
-		// Currently it is assmued that all methods from base classes are implemented already - this does no take abstract base classes into account.
+				implementationCandidates.forEach(cand -> {
+					TypeElement interfaceTypeElement = (TypeElement)e.interfaceDecl.asElement();
+					boolean overrides = elements.overrides(cand.executableElement, e.executableElement, interfaceTypeElement);
+					if (overrides)
+						e.optOverriddenBy=cand;
+				});
+			}
+		}
 
-		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming they all are.
-
-		executableElementsFromInterfaces.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, false));
-		executableElementsFromBaseClasses.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, true));
+		for (ExecutableElementInfo e : executableElements)
+		  processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.optOverriddenBy!=null ? e.optOverriddenBy.executableElement : null, e.interfaceDecl);
 
 		if (statusHolder.encountedSynthesisedMembers && configuration.isWarningAboutSynthesisedNamesEnabled())
 			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
@@ -330,12 +335,12 @@ public final class ModelBuilder
 		return comparableMembers;
 	}
 
-	private Stream<ExecutableElementAndDeclaredTypePair> toExecutableElementAndDeclaredTypePair(DeclaredType interfaceOrClasMirrorType, Stream<ExecutableElement> elements)
+	private Stream<ExecutableElementInfo> toExecutableElementAndDeclaredTypePair(DeclaredType interfaceOrClasMirrorType, Stream<ExecutableElement> elements)
 	{
-		return elements.map(e -> new ExecutableElementAndDeclaredTypePair(interfaceOrClasMirrorType, e));
+		return elements.map(e -> new ExecutableElementInfo(interfaceOrClasMirrorType, e));
 	}
 
-	private void processMethod(BasicClazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods, List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, DeclaredType interfaceOrClassMirrorType, boolean implementedAlready)
+	private void processMethod(BasicClazz clazz, Map<String, Member> membersByName, List<Method> nonPropertyMethods, List<Property> propertyMethods, final StatusHolder statusHolder, ExecutableElement m, ExecutableElement mOverriddenBy, DeclaredType interfaceOrClassMirrorType)
 	{
 		try {
 			String javaDoc = elements.getDocComment(m);
@@ -370,7 +375,7 @@ public final class ModelBuilder
 			EnumSet<Modifier> declaredModifiers = typeBuilder.createModifierSet(m.getModifiers());
 
 			boolean validProperty = false;
-		    if (!m.isDefault() && !implementedAlready)
+		    if (!m.isDefault() && m.getModifiers().contains(javax.lang.model.element.Modifier.ABSTRACT))
 			{
 				PropertyKind propertyKind = null;
 			    if (NamesUtil.isGetterMethod(methodName, configuration.getGetterPrefixes()))
@@ -406,10 +411,10 @@ public final class ModelBuilder
 			if (!validProperty)
 			{
 			    ImplementationInfo implementationInfo;
-				if (implementedAlready)
-					implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
-				else if (m.isDefault())
+			    if (m.isDefault())
 					implementationInfo=ImplementationInfo.IMPLEMENTATION_DEFAULT_PROVIDED;
+			    else if (!m.getModifiers().contains(javax.lang.model.element.Modifier.ABSTRACT) || mOverriddenBy!=null)
+					implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
 				else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;
 
 				nonPropertyMethods.add(new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo));
@@ -570,7 +575,7 @@ public final class ModelBuilder
 	}
 
 
-	private static boolean implementationExists(Clazz clazz, String methodName, List<Method> methods)
+	private static boolean instanceImplementationExists(Clazz clazz, String methodName, List<Method> methods)
 	{
       return methods.stream().anyMatch(m -> m.getDeclaringType()!=clazz && m.getName().equals("compareTo") && !m.getDeclaredModifiers().contains(Modifier.STATIC) && !m.getDeclaredModifiers().contains(Modifier.ABSTRACT));
 	}

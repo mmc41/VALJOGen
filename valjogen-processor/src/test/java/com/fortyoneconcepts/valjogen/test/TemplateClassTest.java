@@ -95,8 +95,8 @@ public class TemplateClassTest extends TemplateTestBase
 	@Test
 	public void testInterfaceWithBaseClass() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName()).build());
-		assertContainsWithWildcards("class "+generatedClassName+" extends "+ComparableBaseClass.class.getSimpleName(), output.code);
+		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName()).build());
+		assertContainsWithWildcards("class "+generatedClassName+" extends "+AbstractComparableBaseClass.class.getSimpleName(), output.code);
 	}
 
 	@Test

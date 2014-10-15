@@ -25,7 +25,7 @@ public class Method extends DefinitionBase
 
 	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
 	{
-	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration()), implementationInfo);
+	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), implementationInfo);
 	}
 
 	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo)
@@ -40,19 +40,20 @@ public class Method extends DefinitionBase
 		this.implementationInfo = implementationInfo;
 	}
 
-	private static EnumSet<Modifier> defaultModifiers(Configuration cfg)
+	private static EnumSet<Modifier> defaultModifiers(Configuration cfg, EnumSet<Modifier> declaredModifiers)
 	{
-		EnumSet<Modifier> overrideMethodModifiers;
-		if (cfg.isFinalMethodsEnabled()) {
-			if (cfg.isSynchronizedAccessEnabled())
-				overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.SYNCHRONIZED);
-			else overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
-		} else {
-			if (cfg.isSynchronizedAccessEnabled())
-				overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED);
-			else overrideMethodModifiers = EnumSet.of(Modifier.PUBLIC);
-		}
-		return overrideMethodModifiers;
+		Set<Modifier> modifiers = new HashSet<>();
+
+		modifiers.add(Modifier.PUBLIC);
+		if (declaredModifiers.contains(Modifier.STATIC))
+			modifiers.add(Modifier.STATIC);
+
+		if (cfg.isFinalMethodsEnabled())
+			modifiers.add(Modifier.FINAL);
+		if (cfg.isSynchronizedAccessEnabled())
+			modifiers.add(Modifier.SYNCHRONIZED);
+
+		return modifiers.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifiers);
 	}
 
 	@Override

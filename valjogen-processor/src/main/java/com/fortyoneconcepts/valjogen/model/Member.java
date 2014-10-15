@@ -38,11 +38,19 @@ public final class Member extends DefinitionBase implements TypedModel
 	@Override
 	public EnumSet<Modifier> getModifiers()
 	{
-		if (clazz.getConfiguration().isFinalMembersAndParametersEnabled() && !isMutable()) {
-			return clazz.isFinal() ? EnumSet.of(Modifier.PRIVATE, Modifier.FINAL) : EnumSet.of(Modifier.PROTECTED, Modifier.FINAL);
-		} else {
-			return clazz.isFinal() ? EnumSet.of(Modifier.PRIVATE) : EnumSet.of(Modifier.PROTECTED);
-		}
+		Set<Modifier> modifiers = new HashSet<>();
+
+		if (clazz.isFinal())
+		  modifiers.add(Modifier.PRIVATE);
+		else  modifiers.add(Modifier.PROTECTED);
+
+		if (declaredModifiers.contains(Modifier.STATIC))
+			modifiers.add(Modifier.STATIC);
+
+		if (clazz.getConfiguration().isFinalMembersAndParametersEnabled() && !isMutable())
+			modifiers.add(Modifier.FINAL);
+
+		return modifiers.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifiers);
 	}
 
 	public Property getGetter()
@@ -56,7 +64,7 @@ public final class Member extends DefinitionBase implements TypedModel
 
 	public boolean isMutable()
 	{
-		boolean mutable = properties.stream().anyMatch(p -> p.isSetter() && !p.isThisReturnType());
+		boolean mutable = properties.stream().anyMatch(p -> p.isMutating());
 		return mutable;
 	}
 

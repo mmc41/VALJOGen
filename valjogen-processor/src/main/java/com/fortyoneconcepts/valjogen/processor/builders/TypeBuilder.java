@@ -166,14 +166,14 @@ final class TypeBuilder
 
 		  Stream<ExecutableElement> executableElements = newClazzElement.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
 			Set<javax.lang.model.element.Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
+			return !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE);
 		  });
 
 		  List<Method> methods = executableElements.map(e -> createMethod(newClazzType, newClazzType, declaredType, e)).collect(Collectors.toList());
 
 		  Stream<VariableElement> fieldElements = newClazzElement.getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.FIELD).map(m -> (VariableElement)m).filter(m -> {
 			Set<javax.lang.model.element.Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(javax.lang.model.element.Modifier.STATIC) && !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE) && !modifiers.contains(javax.lang.model.element.Modifier.FINAL);
+			return !modifiers.contains(javax.lang.model.element.Modifier.PRIVATE);
 		  });
 
 		  List<Member> members = fieldElements.map(e -> createMember(newClazzType, newClazzType, declaredType, e)).collect(Collectors.toList());
@@ -263,92 +263,6 @@ final class TypeBuilder
 	{
 		return Stream.concat(superTypes.stream(), superTypes.stream().flatMap(type -> getSuperTypesWithAncestors(types.directSupertypes(type).stream().map(t -> (DeclaredType)t).collect(Collectors.toList()))));
 	}
-
-	/*
-    * Create a Clazz model instance representing a class to be generated along with all its dependent model instances by inspecting
-    * javax.lang.model metadata and the configuration provided by annotation(s) read by annotation processor.
-    *
-	* @param clazzUsingNewClazz
-	* @param clazzMirrorType
-	*
-	* @return A initialized Clazz which is a model for what our generated code should look like.
-	*
-	* @throws Exception if a fatal error has occured.
-	*/
-	/*
-	public BasicClazz createBasisCLazz(BasicClazz clazzUsingNewClazz, DeclaredType clazzMirrorType) throws Exception
-	{
-		// Step 1 - Create clazz:
-		String className = clazzMirrorType.toString();
-		String classPackage = NamesUtil.getPackageFromQualifiedName(className);
-
-		String classJavaDoc = elements.getDocComment(masterInterfaceElement);
-		if (classJavaDoc==null) // hmmm - seems to be null always (api not working?)
-			classJavaDoc="";
-
-		BasicClazz clazz = new BasicClazz(configuration, className, (c) -> createHelperTypes(c));
-
-
-		List<DeclaredType> superTypes =  getSuperTypesWithAscendents(clazzMirrorType).collect(Collectors.toList());
-
-        // Step 2 - Init type part of clzzz:
-		List<? extends TypeMirror> typeArgs = clazzMirrorType.getTypeArguments();
-
-	    List<Type> typeArgTypes = typeArgs.stream().map(t -> createType(clazz, t, DetailLevel.Low)).collect(Collectors.toList());
-
-		List<Type> interfaceTypes = superTypes.stream().map(ie -> createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toList());
-		Set<Type> interfaceTypesWithAscendants = superTypes.stream().map(ie -> createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toSet());
-
-		clazz.initType(baseClazzType, interfaceTypes, interfaceTypesWithAscendants, typeArgTypes);
-
-		// Step 3 - Init content part of clazz:
-		Map<String, Member> membersByName = new LinkedHashMap<String, Member>();
-		List<Method> nonPropertyMethods = new ArrayList<Method>();
-		List<Property> propertyMethods= new ArrayList<Property>();
-
-		final StatusHolder statusHolder = new StatusHolder();
-
-		Set<String> implementedMethodNames = templates.getTemplateMethodNames();
-
-				//configuration.getImplementedMethodNames();
-
-		// Collect all members, property methods and non-property methods from interfaces paired with the interface they belong to:
-		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromInterfaces = allInterfaceDeclaredMirrorTypes.stream().flatMap(i -> toExecutableElementAndDeclaredTypePair(i, i.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
-			Set<Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.PRIVATE) && !modifiers.contains(Modifier.FINAL);
-		})));
-
-		Stream<ExecutableElementAndDeclaredTypePair> executableElementsFromBaseClasses = superTypes.stream().flatMap(b -> toExecutableElementAndDeclaredTypePair(b, b.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> {
-			Set<Modifier> modifiers = m.getModifiers();
-			return !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.PRIVATE) && !modifiers.contains(Modifier.FINAL);
-		})));
-
-		// Nb. Stream.forEach has side-effects so is not thread-safe and will not work with parallel streams - but do not need to anyway.
-		// Currently it is assmued that all methods from base classes are implemented already - this does no take abstract base classes into account.
-
-		// TODO: Support abstract base classes - find out which methods are actually implemented instead of assuming they all are.
-
-		executableElementsFromInterfaces.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, false));
-		executableElementsFromBaseClasses.forEach(e -> processMethod(clazz, membersByName, nonPropertyMethods, propertyMethods, statusHolder, e.executableElement, e.interfaceDecl, true));
-
-		if (statusHolder.encountedSynthesisedMembers && configuration.isWarningAboutSynthesisedNamesEnabled())
-			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
-
-		List<Type> importTypes = createImportTypes(clazz, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes);
-
-		List<Member> members = new ArrayList<Member>(membersByName.values());
-		List<Member> selectedComparableMembers = clazz.isComparable() ? getSelectedComparableMembers(membersByName, members) : Collections.emptyList();
-
-		if (clazz.isSerializable()) {
-			nonPropertyMethods.addAll(createMagicSerializationMethods(clazz));
-		}
-
-		clazz.initContent(members, propertyMethods, nonPropertyMethods);
-
-		return clazz;
-	}
-*/
-
 
 	HelperTypes createHelperTypes(BasicClazz clazz) throws Exception
 	{

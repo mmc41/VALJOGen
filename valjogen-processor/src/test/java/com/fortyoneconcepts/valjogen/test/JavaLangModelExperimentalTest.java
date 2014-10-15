@@ -15,7 +15,7 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import com.fortyoneconcepts.valjogen.test.input.ComparableBaseClass;
+import com.fortyoneconcepts.valjogen.test.input.AbstractComparableBaseClass;
 import com.google.testing.compile.CompilationRule;
 
 /**
@@ -40,13 +40,13 @@ public class JavaLangModelExperimentalTest
 	@Test
 	public void extractGenerics() throws Exception
 	{
-		String className = ComparableBaseClass.class.getName();
+		String className = AbstractComparableBaseClass.class.getName();
 		TypeElement element = elements.getTypeElement(className);
 
 		TypeMirror elementType = element.asType();
 		DeclaredType declaredType = (DeclaredType)elementType;
 
-		Assert.assertEquals("wrong type", ComparableBaseClass.class.getName(), declaredType.toString());
+		Assert.assertEquals("wrong type", AbstractComparableBaseClass.class.getName(), declaredType.toString());
 
 		ExecutableElement executableElement = declaredType.asElement().getEnclosedElements().stream().filter(m -> m.getKind()==ElementKind.METHOD).map(m -> (ExecutableElement)m).filter(m -> m.getSimpleName().toString().contains("getStrListField")).findFirst().get();
 

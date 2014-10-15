@@ -64,6 +64,12 @@ public final class Property extends Method
 		return kind==PropertyKind.SETTER;
 	}
 
+	public boolean isMutating()
+	{
+		boolean mutating = isSetter() && !isThisReturnType();
+		return mutating;
+	}
+
 	public boolean isEnsureNotNullEnabled()
 	{
 		return member.isEnsureNotNullEnabled();
