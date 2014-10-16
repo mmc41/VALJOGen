@@ -23,6 +23,8 @@ public abstract class Type extends ModelBase
 		this.qualifiedProtoTypicalTypeName =  Objects.requireNonNull(qualifiedProtoTypicalTypeName);
 	}
 
+	public abstract Type copy(BasicClazz optClazzUsingType);
+
 	@Override
 	public Configuration getConfiguration()
 	{
@@ -86,8 +88,18 @@ public abstract class Type extends ModelBase
 	public String getName()
 	{
 		if (isInImportScope())
-			return getUnqualifiedName(getQualifiedName());
+			return getSimpleName();
 		else return getQualifiedName();
+	}
+
+	/**
+	 * Returns a simple type name without package and without any generic parts. I.e. no &lt;T&gt; suffix.
+	 *
+	 * @return The simple type name
+	 */
+	public String getSimpleName()
+	{
+		return getUnqualifiedName(getQualifiedName());
 	}
 
 	/**

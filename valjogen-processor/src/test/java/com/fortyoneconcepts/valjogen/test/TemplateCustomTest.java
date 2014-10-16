@@ -36,7 +36,6 @@ public class TemplateCustomTest extends TemplateTestBase
 				                   "before instance methods", "after instance methods",
 				                   "member mutableObject annotation",
 				                   "constructor annotation", "factory annotation",
-				                   "constructor arguments", "factory arguments",
 				                   "equals annotation", "hashCode annotation", "toString annotation", "compareTo annotation", "getter getMutableObject annotation", "immutable setter setImmutableObject annotation", "mutable setter setMutableObject annotation",
 				                   "constructor preamble", "factory preamble",
 				                   "equals preamble", "hashCode preamble", "toString preamble", "compareTo preamble", "getter getMutableObject preamble", "immutable setter setImmutableObject preamble", "mutable setter setMutableObject preamble",

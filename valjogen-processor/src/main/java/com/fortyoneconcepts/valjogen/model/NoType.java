@@ -23,6 +23,7 @@ public class NoType extends ObjectType
 	public void init(BasicClazz clazzUsingType)
 	{
 		this.clazzUsingType=Objects.requireNonNull(clazzUsingType);
+		this.initializedType=true;
 	}
 
 	@Override

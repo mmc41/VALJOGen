@@ -23,6 +23,7 @@ import com.fortyoneconcepts.valjogen.processor.DiagnosticMessageConsumer;
 import com.fortyoneconcepts.valjogen.processor.ProcessorMessages;
 import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STTemplates;
+import com.fortyoneconcepts.valjogen.processor.TemplateKind;
 
 /***
  * This class is responsible for transforming data in the javax.lang.model.* format to our own valjogen models.
@@ -41,6 +42,7 @@ public final class ModelBuilder
 	// private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
 
 	private static final String compareToOverloadName = "compareTo(T)";
+	private static final String factoryMethodName = "valueOf";
 
 	/**
 	 * Controls when corresponding available ST template methods should be called.
@@ -230,7 +232,18 @@ public final class ModelBuilder
 		Optional<Method> comparableMethodToImplement = implementsComparable ? nonPropertyMethods.stream().filter(m -> m.hasOverLoadName(compareToOverloadName) && m.getDeclaredModifiers().contains(Modifier.ABSTRACT)).findFirst() : Optional.empty();
 		List<Member> selectedComparableMembers = implementsComparable ? getSelectedComparableMembers(membersByName, members, comparableMethodToImplement.orElse(null)) : Collections.emptyList();
 
-		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers, configuration.getClazzModifiers());
+		EnumSet<Modifier> modifiers = configuration.getClazzModifiers();
+		boolean isAbstractClazz = nonPropertyMethods.stream().anyMatch(m -> m.getImplementationInfo()==ImplementationInfo.IMPLEMENTATION_MISSING) || (modifiers!=null && modifiers.contains(Modifier.ABSTRACT));
+        if (modifiers==null) {
+        	if (isAbstractClazz)
+    			modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT);
+    		else
+    			modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
+        }
+
+	    nonPropertyMethods.addAll(createConstructorsAndFactoryMethods(clazz, baseClazzType, members, modifiers));
+
+		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers, modifiers);
 
 		return clazz;
 	}
@@ -261,6 +274,63 @@ public final class ModelBuilder
 		{
 			method.setImplementationInfo(ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
 		}
+	}
+
+	private List<Method> createConstructorsAndFactoryMethods(Clazz clazz, ObjectType baseClazzType, List<Member> members, EnumSet<Modifier> modifiers)
+	{
+		List<Constructor> baseClassConstructors = baseClazzType.getConstructors();
+
+		List<Method> result = new ArrayList<>();
+
+		boolean includeFactoryMethod = !modifiers.contains(Modifier.ABSTRACT) && configuration.isStaticFactoryMethodEnabled();
+
+		EnumSet<Modifier> constructorModifiers;
+		if (includeFactoryMethod) {
+			if (modifiers.contains(Modifier.FINAL))
+				constructorModifiers=EnumSet.of(Modifier.PRIVATE);
+			else constructorModifiers=EnumSet.of(Modifier.PROTECTED);
+		} else constructorModifiers=EnumSet.of(Modifier.PUBLIC);
+
+		EnumSet<Modifier> factoryModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
+
+		if (baseClassConstructors.isEmpty()) {
+			// Add constructor:
+			List<Parameter> parameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), m)).collect(Collectors.toList());
+			Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+			result.add(constructor);
+
+			if (includeFactoryMethod) {
+				// Add factory method:
+				parameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class))).collect(Collectors.toList());
+				Method factoryMethod = new Method(clazz, clazz, factoryMethodName, clazz, parameters, Collections.emptyList(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+				result.add(factoryMethod);
+			}
+		} else {
+			for (Constructor baseClassConstructor : baseClassConstructors)
+			{
+				// Add constructor:
+				Stream<Parameter> baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new DelegateParameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), baseClassConstructor, p));
+				Stream<Parameter> classParameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), m));
+
+				List<Parameter> parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
+
+				DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
+				result.add(constructor);
+
+				if (includeFactoryMethod) {
+					// Add factory method:
+					baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new Parameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers()));
+					classParameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class)));
+					parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
+
+					Method factoryMethod = new Method(clazz, clazz, factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+					result.add(factoryMethod);
+				}
+			}
+		}
+
+		return result;
+
 	}
 
 	private List<Method> createMagicSerializationMethods(BasicClazz clazz) throws Exception

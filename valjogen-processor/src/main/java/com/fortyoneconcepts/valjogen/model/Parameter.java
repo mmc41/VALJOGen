@@ -13,14 +13,31 @@ import java.util.Objects;
  */
 public class Parameter extends DefinitionBase implements TypedModel
 {
-	private final Type type;
-	private final Type erasedParamType;
+	protected final Type type;
+	protected final Type erasedParamType;
 
 	public Parameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers)
 	{
 		super(clazz, paramName, declaredModifiers);
 		this.type=Objects.requireNonNull(paramType);
 		this.erasedParamType=Objects.requireNonNull(erasedParamType);
+	}
+
+	public Parameter(BasicClazz clazz, Type paramType, String paramName, EnumSet<Modifier> declaredModifiers)
+	{
+		super(clazz, paramName, declaredModifiers);
+		this.type=Objects.requireNonNull(paramType);
+		this.erasedParamType=Objects.requireNonNull(paramType);
+	}
+
+	public boolean isDelegating()
+	{
+		return false;
+	}
+
+	public boolean isMemberAssociated()
+	{
+		return false;
 	}
 
 	@Override
@@ -40,6 +57,7 @@ public class Parameter extends DefinitionBase implements TypedModel
 		return (clazz.getConfiguration().isFinalMembersAndParametersEnabled()) ? EnumSet.of(Modifier.FINAL) : EnumSet.noneOf(Modifier.class);
 	}
 
+	// TODO: Remove this setter.
 	public Parameter setName(String newParamName)
 	{
 		return new Parameter(clazz, type, erasedParamType, newParamName, declaredModifiers);

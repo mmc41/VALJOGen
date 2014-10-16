@@ -7,26 +7,8 @@ optBaseClass(clazz) ::= <%
 <if(!clazz.baseClazzType.rootObject)> extends <clazz.baseClazzType.name><endif>
 %>
 
-optGenericQualifier(clazz) ::= <%
-<if(clazz.genericQualifier)> <clazz.genericQualifierText> <endif>
-%>
-
-internalLevel(model) ::= <%
-<if(model.final)>
-private<\ >
-<else>
-protected<\ >
-<endif>
-%>
-
-constructorLevel(clazz) ::= <%
-<if(!clazz.configuration.staticFactoryMethodEnabled)>
-public<\ >
-<elseif(clazz.final)>
-private<\ >
-<else>
-protected<\ >
-<endif>
+optGenericQualifier(clazz, method) ::= <%
+<if(method.static && clazz.genericQualifier)><clazz.genericQualifierText> <endif>
 %>
 
 guard(member, param) ::= <%
@@ -41,12 +23,8 @@ uniqueVariableName(model, str) ::= <%
 <model.variablesPrefix><str>
 %>
 
-implementationMethod(javaName) ::= <%
-method_<javaName>
-%>
-
 declare_method(clazz, method) ::= <%
-<method.modifiers:{m | <m>}; separator=" "> <method.returnType.prototypicalName> <method.name>(<method.parameters:declare_parameter(); wrap, anchor, separator=", ">)
+<method.modifiers:{m | <m>}; separator=" "> <if(!method.constructor)><optGenericQualifier(clazz, method)><method.returnType.prototypicalName> <endif><method.name>(<method.parameters:declare_parameter(); wrap, anchor, separator=", ">)
 <if(method.thrownTypes)>
 <\ >throws <method.thrownTypes:{m | <m.name>}; wrap, anchor, separator=", ">
 <endif>
@@ -66,11 +44,6 @@ other_instance_get_member_value(other, member) ::= <%
   ?
  <endif>
 <endif>
-%>
-
-/** Generate a formal parameter for a method based on a member: **/
-declare_parameter_from_member(member) ::= <%
-final <member.type.prototypicalName> <member.name>
 %>
 
 annotation(a) ::= <% <a> %>

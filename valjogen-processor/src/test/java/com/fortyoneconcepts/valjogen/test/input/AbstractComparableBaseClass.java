@@ -19,10 +19,10 @@ public abstract class AbstractComparableBaseClass implements Comparable<Abstract
 		strListField=Collections.emptyList();
 	}
 
-	public AbstractComparableBaseClass(int intField, String strField)
+	public AbstractComparableBaseClass(int baseIntField, String baseStrField)
 	{
-		this.intField=intField;
-		this.strField=strField;
+		this.intField=baseIntField;
+		this.strField=baseStrField;
 		strListField=Collections.emptyList();
 	}
 

@@ -47,19 +47,17 @@ package <clazz.packageName>;
 
   <! Static methods incl. factory: !>
   <@before_class_methods><@end>
-  <if(!clazz.abstract && clazz.configuration.staticFactoryMethodEnabled)>
-  <method_valueOf(clazz)>
+  <clazz.claimedImplementationClassMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n">
 
-  <endif>
   <@after_class_methods><@end>
   <! Instance methods and constructor: !>
   <@before_instance_methods><@end>
-  <method_this(clazz)>
+  <clazz.claimedImplementationConstructors:{m | <(m.templateName)(clazz, m)>}; separator="\n">
 
-  <clazz.propertyMethods:{m | <(property(clazz, m))>}; separator="\n\n">
+  <clazz.propertyMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n">
 
   <! Call template methods corresponding to prefixed method names !>
-  <clazz.claimedImplementationMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n">
+  <clazz.claimedImplementationInstanceMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n">
   <@after_instance_methods><@end>
 }
 >>
@@ -76,24 +74,24 @@ member(member) ::= <<
 >>
 
 /** Generate constructor **/
-method_this(clazz) ::= <<
+method_this(clazz, method) ::= <<
 <@javadoc><@end><@annotations><clazz.configuration.constructorAnnotations:annotation(); wrap, anchor, separator="\n"><@end>
-<constructorLevel(clazz)><clazz.name>(<@arguments><clazz.members:declare_parameter_from_member(); wrap, anchor, separator=", "><@end>)
+<declare_method(clazz, method)>
 {
-  <if(!clazz.baseClazzType.rootObject)>super();<endif>
+  <if(method.delegating)>super(<method.delegateParameters:{p | <p.name>}; wrap, anchor, separator=", ">);<endif>
   <@preamble><@end>
-  <clazz.members:{p | this.<p.name>=<guard(p, p)>;}; wrap, anchor, separator="\n">
+  <method.nonDelegateMemberParameters:{p | this.<p.member.name>=<guard(p.member, p)>;}; wrap, anchor, separator="\n">
   <@postamble><@end>
 }
 >>
 
 /** Generate static factory method: **/
-method_valueOf(clazz) ::= <<
+method_valueOf(clazz, method) ::= <<
 <@javadoc><@end><@annotations><clazz.configuration.factoryMethodAnnotations:annotation(); wrap, anchor, separator="\n"><@end>
-public static <optGenericQualifier(clazz)><clazz.prototypicalName> valueOf(<@arguments><clazz.members:declare_parameter_from_member(); wrap, anchor, separator=", "><@end>)
+<declare_method(clazz, method)>
 {
   <@preamble><@end>
-  <clazz.prototypicalName> <uniqueVariableName(clazz,"instance")> = new <clazz.prototypicalName>(<clazz.members:{m | <m.name>}; wrap, anchor, separator=", ">);
+  <clazz.prototypicalName> <uniqueVariableName(clazz,"instance")> = new <clazz.prototypicalName>(<method.parameters:{p | <p.name>}; wrap, anchor, separator=", ">);
   <@postamble><@end>
   return <@returnvalue><uniqueVariableName(clazz,"instance")><@end>;
 }

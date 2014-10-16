@@ -32,13 +32,22 @@ public class ObjectType extends Type
 		this(optClazzUsingType, qualifiedProtoTypicalTypeName, null, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
 	}
 
-	private ObjectType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName, ObjectType baseClazz, List<Type> superInterfaces, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
+	protected ObjectType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName, ObjectType baseClazz, List<Type> superInterfaces, Set<Type> superTypesWithAncestors, List<Type> genericTypeArguments)
 	{
 		super(clazzUsingType, qualifiedProtoTypicalTypeName);
 		this.genericTypeArguments=genericTypeArguments;
 		this.baseClazzType = baseClazz;
 		this.interfaceTypes= Objects.requireNonNull(superInterfaces);
 		this.superTypesWithAscendants= Objects.requireNonNull(superTypesWithAncestors);
+		initializedType=false;
+	}
+
+	@Override
+	public Type copy(BasicClazz clazzUsingType)
+	{
+		ObjectType result = new ObjectType(clazzUsingType, this.qualifiedProtoTypicalTypeName, baseClazzType, interfaceTypes, superTypesWithAscendants, genericTypeArguments);
+		result.initializedType=true;
+		return result;
 	}
 
 	/**
@@ -144,10 +153,15 @@ public class ObjectType extends Type
 		return Collections.emptyList();
 	}
 
+	public List<Constructor> getConstructors() {
+		return getMethods().stream().filter(m -> m.isConstructor()).map(m -> (Constructor)m).collect(Collectors.toList());
+	}
+
 	@Override
 	public String getPrototypicalName()
 	{
-		assert initializedType : "Type initialization missing";
+		if (!initializedType)
+			assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
 
 		String name = getPrototypicalQualifiedName();
 
@@ -185,7 +199,7 @@ public class ObjectType extends Type
 	@Override
 	public boolean isSerializable()
 	{
-		assert initializedType : "Type initialization missing";
+		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
 
 		Type serializableType = getHelperTypes().getSerializableInterfaceType();
 		if (this.equals(serializableType))
@@ -196,7 +210,7 @@ public class ObjectType extends Type
 	@Override
 	public boolean isComparable()
 	{
-		assert initializedType : "Type initialization missing";
+		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
 
 	    /*
 	    Type comparableType = getHelperTypes().getComparableInterfaceType();

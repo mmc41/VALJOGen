@@ -8,6 +8,9 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.processor.STUtil;
+import com.fortyoneconcepts.valjogen.processor.TemplateKind;
+
 /***
  * Meta-information about an existing method or a method that should be generated (implemented).
  *
@@ -22,13 +25,24 @@ public class Method extends DefinitionBase
 	protected final Type returnType;
 	protected final EnumSet<Modifier> modifiers;
 	protected ImplementationInfo implementationInfo;
+	protected final String templateName;
 
 	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
 	{
-	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), implementationInfo);
+	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), implementationInfo, TemplateKind.TYPED);
+	}
+
+	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
+	{
+	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), implementationInfo, templateKind);
 	}
 
 	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo)
+	{
+	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, modifiers, implementationInfo, TemplateKind.TYPED);
+	}
+
+	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
 	{
 	    super(clazz, methodName, declaredModifiers);
 	    this.declaringType = Objects.requireNonNull(declaringType);
@@ -38,6 +52,16 @@ public class Method extends DefinitionBase
 		this.returnType = Objects.requireNonNull(returnType);
 		this.modifiers = modifiers;
 		this.implementationInfo = implementationInfo;
+
+		switch(templateKind)
+		{
+		  case TYPED: this.templateName = STUtil.getTypedTemplateName(name, parameters.stream().map(p -> p.getErasedType().getQualifiedName())); break;
+		  case UNTYPED: this.templateName = STUtil.getUnTypedTemplateName(name); break;
+		  case CONSTRUCTOR: this.templateName = STUtil.getConstructorTemplateName(methodName); break;
+		  case PROPERTY: this.templateName = STUtil.getPropertyTemplateName(methodName); break;
+		  default: throw new IllegalArgumentException("Unknown templateKind "+templateKind);
+
+		}
 	}
 
 	private static EnumSet<Modifier> defaultModifiers(Configuration cfg, EnumSet<Modifier> declaredModifiers)
@@ -99,6 +123,11 @@ public class Method extends DefinitionBase
 		return modifiers;
 	}
 
+	public String getQualifiedName()
+	{
+		return clazz.getName()+"."+getName();
+	}
+
 	/**
 	 * Return The name of the method with unqualified type names in parenthesis. All type names are unqualified so not guarenteed to be unique.
 	 *
@@ -140,21 +169,9 @@ public class Method extends DefinitionBase
 	 *
 	 * @return The string with the name of the template that corresponds to the method.
 	 */
-	public String getTemplateName()
+	public final String getTemplateName()
 	{
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("method_");
-		sb.append(name);
-		if (parameters.size()>0) {
-			sb.append("_");
-			sb.append(parameters.stream().map(p -> {
-			  String name = p.getErasedType().getQualifiedName();
-			  return getUnqualifiedName(name);
-			}).collect(Collectors.joining("_")));
-		}
-
-		return sb.toString();
+		return templateName;
 	}
 
 	public List<Parameter> getParameters()
@@ -170,6 +187,11 @@ public class Method extends DefinitionBase
 	public String getJavaDoc()
 	{
 		return javaDoc;
+	}
+
+	public boolean isDelegating()
+	{
+		return false;
 	}
 
 	@Override

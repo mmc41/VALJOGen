@@ -9,7 +9,6 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
-import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase.Output;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -25,8 +24,8 @@ public class TemplateMethodsTest extends TemplateTestBase
 	@Test
 	public void testCallsBaseClassConstructor() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName()).build());
-		assertContainsWithWildcards("class "+generatedClassName+" extends "+AbstractComparableBaseClass.class.getSimpleName(), output.code);
+		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName()).build());
+		assertContainsWithWildcards("class "+generatedClassName+" extends "+ComparableBaseClass.class.getSimpleName(), output.code);
 	}
 
 	@Test
@@ -35,7 +34,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "true");
 		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=Objects.requireNonNull(objectValue); }", output.code);
+		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { super(); this.intValue=intValue; this.objectValue=Objects.requireNonNull(objectValue); }", output.code);
 	}
 
 	@Test
@@ -44,7 +43,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
 		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { this.intValue=intValue; this.objectValue=objectValue; }", output.code);
+		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { super(); this.intValue=intValue; this.objectValue=objectValue; }", output.code);
 	}
 
 	@Test
@@ -100,7 +99,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 				                                                .add(ConfigurationOptionKeys.constructorAnnotations,  new String[] { "@Generated", "@javax.annotation.Resource"})
 				                                                .build());
 
-		assertContainsWithWildcards("@Generated @javax.annotation.Resource private TestImpl", output.code);
+		assertContainsWithWildcards("@Generated @javax.annotation.Resource * TestImpl", output.code);
 	}
 
 	@Test
@@ -110,6 +109,6 @@ public class TemplateMethodsTest extends TemplateTestBase
 				                                                .add(ConfigurationOptionKeys.factoryMethodAnnotations,  new String[] { "@Generated", "@javax.annotation.Resource"})
 				                                                .build());
 
-		assertContainsWithWildcards("@Generated @javax.annotation.Resource public static TestImpl valueOf", output.code);
+		assertContainsWithWildcards("@Generated @javax.annotation.Resource * static TestImpl valueOf", output.code);
 	}
 }

@@ -29,17 +29,41 @@ public class BasicClazz extends ObjectType implements Definition {
 
 	private boolean initializedContent;
 
-	public BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception {
+	public BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception
+	{
+		this(optClazzUsingType, configuration, qualifiedProtoTypicalTypeName, helperFactoryMethod, new ArrayList<Member>(), new ArrayList<Method>(), EnumSet.noneOf(Modifier.class));
+	}
+
+	private BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod, List<Member> members, List<Method> methods, EnumSet<Modifier> declaredModifiers) throws Exception {
 		super(optClazzUsingType, qualifiedProtoTypicalTypeName);
 		this.configuration = Objects.requireNonNull(configuration);
 		this.packageName = getPackageFromQualifiedName(qualifiedProtoTypicalTypeName);
 		this.helperTypes=helperFactoryMethod.apply(this);
 
-		this.methods = new ArrayList<Method>();
-		this.members = new ArrayList<Member>();
-		this.declaredModifiers = EnumSet.noneOf(Modifier.class);
+		this.methods = methods;
+		this.members = members;
+		this.declaredModifiers = declaredModifiers;
 
 		initializedContent=false;
+	}
+
+	@Override
+	public Type copy(BasicClazz clazzUsingType)
+	{
+		try {
+			BasicClazz result = new BasicClazz(clazzUsingType, configuration, qualifiedProtoTypicalTypeName, (c) -> helperTypes, members, methods, declaredModifiers);
+			result.baseClazzType=baseClazzType;
+			result.interfaceTypes=interfaceTypes;
+			result.superTypesWithAscendants=superTypesWithAscendants;
+			result.genericTypeArguments=genericTypeArguments;
+			result.initializedType=true;
+			result.initializedContent=true;
+			return result;
+		} catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	@Override

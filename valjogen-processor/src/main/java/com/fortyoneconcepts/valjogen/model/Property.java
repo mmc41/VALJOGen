@@ -6,6 +6,8 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.processor.TemplateKind;
+
 /***
  * Meta-information about a property setter/getter method that should be generated (implemented).
  *
@@ -20,7 +22,7 @@ public final class Property extends Method
 
 	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
 	{
-		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, declaredModifiers, implementationInfo);
+		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.PROPERTY);
 		this.member=Objects.requireNonNull(member);
 		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;
@@ -28,7 +30,7 @@ public final class Property extends Method
 
 	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, Parameter parameter)
 	{
-		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, declaredModifiers, implementationInfo);
+		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.PROPERTY);
 		this.member=Objects.requireNonNull(member);
 		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;

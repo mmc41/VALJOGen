@@ -102,13 +102,6 @@ import javax.annotation.Generated;
 // Inserted compareTo preamble stuff here.
 %>
 
-@method_valueOf.arguments() ::= <%
-/* Inserted factory arguments stuff here.*/<@super.arguments()>
-%>
-@method_this.arguments() ::= <%
-/* Inserted constructor arguments stuff here.*/<@super.arguments()>
-%>
-
 @getter.postamble() ::= <%
 // Inserted getter <property.name> postamble stuff here.
 %>

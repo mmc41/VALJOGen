@@ -55,6 +55,14 @@ public final class Clazz extends BasicClazz implements Model
 	}
 
 	@Override
+	public Type copy(BasicClazz clazzUsingType)
+	{
+		if (clazzUsingType==this)
+			return this;
+		else throw new RuntimeException("Copy to new owner not supported for Clazz type");
+	}
+
+	@Override
 	public BasicClazz getClazz()
 	{
 		return this;
@@ -112,13 +120,7 @@ public final class Clazz extends BasicClazz implements Model
         this.properties=Objects.requireNonNull(properties);
 		this.importTypes=Objects.requireNonNull(importTypes);
         this.chosenComparableMembers = Objects.requireNonNull(chosenComparableMembers);
-
-        if (modifiers==null) {
-        	if (isAbstract())
-    			this.modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT);
-    		else
-    			this.modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
-        } else this.modifiers=modifiers;
+        this.modifiers = Objects.requireNonNull(modifiers);
 	}
 
 	public String getJavaDoc()
@@ -148,9 +150,19 @@ public final class Clazz extends BasicClazz implements Model
 		return chosenComparableMembers;
 	}
 
-	public List<Method> getClaimedImplementationMethods()
+	public List<Constructor> getClaimedImplementationConstructors()
 	{
-		return methods.stream().filter(m -> m.implementationInfo==ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT).collect(Collectors.toList());
+		return methods.stream().filter(m -> m.implementationInfo==ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT && m.isConstructor() && !m.isStatic()).map(m -> (Constructor)m).collect(Collectors.toList());
+	}
+
+	public List<Method> getClaimedImplementationInstanceMethods()
+	{
+		return methods.stream().filter(m -> m.implementationInfo==ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT && !m.isConstructor() && !m.isStatic()).collect(Collectors.toList());
+	}
+
+	public List<Method> getClaimedImplementationClassMethods()
+	{
+		return methods.stream().filter(m -> m.implementationInfo==ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT && !m.isConstructor() && m.isStatic()).collect(Collectors.toList());
 	}
 
 	public List<Type> getImportTypes()

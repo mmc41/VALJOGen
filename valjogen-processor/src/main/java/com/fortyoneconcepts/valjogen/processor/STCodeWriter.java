@@ -61,7 +61,12 @@ public final class STCodeWriter
 
 		ST st = group.getInstanceOf(mainTemplate);
 
-		st.add(mainTemplateArg, Objects.requireNonNull(clazz));
+		try {
+		  st.add(mainTemplateArg, Objects.requireNonNull(clazz));
+		} catch (Exception e)
+		{
+	      throw new STException("Internal error loading templates : No output", e);
+		}
 
 		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
 		if (result==null)

@@ -19,10 +19,10 @@ public class ComparableBaseClass implements Comparable<ComparableBaseClass>
 		strListField=Collections.emptyList();
 	}
 
-	public ComparableBaseClass(int intField, String strField)
+	public ComparableBaseClass(int baseIntField, String baseStrField)
 	{
-		this.intField=intField;
-		this.strField=strField;
+		this.intField=baseIntField;
+		this.strField=baseStrField;
 		strListField=Collections.emptyList();
 	}
 

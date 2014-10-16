@@ -13,6 +13,12 @@ public final class PrimitiveType extends Type
 	}
 
 	@Override
+	public Type copy(BasicClazz clazzUsingType)
+	{
+		return new PrimitiveType(clazzUsingType, this.qualifiedProtoTypicalTypeName);
+	}
+
+	@Override
 	public boolean isPrimitive() {
 		return true;
 	}

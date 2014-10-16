@@ -30,6 +30,27 @@ public interface Definition extends Model
 	 */
 	public EnumSet<Modifier> getModifiers();
 
+	/**
+	 * Checkes if one of the modifiers used for code generation is STATIC.
+     *
+	 * @return True if a static modifier present.
+	 *
+	 */
+	public default boolean isStatic()
+	{
+		return getModifiers().contains(Modifier.STATIC);
+	}
+
+	/**
+	 * Checkes if one of the modifiers used for code generation is ABSTRACT.
+     *
+	 * @return True if a abstract modifier present.
+	 *
+	 */
+	public default boolean isAbstract()
+	{
+		return getModifiers().contains(Modifier.ABSTRACT);
+	}
 
 	/**
 	 * Checkes if one of the modifiers used for code generation is FINAL.
@@ -45,7 +66,7 @@ public interface Definition extends Model
 	/**
 	 * Checkes if one of the modifiers used for code generation is PUBLIC.
      *
-	 * @return True if a final modifier present.
+	 * @return True if a public modifier present.
 	 *
 	 */
 	public default boolean isPublic()
@@ -56,7 +77,7 @@ public interface Definition extends Model
 	/**
 	 * Checkes if one of the modifiers used for code generation is PRIVATE.
      *
-	 * @return True if a final modifier present.
+	 * @return True if a privage modifier present.
 	 *
 	 */
 	public default boolean isPrivate()
@@ -67,7 +88,7 @@ public interface Definition extends Model
 	/**
 	 * Checkes if one of the modifiers used for code generation is PROTECTED.
      *
-	 * @return True if a final modifier present.
+	 * @return True if a protected modifier present.
 	 *
 	 */
 	public default boolean isProtected()

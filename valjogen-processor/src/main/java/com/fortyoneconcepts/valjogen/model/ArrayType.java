@@ -18,6 +18,12 @@ public final class ArrayType extends Type
 	}
 
 	@Override
+	public Type copy(BasicClazz clazzUsingType)
+	{
+		return new ArrayType(clazzUsingType, this.qualifiedProtoTypicalTypeName, componentType.copy(clazzUsingType));
+	}
+
+	@Override
 	public boolean isMultiDimensionalArray()
 	{
 		return componentType.isArray();
