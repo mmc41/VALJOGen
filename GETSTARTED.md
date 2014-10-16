@@ -64,7 +64,18 @@ In Eclipse open project Properties/Java Compiler/Annoation Processing and enable
 2. Install Eclipse plugin m2e (from eclipses build-in "Luna" update site)
 3. Install jbosstools's m2e-apt plugin from (from update site "http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt")
 
-## 4. HOW TO EXTEND/MODIFY/MAINTAIN VALJOGen:
+## 4. Customizing generated value classes
+
+VALJOGen output can be customized in a number of ways as listed below (in a order of preference):
+
+1. Use existing options for VALJOGenerate and VALJOConfigure annotations.
+2. Specify a BaseClass with your custom stuff in your VALJOConfigure annotation.
+3. Inherit from the generated class(es) and out your custom stuff there. (if not already abstract use VALJOConfigure modifier option to make generated class abstract and non final)
+4. Add custom method(s) in a custom template group file specified in your VALJOConfigure annotation.
+5. Override regions defined in the build-in templates within a custom template group file specified in your VALJOConfigure annotation.
+6. Override existing template methods within a custom template group file specified in your VALJOConfigure annotation
+
+## 5. On the internals of the VALJOGen project:
 
 See [readme in annotaton processor project](valjogen-processor/README.md) for implementation details.
 
@@ -73,7 +84,7 @@ In addition these two 2 eclipse plugins may be useful to update readme pages in 
 - GitHub Flavored Markdown viewer: https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/
 - Markdown editor: http://www.winterwell.com/software/updatesite/
 
-## 5. SUPPORT
+## 6. Support
 - Free [Google group discussions](http://groups.google.com/group/valjogen)
 - Paid email support : valjogen (AT) 41concepts (dot) com
 

@@ -22,10 +22,36 @@ import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 public class TemplateMethodsTest extends TemplateTestBase
 {
 	@Test
-	public void testCallsBaseClassConstructor() throws Exception
+	public void testCallsAllBaseClassConstructorsByDefault() throws Exception
 	{
 		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName()).build());
-		assertContainsWithWildcards("class "+generatedClassName+" extends "+ComparableBaseClass.class.getSimpleName(), output.code);
+
+		assertContainsWithWildcards("TestImpl(final int myValue, final *List<Double> myDoubleList) { super();", output.code);
+		assertContainsWithWildcards("TestImpl(final int baseIntField, final String baseStrField, final int myValue, final *List<Double> myDoubleList) { super(baseIntField, baseStrField);", output.code);
+	}
+
+	@Test
+	public void testCallsoOnlySelectedBaseClassConstructor1() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder
+				                                                              .add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName())
+				                                                              .add(ConfigurationOptionKeys.baseClazzConstructors, new String[] { "()" })
+				                                                              .build());
+
+		assertContainsWithWildcards("TestImpl(final int myValue, final *List<Double> myDoubleList) { super();", output.code);
+		assertNotContainsWithWildcards("TestImpl(final int baseIntField, final String baseStrField, final int myValue, final *List<Double> myDoubleList) { super(baseIntField, baseStrField);", output.code);
+	}
+
+	@Test
+	public void testCallsoOnlySelectedBaseClassConstructor2() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder
+				                                                              .add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName())
+				                                                              .add(ConfigurationOptionKeys.baseClazzConstructors, new String[] { "(int, String)" })
+				                                                              .build());
+
+		assertNotContainsWithWildcards("TestImpl(final int myValue, final *List<Double> myDoubleList) { super();", output.code);
+		assertContainsWithWildcards("TestImpl(final int baseIntField, final String baseStrField, final int myValue, final *List<Double> myDoubleList) { super(baseIntField, baseStrField);", output.code);
 	}
 
 	@Test
@@ -34,7 +60,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "true");
 		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { super(); this.intValue=intValue; this.objectValue=Objects.requireNonNull(objectValue); }", output.code);
+		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { *this.intValue=intValue; this.objectValue=Objects.requireNonNull(objectValue); }", output.code);
 	}
 
 	@Test
@@ -43,7 +69,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
 		Output output = produceOutput(MutableInterface.class);
 
-		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { super(); this.intValue=intValue; this.objectValue=objectValue; }", output.code);
+		assertContainsWithWildcards(generatedClassName+"(final int intValue, final Object objectValue) { *this.intValue=intValue; this.objectValue=objectValue; }", output.code);
 	}
 
 	@Test

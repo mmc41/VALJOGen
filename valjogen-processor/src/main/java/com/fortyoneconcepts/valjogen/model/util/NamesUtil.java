@@ -201,14 +201,16 @@ public class NamesUtil
 			return false;
 
 		String nameTypes1String=nameQualifierPos1>=0 ? overloadNamesSpecifier1.substring(nameQualifierPos1+1, overloadNamesSpecifier1.length()-1) : "";
-		String[] nameTypes1 = !nameTypes1String.isEmpty() ? nameTypes1String.split(",") : new String[0];
-
 		String nameTypes2String = nameQualifierPos2>=0 ? overloadNamesSpecifier2.substring(nameQualifierPos2+1, overloadNamesSpecifier2.length()-1) : "";
+
+		if (nameTypes1String.equals("**") || nameTypes2String.equals("**"))
+			return true;
+
+		String[] nameTypes1 = !nameTypes1String.isEmpty() ? nameTypes1String.split(",") : new String[0];
 		String[] nameTypes2 = !nameTypes2String.isEmpty() ? nameTypes2String.split(",") : new String[0];
 
 		if (nameTypes1.length!=nameTypes2.length)
 			return false;
-
 
 		String defaultPackage = "java.lang";
 		for (int i=0; i<nameTypes1.length; ++i)

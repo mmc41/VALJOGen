@@ -135,9 +135,16 @@ public class Method extends DefinitionBase
 	 */
 	public String getOverloadName()
 	{
+		return getOverloadName(true);
+	}
+
+	protected String getOverloadName(boolean includeMethodName)
+	{
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(name);
+		if (includeMethodName)
+			sb.append(name);
+
 		sb.append("(");
 		sb.append(parameters.stream().map(p -> {
 		  String name = p.getErasedType().getQualifiedName();
@@ -146,22 +153,6 @@ public class Method extends DefinitionBase
 		sb.append(")");
 
 		return sb.toString();
-	}
-
-	/**
-	 * Return The name of the method with unqualified type names in parenthesis. All type names are unqualified so not guarenteed to be unique.
-	 *
-	 * @param overLoadName The overload name to compare with
-	 *
-	 * @return The string suitable for overload resolution.
-	 */
-	public boolean hasOverLoadName(String overLoadName)
-	{
-		if (this.getName().contains("compareTo"))
-			System.out.println("got here");
-
-		boolean same = this.getOverloadName().equals(overLoadName);
-		return same;
 	}
 
 	/**

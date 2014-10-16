@@ -36,11 +36,6 @@ public final class DelegateConstructor extends Constructor
 		return parameters.stream().filter(p -> p.isDelegating()).map(p -> (DelegateParameter)p).collect(Collectors.toList());
 	}
 
-	public List<MemberParameter> getNonDelegateMemberParameters()
-	{
-		return parameters.stream().filter(p -> !p.isDelegating() && p.isMemberAssociated()).map(p -> (MemberParameter)p).collect(Collectors.toList());
-	}
-
 	@Override
 	public boolean isConstructor()
 	{

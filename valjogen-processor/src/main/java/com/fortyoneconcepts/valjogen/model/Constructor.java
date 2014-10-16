@@ -2,6 +2,7 @@ package com.fortyoneconcepts.valjogen.model;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.processor.TemplateKind;
 
@@ -26,5 +27,16 @@ public class Constructor extends Method
 	public boolean isConstructor()
 	{
 		return true;
+	}
+
+	@Override
+	public String getOverloadName()
+	{
+		return getOverloadName(false);
+	}
+
+	public List<MemberParameter> getNonDelegateMemberParameters()
+	{
+		return parameters.stream().filter(p -> !p.isDelegating() && p.isMemberAssociated()).map(p -> (MemberParameter)p).collect(Collectors.toList());
 	}
 }

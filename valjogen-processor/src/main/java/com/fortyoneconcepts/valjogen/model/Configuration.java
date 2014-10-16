@@ -185,6 +185,11 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getStringValue(baseClazzName, configureAnnotation.baseClazzName());
 	 }
 
+	 public String[] getBaseClazzConstructors()
+	 {
+		 return getStringArrayValue(baseClazzConstructors, configureAnnotation.baseClazzConstructors());
+	 }
+
 	 public String getSuggestedVariablesPrefix()
 	 {
 		 return getStringValue(suggestedVariablesPrefix, configureAnnotation.suggestedVariablesPrefix());

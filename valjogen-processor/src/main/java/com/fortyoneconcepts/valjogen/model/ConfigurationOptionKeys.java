@@ -159,6 +159,11 @@ public interface ConfigurationOptionKeys
 	 public static String baseClazzName = "baseClazzName";
 
 	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#baseClazzConstructors
+	 */
+	 public static String baseClazzConstructors = "baseClazzConstructors";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#headerFileName
 	 */
      public static String headerFileName = "headerFileName";

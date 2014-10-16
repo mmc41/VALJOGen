@@ -142,6 +142,18 @@ public class NamesUtilTest
 	}
 
 	@Test
+	public void testMatchingOverloadsNoMethodsAndNoArgs()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("()", "()", false));
+	}
+
+	@Test
+	public void testMatchingOverloadsNoMethodsAndArgs()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("(int)", "(int)", false));
+	}
+
+	@Test
 	public void testMatchingOverloadsNoArgs()
 	{
 		Assert.assertTrue(NamesUtil.matchingOverloads("test()", "test()", false));
@@ -193,5 +205,23 @@ public class NamesUtilTest
 	public void testNotMatchingDifferentNumberArgsOverloads2()
 	{
 		Assert.assertFalse(NamesUtil.matchingOverloads("*(*)", "test()", false));
+	}
+
+	@Test
+	public void testDoubleStarMatchesAllArgs1()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test(**)", "test(int,String)", false));
+	}
+
+	@Test
+	public void testDoubleStarMatchesAllArgs2()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test(int,String)", "test(**)", false));
+	}
+
+	@Test
+	public void testDoubleStarMatchesAllArgs3()
+	{
+		Assert.assertTrue(NamesUtil.matchingOverloads("test()", "test(**)", false));
 	}
 }

@@ -214,6 +214,20 @@ public @interface VALJOConfigure
     String baseClazzName() default "java.lang.Object";
 
 	/**
+	* Specifies the base class constructors to delegate to in generated constructors and factory methods. Each generated constructor will include arguments for the corresponding base constructor followed
+	* by the arguments for the members in the class. By default ALL base constructors will be used. As factory methods (if enabled) follow constructors a corresponding set of factory methods will be
+	* generated as well.
+	*
+	* The specifiers are of form <code>"(" &lt;unqualifed parameter type name&gt; { "," &lt;unqualifed parameter type name&gt; } ")"</code>. For example to specify a constructor taking an integer and a String
+	* as arguments write <code>(int,String)</code>. Note that all type names are unqualified.
+	*
+	* In addition the wildcard '*' may be used to match a single type name and the wildcard '**' may used to match all set of typenames (i.e. each and every base constructor).
+	*
+	* @return List of base class constructors to use when generating constructors for the class.
+	*/
+    String[] baseClazzConstructors() default { "(**)" };
+
+	/**
 	* Specified annotation strings with arguments that should be added to the generated class.
 	*
 	* @return annotation string to add to the generated class.
