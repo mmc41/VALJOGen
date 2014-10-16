@@ -88,6 +88,7 @@ public final class TestSupport
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public static <T> T createInstanceUsingFactory(Class<T> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 		Method mostCompleteFactoryMethod = Arrays.stream(clazz.getMethods()).filter(m->m.getName().equals(ConfigurationDefaults.factoryMethodName) && Modifier.isStatic(m.getModifiers())).max((a,b) -> Integer.compare(a.getParameterCount(), b.getParameterCount())).get();

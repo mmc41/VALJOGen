@@ -37,12 +37,12 @@ declare_parameter(param) ::= <<
 other_instance_get_member_value(other, member) ::= <%
 <if(other.type.thisType)>
  <other.name>.<member.name>
+<elseif(member.getter)>
+ <other.name>.<member.getter.name>()
+<elseif(other.type.thisSuperType)>
+ <other.name>.<member.name>
 <else>
- <if(member.getter)>
-  <other.name>.<member.getter.name>()
- <else>
   ?
- <endif>
 <endif>
 %>
 

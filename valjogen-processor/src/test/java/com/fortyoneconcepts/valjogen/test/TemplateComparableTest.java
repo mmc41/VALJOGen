@@ -73,8 +73,31 @@ public class TemplateComparableTest extends TemplateTestBase
 	@Test
 	public void testComparableIfNotProvidedByBaseClass() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName()).build());
+		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder
+				                                                                      .add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName())
+				                                                                      //.add(ConfigurationOptionKeys.comparableMembers, new String[] {"intField", "_float"})
+				                                                                      .build());
 		assertContainsWithWildcards("int compareTo(", output.code);
 		assertNotContainsWithWildcards("abstract class "+generatedClassName, output.code); // Comparable implemented (so class is not abstract)
+	}
+
+	@Test
+	public void testComparableWithSuperClassMemberClass() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder
+				                                                                      .add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName())
+				                                                                      .add(ConfigurationOptionKeys.comparableMembers, new String[] {"intField" })
+				                                                                      .build());
+		assertContainsWithWildcards("int compareTo(*Integer.compare(intField, *.intField)", output.code);
+	}
+
+	@Test
+	public void testComparableWithSuperClassOverloadedMethod() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder
+				                                                                      .add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName())
+				                                                                      .add(ConfigurationOptionKeys.comparableMembers, new String[] {"_float" })
+				                                                                      .build());
+		assertContainsWithWildcards("int compareTo(*Float.compare(_float, *.getFloat()", output.code);
 	}
 }

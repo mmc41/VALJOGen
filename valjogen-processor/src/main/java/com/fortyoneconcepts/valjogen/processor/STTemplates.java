@@ -2,15 +2,23 @@ package com.fortyoneconcepts.valjogen.processor;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.STMessage;
 
 import com.fortyoneconcepts.valjogen.model.Configuration;
 
@@ -33,11 +41,17 @@ public final class STTemplates
 
 	private static final String method_prefix="/method_";
 
+	private final Deque<STException> stExceptions;
 	private final STGroup group;
 	private final Set<String> templateMethodNames;
 
 	public STTemplates(ResourceLoader resourceLoader, Configuration cfg) throws Exception
 	{
+		stExceptions = new ArrayDeque<STException>();
+
+		STGroup.verbose = LOGGER.isLoggable(Level.FINE);
+		STGroup.trackCreationEvents = cfg.isDebugStringTemplatesEnabled();
+
 		STGroup defaultGroup = new STGroupFile(mainTemplateFile, delimiterStartChar, delimiterStopChar);
 
 		String customTemplateFileName = cfg.getCustomJavaTemplateFileName();
@@ -55,6 +69,8 @@ public final class STTemplates
 		} else {
 			group = defaultGroup;
 		}
+
+		group.setListener(myErrorListener);
 
 		Set<String> templateNames = getAllTemplateNames(group);
 
@@ -83,6 +99,16 @@ public final class STTemplates
 	public Set<String> getAllTemplateMethodNames()
 	{
 		return templateMethodNames;
+	}
+
+	/**
+	 * Return list of exceptions that has occured during processing of string templates.
+	 *
+	 * @return List of normal template method names.
+	 */
+	public Deque<STException> exceptions()
+	{
+		return stExceptions;
 	}
 
 	private static String templateNameToMethodName(String templateName)
@@ -116,4 +142,42 @@ public final class STTemplates
 			names.addAll(getAllTemplateNames(importGroup));
 		return names;
 	}
+
+	/**
+	 * Errror listener for string templates - registers and throws exceptions.
+	 */
+	private final STErrorListener myErrorListener = new STErrorListener()  {
+		private String reportSTMsg(STMessage msg) {
+			LOGGER.severe(() -> msg.toString());
+			return msg.toString();
+		}
+
+		@Override
+		public void runTimeError(STMessage msg) {
+			STException exception = new STException(reportSTMsg(msg));
+			stExceptions.add(exception);
+			throw exception;
+		}
+
+		@Override
+		public void compileTimeError(STMessage msg) {
+			STException exception = new STException(reportSTMsg(msg));
+			stExceptions.add(exception);
+			throw exception;
+		}
+
+		@Override
+		public void IOError(STMessage msg) {
+			STException exception = new STException(reportSTMsg(msg));
+			stExceptions.add(exception);
+			throw exception;
+		}
+
+		@Override
+		public void internalError(STMessage msg) {
+			STException exception = new STException(reportSTMsg(msg));
+			stExceptions.add(exception);
+			throw exception;
+		}
+	};
 }

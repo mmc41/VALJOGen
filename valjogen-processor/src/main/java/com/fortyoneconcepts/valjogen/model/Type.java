@@ -204,6 +204,16 @@ public abstract class Type extends ModelBase
 	}
 
 	/**
+	* Returns if the type is the base class for the generated type (Clazz)
+	*
+	* @return True if this type is the base class for the class being generated.
+	*/
+	public boolean isThisSuperType()
+	{
+		return false;
+	}
+
+	/**
 	* Returns this overall category (kind) of type this type is.
 	*
 	* @return The type category.

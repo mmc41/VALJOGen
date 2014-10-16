@@ -28,6 +28,7 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 import com.fortyoneconcepts.valjogen.model.util.ThisReference;
 import com.fortyoneconcepts.valjogen.processor.DiagnosticMessageConsumer;
 import com.fortyoneconcepts.valjogen.processor.ProcessorMessages;
+import com.fortyoneconcepts.valjogen.processor.TemplateKind;
 import com.fortyoneconcepts.valjogen.processor.TypePool;
 
 /**
@@ -228,7 +229,7 @@ final class TypeBuilder
 		Method newMethod;
 		if (BuilderUtil.isConstructor(methodName))
 		  newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
-		else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+		else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
 
 		return newMethod;
 	}

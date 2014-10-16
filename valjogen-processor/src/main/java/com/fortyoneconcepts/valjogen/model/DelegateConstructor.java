@@ -20,12 +20,6 @@ public final class DelegateConstructor extends Constructor
 	    this.delegateConstructor=Objects.requireNonNull(delegateMethod);
 	}
 
-	public DelegateConstructor(BasicClazz clazz, Type declaringType, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, Constructor delegateMethod)
-	{
-	    super(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo);
-	    this.delegateConstructor=Objects.requireNonNull(delegateMethod);
-	}
-
 	public Constructor getDelegateConstructor()
 	{
 		return delegateConstructor;

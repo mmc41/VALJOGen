@@ -126,6 +126,12 @@ public class BasicClazz extends ObjectType implements Definition {
 	}
 
 	@Override
+	public boolean isThisSuperType()
+	{
+		return this==clazzUsingType.getBaseClazzType();
+	}
+
+	@Override
 	public boolean canBeMoreDetailed()
 	{
 		return false;

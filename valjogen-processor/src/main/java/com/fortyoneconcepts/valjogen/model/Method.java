@@ -24,22 +24,15 @@ public class Method extends DefinitionBase
 	protected final String javaDoc;
 	protected final Type returnType;
 	protected final EnumSet<Modifier> modifiers;
-	protected ImplementationInfo implementationInfo;
 	protected final String templateName;
 
-	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
-	{
-	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), implementationInfo, TemplateKind.TYPED);
-	}
+	protected ImplementationInfo implementationInfo;
+	protected Optional<Method> overriddenByMethod;
+	protected Optional<Method> overridesMethod;
 
 	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
 	{
 	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), implementationInfo, templateKind);
-	}
-
-	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo)
-	{
-	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, modifiers, implementationInfo, TemplateKind.TYPED);
 	}
 
 	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
@@ -52,6 +45,9 @@ public class Method extends DefinitionBase
 		this.returnType = Objects.requireNonNull(returnType);
 		this.modifiers = modifiers;
 		this.implementationInfo = implementationInfo;
+
+		this.overriddenByMethod = Optional.empty();
+		this.overridesMethod = Optional.empty();
 
 		switch(templateKind)
 		{
@@ -93,7 +89,28 @@ public class Method extends DefinitionBase
 
 	public void setImplementationInfo(ImplementationInfo implementationInfo)
 	{
-		this.implementationInfo=implementationInfo;
+		this.implementationInfo=Objects.requireNonNull(implementationInfo);
+	}
+
+	public void setOverriddenByMethod(Method overriddenByMethod)
+	{
+		this.overriddenByMethod=Optional.of(Objects.requireNonNull(overriddenByMethod));
+		overriddenByMethod.overridesMethod=Optional.of(this);
+	}
+
+	public Optional<Method> getOverriddenByMethod()
+	{
+		return overriddenByMethod;
+	}
+
+	public Optional<Method> getOverridesMethod()
+	{
+		return overridesMethod;
+	}
+
+	public final boolean isOverridden()
+	{
+		return getOverriddenByMethod().isPresent();
 	}
 
 	public boolean isConstructor()
@@ -199,6 +216,7 @@ public class Method extends DefinitionBase
 					  ", parameters=["+parameters.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
 					  ", returnType="+returnType.getPrototypicalName() +
 					  ", thrownTypes=["+thrownTypes.stream().map(t -> t.getPrototypicalName()).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
+					  ", overridden="+this.isOverridden()+
 					  ", declaredModifiers="+declaredModifiers+
 					  ", modifiers="+modifiers+
 					  ", implementationInfo="+implementationInfo+"]");

@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.util.Date;
+import java.util.Deque;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,16 +49,12 @@ public final class STCodeWriter
 
 		String result = null;
 
-		STGroup.verbose = LOGGER.isLoggable(Level.FINE);
-		STGroup.trackCreationEvents = cfg.isDebugStringTemplatesEnabled();
-
 		STGroup group = stTemplates.getSTGroup();
 
+		stTemplates.exceptions().clear();
+
 		group.registerModelAdaptor(Model.class, new STCustomModelAdaptor());
-
 		group.registerRenderer(Date.class, new STISODateRender());
-
-		group.setListener(new ErrorListener());
 
 		ST st = group.getInstanceOf(mainTemplate);
 
@@ -69,13 +66,12 @@ public final class STCodeWriter
 		}
 
 		result = st.render(Objects.requireNonNull(cfg).getLocale(), cfg.getLineWidth());
+
+		if (!stTemplates.exceptions().isEmpty())
+			throw stTemplates.exceptions().getFirst();
+
 		if (result==null)
 			throw new STException("Template rendering error : No output");
-
-		// Unfortunately, ST does not propagate exceptions so we have to do that.
-		Exception exception = lastException;
-		if (exception!=null)
-			throw exception;
 
 		if (cfg.isDebugStringTemplatesEnabled())
 		{
@@ -86,31 +82,5 @@ public final class STCodeWriter
 		}
 
 		return result;
-	}
-
-	private final class ErrorListener implements STErrorListener  {
-		private String reportSTMsg(STMessage msg) {
-			return msg.toString();
-		}
-
-		@Override
-		public void runTimeError(STMessage msg) {
-			throw (lastException = new STException(reportSTMsg(msg)));
-		}
-
-		@Override
-		public void compileTimeError(STMessage msg) {
-			throw (lastException = new STException(reportSTMsg(msg)));
-		}
-
-		@Override
-		public void IOError(STMessage msg) {
-			throw (lastException = new STException(reportSTMsg(msg)));
-		}
-
-		@Override
-		public void internalError(STMessage msg) {
-			throw (lastException = new STException(reportSTMsg(msg)));
-		}
 	}
 }

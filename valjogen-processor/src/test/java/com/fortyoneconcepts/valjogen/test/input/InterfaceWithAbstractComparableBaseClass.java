@@ -9,7 +9,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
 @VALJOGenerate
-@VALJOConfigure(baseClazzName="com.fortyoneconcepts.valjogen.test.input.AbstractComparableBaseClass", comparableMembers="_float")
+@VALJOConfigure(baseClazzName="com.fortyoneconcepts.valjogen.test.input.AbstractComparableBaseClass", comparableMembers= {"intField", "_float"})
 public interface InterfaceWithAbstractComparableBaseClass
 {
 	public int getMyValue();
