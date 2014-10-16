@@ -3,15 +3,17 @@
 */
 package com.fortyoneconcepts.valjogen.integrationtests;
 
+import java.io.Serializable;
 import java.lang.reflect.*;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
 import com.fortyoneconcepts.valjogen.testsources.util.TestUtil;
 
+import static com.fortyoneconcepts.valjogen.integrationtests.util.TestSupport.*;
+import static com.fortyoneconcepts.valjogen.integrationtests.util.SerializationUtil.*;
 
 public class SerializationTest
 {
@@ -32,5 +34,43 @@ public class SerializationTest
 		Assert.assertEquals("ID specified in package's @VALJOConfigure expected", 42, id);
 	}
 
-	// TODO: Add test that the instance can actually serialize
+	/***
+	 * Test both that serialization ID is added and that default package configuration works.
+	 *
+	 * @throws Throwable
+	 */
+	@Test
+	public void testSimpleClassCanSerialize() throws Throwable
+	{
+		@SuppressWarnings("unchecked")
+		Class<Serializable> clazz = (Class<Serializable>)TestUtil.getTestClass(TestClassConstants.SerializableClass);
+
+		Serializable o = createInstanceUsingFactory(clazz);
+
+		byte[] serializedData = write(o);
+
+		Serializable deserialized = read(serializedData);
+
+		Assert.assertTrue(compareInstanceFields(o,deserialized));
+	}
+
+	/***
+	 * Test both that serialization ID is added and that default package configuration works.
+	 *
+	 * @throws Throwable
+	 */
+	@Test
+	public void testClassWithBaseClassCanSerialize() throws Throwable
+	{
+		@SuppressWarnings("unchecked")
+		Class<Serializable> clazz = (Class<Serializable>)TestUtil.getTestClass(TestClassConstants.SerializableWithBaseClass);
+
+		Serializable o = createInstanceUsingFactory(clazz);
+
+		byte[] serializedData = write(o);
+
+		Serializable deserialized = read(serializedData);
+
+		Assert.assertTrue(compareInstanceFields(o,deserialized));
+	}
 }

@@ -8,7 +8,9 @@ package com.fortyoneconcepts.valjogen.examples;
 * Used by the "ExtendingByInheritance.java" example.
 *
 * Note that constructors of the generated class will delegate to available
-* constructors in the base class.
+* constructors in the base class. Also keep it mind that if you need
+* serialization base classes must be serializable for any generated
+* subclasses like ours (without a default constructor) to be serializable.
 */
 public class BaseClass
 {

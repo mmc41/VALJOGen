@@ -44,7 +44,6 @@ public final class ModelBuilder
 	// private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
 
 	private static final String compareToOverloadName = "compareTo(T)";
-	private static final String factoryMethodName = "valueOf";
 
 	/**
 	 * Controls when corresponding available ST template methods should be called.
@@ -316,7 +315,7 @@ public final class ModelBuilder
 					classParameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class)));
 					parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
 
-					Method factoryMethod = new Method(clazz, clazz, factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+					Method factoryMethod = new Method(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
 					result.add(factoryMethod);
 				}
 			}
@@ -332,7 +331,7 @@ public final class ModelBuilder
 			if (includeFactoryMethod) {
 				// Add factory method:
 				parameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class))).collect(Collectors.toList());
-				Method factoryMethod = new Method(clazz, clazz, factoryMethodName, clazz, parameters, Collections.emptyList(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+				Method factoryMethod = new Method(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, Collections.emptyList(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
 				result.add(factoryMethod);
 			}
 		}

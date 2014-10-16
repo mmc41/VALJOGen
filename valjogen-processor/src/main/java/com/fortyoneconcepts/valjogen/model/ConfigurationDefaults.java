@@ -17,4 +17,6 @@ public interface ConfigurationDefaults
   public static final String RootObject = "java.lang.Object";
 
   public static final long SerialVersionUID_NotSet = 0;
+
+  public static final String factoryMethodName = "valueOf";
 }

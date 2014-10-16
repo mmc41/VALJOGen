@@ -8,6 +8,6 @@
 *
 * @author mmc
 **/
-@VALJOConfigure(serialVersionUID=42)
+@VALJOConfigure(serialVersionUID=42, staticFactoryMethodEnabled=true)
 package com.fortyoneconcepts.valjogen.testsources;
 import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;

@@ -209,6 +209,8 @@ public @interface VALJOConfigure
 	/**
 	* Specifies the base class of the generated class. May be overruled by equivalent annotation processor key.
 	*
+	* Note: The base class must be serializable in itself for serialization of the generated class to work (serialization does not require a default constructor however).
+	*
 	* @return Name of the base class for the generated class.
 	*/
     String baseClazzName() default "java.lang.Object";

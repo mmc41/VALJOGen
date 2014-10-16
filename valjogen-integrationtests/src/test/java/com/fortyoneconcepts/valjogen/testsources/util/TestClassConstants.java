@@ -16,4 +16,5 @@ public interface TestClassConstants
 	public static String ComplexClass = PackageName+".ComplexClass";
 	public static String CustomTemplateClass = PackageName+".CustomTemplateClass";
 	public static String SerializableClass = PackageName+".SerializableClass";
+	public static String SerializableWithBaseClass = PackageName+".SerializableWithBaseClass";
 }

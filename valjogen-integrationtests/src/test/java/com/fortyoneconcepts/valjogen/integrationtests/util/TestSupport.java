@@ -5,13 +5,21 @@ package com.fortyoneconcepts.valjogen.integrationtests.util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 
 /**
  * Utilities for finding folders with generated and expected source files.
@@ -77,5 +85,87 @@ public final class TestSupport
 		if (!"file".equalsIgnoreCase(url.getProtocol()))
 			throw new IllegalStateException("Could not find file location of this class used as reference for finding all other files");
 		return Paths.get(url.toURI()).getParent().getParent();
+	}
+
+
+	public static <T> T createInstanceUsingFactory(Class<T> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	{
+		Method mostCompleteFactoryMethod = Arrays.stream(clazz.getMethods()).filter(m->m.getName().equals(ConfigurationDefaults.factoryMethodName) && Modifier.isStatic(m.getModifiers())).max((a,b) -> Integer.compare(a.getParameterCount(), b.getParameterCount())).get();
+
+		Parameter[] parameters = mostCompleteFactoryMethod.getParameters();
+
+		Object[] args = new Object[parameters.length];
+
+		for (int i=0; i<parameters.length; ++i)
+		{
+			args[i]=getTestValue(parameters[i].getType());
+		}
+
+		return (T)mostCompleteFactoryMethod.invoke(null, args);
+	}
+
+	public static Object getTestValue(Class<?> clazz)
+	{
+		if (clazz.equals(String.class))
+			return "testString";
+		else if (clazz.equals(Object.class))
+			return "testObject";
+		else if (clazz.equals(Integer.TYPE))
+			return (byte)1;
+		else if (clazz.equals(Byte.class))
+			return Byte.valueOf((byte)1);
+		else if (clazz.equals(Integer.TYPE))
+			return 2;
+		if (clazz.equals(Integer.class))
+			return Integer.valueOf(2);
+		else if (clazz.equals(Long.TYPE))
+			return (long)3;
+		if (clazz.equals(Long.class))
+			return Long.valueOf((long)3);
+		else if (clazz.equals(Boolean.TYPE))
+			return true;
+		else if (clazz.equals(Boolean.class))
+			return Boolean.valueOf(true);
+		else if (clazz.equals(Float.TYPE))
+			return (float)4.4;
+		else if (clazz.equals(Float.class))
+			return Float.valueOf((float)4.4);
+		else if (clazz.equals(Double.TYPE))
+			return (double)5.5;
+		else if (clazz.equals(Double.class))
+			return Double.valueOf((double)5.5);
+
+		throw new IllegalArgumentException("Presently unsupported argument type "+clazz);
+	}
+
+	public static boolean compareInstanceFields(Object a, Object b) throws IllegalArgumentException, IllegalAccessException
+	{
+		Class<?> aClass = a.getClass();
+		Class<?> bClass = b.getClass();
+
+		if (!aClass.equals(bClass))
+			return false;
+
+		return compareInstanceFields(a, b, aClass);
+	}
+
+	private static boolean compareInstanceFields(Object a, Object b, Class<?> clazz) throws IllegalArgumentException, IllegalAccessException
+	{
+		Field[] fields = clazz.getDeclaredFields();
+
+		for (int i=0; i<fields.length; ++i)
+		{
+			fields[i].setAccessible(true);
+
+			Object afv = fields[i].get(a);
+			Object bfv = fields[i].get(b);
+			if (!afv.equals(bfv))
+				return false;
+		}
+
+		Class<?> base = clazz.getSuperclass();
+		if (base!=null && !base.getSimpleName().equals("Object"))
+			return compareInstanceFields(a, b, base);
+		else return true;
 	}
 }
