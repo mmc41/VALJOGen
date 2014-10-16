@@ -8,7 +8,7 @@ import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
 
 @VALJOGenerate(name=TestClassConstants.SerializableClass)
 // Note that we inherit @VALJOConfigure configuration from package here.
-public interface SerializableInterface extends java.io.Serializable
+public interface MutableSerializableInterface extends java.io.Serializable
 {
 	public String getValue();
 	public void setValue(String value);

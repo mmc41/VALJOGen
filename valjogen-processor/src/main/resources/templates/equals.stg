@@ -16,6 +16,12 @@ method_equals_Object(clazz, method) ::= <<
   if (<first(method.parameters).name> == null)
     return false;
   <@end>
+  <@supercheck>
+  <if(!method.declaringType.rootObject)>
+  if (!super.equals(obj))
+    return false;
+  <endif>
+  <@end>
   <@typecheck>
   if (getClass() != <first(method.parameters).name>.getClass())
     return false;

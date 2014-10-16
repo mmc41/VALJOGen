@@ -64,7 +64,7 @@ public class TemplateComparableTest extends TemplateTestBase
 	@Test
 	public void testNotComparableIfProvidedByBaseClass() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName()).build());
+		Output output = produceOutput(InterfaceWithComparableHashEqualsBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClassWithHashAndEquals.class.getName()).build());
 		assertNotContainsWithWildcards("int compareTo(", output.code); // No compare generated.
 		assertNotContainsWithWildcards("abstract class "+generatedClassName, output.code); // No compare needed (so class is not abstract).
 		Assert.assertTrue("No warning about not all members being comparable expected", output.warnings.size()==0 || !output.warnings.get(0).contains("not all members are comparable"));
@@ -75,7 +75,6 @@ public class TemplateComparableTest extends TemplateTestBase
 	{
 		Output output = produceOutput(InterfaceWithAbstractComparableBaseClass.class, configureAnnotationBuilder
 				                                                                      .add(ConfigurationOptionKeys.baseClazzName, AbstractComparableBaseClass.class.getName())
-				                                                                      //.add(ConfigurationOptionKeys.comparableMembers, new String[] {"intField", "_float"})
 				                                                                      .build());
 		assertContainsWithWildcards("int compareTo(", output.code);
 		assertNotContainsWithWildcards("abstract class "+generatedClassName, output.code); // Comparable implemented (so class is not abstract)

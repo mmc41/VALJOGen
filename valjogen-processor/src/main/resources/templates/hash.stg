@@ -10,12 +10,12 @@ method_hashCode(clazz, method) ::= <<
   <@preamble><@end>
   <if(clazz.primitiveMembers || clazz.arrayMembers)>
   final int <uniqueVariableName(clazz,"prime")> = 31;
-  int <uniqueVariableName(clazz,"result")> = 1;
+  int <uniqueVariableName(clazz,"result")> = <if(method.declaringType.rootObject)>1<else>super.hashCode()<endif>;
   <clazz.members:{m | <uniqueVariableName(clazz,"result")> = <uniqueVariableName(clazz,"prime")> * <uniqueVariableName(clazz,"result")> + <(hashTemplateNamesByTypeCategory.(m.type.typeCategory))(m.name, m.type)> }; separator="\n">
   <elseif(clazz.anyMembers)>
-  int <uniqueVariableName(clazz,"result")> = <clazz.helperTypes.javaUtilObjects.name>.hash(<clazz.members:{p | <p.name>}; separator=", ">);
+  int <uniqueVariableName(clazz,"result")> = <if(!method.declaringType.rootObject)>31 * super.hashCode() + <endif><clazz.helperTypes.javaUtilObjects.name>.hash(<clazz.members:{p | <p.name>}; separator=", ">);
   <else>
-  int <uniqueVariableName(clazz,"result")> = 0;
+  int <uniqueVariableName(clazz,"result")> = <if(method.declaringType.rootObject)>0<else>super.hashCode()<endif>;
   <endif>
   <@postamble><@end>
   return <@returnvalue><uniqueVariableName(clazz,"result")><@end>;

@@ -24,7 +24,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 	@Test
 	public void testCallsAllBaseClassConstructorsByDefault() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName()).build());
+		Output output = produceOutput(InterfaceWithComparableHashEqualsBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClassWithHashAndEquals.class.getName()).build());
 
 		assertContainsWithWildcards("TestImpl(final int myValue, final *List<Double> myDoubleList) { super();", output.code);
 		assertContainsWithWildcards("TestImpl(final int baseIntField, final String baseStrField, final int myValue, final *List<Double> myDoubleList) { super(baseIntField, baseStrField);", output.code);
@@ -33,8 +33,8 @@ public class TemplateMethodsTest extends TemplateTestBase
 	@Test
 	public void testCallsoOnlySelectedBaseClassConstructor1() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder
-				                                                              .add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName())
+		Output output = produceOutput(InterfaceWithComparableHashEqualsBaseClass.class, configureAnnotationBuilder
+				                                                              .add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClassWithHashAndEquals.class.getName())
 				                                                              .add(ConfigurationOptionKeys.baseClazzConstructors, new String[] { "()" })
 				                                                              .build());
 
@@ -45,8 +45,8 @@ public class TemplateMethodsTest extends TemplateTestBase
 	@Test
 	public void testCallsoOnlySelectedBaseClassConstructor2() throws Exception
 	{
-		Output output = produceOutput(InterfaceWithComparableBaseClass.class, configureAnnotationBuilder
-				                                                              .add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClass.class.getName())
+		Output output = produceOutput(InterfaceWithComparableHashEqualsBaseClass.class, configureAnnotationBuilder
+				                                                              .add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClassWithHashAndEquals.class.getName())
 				                                                              .add(ConfigurationOptionKeys.baseClazzConstructors, new String[] { "(int, String)" })
 				                                                              .build());
 

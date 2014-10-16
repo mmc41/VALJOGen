@@ -7,20 +7,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class ComparableBaseClass implements Comparable<ComparableBaseClass>
+public class ComparableBaseClassWithHashAndEquals implements Comparable<ComparableBaseClassWithHashAndEquals>
 {
 	protected int intField;
 	protected String strField;
 	protected List<String> strListField;
 
-	protected ComparableBaseClass()
+	protected ComparableBaseClassWithHashAndEquals()
 	{
 		this.intField=42;
 		this.strField="hello";
 		strListField=Collections.emptyList();
 	}
 
-	public ComparableBaseClass(int baseIntField, String baseStrField)
+	public ComparableBaseClassWithHashAndEquals(int baseIntField, String baseStrField)
 	{
 		this.intField=baseIntField;
 		this.strField=baseStrField;
@@ -48,7 +48,7 @@ public class ComparableBaseClass implements Comparable<ComparableBaseClass>
 	}
 
 	@Override
-	public int compareTo(ComparableBaseClass o)
+	public int compareTo(ComparableBaseClassWithHashAndEquals o)
 	{
 		return strField().compareTo(o.strField());
 	}
@@ -72,7 +72,7 @@ public class ComparableBaseClass implements Comparable<ComparableBaseClass>
 		if (getClass() != obj.getClass())
 			return false;
 
-		ComparableBaseClass other = (ComparableBaseClass) obj;
+		ComparableBaseClassWithHashAndEquals other = (ComparableBaseClassWithHashAndEquals) obj;
 
 		if (!Objects.equals(intField, other.intField))
 			return false;

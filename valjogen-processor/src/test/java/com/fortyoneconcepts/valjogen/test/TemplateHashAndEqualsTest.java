@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
+import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase.Output;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -51,4 +52,35 @@ public class TemplateHashAndEqualsTest extends TemplateTestBase
 		assertNotContainsWithWildcards("int hashCode()", output.code);
 	}
 
+	@Test
+	public void testCallsBaseClassHash() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithComparableHashEqualsBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClassWithHashAndEquals.class.getName()).build());
+
+		assertContainsWithWildcards("int hashCode() *result = super.hashCode();", output.code);
+	}
+
+	@Test
+	public void testCallsBaseClassEquals() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithComparableHashEqualsBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ComparableBaseClassWithHashAndEquals.class.getName()).build());
+
+		assertContainsWithWildcards("equals(final Object obj) *if (!super.equals(obj)) return false", output.code);
+	}
+
+	@Test
+	public void notCallingHashOnRootObject() throws Exception
+	{
+		Output output = produceOutput(ComparableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.hashEnabled, true).build(), false, true);
+
+		assertNotContainsWithWildcards("int hashCode() *super.hashCode()", output.code);
+	}
+
+	@Test
+	public void notCallingEqualshOnRootObject() throws Exception
+	{
+		Output output = produceOutput(ComparableInterface.class, generateAnnotationBuilder.build(), configureAnnotationBuilder.add(ConfigurationOptionKeys.equalsEnabled, true).build(), false, true);
+
+		assertNotContainsWithWildcards("equals(final Object obj) *super.equals(*))", output.code);
+	}
 }

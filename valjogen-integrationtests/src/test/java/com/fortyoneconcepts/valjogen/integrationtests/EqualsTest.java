@@ -5,6 +5,7 @@ package com.fortyoneconcepts.valjogen.integrationtests;
 
 import org.junit.Test;
 
+import com.fortyoneconcepts.valjogen.testsources.BaseClass;
 import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
 import com.fortyoneconcepts.valjogen.testsources.util.TestUtil;
 
@@ -24,5 +25,14 @@ public class EqualsTest
 	{
 		Class<?> clazz = TestUtil.getTestClass(TestClassConstants.ComplexClass);
 	    EqualsVerifier.forClass(clazz).verify();
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void withBaseClassEqualsAndHashContractTest() throws Throwable
+	{
+		@SuppressWarnings("rawtypes")
+		Class clazz = TestUtil.getTestClass(TestClassConstants.SerializableWithBaseClass);
+	    EqualsVerifier.forClass(clazz).withRedefinedSuperclass().verify();
 	}
 }
