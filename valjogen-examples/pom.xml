@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.fortyoneconcepts.valjogen</groupId>
 		<artifactId>valjogen-projectsmaster</artifactId>
-		<version>0.5</version>
+		<version>1.0.0-RC1</version>
 	</parent>
 
 	<groupId>com.fortyoneconcepts.valjogen.examples</groupId>
@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>com.fortyoneconcepts.valjogen.annotations</groupId>
 			<artifactId>valjogen-annotations</artifactId>
-			<version>0.5</version>
+			<version>1.0.0-RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
 			<artifactId>valjogen-annotationprocessor</artifactId>
-			<version>0.5</version>
+			<version>1.0.0-RC1</version>
 		</dependency>
 	</dependencies>
 
