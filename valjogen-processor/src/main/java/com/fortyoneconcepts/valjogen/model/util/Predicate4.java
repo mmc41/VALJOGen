@@ -1,7 +1,10 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.model.util;
 
 /**
- * Represents a predicate (boolean-valued function) of two arguments.
+ * Represents a predicate (boolean-valued function) of 4 arguments.
  *
  * @param <T1> the type of the first input to the predicate
  * @param <T2> the type of the second input to the predicate
@@ -13,7 +16,7 @@ package com.fortyoneconcepts.valjogen.model.util;
 public interface Predicate4<T1,T2,T3,T4>
 {
     /**
-     * Evaluates this predicate on the given argument.
+     * Evaluates this predicate on the given arguments.
      *
      * @param t1 the first input argument
      * @param t2 the second input argument

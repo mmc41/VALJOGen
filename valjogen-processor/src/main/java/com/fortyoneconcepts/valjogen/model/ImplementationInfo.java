@@ -1,5 +1,13 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.model;
 
+/**
+ * Specifies what is implemented already and what will be implemented by generated class and what is missing.
+ *
+ * @author mmc
+ */
 public enum ImplementationInfo
 {
 	/**

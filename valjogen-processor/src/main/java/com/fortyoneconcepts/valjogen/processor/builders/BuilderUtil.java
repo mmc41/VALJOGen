@@ -1,17 +1,25 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.processor.builders;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 
+/**
+ * Various low level type mirror utilities used by builders.
+ *
+ * @author mmc
+ */
 class BuilderUtil
 {
-	static boolean isClass(TypeMirror typeMirror)
+	public static boolean isClass(TypeMirror typeMirror)
 	{
 		ElementKind kind = (typeMirror instanceof DeclaredType) ? ((DeclaredType) typeMirror).asElement().getKind() : ElementKind.OTHER;
 		return kind==ElementKind.CLASS || kind==ElementKind.ENUM;
     }
 
-	static boolean isInterface(TypeMirror typeMirror)
+	public static boolean isInterface(TypeMirror typeMirror)
 	{
 		ElementKind kind = (typeMirror instanceof DeclaredType) ? ((DeclaredType) typeMirror).asElement().getKind() : ElementKind.OTHER;
         return kind == ElementKind.INTERFACE;

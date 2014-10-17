@@ -7,6 +7,8 @@ of nanoc and the website. For instance the main README.md is linked to INDEX.md 
 
 To generate the website type "./build_site.sh" inside a command prompt inside this directory. Then switch to the gh-pages branch and execute the ./deploy_website.sh script there.
 
+In rare cases you may have to delete the output dir before doing the above for all changes to be picked up. I.e. 'rm -rf output'
+
 To test the generated website locally before deploying type "nanoc view" in a command prompt and open a browser at http://localhost:3000
 
 To install the necessary tools install ruby 1.9 or later, rubygems and type:

@@ -1,5 +1,13 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.model;
 
+/**
+ * Common base class for models
+ *
+ * @author mmc
+ */
 public abstract class ModelBase implements Model
 {
 	protected final static int MAX_RECURSIVE_LEVEL = 5;

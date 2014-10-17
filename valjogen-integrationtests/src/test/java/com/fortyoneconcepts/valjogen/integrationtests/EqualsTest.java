@@ -5,7 +5,6 @@ package com.fortyoneconcepts.valjogen.integrationtests;
 
 import org.junit.Test;
 
-import com.fortyoneconcepts.valjogen.testsources.BaseClass;
 import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
 import com.fortyoneconcepts.valjogen.testsources.util.TestUtil;
 

@@ -169,7 +169,7 @@ public final class ModelBuilder
 		List<DeclaredType> interfaceDeclaredMirrorTypes = typeBuilder.createInterfaceDeclaredTypes(masterInterfaceDecl, ekstraInterfaceNames, classPackage);
 
 		List<DeclaredType> allInterfaceDeclaredMirrorTypes = interfaceDeclaredMirrorTypes.stream().flatMap(ie -> typeBuilder.getDeclaredInterfacesWithAscendents(ie)).collect(Collectors.toList());
-		Set<DeclaredType> superTypesWithAscendantsMirrorTypes = concat(allInterfaceDeclaredMirrorTypes.stream(), allBaseClassDeclaredMirrorTypes.stream()).collect(Collectors.toSet());
+		List<DeclaredType> superTypesWithAscendantsMirrorTypes = concat(allInterfaceDeclaredMirrorTypes.stream(), allBaseClassDeclaredMirrorTypes.stream()).distinct().sorted((s1,s2) -> s1.toString().compareTo(s2.toString())).collect(Collectors.toList());
 
         // Step 2 - Init type part of clzzz:
 		List<? extends TypeMirror> typeArgs = masterInterfaceDecl.getTypeArguments();

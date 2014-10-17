@@ -4,14 +4,11 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.util.Date;
-import java.util.Deque;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.gui.STViz;
-import org.stringtemplate.v4.misc.*;
 
 import com.fortyoneconcepts.valjogen.model.*;
 
@@ -30,7 +27,6 @@ public final class STCodeWriter
 	private static final String mainTemplate = "class";
 	private static final String mainTemplateArg = "clazz";
 
-	private RuntimeException lastException;
 	private final Clazz clazz;
 	private final STTemplates stTemplates;
 	private final Configuration cfg;
@@ -40,13 +36,10 @@ public final class STCodeWriter
 		this.stTemplates=stTemplates;
 		this.clazz=clazz;
 		this.cfg=cfg;
-		this.lastException=null;
 	}
 
 	public String outputClass() throws Exception
 	{
-		lastException = null;
-
 		String result = null;
 
 		STGroup group = stTemplates.getSTGroup();

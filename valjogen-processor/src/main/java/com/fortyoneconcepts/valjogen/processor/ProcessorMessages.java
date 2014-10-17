@@ -1,5 +1,13 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.processor;
 
+/**
+ * Contains information and error/warning messages output to the user.
+ *
+ * @author mmc
+ */
 public interface ProcessorMessages
 {
   public static final String ClassNotFound="Could not find class/interface %s";

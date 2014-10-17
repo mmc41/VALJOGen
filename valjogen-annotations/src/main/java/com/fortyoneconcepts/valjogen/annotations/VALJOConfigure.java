@@ -136,7 +136,8 @@ public @interface VALJOConfigure
 	boolean hashEnabled() default true;
 
 	/**
-	* For classes that implement the {@link Comparable} interface this is the ordered names of members to use in a compareTo implementation. If left unspecified all members in declaration order is assumed. May be overruled by equivalent annotation processor key.
+	* For classes that implement the {@link Comparable} interface this is the ordered names of members to use in a compareTo implementation. This may include accessible members of a base class.
+	* If left unspecified it defaults to all members of the generated class in declaration order. May be overruled by equivalent annotation processor key.
 	*
 	* @return Array of names of all members to use in compareTo method and in specified order.
 	*/
@@ -285,10 +286,17 @@ public @interface VALJOConfigure
 	* {@literal @}<span class="st-identifier">method_equals</span>.<span class="st-identifier">preamble</span>() ::= &lt;&lt; <span class="free-comment">// initial method code here.</span> &gt;&gt;
 	* </code></pre>
 	* <p>
-	* When you need to generate code for new java methods implementations, first make sure the method signature is declared in one of its interfaces, then add a template named <code>method_<i>specifier</i></code>
+	* When you need to generate code for new java methods implementations, first make sure the method signature is declared, then add a template named <code>method_<i>specifier</i></code>
 	* with the template arguments <code>clazz</code> and <code>method</code> in your ST group file. The specifier is the java method name followed by underscore seperated, unqualified type arguments with a leading underscore
 	* before first argument (if present). For example to generate the method "void f()" create a template named <code>method_f</code>" and to generate the method "double f(String arg, int value)"
 	* create a template named <code>method_f_String_int</code>". The require custom method arguments are of type Clazz and Method in the com.fortyoneconcepts.valjogen.model package. Refer to the JavaDoc for these for details.
+	*
+	* Declared methods that the implementation can override include methods in the interfaces and base class and their ancestors. In addition, if the generated class is serializable
+	* the magic serialization methods readResolve, readObjectNoData, writeObject and writeReplace are also recognized as methods.
+	*
+	* In you instead need to implement non-declared methods, add nested types or do something special then do override one of the ST regions in the main <code>class</code> template like f.x. {@literal @}class.before_class_methods,
+	* {@literal @}class.after_class_methods, {@literal @}class.before_instance_methods or {@literal @}class.after_instance_methods. When you override regions you have complete freedom to add
+	* any kind of code but without help like method signatures etc.
 	*
 	* The example shown below shows how the main part of the equals method might be defined. Refer to the ST <a href="http://github.com/41concepts/VALJOGen/blob/master/valjogen-processor/src/main/resources/templates/equals.stg" target="_blank">source file for the equals method</a>
 	* for the complete and present source code. In any case it is a good idea to study the template sources and example templates for tips about how to write custom templates. Note how getters in the model
@@ -330,7 +338,7 @@ public @interface VALJOConfigure
 	*
 	* @return Log level
 	*/
-    String logLevel() default "INFO"; // "WARNING"; // INFO
+    String logLevel() default "WARNING"; // INFO
 
     /**
 	* Experimental debugging feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are

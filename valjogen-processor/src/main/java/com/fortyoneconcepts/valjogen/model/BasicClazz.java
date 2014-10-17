@@ -1,3 +1,6 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.model;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.getGenericQualifier;

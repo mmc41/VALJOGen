@@ -1,5 +1,13 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.processor;
 
+/**
+ * Specifies how to calculate the ST template name for a method.
+ *
+ * @author mmc
+ */
 public enum TemplateKind
 {
 	/**

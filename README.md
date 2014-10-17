@@ -1,24 +1,26 @@
 <a name="jumbotron-start"/>
 
-# About VALJOGen 
+# About VALJOGen
 
-VALJOGen is a **VALue Java Objects Generator** that can be used to generate modern Java 7/8+ style value classes from annotated Java interfaces.
+VALJOGen is a **VALue Java Objects Generator** that can be used to generate modern Java 7/8+ value classes from annotated Java interfaces.
 
 **FEATURES:**
 
-+ Can generate **mutable or immutable value objects** with **auto-implemented getters and setters from your interfaces**.
++ Can generate **value objects** with **auto-implemented getters and setters from your interfaces**.
 + Support for auto-implementing factory methods, constructors, Object.**hashCode**, Object.**equals**, Object.**toString**, Comparable.**compareTo**, **Serializable** etc.
 + **Extremely customizable** code output. You can change every aspect for the generated class and even add your own code using [StringTemplate 4](http://www.stringtemplate.org) based custom templates.
-+ Great support for **immutable objects**, including final fields and immutable *setters* that return new instances.
-+ Support for guards (checks) against null arguments, synchronized/unsynchronized mutable objects, custom getter/setter prefixes, injection of base class and extra interfaces into implementation etc.
-+ The annotation processor **run on any standard Java developer tool** running **JDK1.8+** incl. Does not require plugins to **work nicely with IDE's** (as long as they offer the usual standard annotation processor support).
-+ Outputs concise, **modern and nicely formated Java 7+ source code** as if written by hand and without any overhead.
++ Great support for **immutable value objects**, including final fields and immutable *setters* that return new instances.
++ Support for synchronized/unsynchronized **mutable value objects**.
++ Full support for overriding **custom base classes** with both default and non-default base constructors, for overriding base class methods, implementing abstract properties etc.
++ Support for guards (checks) against null arguments, custom getter/setter prefixes, injection of extra interfaces into implementation etc.
++ The annotation processor **runs on any standard Java developer tool** running ** JDK1.8+**. **Works nicely with IDE's** without plugins (as long as they offer the usual standard annotation processor support).
++ Outputs **modern and nicely formatted Java 1.7+ source code** as if written by hand - without reflection and without any overhead.
 + Generated code has **no runtime dependencies** on VALJOGen!
 + Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.
 
 => For a quick introduction see the [getting started document](GETSTARTED.md) or look at some of the [examples](http://valjogen.41concepts.com/examples.html).
 
-<sub>*Compared to other tools like for example [projectlombok](http://projectlombok.org/) or [Joda Beans](http://www.joda.org/joda-beans/) VALJOGen is much more customizable, more powerfull, less intrusive, easier to work with, offer less integration problems and has no performance overhead. VALJOGen does not move/mess around with your code or hide the generated code from you and your debugger. VALJOGen does not require you to write your code in a new way (or subclass anything other then your own plain Java interfaces), does not introduce runtime dependencies into your code and just works with any standard Java tools including IDE's. Finally, unlike projectlombok, it use standard API's (no hacks or virtual "language extensions") so there is much less risk of problems when a new JDK or IDE is released.*</sub>
+<sub>Why VALJOGen?: *Compared to other tools like for example [projectlombok](http://projectlombok.org/) or [Joda Beans](http://www.joda.org/joda-beans/) VALJOGen is much more customizable, more powerfull, less intrusive, offer less integration problems and generated code has no performance overhead (no use of reflection). VALJOGen does not move/mess around with your code or hide the generated code from you and your debugger. VALJOGen does not require you to write your code in a new way (or subclass anything other then your own plain Java interfaces), does not introduce new runtime dependencies into your codebase and just works with any standard Java tools including IDE's. Finally, unlike some alternatives, it use standard API's (no hacks or virtual "language extensions") so there is much less risk of problems when a new JDK or IDE is released.*</sub>
 
 <a name="jumbotron-end"/>
 
@@ -59,5 +61,25 @@ Contributors and contributions are welcome. [Refer to the contribution guide](CO
 - [Main website](http://valjogen.41concepts.com)
 - Free [Google group discussions](http://groups.google.com/group/valjogen)
 - Paid email support : <valjogen(at)41concepts(dot)com>
+
+## 8. CREDITS
+
+VALJOGen is build on [JDK 1.8+](http://www.oracle.com/technetwork/java/index.html) and has benefitted from using the following excellent open-source libraries and tools:
+
+- [Maven](http://maven.apache.org/) with various plugins.
+- [Eclipse](https://www.eclipse.org/)
+- [StringTemplate 4](http://www.stringtemplate.org/)
+- [EqualsVerifier](http://www.jqno.nl/equalsverifier/)
+- [com.google.testing.compile](https://github.com/google/compile-testing)
+
+The website uses the following great open-source libraries and tools:
+
+- [Ruby](https://www.ruby-lang.org/en/)
+- [nanoc](http://nanoc.ws/)
+- [kramdown](http://kramdown.gettalong.org/) with [coderay](http://coderay.rubychan.de/)
+- [Eclipse GitHub Flavored Markdown viewer]: https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/
+- [Eclipse Markdown editor]: http://www.winterwell.com/software/updatesite/
+
+VALJOGen development is supported by [41concepts](http://www.41concepts.com) a Danish software R&D and consulting company.
 
 / Morten M. Christensen, [41concepts](http://www.41concepts.com)

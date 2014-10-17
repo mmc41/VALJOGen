@@ -34,6 +34,7 @@ class FixLinksHtmlFilter < Nanoc::Filter
     content=content.gsub(/"INDEX.(html|md)"/, '"index.html"')
     content=content.gsub(/"INDEX.(html|md)"/, '"index.html"')
     content=content.gsub(/"LICENSE.(html|md)"/, '"license.html"')
+    content=content.gsub(/"DOWNLOADS.(html|md)"/, '"downloads.html"')
     
     content=content.gsub('<a href="src/main/java/com/fortyoneconcepts/valjogen/examples">', '<a href="http://github.com/41concepts/VALJOGen/tree/master/valjogen-examples/src/main/java/com/fortyoneconcepts/valjogen/examples">')
     content=content.gsub('<a href="valjogen-annotations/src/main/java/com/fortyoneconcepts/valjogen/annotations">', '<a href="http://github.com/41concepts/VALJOGen/tree/master/valjogen-annotations/src/main/java/com/fortyoneconcepts/valjogen/annotations">')

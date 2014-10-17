@@ -1,8 +1,16 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.processor;
 
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic.Kind;
 
+/**
+ * Consumer of messages like errors and warnings that the annotation processor should make note of.
+ *
+ * @author mmc
+ */
 @FunctionalInterface
 public interface DiagnosticMessageConsumer
 {

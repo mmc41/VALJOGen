@@ -1,3 +1,6 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
 package com.fortyoneconcepts.valjogen.model.util;
 
 import java.util.Collection;
@@ -5,6 +8,12 @@ import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.model.ModelBase;
 
+/**
+ * Utilities for converting collections to strings for printing.
+ *
+ * @author mmc
+ *
+ */
 public final class ToStringUtil
 {
  public static String toRefsString(Collection<?> c)
