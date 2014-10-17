@@ -1,14 +1,14 @@
 <a name="jumbotron-start"/>
 
-# Downloads (NOTE: NOT ACTUALLY AVAILABLE YET)
+# Downloads
 
 The VALJOGen distribution can be used with maven by using the following dependency
 
 ```Xml
 <dependency>
-    <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
-    <artifactId>valjogen-annotationprocessor</artifactId>
-    <version>*XXX*</version>
+  <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
+  <artifactId>valjogen-annotationprocessor</artifactId>
+  <version>0.5</version>
 </dependency>
 ```
 
@@ -23,6 +23,6 @@ or you can download the following distribution files manually:
 
 <a name="jumbotron-end"/>
 
-The single jar for the annotation processor to use in your projects is **valjogen-annotationprocessor-XXX.jar**. Alternatively you may use the valjogen-annotations-XXX.jar if you want to compile your project with the VALJOGen annotations but without the annotation processor.
+The single jar for the annotation processor to use in your projects is **valjogen-annotationprocessor-0.5.jar**. Alternatively you may use the valjogen-annotations-0.5.jar if you want to compile your project with the VALJOGen annotations but without the annotation processor.
 
 / Morten M. Christensen, [41concepts](http://www.41concepts.com)

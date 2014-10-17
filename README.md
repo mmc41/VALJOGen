@@ -77,8 +77,8 @@ The website uses the following great open-source libraries and tools:
 - [Ruby](https://www.ruby-lang.org/en/)
 - [nanoc](http://nanoc.ws/)
 - [kramdown](http://kramdown.gettalong.org/) with [coderay](http://coderay.rubychan.de/)
-- [Eclipse GitHub Flavored Markdown viewer]: https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/
-- [Eclipse Markdown editor]: http://www.winterwell.com/software/updatesite/
+- [Eclipse GitHub Flavored Markdown viewer](https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/)
+- [Eclipse Markdown editor](http://www.winterwell.com/software/updatesite/)
 
 VALJOGen development is supported by [41concepts](http://www.41concepts.com) a Danish software R&D and consulting company.
 

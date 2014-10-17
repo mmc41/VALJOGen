@@ -13,7 +13,7 @@
 		<maven.compiler.verbose>false</maven.compiler.verbose>
 		<maven.compiler.debug>true</maven.compiler.debug>
 		<maven.compiler.failOnError>true</maven.compiler.failOnError>
-        <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
+		<maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
 		<maven.build.timestamp.format>yyyy-MM-dd 'at' HH:mm</maven.build.timestamp.format>
 		<maven.javadoc.failOnError>true</maven.javadoc.failOnError>
 		<maven.javadoc.failOnWarning>true</maven.javadoc.failOnWarning>
@@ -97,12 +97,12 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
 					<configuration>
-                      <compilerArgs>
-                          <arg>-parameters</arg>                                                    <!-- Make sure parameter meta data is available for best code generation -->
-                          <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=../../src/test/java</arg> <!-- Specify where to locate sources relative to class path -->
-                      </compilerArgs>
-                      <enableAssertions>true</enableAssertions>
-			        </configuration>
+						<compilerArgs>
+							<arg>-parameters</arg>                                                    <!-- Make sure parameter meta data is available for best code generation -->
+							<arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=../../src/test/java</arg> <!-- Specify where to locate sources relative to class path -->
+						</compilerArgs>
+						<enableAssertions>true</enableAssertions>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -134,11 +134,11 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.17</version>
 					<configuration>
-	                    <excludes>
-	                        <exclude>source/**</exclude>
-	                    </excludes>
-	                    <enableAssertions>true</enableAssertions>
-                    </configuration>
+						<excludes>
+							<exclude>source/**</exclude>
+						</excludes>
+						<enableAssertions>true</enableAssertions>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -226,6 +226,45 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.9</version>
+			</plugin>
+			<plugin>
+			    <!-- Update documentation files with project version number -->
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.3</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+	                <includes>
+	                    <include>${basedir}/**/*.md</include>
+	                </includes>
+					<encoding>UTF-8</encoding>
+					<regex>true</regex>
+					<regexFlags>
+                      <regexFlag>MULTILINE</regexFlag>
+                    </regexFlags>
+					<replacements>
+						<replacement>
+							<token>&lt;dependency&gt;\s*&lt;groupId&gt;com\.fortyoneconcepts\.valjogen\.annotationprocessor&lt;/groupId&gt;\s*&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;\s*&lt;version&gt;[^&lt;]*&lt;/version&gt;\s*&lt;/dependency&gt;</token>
+							<value>&lt;dependency&gt;${line.separator}  &lt;groupId&gt;com.fortyoneconcepts.valjogen.annotationprocessor&lt;/groupId&gt;${line.separator}  &lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;${line.separator}  &lt;version&gt;${project.version}&lt;/version&gt;${line.separator}&lt;/dependency&gt;</value>
+						</replacement>
+						<replacement>
+						    <token>valjogen-annotationprocessor-[\d.]+([\w\-]*).jar</token>
+						    <value>valjogen-annotationprocessor-${project.version}$1.jar</value>
+						</replacement>
+						<replacement>
+						    <token>valjogen-annotations-[\d.]+([\w\-]*).jar</token>
+						    <value>valjogen-annotations-${project.version}$1.jar</value>
+						</replacement>
+					</replacements>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

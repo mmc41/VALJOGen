@@ -37,20 +37,20 @@ Refer to the [collection of examples along with their generated output](http://v
 ## 1. Using VALJOGen with JavaC compiler:
 
 ```Bash
-javac -parameters -cp valjogen-annotationprocessor-*XXX*.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+javac -parameters -cp valjogen-annotationprocessor-0.5.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
 Notably, the example above makes the annotation processor available on the class path, uses the JDK1.8+ -parameter option to enable parameter names processing by the annotation processor and the -Akey[=value] option to let the processor know the source path.
 
 ## 2. Using VALJOGen with Maven:
 
-Use `Maven 3.2.0` or later and add the dependency (*NOTE: THIS IS FOR THE FUTURE - PROJECT ARTIFACTS ARE NOT IN MAVEN CENTRAL YET*):
+Use `Maven 3.2.0` or later and add the dependency:
 
 ```Xml
 <dependency>
-    <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
-    <artifactId>valjogen-annotationprocessor</artifactId>
-    <version>*XXX*</version>
+  <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
+  <artifactId>valjogen-annotationprocessor</artifactId>
+  <version>0.5</version>
 </dependency>
 ```
 
@@ -103,6 +103,6 @@ VALJOGen output can be customized in a number of ways as listed below (in a orde
 
 See [readme in annotaton processor project](valjogen-processor/README.md) for some implementation details or look at the source.
 
-The [VALJOGen website](http://valjogen.41concepts.com) is generated using [nanoc](http://nanoc.ws/) using [github flavored markdown](https://help.github.com/articles/github-flavored-markdown/) files. See site subproject folder for details. 
+The [VALJOGen website](http://valjogen.41concepts.com) is generated using [nanoc](http://nanoc.ws/) using [github flavored markdown](https://help.github.com/articles/github-flavored-markdown/) files. See site subproject folder for details.
 
 / Morten M. Christensen, [41concepts](http://www.41concepts.com)
