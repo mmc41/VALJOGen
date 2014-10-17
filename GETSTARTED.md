@@ -48,7 +48,7 @@ Use `Maven 3.2.0` or later and add the dependency:
 
 ```Xml
 <dependency>
-  <groupId>com.fortyoneconcepts.valjogen.annotationprocessor</groupId>
+  <groupId>com.41concepts</groupId>
   <artifactId>valjogen-annotationprocessor</artifactId>
   <version>1.0.0-RC1</version>
 </dependency>

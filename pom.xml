@@ -37,7 +37,7 @@
 		<encoding>UTF-8</encoding>
 		<license.url>http://valjogen.41concepts.com/license.html</license.url>
 	</properties>
-	<groupId>com.fortyoneconcepts.valjogen</groupId>
+	<groupId>com.41concepts</groupId>
 	<artifactId>valjogen-projectsmaster</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0.0-RC1</version>
@@ -57,7 +57,7 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>scm:git:git@github.com:41concepts/VALJOGen.git</url>
+		<url>scm:git:https://github.com/41concepts/VALJOGen.git</url>
 	</scm>
 	<modules>
 		<module>valjogen-annotations</module>
@@ -252,8 +252,8 @@
                     </regexFlags>
 					<replacements>
 						<replacement>
-							<token>&lt;dependency&gt;\s*&lt;groupId&gt;com\.fortyoneconcepts\.valjogen\.annotationprocessor&lt;/groupId&gt;\s*&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;\s*&lt;version&gt;[^&lt;]*&lt;/version&gt;\s*&lt;/dependency&gt;</token>
-							<value>&lt;dependency&gt;${line.separator}  &lt;groupId&gt;com.fortyoneconcepts.valjogen.annotationprocessor&lt;/groupId&gt;${line.separator}  &lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;${line.separator}  &lt;version&gt;${project.version}&lt;/version&gt;${line.separator}&lt;/dependency&gt;</value>
+							<token>&lt;dependency&gt;\s*&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;\s*&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;\s*&lt;version&gt;[^&lt;]*&lt;/version&gt;\s*&lt;/dependency&gt;</token>
+							<value>&lt;dependency&gt;${line.separator}  &lt;groupId&gt;com.41concepts&lt;/groupId&gt;${line.separator}  &lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;${line.separator}  &lt;version&gt;${project.version}&lt;/version&gt;${line.separator}&lt;/dependency&gt;</value>
 						</replacement>
 						<replacement>
 						    <token>valjogen-annotationprocessor-[A-Z0-9.-]+?([a-z\-]*).jar</token>

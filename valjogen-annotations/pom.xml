@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.fortyoneconcepts.valjogen</groupId>
+		<groupId>com.41concepts</groupId>
 		<artifactId>valjogen-projectsmaster</artifactId>
 		<version>1.0.0-RC1</version>
 	</parent>
 
-	<groupId>com.fortyoneconcepts.valjogen.annotations</groupId>
+	<groupId>com.41concepts</groupId>
 	<artifactId>valjogen-annotations</artifactId>
 	<packaging>jar</packaging>
 
