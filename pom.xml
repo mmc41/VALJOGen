@@ -36,6 +36,7 @@
 		</javadoc.bottom>
 		<encoding>UTF-8</encoding>
 		<license.url>http://valjogen.41concepts.com/license.html</license.url>
+		<gpg.keyname>FCE61EA7</gpg.keyname>
 	</properties>
 	<groupId>com.41concepts</groupId>
 	<artifactId>valjogen-projectsmaster</artifactId>
@@ -57,8 +58,20 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>scm:git:https://github.com/41concepts/VALJOGen.git</url>
+	  <connection>scm:git:git@github.com:41concepts/VALJOGen.git</connection>
+      <developerConnection>scm:git:git@github.com:41concepts/VALJOGen.git</developerConnection>
+      <url>git@github.com:41concepts/VALJOGen.git</url>
 	</scm>
+	<distributionManagement>
+      <snapshotRepository>
+        <id>ossrh</id>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+       </snapshotRepository>
+      <repository>
+        <id>ossrh</id>
+        <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      </repository>
+    </distributionManagement>
 	<modules>
 		<module>valjogen-annotations</module>
 		<module>valjogen-integrationtests</module>
@@ -219,6 +232,20 @@
 						</archive>
 					</configuration>
 				</plugin>
+				<plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-gpg-plugin</artifactId>
+	                <version>1.5</version>
+	                <executions>
+	                  <execution>
+	                    <id>sign-artifacts</id>
+	                    <phase>verify</phase>
+	                    <goals>
+	                      <goal>sign</goal>
+	                    </goals>
+	                  </execution>
+	                </executions>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -251,6 +278,7 @@
                       <regexFlag>MULTILINE</regexFlag>
                     </regexFlags>
 					<replacements>
+					    <!-- Be carefull with reformatting here - do not introduce line breaks etc. inside token or value elements -->
 						<replacement>
 							<token>&lt;dependency&gt;\s*&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;\s*&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;\s*&lt;version&gt;[^&lt;]*&lt;/version&gt;\s*&lt;/dependency&gt;</token>
 							<value>&lt;dependency&gt;${line.separator}  &lt;groupId&gt;com.41concepts&lt;/groupId&gt;${line.separator}  &lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;${line.separator}  &lt;version&gt;${project.version}&lt;/version&gt;${line.separator}&lt;/dependency&gt;</value>

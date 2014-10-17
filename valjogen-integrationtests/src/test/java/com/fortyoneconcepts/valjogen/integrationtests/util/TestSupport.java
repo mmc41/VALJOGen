@@ -120,21 +120,21 @@ public final class TestSupport
 		if (clazz.equals(Integer.class))
 			return Integer.valueOf(2);
 		else if (clazz.equals(Long.TYPE))
-			return (long)3;
+			return 3L;
 		if (clazz.equals(Long.class))
-			return Long.valueOf((long)3);
+			return Long.valueOf(3L);
 		else if (clazz.equals(Boolean.TYPE))
 			return true;
 		else if (clazz.equals(Boolean.class))
 			return Boolean.valueOf(true);
 		else if (clazz.equals(Float.TYPE))
-			return (float)4.4;
+			return 4.4f;
 		else if (clazz.equals(Float.class))
-			return Float.valueOf((float)4.4);
+			return Float.valueOf(4.4f);
 		else if (clazz.equals(Double.TYPE))
-			return (double)5.5;
+			return 5.5d;
 		else if (clazz.equals(Double.class))
-			return Double.valueOf((double)5.5);
+			return Double.valueOf(5.5d);
 
 		throw new IllegalArgumentException("Presently unsupported argument type "+clazz);
 	}

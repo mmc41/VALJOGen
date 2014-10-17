@@ -204,10 +204,19 @@ public class ObjectType extends Type
 	{
 		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
 
+	    /*
 		Type serializableType = getHelperTypes().getSerializableInterfaceType();
 		if (this.equals(serializableType))
 			return true;
 		else return getSuperTypesWithAscendants().contains(serializableType);
+		*/
+
+	    // Hmm: Above does not work - workaround.
+		if (this.getQualifiedName().equals("java.io.Serializable"))
+			return true;
+
+		boolean serializable = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.io.Serializable"));
+		return serializable;
 	}
 
 	@Override

@@ -1,0 +1,27 @@
+Build procect:
+mvn package
+
+Build website
+cd site
+./build_site.sh
+
+Sign:
+mvn mvn verify -Dgpg.passphrase=thephrase
+
+Deply:
+mvn deploy -Dgpg.passphrase=x/y
+
+SETUP:
+
+Configure SonaType account in ~/.m2/settings.xml:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <servers>
+    <server> <!-- SonaType -->
+      <id>ossrh</id>
+      <username>mmc41</username>
+      <password>myPASSWORD</password>
+    </server>
+  </servers>
+</settings>
