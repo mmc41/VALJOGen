@@ -53,6 +53,7 @@
                 <li><a href="getstarted.html">Getting started</a></li>
                 <li><a href="examples.html">Examples</a></li>
                 <li><a href="apidocs/index.html" target="_blank">Javadocs</a></li> 
+                <li><a href="downloads.html">Downloads</a></li>
                 <li><a href="contributing.html">Contributing</a></li>
                 <li><a href="https://github.com/41concepts/VALJOGen" target="_blank">Source</a></li>
                 <li><a href="license.html">License</a></li>
@@ -79,31 +80,37 @@
 
 <ul>
   <li>
-    <p><a href="#source-example-codecomparablenamejavacode"><code>ComparableName.java</code></a> - Example that shows how to make generated class implement comparable in a specific way.</p>
-  </li>
-  <li>
-    <p><a href="#source-example-codecustomhashcodejavacode"><code>CustomHashCode.java</code></a> - Example that shows how to apply a custom template to change the generated code for known methods.</p>
-  </li>
-  <li>
-    <p><a href="#source-example-codecustommethodjavacode"><code>CustomMethod.java</code></a> - Example that shows how to apply a custom template implementing a custom method.</p>
-  </li>
-  <li>
     <p><a href="#source-example-codehellojavacode"><code>Hello.java</code></a> - Simplest possible example that generates a default value object containing a hello message.</p>
   </li>
   <li>
-    <p><a href="#source-example-codeimmutablepairjavacode"><code>ImmutablePair.java</code></a> - Example that shows how to generate a simple immutable pair class.</p>
+    <p><a href="#source-example-codesimpleinterfacewithnamedoutputjavacode"><code>SimpleInterfaceWithNamedOutput.java</code></a> - Example that shows how to control the name of the generated implementation class.</p>
   </li>
   <li>
     <p><a href="#source-example-codemutablepairjavacode"><code>MutablePair.java</code></a> - Example that shows how to generate a simple mutable pair class.</p>
   </li>
   <li>
-    <p><a href="#source-example-codepackage-infojavacode"><code>package-info.java</code></a> - Example of how to configure ValjoGen defaults for interfaces in a package.</p>
+    <p><a href="#source-example-codeimmutablepairjavacode"><code>ImmutablePair.java</code></a> - Example that shows how to generate a simple immutable pair class.</p>
   </li>
   <li>
     <p><a href="#source-example-codeserializablepositionjavacode"><code>SerializablePosition.java</code></a> - Example that shows how to specify serialization ID for serialiable classes.</p>
   </li>
   <li>
-    <p><a href="#source-example-codesimpleinterfacewithnamedoutputjavacode"><code>SimpleInterfaceWithNamedOutput.java</code></a> - Example that shows how to control the name of the generated implementation class.</p>
+    <p><a href="#source-example-codeextendingbyinheritancejavacode"><code>ExtendingByInheritance.java</code></a> - Example that shows how use standard subclassing for customization.</p>
+  </li>
+  <li>
+    <p><a href="#source-example-codecomparablenamejavacode"><code>ComparableName.java</code></a> - Example that shows how to make generated class implement comparable in a specific way.</p>
+  </li>
+  <li>
+    <p><a href="#source-example-codepackage-infojavacode"><code>package-info.java</code></a> - Example of how to configure ValjoGen defaults for interfaces in a package.</p>
+  </li>
+  <li>
+    <p><a href="#source-example-codecustommethodjavacode"><code>CustomMethod.java</code></a> - Example that shows how to apply a custom template implementing a custom method.</p>
+  </li>
+  <li>
+    <p><a href="#source-example-codecustomhashcodejavacode"><code>CustomHashCode.java</code></a> - Example that shows how to apply a custom template to change the generated code for known methods.</p>
+  </li>
+  <li>
+    <p><a href="#source-example-codebaseclassjavacode"><code>BaseClass.java</code></a> - Example of a preexisting base class that generated code can extend from.</p>
   </li>
   <li>
     <p><a href="#custom-template-example-codecustomhashcodestgcode"><code>custom_hashCode.stg</code></a> - This custom template shows how to add caching to the generated hashCode method.</p>
@@ -121,422 +128,20 @@
 
 <hr />
 
-<h2 id="source-example-codecomparablenamejavacode">Source example: <code>ComparableName.java</code></h2>
-<div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
-
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
-
-<span style="color:#777">/**
-* Example that shows how to make generated class implement comparable in a specific way. As we can't refer directly to the generated class directly from our interface
-* we need to specify the implmentation with it's generic reference as an extra interface that the generated class should implement (in addition to this
-* main interface). Extra interfaces are resolved only when the implementation is generated. Notice the use of the &lt;code&gt;This&lt;/code&gt; macro so we do not have to
-* hardcode the implementation class name. Notice also how a certain ordering for the compareTo implementation is specified (instead of the default
-* which is in order of declaration of the properties in the interface).
-*/</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(extraInterfaceNames={ <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">java.lang.Comparable&lt;$(This)&gt;</span><span style="color:#710">&quot;</span></span> }, comparableMembers= {<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">lastName</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">firstName</span><span style="color:#710">&quot;</span></span> })
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">ComparableName</span>
-{
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName();
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName();
-}
-
-</pre></div>
-</div>
-</div>
-
-<h3 id="generated-output-codecomparablenamejavacodesource-example-codecomparablenamejavacode--codecomparablenameimpljavacode-">Generated output: <a href="#source-example-codecomparablenamejavacode"><code>ComparableName.java</code></a> =&gt; <code>ComparableNameImpl.java</code> :</h3>
-
-<div><div class="CodeRay">
-  <div class="code"><pre>
-
-<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
-
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
-
-<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-06T17:46Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.ComparableName</span><span style="color:#710">&quot;</span></span>) 
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">ComparableNameImpl</span> <span style="color:#088;font-weight:bold">implements</span> ComparableName, <span style="color:#0a8;font-weight:bold">Comparable</span>&lt;ComparableNameImpl&gt;
-{
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName;
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName;
-
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> ComparableNameImpl valueOf(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
-  {
-    ComparableNameImpl _instance = <span style="color:#080;font-weight:bold">new</span> ComparableNameImpl(firstName, lastName);
-    <span style="color:#080;font-weight:bold">return</span> _instance;
-  }
-
-  <span style="color:#088;font-weight:bold">private</span> ComparableNameImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
-  {
-    <span style="color:#950">this</span>.firstName=Objects.requireNonNull(firstName);
-    <span style="color:#950">this</span>.lastName=Objects.requireNonNull(lastName);
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName()
-  {
-   <span style="color:#080;font-weight:bold">return</span> firstName;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName()
-  {
-   <span style="color:#080;font-weight:bold">return</span> lastName;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> compareTo(<span style="color:#088;font-weight:bold">final</span> ComparableNameImpl arg0)
-  {
-    <span style="color:#339;font-weight:bold">int</span> _result;
-
-    <span style="color:#080;font-weight:bold">if</span> ((_result=lastName.compareTo(arg0.lastName))!=<span style="color:#00D">0</span>)
-     <span style="color:#080;font-weight:bold">return</span> _result;
-    <span style="color:#080;font-weight:bold">if</span> ((_result=firstName.compareTo(arg0.firstName))!=<span style="color:#00D">0</span>)
-     <span style="color:#080;font-weight:bold">return</span> _result;
-
-    <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
-  {
-    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(firstName, lastName);
-    <span style="color:#080;font-weight:bold">return</span> _result;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
-  {
-    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
-
-    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
-
-    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
-
-    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
-    ComparableNameImpl _other = (ComparableNameImpl) arg0;
-
-    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(firstName, _other.firstName) &amp;&amp; Objects.equals(lastName, _other.lastName));
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
-  {
-    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">ComparableNameImpl [</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">firstName=</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(firstName); 
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">, </span><span style="color:#710">&quot;</span></span>);
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">lastName=</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(lastName); 
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
-    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
-  }
-}
-</pre></div>
-</div>
-</div>
-
-<hr />
-
-<h2 id="source-example-codecustomhashcodejavacode">Source example: <code>CustomHashCode.java</code></h2>
-<div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
-
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
-
-<span style="color:#777">/**
-* Example that shows how to apply a custom template to change the generated code for known methods. In this case to support caching of hashCode.
-*/</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(customTemplateFileName=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">custom_hashCode.stg</span><span style="color:#710">&quot;</span></span>)
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">CustomHashCode</span>
-{
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName();
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName();
-}
-
-</pre></div>
-</div>
-</div>
-
-<p><strong>See also:</strong> <a href="#custom-template-example-codecustomhashcodestgcode"><code>custom_hashCode.stg</code></a></p>
-
-<h3 id="generated-output-codecustomhashcodejavacodesource-example-codecustomhashcodejavacode-codecustomhashcodestgcodecustom-template-example-codecustomhashcodestgcode--codecustomhashcodeimpljavacode-">Generated output: (<a href="#source-example-codecustomhashcodejavacode"><code>CustomHashCode.java</code></a>, <a href="#custom-template-example-codecustomhashcodestgcode"><code>custom_hashCode.stg</code></a>) =&gt; <code>CustomHashCodeImpl.java</code> :</h3>
-
-<div><div class="CodeRay">
-  <div class="code"><pre>
-
-<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
-
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
-
-<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-06T17:46Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.CustomHashCode</span><span style="color:#710">&quot;</span></span>) 
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">CustomHashCodeImpl</span> <span style="color:#088;font-weight:bold">implements</span> CustomHashCode
-{
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">volatile</span> <span style="color:#088;font-weight:bold">transient</span> <span style="color:#339;font-weight:bold">int</span> cachedHashCode = <span style="color:#00D">0</span>;
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName;
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName;
-
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> CustomHashCodeImpl valueOf(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
-  {
-    CustomHashCodeImpl _instance = <span style="color:#080;font-weight:bold">new</span> CustomHashCodeImpl(firstName, lastName);
-    <span style="color:#080;font-weight:bold">return</span> _instance;
-  }
-
-  <span style="color:#088;font-weight:bold">private</span> CustomHashCodeImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
-  {
-    <span style="color:#950">this</span>.firstName=Objects.requireNonNull(firstName);
-    <span style="color:#950">this</span>.lastName=Objects.requireNonNull(lastName);
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName()
-  {
-   <span style="color:#080;font-weight:bold">return</span> firstName;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName()
-  {
-   <span style="color:#080;font-weight:bold">return</span> lastName;
-  }
-
- <span style="color:#777">/**
-  * Returns a hash code value for the object or cached value if already called.
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
-  {
-    <span style="color:#080;font-weight:bold">if</span> (cachedHashCode!=<span style="color:#00D">0</span>)
-     <span style="color:#080;font-weight:bold">return</span> cachedHashCode;
-
-    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(firstName, lastName);
-    <span style="color:#080;font-weight:bold">return</span> (cachedHashCode=_result);
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
-  {
-    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
-
-    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
-
-    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
-
-    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
-    CustomHashCodeImpl _other = (CustomHashCodeImpl) arg0;
-
-    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(firstName, _other.firstName) &amp;&amp; Objects.equals(lastName, _other.lastName));
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
-  {
-    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CustomHashCodeImpl [</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">firstName=</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(firstName); 
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">, </span><span style="color:#710">&quot;</span></span>);
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">lastName=</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(lastName); 
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
-    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
-  }
-}
-</pre></div>
-</div>
-</div>
-
-<hr />
-
-<h2 id="source-example-codecustommethodjavacode">Source example: <code>CustomMethod.java</code></h2>
-<div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
-
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
-
-<span style="color:#777">/**
-* Example that shows how to apply a custom template implementing a custom method.
-* Example also shows how to make the generated mutable class thread safe.
-*/</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(customTemplateFileName=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">custom_method.stg</span><span style="color:#710">&quot;</span></span>, implementedMethodNames={<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">nanoLastUpdated</span><span style="color:#710">&quot;</span></span>}, synchronizedAccessEnabled=<span style="color:#069">true</span>)
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">CustomMethod</span>
-{
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getName();
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setName(<span style="color:#0a8;font-weight:bold">String</span> name);
-
-        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">long</span> nanoLastUpdated();
-}
-
-</pre></div>
-</div>
-</div>
-
-<p><strong>See also:</strong> <a href="#custom-template-example-codecustommethodstgcode"><code>custom_method.stg</code></a></p>
-
-<h3 id="generated-output-codecustommethodjavacodesource-example-codecustommethodjavacode-codecustommethodstgcodecustom-template-example-codecustommethodstgcode--codecustommethodimpljavacode-">Generated output: (<a href="#source-example-codecustommethodjavacode"><code>CustomMethod.java</code></a>, <a href="#custom-template-example-codecustommethodstgcode"><code>custom_method.stg</code></a>) =&gt; <code>CustomMethodImpl.java</code> :</h3>
-
-<div><div class="CodeRay">
-  <div class="code"><pre>
-
-<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
-
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
-<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
-
-<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-06T17:46Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.CustomMethod</span><span style="color:#710">&quot;</span></span>) 
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">CustomMethodImpl</span> <span style="color:#088;font-weight:bold">implements</span> CustomMethod
-{
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#339;font-weight:bold">long</span> changeNanoTime;
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#0a8;font-weight:bold">String</span> name;
-
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> CustomMethodImpl valueOf(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> name)
-  {
-    CustomMethodImpl _instance = <span style="color:#080;font-weight:bold">new</span> CustomMethodImpl(name);
-    <span style="color:#080;font-weight:bold">return</span> _instance;
-  }
-
-  <span style="color:#088;font-weight:bold">private</span> CustomMethodImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> name)
-  {
-    <span style="color:#950">this</span>.name=Objects.requireNonNull(name);
-    changeNanoTime=<span style="color:#0a8;font-weight:bold">System</span>.nanoTime();
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#0a8;font-weight:bold">String</span> getName()
-  {
-   <span style="color:#080;font-weight:bold">return</span> name;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">void</span> setName(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> name)
-  {
-   changeNanoTime=<span style="color:#0a8;font-weight:bold">System</span>.nanoTime();
-   <span style="color:#950">this</span>.name=Objects.requireNonNull(name);
-  }
-
- <span style="color:#777">/**
-  * Returnes the last time this class was updated.
-  */</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">long</span> nanoLastUpdated()
-  {
-    <span style="color:#080;font-weight:bold">return</span> changeNanoTime;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
-  {
-    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(name);
-    <span style="color:#080;font-weight:bold">return</span> _result;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
-  {
-    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
-
-    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
-
-    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
-      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
-
-    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
-    CustomMethodImpl _other = (CustomMethodImpl) arg0;
-
-    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(name, _other.name));
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
-  {
-    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CustomMethodImpl [</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">name=</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(name); 
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
-    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
-  }
-}
-</pre></div>
-</div>
-</div>
-
-<hr />
-
 <h2 id="source-example-codehellojavacode">Source example: <code>Hello.java</code></h2>
+
 <div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations</span>.*;
 
 <span style="color:#777">/**
 * Simplest possible example that generates a default value object containing a hello message.
+*
+* NOTE: Comments are entirely optional but used for the websites documentation backend.
 */</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 1</span><span style="color:#710">&quot;</span></span>)
 <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">Hello</span>
 {
         <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getHelloMessage();
@@ -549,7 +154,7 @@
 <h3 id="generated-output-codehellojavacodesource-example-codehellojavacode--codehelloimpljavacode-">Generated output: <a href="#source-example-codehellojavacode"><code>Hello.java</code></a> =&gt; <code>HelloImpl.java</code> :</h3>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
 
 <span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
@@ -557,7 +162,7 @@
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
 
-<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-06T17:46Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.Hello</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.Hello</span><span style="color:#710">&quot;</span></span>) 
 <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">HelloImpl</span> <span style="color:#088;font-weight:bold">implements</span> Hello
 {
   <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> helloMessage;
@@ -570,19 +175,20 @@
 
   <span style="color:#088;font-weight:bold">private</span> HelloImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> helloMessage)
   {
+    <span style="color:#950">super</span>();
     <span style="color:#950">this</span>.helloMessage=Objects.requireNonNull(helloMessage);
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> getHelloMessage()
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getHelloMessage()
   {
    <span style="color:#080;font-weight:bold">return</span> helloMessage;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -592,7 +198,7 @@
     <span style="color:#080;font-weight:bold">return</span> _result;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -613,7 +219,7 @@
     <span style="color:#080;font-weight:bold">return</span> (Objects.equals(helloMessage, _other.helloMessage));
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -633,37 +239,32 @@
 
 <hr />
 
-<h2 id="source-example-codeimmutablepairjavacode">Source example: <code>ImmutablePair.java</code></h2>
+<h2 id="source-example-codesimpleinterfacewithnamedoutputjavacode">Source example: <code>SimpleInterfaceWithNamedOutput.java</code></h2>
+
 <div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
 
 <span style="color:#777">/**
-* Example that shows how to generate a simple immutable pair class.
-* Note the tiny difference compared to the mutable pair class example.
-*
-* @param &lt;TLeft&gt; First object type in pair.
-* @param &lt;TRight&gt; Second object type in pair.
+* Example that shows how to control the name of the generated implementation class.
 */</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">ImmutablePair</span>&lt;TLeft, TRight&gt;
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(name=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">SimpleInterfaceImpl</span><span style="color:#710">&quot;</span></span>, comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 2</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">SimpleInterfaceWithNamedOutput</span>
 {
-        <span style="color:#088;font-weight:bold">public</span> TLeft getLeft();
-        <span style="color:#088;font-weight:bold">public</span> ImmutablePair&lt;TLeft, TRight&gt; setLeft(TLeft left);
-
-        <span style="color:#088;font-weight:bold">public</span> TRight getRight();
-        <span style="color:#088;font-weight:bold">public</span> ImmutablePair&lt;TLeft, TRight&gt; setRight(TRight right);
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">Object</span> getObject();
+    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getString();
 }
 
 </pre></div>
 </div>
 </div>
 
-<h3 id="generated-output-codeimmutablepairjavacodesource-example-codeimmutablepairjavacode--codeimmutablepairimpljavacode-">Generated output: <a href="#source-example-codeimmutablepairjavacode"><code>ImmutablePair.java</code></a> =&gt; <code>ImmutablePairImpl.java</code> :</h3>
+<h3 id="generated-output-codesimpleinterfacewithnamedoutputjavacodesource-example-codesimpleinterfacewithnamedoutputjavacode--codesimpleinterfaceimpljavacode-">Generated output: <a href="#source-example-codesimpleinterfacewithnamedoutputjavacode"><code>SimpleInterfaceWithNamedOutput.java</code></a> =&gt; <code>SimpleInterfaceImpl.java</code> :</h3>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
 
 <span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
@@ -671,71 +272,54 @@
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
 
-<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-06T17:46Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.ImmutablePair&lt;TLeft,TRight&gt;</span><span style="color:#710">&quot;</span></span>) 
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">ImmutablePairImpl</span>&lt;TLeft,TRight&gt; <span style="color:#088;font-weight:bold">implements</span> ImmutablePair&lt;TLeft,TRight&gt;
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.SimpleInterfaceWithNamedOutput</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">SimpleInterfaceImpl</span> <span style="color:#088;font-weight:bold">implements</span> SimpleInterfaceWithNamedOutput
 {
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> TLeft left;
-  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> TRight right;
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> _object;
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> _string;
 
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span>  &lt;TLeft,TRight&gt; ImmutablePairImpl&lt;TLeft,TRight&gt; valueOf(<span style="color:#088;font-weight:bold">final</span> TLeft left, <span style="color:#088;font-weight:bold">final</span> TRight right)
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> SimpleInterfaceImpl valueOf(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> _object, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> _string)
   {
-    ImmutablePairImpl&lt;TLeft,TRight&gt; _instance = <span style="color:#080;font-weight:bold">new</span> ImmutablePairImpl&lt;TLeft,TRight&gt;(left, right);
+    SimpleInterfaceImpl _instance = <span style="color:#080;font-weight:bold">new</span> SimpleInterfaceImpl(_object, _string);
     <span style="color:#080;font-weight:bold">return</span> _instance;
   }
 
-  <span style="color:#088;font-weight:bold">private</span> ImmutablePairImpl(<span style="color:#088;font-weight:bold">final</span> TLeft left, <span style="color:#088;font-weight:bold">final</span> TRight right)
+  <span style="color:#088;font-weight:bold">private</span> SimpleInterfaceImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> _object, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> _string)
   {
-    <span style="color:#950">this</span>.left=Objects.requireNonNull(left);
-    <span style="color:#950">this</span>.right=Objects.requireNonNull(right);
+    <span style="color:#950">super</span>();
+    <span style="color:#950">this</span>._object=Objects.requireNonNull(_object);
+    <span style="color:#950">this</span>._string=Objects.requireNonNull(_string);
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> TLeft getLeft()
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">Object</span> getObject()
   {
-   <span style="color:#080;font-weight:bold">return</span> left;
+   <span style="color:#080;font-weight:bold">return</span> _object;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> ImmutablePairImpl&lt;TLeft,TRight&gt; setLeft(<span style="color:#088;font-weight:bold">final</span> TLeft left)
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getString()
   {
-   <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> ImmutablePairImpl&lt;TLeft,TRight&gt;(left, <span style="color:#950">this</span>.right);
+   <span style="color:#080;font-weight:bold">return</span> _string;
   }
 
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> TRight getRight()
-  {
-   <span style="color:#080;font-weight:bold">return</span> right;
-  }
-
- <span style="color:#777">/**
-  * {@inheritDoc}
-  */</span>
-  <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> ImmutablePairImpl&lt;TLeft,TRight&gt; setRight(<span style="color:#088;font-weight:bold">final</span> TRight right)
-  {
-   <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> ImmutablePairImpl&lt;TLeft,TRight&gt;(<span style="color:#950">this</span>.left, right);
-  }
-
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
   <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
   {
-    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(left, right);
+    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(_object, _string);
     <span style="color:#080;font-weight:bold">return</span> _result;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -751,24 +335,24 @@
       <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
 
     <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
-    ImmutablePairImpl&lt;TLeft,TRight&gt; _other = (ImmutablePairImpl&lt;TLeft,TRight&gt;) arg0;
+    SimpleInterfaceImpl _other = (SimpleInterfaceImpl) arg0;
 
-    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(left, _other.left) &amp;&amp; Objects.equals(right, _other.right));
+    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(_object, _other._object) &amp;&amp; Objects.equals(_string, _other._string));
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
   <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
   {
     <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">ImmutablePairImpl [</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">left=</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(left); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">SimpleInterfaceImpl [</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">_object=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(_object); 
     _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">, </span><span style="color:#710">&quot;</span></span>);
-    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">right=</span><span style="color:#710">&quot;</span></span>);
-    _sb.append(right); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">_string=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(_string); 
     _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
     <span style="color:#080;font-weight:bold">return</span> _sb.toString();
   }
@@ -780,8 +364,10 @@
 <hr />
 
 <h2 id="source-example-codemutablepairjavacode">Source example: <code>MutablePair.java</code></h2>
+
 <div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
 
@@ -792,7 +378,7 @@
 * @param &lt;TLeft&gt; First object type in pair.
 * @param &lt;TRight&gt; Second object type in pair.
 */</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 3</span><span style="color:#710">&quot;</span></span>)
 <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">MutablePair</span>&lt;TLeft, TRight&gt;
 {
         <span style="color:#088;font-weight:bold">public</span> TLeft getLeft();
@@ -809,7 +395,7 @@
 <h3 id="generated-output-codemutablepairjavacodesource-example-codemutablepairjavacode--codemutablepairimpljavacode-">Generated output: <a href="#source-example-codemutablepairjavacode"><code>MutablePair.java</code></a> =&gt; <code>MutablePairImpl.java</code> :</h3>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
 
 <span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
@@ -817,13 +403,13 @@
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
 
-<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-06T17:46Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.MutablePair&lt;TLeft,TRight&gt;</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.MutablePair&lt;TLeft,TRight&gt;</span><span style="color:#710">&quot;</span></span>) 
 <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">MutablePairImpl</span>&lt;TLeft,TRight&gt; <span style="color:#088;font-weight:bold">implements</span> MutablePair&lt;TLeft,TRight&gt;
 {
   <span style="color:#088;font-weight:bold">private</span> TLeft left;
   <span style="color:#088;font-weight:bold">private</span> TRight right;
 
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span>  &lt;TLeft,TRight&gt; MutablePairImpl&lt;TLeft,TRight&gt; valueOf(<span style="color:#088;font-weight:bold">final</span> TLeft left, <span style="color:#088;font-weight:bold">final</span> TRight right)
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> &lt;TLeft,TRight&gt; MutablePairImpl&lt;TLeft,TRight&gt; valueOf(<span style="color:#088;font-weight:bold">final</span> TLeft left, <span style="color:#088;font-weight:bold">final</span> TRight right)
   {
     MutablePairImpl&lt;TLeft,TRight&gt; _instance = <span style="color:#080;font-weight:bold">new</span> MutablePairImpl&lt;TLeft,TRight&gt;(left, right);
     <span style="color:#080;font-weight:bold">return</span> _instance;
@@ -831,47 +417,48 @@
 
   <span style="color:#088;font-weight:bold">private</span> MutablePairImpl(<span style="color:#088;font-weight:bold">final</span> TLeft left, <span style="color:#088;font-weight:bold">final</span> TRight right)
   {
+    <span style="color:#950">super</span>();
     <span style="color:#950">this</span>.left=Objects.requireNonNull(left);
     <span style="color:#950">this</span>.right=Objects.requireNonNull(right);
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> TLeft getLeft()
+  <span style="color:#088;font-weight:bold">public</span> TLeft getLeft()
   {
    <span style="color:#080;font-weight:bold">return</span> left;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">void</span> setLeft(<span style="color:#088;font-weight:bold">final</span> TLeft left)
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setLeft(<span style="color:#088;font-weight:bold">final</span> TLeft left)
   {
    <span style="color:#950">this</span>.left=Objects.requireNonNull(left);
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> TRight getRight()
+  <span style="color:#088;font-weight:bold">public</span> TRight getRight()
   {
    <span style="color:#080;font-weight:bold">return</span> right;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">void</span> setRight(<span style="color:#088;font-weight:bold">final</span> TRight right)
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setRight(<span style="color:#088;font-weight:bold">final</span> TRight right)
   {
    <span style="color:#950">this</span>.right=Objects.requireNonNull(right);
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -881,7 +468,7 @@
     <span style="color:#080;font-weight:bold">return</span> _result;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -902,7 +489,7 @@
     <span style="color:#080;font-weight:bold">return</span> (Objects.equals(left, _other.left) &amp;&amp; Objects.equals(right, _other.right));
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -925,20 +512,149 @@
 
 <hr />
 
-<h2 id="source-example-codepackage-infojavacode">Source example: <code>package-info.java</code></h2>
+<h2 id="source-example-codeimmutablepairjavacode">Source example: <code>ImmutablePair.java</code></h2>
+
 <div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#777">/**
-* Example of how to configure ValjoGen defaults for interfaces in a package.
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
+
+<span style="color:#777">/**
+* Example that shows how to generate a simple immutable pair class.
+* Note the tiny difference compared to the mutable pair class example.
 *
-* Note how a <a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a> annotation can be applied here as a default for all examples. The annotation
-* will be overridden it its entirety if also apllied on an interface of an example.
-*
-* @author mmc
+* @param &lt;TLeft&gt; First object type in pair.
+* @param &lt;TRight&gt; Second object type in pair.
 */</span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 4</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">ImmutablePair</span>&lt;TLeft, TRight&gt;
+{
+        <span style="color:#088;font-weight:bold">public</span> TLeft getLeft();
+        <span style="color:#088;font-weight:bold">public</span> ImmutablePair&lt;TLeft, TRight&gt; setLeft(TLeft left);
+
+        <span style="color:#088;font-weight:bold">public</span> TRight getRight();
+        <span style="color:#088;font-weight:bold">public</span> ImmutablePair&lt;TLeft, TRight&gt; setRight(TRight right);
+}
+
+</pre></div>
+</div>
+</div>
+
+<h3 id="generated-output-codeimmutablepairjavacodesource-example-codeimmutablepairjavacode--codeimmutablepairimpljavacode-">Generated output: <a href="#source-example-codeimmutablepairjavacode"><code>ImmutablePair.java</code></a> =&gt; <code>ImmutablePairImpl.java</code> :</h3>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
 
 <span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
 
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.ImmutablePair&lt;TLeft,TRight&gt;</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">ImmutablePairImpl</span>&lt;TLeft,TRight&gt; <span style="color:#088;font-weight:bold">implements</span> ImmutablePair&lt;TLeft,TRight&gt;
+{
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> TLeft left;
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> TRight right;
+
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> &lt;TLeft,TRight&gt; ImmutablePairImpl&lt;TLeft,TRight&gt; valueOf(<span style="color:#088;font-weight:bold">final</span> TLeft left, <span style="color:#088;font-weight:bold">final</span> TRight right)
+  {
+    ImmutablePairImpl&lt;TLeft,TRight&gt; _instance = <span style="color:#080;font-weight:bold">new</span> ImmutablePairImpl&lt;TLeft,TRight&gt;(left, right);
+    <span style="color:#080;font-weight:bold">return</span> _instance;
+  }
+
+  <span style="color:#088;font-weight:bold">private</span> ImmutablePairImpl(<span style="color:#088;font-weight:bold">final</span> TLeft left, <span style="color:#088;font-weight:bold">final</span> TRight right)
+  {
+    <span style="color:#950">super</span>();
+    <span style="color:#950">this</span>.left=Objects.requireNonNull(left);
+    <span style="color:#950">this</span>.right=Objects.requireNonNull(right);
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> TLeft getLeft()
+  {
+   <span style="color:#080;font-weight:bold">return</span> left;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> ImmutablePairImpl&lt;TLeft,TRight&gt; setLeft(<span style="color:#088;font-weight:bold">final</span> TLeft left)
+  {
+   <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> ImmutablePairImpl&lt;TLeft,TRight&gt;(left, <span style="color:#950">this</span>.right);
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> TRight getRight()
+  {
+   <span style="color:#080;font-weight:bold">return</span> right;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> ImmutablePairImpl&lt;TLeft,TRight&gt; setRight(<span style="color:#088;font-weight:bold">final</span> TRight right)
+  {
+   <span style="color:#080;font-weight:bold">return</span> <span style="color:#080;font-weight:bold">new</span> ImmutablePairImpl&lt;TLeft,TRight&gt;(<span style="color:#950">this</span>.left, right);
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
+  {
+    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(left, right);
+    <span style="color:#080;font-weight:bold">return</span> _result;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
+  {
+    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
+    ImmutablePairImpl&lt;TLeft,TRight&gt; _other = (ImmutablePairImpl&lt;TLeft,TRight&gt;) arg0;
+
+    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(left, _other.left) &amp;&amp; Objects.equals(right, _other.right));
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
+  {
+    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">ImmutablePairImpl [</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">left=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(left); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">, </span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">right=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(right); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
+    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
+  }
+}
 </pre></div>
 </div>
 </div>
@@ -946,8 +662,10 @@
 <hr />
 
 <h2 id="source-example-codeserializablepositionjavacode">Source example: <code>SerializablePosition.java</code></h2>
+
 <div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
@@ -955,7 +673,7 @@
 <span style="color:#777">/**
 * Example that shows how to specify serialization ID for serialiable classes.
 */</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 5</span><span style="color:#710">&quot;</span></span>)
 <span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(serialVersionUID=<span style="color:#00D">42</span>)
 <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">SerializablePosition</span> <span style="color:#088;font-weight:bold">extends</span> java.io.Serializable
 {
@@ -970,7 +688,7 @@
 <h3 id="generated-output-codeserializablepositionjavacodesource-example-codeserializablepositionjavacode--codeserializablepositionimpljavacode-">Generated output: <a href="#source-example-codeserializablepositionjavacode"><code>SerializablePosition.java</code></a> =&gt; <code>SerializablePositionImpl.java</code> :</h3>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
 
 <span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
 
@@ -978,7 +696,7 @@
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
 
-<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-06T17:46Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.SerializablePosition</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.SerializablePosition</span><span style="color:#710">&quot;</span></span>) 
 <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">SerializablePositionImpl</span> <span style="color:#088;font-weight:bold">implements</span> SerializablePosition
 {
   <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">static</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">long</span> serialVersionUID = <span style="color:#00D">42</span>;
@@ -994,29 +712,30 @@
 
   <span style="color:#088;font-weight:bold">private</span> SerializablePositionImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> x, <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> y)
   {
+    <span style="color:#950">super</span>();
     <span style="color:#950">this</span>.x=x;
     <span style="color:#950">this</span>.y=y;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> getX()
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> getX()
   {
    <span style="color:#080;font-weight:bold">return</span> x;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
-  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> getY()
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> getY()
   {
    <span style="color:#080;font-weight:bold">return</span> y;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -1029,7 +748,7 @@
     <span style="color:#080;font-weight:bold">return</span> _result;
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -1050,7 +769,7 @@
     <span style="color:#080;font-weight:bold">return</span> ((x == _other.x) &amp;&amp; (y == _other.y));
   }
 
- <span style="color:#777">/**
+  <span style="color:#777">/**
   * {@inheritDoc}
   */</span>
   <span style="color:#007">@Override</span>
@@ -1073,30 +792,591 @@
 
 <hr />
 
-<h2 id="source-example-codesimpleinterfacewithnamedoutputjavacode">Source example: <code>SimpleInterfaceWithNamedOutput.java</code></h2>
-<div><div class="CodeRay">
-  <div class="code"><pre><span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+<h2 id="source-example-codeextendingbyinheritancejavacode">Source example: <code>ExtendingByInheritance.java</code></h2>
 
+<div><div class="CodeRay">
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
 <span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
 
 <span style="color:#777">/**
-* Example that shows how to control the name of the generated implementation class.
+* Example that shows how use standard subclassing for customization. Generated output will inheriting from the specified base
+* class (see &quot;BaseClass.java&quot;). In addition the generated abstract class can be futher customized when subclassing it.
 */</span>
-<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(name=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">SimpleInterfaceImpl</span><span style="color:#710">&quot;</span></span>)
-<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">SimpleInterfaceWithNamedOutput</span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 6</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(clazzModifiers= {<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">ABSTRACT</span><span style="color:#710">&quot;</span></span>}, baseClazzName=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen.examples.BaseClass</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">ExtendingByInheritance</span>
 {
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">Object</span> getObject();
-    <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getString();
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getGeneratedProperty();
 }
 
 </pre></div>
 </div>
 </div>
 
+<p><strong>See also:</strong> <a href="#source-example-codebaseclassjavacode"><code>BaseClass.java</code></a></p>
+
+<h3 id="generated-output-codeextendingbyinheritancejavacodesource-example-codeextendingbyinheritancejavacode-codebaseclassjavacodesource-example-codebaseclassjavacode--codeextendingbyinheritanceimpljavacode-">Generated output: (<a href="#source-example-codeextendingbyinheritancejavacode"><code>ExtendingByInheritance.java</code></a>, <a href="#source-example-codebaseclassjavacode"><code>BaseClass.java</code></a>) =&gt; <code>ExtendingByInheritanceImpl.java</code> :</h3>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
+
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
+
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.ExtendingByInheritance</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#088;font-weight:bold">abstract</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">ExtendingByInheritanceImpl</span> <span style="color:#088;font-weight:bold">extends</span> BaseClass <span style="color:#088;font-weight:bold">implements</span> ExtendingByInheritance
+{
+  <span style="color:#088;font-weight:bold">protected</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> generatedProperty;
+
+
+  <span style="color:#088;font-weight:bold">public</span> ExtendingByInheritanceImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> baseValue, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> generatedProperty)
+  {
+    <span style="color:#950">super</span>(baseValue);
+    <span style="color:#950">this</span>.generatedProperty=Objects.requireNonNull(generatedProperty);
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getGeneratedProperty()
+  {
+   <span style="color:#080;font-weight:bold">return</span> generatedProperty;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
+  {
+    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(generatedProperty);
+    <span style="color:#080;font-weight:bold">return</span> _result;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
+  {
+    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
+    ExtendingByInheritanceImpl _other = (ExtendingByInheritanceImpl) arg0;
+
+    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(generatedProperty, _other.generatedProperty));
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
+  {
+    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">ExtendingByInheritanceImpl [</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">generatedProperty=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(generatedProperty); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
+    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
+  }
+}
+</pre></div>
+</div>
+</div>
+
+<hr />
+
+<h2 id="source-example-codecomparablenamejavacode">Source example: <code>ComparableName.java</code></h2>
+
+<div><div class="CodeRay">
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
+
+<span style="color:#777">/**
+* Example that shows how to make generated class implement comparable in a specific way. As we can't refer directly to the generated class directly from our interface
+* we need to specify the implmentation with it's generic reference as an extra interface that the generated class should implement (in addition to this
+* main interface). Extra interfaces are resolved only when the implementation is generated. Notice the use of the &lt;code&gt;This&lt;/code&gt; macro so we do not have to
+* hardcode the implementation class name. Notice also how a certain ordering for the compareTo implementation is specified (instead of the default
+* which is in order of declaration of the properties in the interface).
+*/</span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 8</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(extraInterfaceNames={ <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">java.lang.Comparable&lt;$(This)&gt;</span><span style="color:#710">&quot;</span></span> }, comparableMembers= {<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">lastName</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">firstName</span><span style="color:#710">&quot;</span></span> })
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">ComparableName</span>
+{
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName();
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName();
+}
+
+</pre></div>
+</div>
+</div>
+
+<h3 id="generated-output-codecomparablenamejavacodesource-example-codecomparablenamejavacode--codecomparablenameimpljavacode-">Generated output: <a href="#source-example-codecomparablenamejavacode"><code>ComparableName.java</code></a> =&gt; <code>ComparableNameImpl.java</code> :</h3>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
+
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
+
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.ComparableName</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">ComparableNameImpl</span> <span style="color:#088;font-weight:bold">implements</span> ComparableName, <span style="color:#0a8;font-weight:bold">Comparable</span>&lt;ComparableNameImpl&gt;
+{
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName;
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName;
+
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> ComparableNameImpl valueOf(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
+  {
+    ComparableNameImpl _instance = <span style="color:#080;font-weight:bold">new</span> ComparableNameImpl(firstName, lastName);
+    <span style="color:#080;font-weight:bold">return</span> _instance;
+  }
+
+  <span style="color:#088;font-weight:bold">private</span> ComparableNameImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
+  {
+    <span style="color:#950">super</span>();
+    <span style="color:#950">this</span>.firstName=Objects.requireNonNull(firstName);
+    <span style="color:#950">this</span>.lastName=Objects.requireNonNull(lastName);
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName()
+  {
+   <span style="color:#080;font-weight:bold">return</span> firstName;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName()
+  {
+   <span style="color:#080;font-weight:bold">return</span> lastName;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> compareTo(<span style="color:#088;font-weight:bold">final</span> ComparableNameImpl arg0)
+  {
+    <span style="color:#339;font-weight:bold">int</span> _result;
+
+    <span style="color:#080;font-weight:bold">if</span> ((_result=lastName.compareTo(arg0.lastName))!=<span style="color:#00D">0</span>)
+     <span style="color:#080;font-weight:bold">return</span> _result;
+    <span style="color:#080;font-weight:bold">if</span> ((_result=firstName.compareTo(arg0.firstName))!=<span style="color:#00D">0</span>)
+     <span style="color:#080;font-weight:bold">return</span> _result;
+
+    <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
+  {
+    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(firstName, lastName);
+    <span style="color:#080;font-weight:bold">return</span> _result;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
+  {
+    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
+    ComparableNameImpl _other = (ComparableNameImpl) arg0;
+
+    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(firstName, _other.firstName) &amp;&amp; Objects.equals(lastName, _other.lastName));
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
+  {
+    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">ComparableNameImpl [</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">firstName=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(firstName); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">, </span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">lastName=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(lastName); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
+    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
+  }
+}
+</pre></div>
+</div>
+</div>
+
+<hr />
+
+<h2 id="source-example-codepackage-infojavacode">Source example: <code>package-info.java</code></h2>
+
+<div><div class="CodeRay">
+  <div class="code"><pre>
+<span style="color:#777">/**
+* Example of how to configure ValjoGen defaults for interfaces in a package.
+*
+* Note how a <a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a> annotation can be applied here as a default for all examples. The annotation
+* will be overridden it its entirety if also applied on an interface of an example.
+*
+* @author mmc
+*/</span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(headerFileName=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Header.txt</span><span style="color:#710">&quot;</span></span>, comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 8</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
+
+</pre></div>
+</div>
+</div>
+
+<p><strong>See also:</strong> <a href="#custom-header-example-codeheadertxtcode"><code>Header.txt</code></a></p>
+
+<hr />
+
+<h2 id="source-example-codecustommethodjavacode">Source example: <code>CustomMethod.java</code></h2>
+
+<div><div class="CodeRay">
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
+
+<span style="color:#777">/**
+* Example that shows how to apply a custom template implementing a custom method.
+* Example also shows how to make the generated mutable class thread safe.
+*/</span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 11</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(customJavaTemplateFileName=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">custom_method.stg</span><span style="color:#710">&quot;</span></span>, synchronizedAccessEnabled=<span style="color:#069">true</span>)
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">CustomMethod</span>
+{
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getName();
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">void</span> setName(<span style="color:#0a8;font-weight:bold">String</span> name);
+
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">long</span> nanoLastUpdated();
+}
+
+</pre></div>
+</div>
+</div>
+
+<p><strong>See also:</strong> <a href="#custom-template-example-codecustommethodstgcode"><code>custom_method.stg</code></a></p>
+
+<h3 id="generated-output-codecustommethodjavacodesource-example-codecustommethodjavacode-codecustommethodstgcodecustom-template-example-codecustommethodstgcode--codecustommethodimpljavacode-">Generated output: (<a href="#source-example-codecustommethodjavacode"><code>CustomMethod.java</code></a>, <a href="#custom-template-example-codecustommethodstgcode"><code>custom_method.stg</code></a>) =&gt; <code>CustomMethodImpl.java</code> :</h3>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
+
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
+
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.CustomMethod</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">CustomMethodImpl</span> <span style="color:#088;font-weight:bold">implements</span> CustomMethod
+{
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#339;font-weight:bold">long</span> changeNanoTime;
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#0a8;font-weight:bold">String</span> name;
+
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> CustomMethodImpl valueOf(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> name)
+  {
+    CustomMethodImpl _instance = <span style="color:#080;font-weight:bold">new</span> CustomMethodImpl(name);
+    <span style="color:#080;font-weight:bold">return</span> _instance;
+  }
+
+  <span style="color:#088;font-weight:bold">private</span> CustomMethodImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> name)
+  {
+    <span style="color:#950">super</span>();
+    <span style="color:#950">this</span>.name=Objects.requireNonNull(name);
+    changeNanoTime=<span style="color:#0a8;font-weight:bold">System</span>.nanoTime();
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#0a8;font-weight:bold">String</span> getName()
+  {
+   <span style="color:#080;font-weight:bold">return</span> name;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">void</span> setName(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> name)
+  {
+   changeNanoTime=<span style="color:#0a8;font-weight:bold">System</span>.nanoTime();
+   <span style="color:#950">this</span>.name=Objects.requireNonNull(name);
+  }
+
+  <span style="color:#777">/**
+  * Returnes the last time this class was updated.
+  */</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">long</span> nanoLastUpdated()
+  {
+    <span style="color:#080;font-weight:bold">return</span> changeNanoTime;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
+  {
+    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(name);
+    <span style="color:#080;font-weight:bold">return</span> _result;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
+  {
+    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
+    CustomMethodImpl _other = (CustomMethodImpl) arg0;
+
+    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(name, _other.name));
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">synchronized</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
+  {
+    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CustomMethodImpl [</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">name=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(name); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
+    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
+  }
+}
+</pre></div>
+</div>
+</div>
+
+<hr />
+
+<h2 id="source-example-codecustomhashcodejavacode">Source example: <code>CustomHashCode.java</code></h2>
+
+<div><div class="CodeRay">
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOConfigure</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">com.fortyoneconcepts.valjogen.annotations.VALJOGenerate</span>;
+
+<span style="color:#777">/**
+* Example that shows how to apply a custom template to change the generated code for known methods. In this case to support caching of hashCode.
+*/</span>
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOGenerate.html" title="See JavaDoc">@VALJOGenerate</a></span>(comment=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Example 12</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#007"><a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a></span>(customJavaTemplateFileName=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">custom_hashCode.stg</span><span style="color:#710">&quot;</span></span>)
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">interface</span> <span style="color:#B06;font-weight:bold">CustomHashCode</span>
+{
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName();
+        <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName();
+}
+
+</pre></div>
+</div>
+</div>
+
+<p><strong>See also:</strong> <a href="#custom-template-example-codecustomhashcodestgcode"><code>custom_hashCode.stg</code></a></p>
+
+<h3 id="generated-output-codecustomhashcodejavacodesource-example-codecustomhashcodejavacode-codecustomhashcodestgcodecustom-template-example-codecustomhashcodestgcode--codecustomhashcodeimpljavacode-">Generated output: (<a href="#source-example-codecustomhashcodejavacode"><code>CustomHashCode.java</code></a>, <a href="#custom-template-example-codecustomhashcodestgcode"><code>custom_hashCode.stg</code></a>) =&gt; <code>CustomHashCodeImpl.java</code> :</h3>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span style="color:#777">/* This is a sample header for VALJOGen examples provided by the file &quot;Header.txt&quot; and configured by &quot;package-info.java&quot; */</span>
+
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Arrays</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">java.util.Objects</span>;
+<span style="color:#080;font-weight:bold">import</span> <span style="color:#B44;font-weight:bold">javax.annotation.Generated</span>;
+
+<span style="color:#007">@Generated</span>(value = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">com.fortyoneconcepts.valjogen</span><span style="color:#710">&quot;</span></span>, date=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">2014-10-17T16:11Z</span><span style="color:#710">&quot;</span></span>, comments=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Generated by ValjoGen code generator (ValjoGen.41concepts.com) from com.fortyoneconcepts.valjogen.examples.CustomHashCode</span><span style="color:#710">&quot;</span></span>) 
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">CustomHashCodeImpl</span> <span style="color:#088;font-weight:bold">implements</span> CustomHashCode
+{
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">volatile</span> <span style="color:#088;font-weight:bold">transient</span> <span style="color:#339;font-weight:bold">int</span> cachedHashCode = <span style="color:#00D">0</span>;
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName;
+  <span style="color:#088;font-weight:bold">private</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName;
+
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> CustomHashCodeImpl valueOf(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
+  {
+    CustomHashCodeImpl _instance = <span style="color:#080;font-weight:bold">new</span> CustomHashCodeImpl(firstName, lastName);
+    <span style="color:#080;font-weight:bold">return</span> _instance;
+  }
+
+  <span style="color:#088;font-weight:bold">private</span> CustomHashCodeImpl(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> firstName, <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">String</span> lastName)
+  {
+    <span style="color:#950">super</span>();
+    <span style="color:#950">this</span>.firstName=Objects.requireNonNull(firstName);
+    <span style="color:#950">this</span>.lastName=Objects.requireNonNull(lastName);
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getFirstName()
+  {
+   <span style="color:#080;font-weight:bold">return</span> firstName;
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> getLastName()
+  {
+   <span style="color:#080;font-weight:bold">return</span> lastName;
+  }
+
+  <span style="color:#777">/**
+  * Returns a hash code value for the object or cached value if already called.
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">int</span> hashCode()
+  {
+    <span style="color:#080;font-weight:bold">if</span> (cachedHashCode!=<span style="color:#00D">0</span>)
+     <span style="color:#080;font-weight:bold">return</span> cachedHashCode;
+
+    <span style="color:#339;font-weight:bold">int</span> _result = Objects.hash(firstName, lastName);
+    <span style="color:#080;font-weight:bold">return</span> (cachedHashCode=_result);
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">boolean</span> equals(<span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">Object</span> arg0)
+  {
+    <span style="color:#080;font-weight:bold">if</span> (<span style="color:#950">this</span> == arg0)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">true</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (arg0 == <span style="color:#069">null</span>)
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#080;font-weight:bold">if</span> (getClass() != arg0.getClass())
+      <span style="color:#080;font-weight:bold">return</span> <span style="color:#069">false</span>;
+
+    <span style="color:#007">@SuppressWarnings</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">unchecked</span><span style="color:#710">&quot;</span></span>)
+    CustomHashCodeImpl _other = (CustomHashCodeImpl) arg0;
+
+    <span style="color:#080;font-weight:bold">return</span> (Objects.equals(firstName, _other.firstName) &amp;&amp; Objects.equals(lastName, _other.lastName));
+  }
+
+  <span style="color:#777">/**
+  * {@inheritDoc}
+  */</span>
+  <span style="color:#007">@Override</span>
+  <span style="color:#088;font-weight:bold">public</span> <span style="color:#0a8;font-weight:bold">String</span> toString()
+  {
+    <span style="color:#088;font-weight:bold">final</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span> _sb = <span style="color:#080;font-weight:bold">new</span> <span style="color:#0a8;font-weight:bold">StringBuilder</span>();
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CustomHashCodeImpl [</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">firstName=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(firstName); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">, </span><span style="color:#710">&quot;</span></span>);
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">lastName=</span><span style="color:#710">&quot;</span></span>);
+    _sb.append(lastName); 
+    _sb.append(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">]</span><span style="color:#710">'</span></span>);
+    <span style="color:#080;font-weight:bold">return</span> _sb.toString();
+  }
+}
+</pre></div>
+</div>
+</div>
+
+<hr />
+
+<h2 id="source-example-codebaseclassjavacode">Source example: <code>BaseClass.java</code></h2>
+
+<div><div class="CodeRay">
+  <div class="code"><pre>
+<span style="color:#080;font-weight:bold">package</span> <span style="color:#707;font-weight:bold">com.fortyoneconcepts.valjogen.examples</span>;
+
+<span style="color:#777">/**
+* Example of a preexisting base class that generated code can extend from.
+* Used by the &quot;ExtendingByInheritance.java&quot; example.
+*
+* Note that constructors of the generated class will delegate to available
+* constructors in the base class. Also keep it mind that if you need
+* serialization base classes must be serializable for any generated
+* subclasses like ours (without a default constructor) to be serializable.
+*/</span>
+<span style="color:#088;font-weight:bold">public</span> <span style="color:#339;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">BaseClass</span>
+{
+        <span style="color:#088;font-weight:bold">protected</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> baseValue;
+
+        <span style="color:#088;font-weight:bold">public</span> BaseClass(<span style="color:#339;font-weight:bold">int</span> baseValue)
+        {
+                <span style="color:#950">this</span>.baseValue=baseValue;
+        }
+}
+
+</pre></div>
+</div>
+</div>
+
+<p><strong>See also:</strong> <a href="#source-example-codeextendingbyinheritancejavacode"><code>ExtendingByInheritance.java</code></a></p>
+
 <hr />
 
 <h2 id="custom-template-example-codecustomhashcodestgcode">Custom template example: <code>custom_hashCode.stg</code></h2>
-<pre><code> /**
+
+<pre><code>
+/**
 * This custom template shows how to add caching to the generated hashCode method. It overrides StringTemplate regions to
 * add a new instance member to hold the cached value, add a check in start of the hashCode method and store
 * the returned value of hashCode to the assoicated instance member. Finally it adds a javadoc comment on top
@@ -1122,7 +1402,7 @@ if (cachedHashCode!=0)
 %&gt;
 
 @method_hashCode.javadoc() ::= &lt;&lt;
-
+/**
 * Returns a hash code value for the object or cached value if already called.
 */
 
@@ -1135,7 +1415,9 @@ if (cachedHashCode!=0)
 <hr />
 
 <h2 id="custom-template-example-codecustomloggingstgcode">Custom template example: <code>custom_logging.stg</code></h2>
-<pre><code> /**
+
+<pre><code>
+/**
 * This custom template shows how to add logging of created instances to a generated class. It overrides StringTemplate regions to
 * add an import, add a static logger instance and add a log message at the end of the constructor. Refer to the *.stg files
 * in the source for how to find the refered regions.
@@ -1144,7 +1426,7 @@ if (cachedHashCode!=0)
 * stringtemplate arguments of the template they are called from and how &lt;@super.imports()&gt; are used to refer to the
 * region's orginal content.
 *
-* NOTE 1: The import could also have been done easier VALJOConfigure annotation's importClasses option - this is just an alternative.
+* NOTE 1: The import could also have been done easier with VALJOConfigure's importClasses option - this is just an alternative.
 */
 
 &lt;@class.imports() ::= &lt;&lt;
@@ -1166,17 +1448,19 @@ LOGGER.fine(() -&gt; "Constructing &lt;clazz.name&gt;");
 <hr />
 
 <h2 id="custom-template-example-codecustommethodstgcode">Custom template example: <code>custom_method.stg</code></h2>
-<pre><code> /**
+
+<pre><code>
+/**
 * This custom template shows how to implement a custom method declared in the interface. First it overrides StringTemplate regions to
 * add a variable holding a time then it modifies the constructor and setter to update the time of change. Finally, a new method
 * is added to return the time as declared in the interface.
 *
-* The custom template for the method must have a name of "method_"+the-name-of-the-method and the arguments clazz and model.
-* The custom template is called automatically if <a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html" title="See JavaDoc">@VALJOConfigure</a> annotation implementedMethodNames contains the name of
-* the method ("nanoLastUpdated").
+* The custom template for the method must have a specific name of "method_"+specifier and the template must be configured by
+* the VALJOConfigure annotation. See javadoc on VALJOConfigure#customJavaTemplateFileName for details about this. Also refer to
+* javadocs in the com.fortyoneconcepts.valjogen.model packakge for template arguments clazz of type Clazz and method of type Method.
 *
 * Refer to the *.stg files in the source for how to find the refered regions and for descriptions of the used sub-template
-* declare_method that helps with generating the correct declaration.
+* declare_method that can help with generating the correct declaration.
 *
 */
 
@@ -1193,7 +1477,7 @@ changeNanoTime=System.nanoTime();
 %&gt;
 
 method_nanoLastUpdated(clazz, method) ::= &lt;&lt;
-
+/**
 * Returnes the last time this class was updated.
 */
 &lt;declare_method(clazz, method)&gt;
@@ -1208,8 +1492,11 @@ method_nanoLastUpdated(clazz, method) ::= &lt;&lt;
 <hr />
 
 <h2 id="custom-header-example-codeheadertxtcode">Custom header example: <code>Header.txt</code></h2>
-<p><code>/* This is a sample header file for VALJOGen examples */
-</code></p>
+
+<pre><code>/* This is a sample header for VALJOGen examples provided by the file "Header.txt" and configured by "package-info.java" */
+</code></pre>
+
+<p><strong>See also:</strong> <a href="#source-example-codepackage-infojavacode"><code>package-info.java</code></a></p>
 
 <hr />
 

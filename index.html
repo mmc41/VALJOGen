@@ -53,6 +53,7 @@
                 <li><a href="getstarted.html">Getting started</a></li>
                 <li><a href="examples.html">Examples</a></li>
                 <li><a href="apidocs/index.html" target="_blank">Javadocs</a></li> 
+                <li><a href="downloads.html">Downloads</a></li>
                 <li><a href="contributing.html">Contributing</a></li>
                 <li><a href="https://github.com/41concepts/VALJOGen" target="_blank">Source</a></li>
                 <li><a href="license.html">License</a></li>
@@ -77,25 +78,27 @@
 
 <h1 id="about-valjogen">About VALJOGen</h1>
 
-<p>VALJOGen is a <strong>VALue Java Objects Generator</strong> that can be used to generate modern Java 7/8+ style value classes from annotated Java interfaces.</p>
+<p>VALJOGen is a <strong>VALue Java Objects Generator</strong> that can be used to generate modern Java 7/8+ value classes from annotated Java interfaces.</p>
 
 <p><strong>FEATURES:</strong></p>
 
 <ul>
-  <li>Can generate <strong>mutable or immutable value objects</strong> with <strong>auto-implemented getters and setters from your interfaces</strong>.</li>
+  <li>Can generate <strong>value objects</strong> with <strong>auto-implemented getters and setters from your interfaces</strong>.</li>
   <li>Support for auto-implementing factory methods, constructors, Object.<strong>hashCode</strong>, Object.<strong>equals</strong>, Object.<strong>toString</strong>, Comparable.<strong>compareTo</strong>, <strong>Serializable</strong> etc.</li>
   <li><strong>Extremely customizable</strong> code output. You can change every aspect for the generated class and even add your own code using <a href="http://www.stringtemplate.org">StringTemplate 4</a> based custom templates.</li>
-  <li>Great support for <strong>immutable objects</strong>, including final fields and immutable <em>setters</em> that return new instances.</li>
-  <li>Support for guards (checks) against null arguments, synchronized/unsynchronized mutable objects, custom getter/setter prefixes, injection of base class and extra interfaces into implementation etc.</li>
-  <li>The annotation processor <strong>run on any standard Java developer tool</strong> running <strong>JDK1.8+</strong> incl. Does not require plugins to <strong>work nicely with IDE’s</strong> (as long as they offer the usual standard annotation processor support).</li>
-  <li>Outputs concise, <strong>modern and nicely formated Java 7+ source code</strong> as if written by hand and without any overhead.</li>
+  <li>Great support for <strong>immutable value objects</strong>, including final fields and immutable <em>setters</em> that return new instances.</li>
+  <li>Support for synchronized/unsynchronized <strong>mutable value objects</strong>.</li>
+  <li>Full support for overriding <strong>custom base classes</strong> with both default and non-default base constructors, for overriding base class methods, implementing abstract properties etc.</li>
+  <li>Support for guards (checks) against null arguments, custom getter/setter prefixes, injection of extra interfaces into implementation etc.</li>
+  <li>The annotation processor <strong>runs on any standard Java developer tool</strong> running ** JDK1.8+<strong>. **Works nicely with IDE’s</strong> without plugins (as long as they offer the usual standard annotation processor support).</li>
+  <li>Outputs <strong>modern and nicely formatted Java 1.7+ source code</strong> as if written by hand - without reflection and without any overhead.</li>
   <li>Generated code has <strong>no runtime dependencies</strong> on VALJOGen!</li>
   <li>Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.</li>
 </ul>
 
 <p>=&gt; For a quick introduction see the <a href="getstarted.html">getting started document</a> or look at some of the <a href="http://valjogen.41concepts.com/examples.html">examples</a>.</p>
 
-<p><sub><em>Compared to other tools like for example <a href="http://projectlombok.org/">projectlombok</a> or <a href="http://www.joda.org/joda-beans/">Joda Beans</a> VALJOGen is much more customizable, more powerfull, less intrusive, easier to work with and offer less integration problems and no performance overhead. VALJOGen does not move/mess around with your code or hide the generated code from you and your debugger. VALJOGen does not require you to write your code in a new way (or subclass anything other then your own plain Java interfaces), does not introduce runtime dependencies into your code and just works with any standard Java tools including IDE’s. Finally, unlike projectlombok, it use standard API’s (no hacks or virtual “language extensions”) so there is much less risk of problems when a new JDK or IDE is released.</em></sub></p>
+<p><sub>Why VALJOGen?: <em>Compared to other tools like for example <a href="http://projectlombok.org/">projectlombok</a> or <a href="http://www.joda.org/joda-beans/">Joda Beans</a> VALJOGen is much more customizable, more powerfull, less intrusive, offer less integration problems and generated code has no performance overhead (no use of reflection). VALJOGen does not move/mess around with your code or hide the generated code from you and your debugger. VALJOGen does not require you to write your code in a new way (or subclass anything other then your own plain Java interfaces), does not introduce new runtime dependencies into your codebase and just works with any standard Java tools including IDE’s. Finally, unlike some alternatives, it use standard API’s (no hacks or virtual “language extensions”) so there is much less risk of problems when a new JDK or IDE is released.</em></sub></p>
 
 </div>
 
@@ -146,6 +149,30 @@
   <li>Free <a href="http://groups.google.com/group/valjogen">Google group discussions</a></li>
   <li>Paid email support : &lt;valjogen(at)41concepts(dot)com&gt;</li>
 </ul>
+
+<h2 id="credits">8. CREDITS</h2>
+
+<p>VALJOGen is build on <a href="http://www.oracle.com/technetwork/java/index.html">JDK 1.8+</a> and has benefitted from using the following excellent open-source libraries and tools:</p>
+
+<ul>
+  <li><a href="http://maven.apache.org/">Maven</a> with various plugins.</li>
+  <li><a href="https://www.eclipse.org/">Eclipse</a></li>
+  <li><a href="http://www.stringtemplate.org/">StringTemplate 4</a></li>
+  <li><a href="http://www.jqno.nl/equalsverifier/">EqualsVerifier</a></li>
+  <li><a href="https://github.com/google/compile-testing">com.google.testing.compile</a></li>
+</ul>
+
+<p>The website uses the following great open-source libraries and tools:</p>
+
+<ul>
+  <li><a href="https://www.ruby-lang.org/en/">Ruby</a></li>
+  <li><a href="http://nanoc.ws/">nanoc</a></li>
+  <li><a href="http://kramdown.gettalong.org/">kramdown</a> with <a href="http://coderay.rubychan.de/">coderay</a></li>
+  <li><a href="https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/">Eclipse GitHub Flavored Markdown viewer</a></li>
+  <li><a href="http://www.winterwell.com/software/updatesite/">Eclipse Markdown editor</a></li>
+</ul>
+
+<p>VALJOGen development is supported by <a href="http://www.41concepts.com">41concepts</a> a Danish software R&amp;D and consulting company.</p>
 
 
 

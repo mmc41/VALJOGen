@@ -53,6 +53,7 @@
                 <li><a href="getstarted.html">Getting started</a></li>
                 <li><a href="examples.html">Examples</a></li>
                 <li><a href="apidocs/index.html" target="_blank">Javadocs</a></li> 
+                <li><a href="downloads.html">Downloads</a></li>
                 <li><a href="contributing.html">Contributing</a></li>
                 <li><a href="https://github.com/41concepts/VALJOGen" target="_blank">Source</a></li>
                 <li><a href="license.html">License</a></li>
@@ -77,9 +78,9 @@
 
 <h1 id="get-started-using-valjogen">Get started using VALJOGen</h1>
 
-<p>VALJOGen annotations are source-level and needed by compiler only. There are no-runtime dependencies and no libraries that you need to add to your classpath at runtime (unless you explicitly add references yourself to 3rd party code). You do need to add the VALJOGen annotationprocessor jar to your compile path though.</p>
+<p>VALJOGen annotations are source-level and needed by compiler only. There are no-runtime dependencies and no libraries that you need to add to your classpath at runtime (unless you explicitly add references yourself to 3rd party code). You do need to add the VALJOGen annotationprocessor jar to your compile path though. Files are available at maven central or can be downloaded manually as noted <a href="downloads.html">here</a></p>
 
-<p>VALJOGen uses standard Java annotation processors (<code>JSR 269</code>) and should work any Java tool running <code>JDK 1.8+</code>. Below are listed some ways of using VALJOGen with porpular tools (do replace <em>XXX</em> with latest version)</p>
+<p>VALJOGen uses standard Java annotation processors (<code>JSR 269</code>) and should work any Java tool running <code>JDK 1.8+</code>. Below are listed some ways of using VALJOGen with popular tools (do replace <em>XXX</em> with latest version)</p>
 
 <p><strong>Simple example:</strong></p>
 
@@ -116,28 +117,49 @@
 <h2 id="using-valjogen-with-javac-compiler">1. Using VALJOGen with JavaC compiler:</h2>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>javac -cp valjogen-annotationprocessor-*XXX*.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+  <div class="code"><pre>javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC1.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 </pre></div>
 </div>
 </div>
 
+<p>Notably, the example above makes the annotation processor available on the class path, uses the JDK1.8+ -parameter option to enable parameter names processing by the annotation processor and the -Akey[=value] option to let the processor know the source path.</p>
+
 <h2 id="using-valjogen-with-maven">2. Using VALJOGen with Maven:</h2>
 
-<p>Use <code>Maven 3.2.0</code> or later and add the dependency (<em>NOTE: THIS IS FOR THE FUTURE - PROJECT ARTIFACTS ARE NOT IN MAVEN CENTRAL YET</em>):</p>
+<p>Use <code>Maven 3.2.0</code> or later and add the dependency:</p>
 
 <div><div class="CodeRay">
   <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;dependency&gt;</span>
-    <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.fortyoneconcepts.valjogen.annotationprocessor<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
-    <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotationprocessor<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
-    <span style="color:#070;font-weight:bold">&lt;version&gt;</span>*XXX*<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.fortyoneconcepts.valjogen.annotationprocessor<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotationprocessor<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC1<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+</div>
+
+<p>In addition you should configure the following for the maven-compiler-plugin:</p>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;plugin&gt;</span>
+   <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>org.apache.maven.plugins<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
+   <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>maven-compiler-plugin<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
+   ...
+   <span style="color:#070;font-weight:bold">&lt;configuration&gt;</span>
+     <span style="color:#070;font-weight:bold">&lt;compilerArgs&gt;</span>
+       <span style="color:#070;font-weight:bold">&lt;arg&gt;</span>-parameters<span style="color:#070;font-weight:bold">&lt;/arg&gt;</span>                                                         <span style="color:#777">&lt;!-- Ensure parameter meta data is available for best code generation --&gt;</span>
+       <span style="color:#070;font-weight:bold">&lt;arg&gt;</span>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java<span style="color:#070;font-weight:bold">&lt;/arg&gt;</span> <span style="color:#777">&lt;!-- Specify where to locate sources (just an example )--&gt;</span>
+     <span style="color:#070;font-weight:bold">&lt;/compilerArgs&gt;</span>
+     <span style="color:#070;font-weight:bold">&lt;enableAssertions&gt;</span>true<span style="color:#070;font-weight:bold">&lt;/enableAssertions&gt;</span>
+   <span style="color:#070;font-weight:bold">&lt;/configuration&gt;</span>
+<span style="color:#070;font-weight:bold">&lt;/plugin&gt;</span>
 </pre></div>
 </div>
 </div>
 
 <h2 id="using-valjogen-with-eclipse">3. Using VALJOGen with Eclipse:</h2>
 
-<pre><code>In Eclipse open project Properties/Java Compiler/Annoation Processing and enable Annotation processing. Then add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directory for your project.
+<pre><code>In Eclipse open project Properties/Java Compiler/Annoation Processing and enable Annotation processing. Then add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directories for your project.
 </code></pre>
 
 <h3 id="using-valjogen-with-eclipse-and-maven-currently-untested">Using VALJOGen with Eclipse and Maven <em>(CURRENTLY UNTESTED)</em>:</h3>
@@ -148,22 +170,31 @@
   <li>Install jbosstools’s m2e-apt plugin from (from update site “http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt”)</li>
 </ol>
 
-<h2 id="how-to-extendmodifymaintain-valjogen">4. HOW TO EXTEND/MODIFY/MAINTAIN VALJOGen:</h2>
+<h2 id="customizing-generated-value-classes">4. Customizing generated value classes</h2>
 
-<p>See <a href="processor-readme.html">readme in annotaton processor project</a> for implementation details.</p>
+<p>VALJOGen output can be customized in a number of ways as listed below (in a order of preference):</p>
 
-<p>In addition these two 2 eclipse plugins may be useful to update readme pages in GitHub Flavored Markdown (<code>.md</code>):</p>
+<ol>
+  <li>Use existing options in VALJOGenerate and VALJOConfigure annotations.</li>
+  <li>Specify a BaseClass with your custom code in your VALJOConfigure annotation.</li>
+  <li>SubClass the generates class(es) and out your custom stuff there (use VALJOConfigure modifier option to make generated class abstract or non final)</li>
+  <li>Add custom method(s) in a custom template group file specified in your VALJOConfigure annotation.</li>
+  <li>Override the regions defined in the build-in templates. Do this in a custom template group file specified in your VALJOConfigure annotation.</li>
+  <li>Override existing template methods. Do this in a custom template group file specified in your VALJOConfigure annotation</li>
+</ol>
 
+<h2 id="support">5. Support</h2>
 <ul>
-  <li>GitHub Flavored Markdown viewer: https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/</li>
-  <li>Markdown editor: http://www.winterwell.com/software/updatesite/</li>
-</ul>
-
-<h2 id="support">5. SUPPORT</h2>
-<ul>
+  <li><a href="http://valjogen.41concepts.com">Main website</a></li>
   <li>Free <a href="http://groups.google.com/group/valjogen">Google group discussions</a></li>
   <li>Paid email support : valjogen (AT) 41concepts (dot) com</li>
 </ul>
+
+<h2 id="about-valjogen-project-internals">6. About VALJOGen project internals</h2>
+
+<p>See <a href="processor-readme.html">readme in annotaton processor project</a> for some implementation details or look at the source.</p>
+
+<p>The <a href="http://valjogen.41concepts.com">VALJOGen website</a> is generated using <a href="http://nanoc.ws/">nanoc</a> using <a href="https://help.github.com/articles/github-flavored-markdown/">github flavored markdown</a> files. See site subproject folder for details.</p>
 
 
 
