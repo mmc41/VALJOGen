@@ -20,8 +20,19 @@ Configure SonaType account in ~/.m2/settings.xml:
   <servers>
     <server> <!-- SonaType -->
       <id>ossrh</id>
-      <username>mmc41</username>
+      <username>myUserName</username>
       <password>myPASSWORD</password>
     </server>
   </servers>
 </settings>
+
+INFO:
+groupID: com.41concepts
+
+"Configuration has been prepared, now you can:
+Deploy snapshot artifacts into repository https://oss.sonatype.org/content/repositories/snapshots
+Deploy release artifacts into the staging repository https://oss.sonatype.org/service/local/staging/deploy/maven2
+Promote staged artifacts into repository 'Releases'
+Download snapshot and release artifacts from group https://oss.sonatype.org/content/groups/public
+Download snapshot, release and staged artifacts from staging group https://oss.sonatype.org/content/groups/staging
+please comment on this ticket when you promoted your first release, thanks"

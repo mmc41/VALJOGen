@@ -255,6 +255,16 @@
 				<version>2.9</version>
 			</plugin>
 			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+            </plugin>
+			<plugin>
 			    <!-- Update documentation files with project version number -->
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
@@ -278,7 +288,7 @@
                       <regexFlag>MULTILINE</regexFlag>
                     </regexFlags>
 					<replacements>
-					    <!-- Be carefull with reformatting here - do not introduce line breaks etc. inside token or value elements -->
+					    <!-- Be carefull with reformatting here - do not introduce line breaks etc. inside token or value elements. -->
 						<replacement>
 							<token>&lt;dependency&gt;\s*&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;\s*&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;\s*&lt;version&gt;[^&lt;]*&lt;/version&gt;\s*&lt;/dependency&gt;</token>
 							<value>&lt;dependency&gt;${line.separator}  &lt;groupId&gt;com.41concepts&lt;/groupId&gt;${line.separator}  &lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;${line.separator}  &lt;version&gt;${project.version}&lt;/version&gt;${line.separator}&lt;/dependency&gt;</value>
