@@ -61,11 +61,11 @@
 				<executions>
 					<execution>
 						<id>process-resources</id>
-						<!-- here the phase you need -->
 						<phase>process-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
+						<!-- This copies test sources to dest - do we need it anymore since of SRC option for the processor ? -->
 						<configuration>
 							<outputDirectory>target/test-classes/source</outputDirectory>
 							<resources>
@@ -81,6 +81,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<configuration>
+                    <!-- Would like annotations to be included too but can not get include option to work -->
+				    <excludes>
+				      <exclude>META-INF/services/**</exclude>
+				    </excludes>
+				    <useDefaultExcludes>false</useDefaultExcludes>
+                 </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -88,7 +95,7 @@
 				<configuration>
 					<includeDependencySources>true</includeDependencySources>
 					<dependencySourceIncludes>
-						<dependencySourceInclude>com.fortyoneconcepts.valjogen.annotations:*</dependencySourceInclude>
+						<dependencySourceInclude>com.41concepts:*</dependencySourceInclude>
 					</dependencySourceIncludes>
 					<show>private</show>
 				</configuration>
@@ -108,12 +115,11 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<finalName>${project.artifactId}-${project.version}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
-					<attach>false</attach>
 				</configuration>
 				<executions>
 					<execution>
+					    <id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -126,6 +132,5 @@
                 <artifactId>maven-gpg-plugin</artifactId>
             </plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-without-dependencies</finalName>
 	</build>
 </project>

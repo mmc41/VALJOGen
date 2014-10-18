@@ -108,7 +108,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.1</version>
+					<version>3.2</version>
 					<configuration>
 						<compilerArgs>
 							<arg>-parameters</arg>                                                    <!-- Make sure parameter meta data is available for best code generation -->
@@ -156,7 +156,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9.1</version>
+					<version>2.10.1</version>
 					<configuration>
 						<show>public</show>
 						<quiet>true</quiet>
@@ -186,7 +186,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.4</version>
+					<version>2.4.1</version>
 					<configuration>
 						<archive>
 							<index>true</index>
@@ -197,7 +197,7 @@
 							<manifestEntries>
 								<Built-By>mmc</Built-By>
 								<url>${project.url}</url>
-								<Specification-Title>VALJOGen JavaDoc</Specification-Title>
+								<Specification-Title>VALJOGen</Specification-Title>
 								<Implementation-Vendor>www.41concepts.com</Implementation-Vendor>
 								<Implementation-Version>${project.version}</Implementation-Version>
 								<Licence-Url>${license.url}</Licence-Url>
@@ -209,7 +209,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.6</version>
+					<version>2.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
