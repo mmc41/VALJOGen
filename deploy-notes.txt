@@ -12,7 +12,8 @@ Change version (example)
 mvn versions:set -DnewVersion=1.0.0-RC2
 
 Deply:
-mvn deploy -Dgpg.passphrase=x/y
+mvn deploy -Dgpg.passphrase=xy
+( the shell may require some passphrases with special characters to have those characters escaped with \)
 
 SETUP:
 
