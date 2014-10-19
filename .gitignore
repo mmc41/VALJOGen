@@ -6,6 +6,7 @@
 .*.md.html
 target/
 *.iml
+pom.xml.versionsBackup
 .idea/
 sitedeploy/
 .README.md.html

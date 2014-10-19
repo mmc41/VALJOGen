@@ -8,6 +8,9 @@ cd site
 Sign:
 mvn mvn verify -Dgpg.passphrase=thephrase
 
+Change version (example)
+mvn versions:set -DnewVersion=1.0.0-RC2
+
 Deply:
 mvn deploy -Dgpg.passphrase=x/y
 

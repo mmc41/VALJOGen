@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.41concepts</groupId>
 		<artifactId>valjogen-projectsmaster</artifactId>
-		<version>1.0.0-RC1</version>
+		<version>1.0.0-RC2</version>
 	</parent>
 
 	<groupId>com.41concepts</groupId>
@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>com.41concepts</groupId>
 			<artifactId>valjogen-annotations</artifactId>
-			<version>1.0.0-RC1</version>
+			<version>1.0.0-RC2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.41concepts</groupId>
 			<artifactId>valjogen-annotationprocessor</artifactId>
-			<version>1.0.0-RC1</version>
+			<version>1.0.0-RC2</version>
 		</dependency>
 		<dependency>
 			<groupId>nl.jqno.equalsverifier</groupId>
@@ -41,6 +41,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <excludes>
+                      <exclude>${basedir}/src/test/resources/**</exclude>
+                    </excludes>
                     <compilerArgs>
                         <arg>-Xlint</arg>
                         <arg>-Xlint:-processing</arg>
@@ -50,26 +53,31 @@
                     <enableAssertions>true</enableAssertions>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<skipIfEmpty>true</skipIfEmpty>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!-- Try to disable jar generation - not working unfortunately -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                  <skip>true</skip>
+                    <skip>true</skip>
+                    <skipIfEmpty>true</skipIfEmpty>
+                    <archive>
+                        <index>false</index>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                        <manifest/>
+                        <manifestEntries/>
+                    </archive>
+                    <excludes>
+                        <exclude>**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
-			<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
+                <artifactId>maven-install-plugin</artifactId>
                 <configuration>
                   <skip>true</skip>
                 </configuration>

@@ -37,7 +37,7 @@ Refer to the [collection of examples along with their generated output](http://v
 ## 1. Using VALJOGen with JavaC compiler:
 
 ```Bash
-javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC1.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC2.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
 Notably, the example above makes the annotation processor available on the class path, uses the JDK1.8+ -parameter option to enable parameter names processing by the annotation processor and the -Akey[=value] option to let the processor know the source path.
@@ -50,7 +50,7 @@ Use `Maven 3.2.0` or later and add the dependency:
 <dependency>
   <groupId>com.41concepts</groupId>
   <artifactId>valjogen-annotationprocessor</artifactId>
-  <version>1.0.0-RC1</version>
+  <version>1.0.0-RC2</version>
 </dependency>
 ```
 
@@ -66,12 +66,11 @@ In addition you should configure the following for the maven-compiler-plugin:
        <arg>-parameters</arg>                                                         <!-- Ensure parameter meta data is available for best code generation -->
        <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java</arg> <!-- Specify where to locate sources (just an example )-->
      </compilerArgs>
-     <enableAssertions>true</enableAssertions>
    </configuration>
 </plugin>
 ```
 
-## 3. Using VALJOGen with Eclipse:
+## 3. Using VALJOGen with Eclipse *(CURRENTLY UNTESTED)*:
 
 ```
 In Eclipse open project Properties/Java Compiler/Annoation Processing and enable Annotation processing. Then add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directories for your project.
