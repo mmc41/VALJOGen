@@ -90,7 +90,7 @@
   <li>Support for synchronized/unsynchronized <strong>mutable value objects</strong>.</li>
   <li>Full support for overriding <strong>custom base classes</strong> with both default and non-default base constructors, for overriding base class methods, implementing abstract properties etc.</li>
   <li>Support for guards (checks) against null arguments, custom getter/setter prefixes, injection of extra interfaces into implementation etc.</li>
-  <li>The annotation processor <strong>runs on any standard Java developer tool</strong> running ** JDK1.8+<strong>. **Works nicely with IDE’s</strong> without plugins (as long as they offer the usual standard annotation processor support).</li>
+  <li>The annotation processor <strong>runs on any standard Java developer tool</strong> running <strong>JDK1.8+</strong>. <strong>Should work nicely with IDE’s</strong> without plugins (as long as they offer the usual standard annotation processor support).</li>
   <li>Outputs <strong>modern and nicely formatted Java 1.7+ source code</strong> as if written by hand - without reflection and without any overhead.</li>
   <li>Generated code has <strong>no runtime dependencies</strong> on VALJOGen!</li>
   <li>Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.</li>
@@ -115,7 +115,7 @@
 
 <h2 id="how-to-use-valjogen-in-your-projects">2. HOW TO USE VALJOGen IN YOUR PROJECTS:</h2>
 
-<p>The VALJOGen annotationprocessor is standard since Java 6 and may be used with any standard-complient JDK1.8+ based tool like javac, eclipse, maven etc. Refer to the <a href="getstarted.html">getting started document</a> for more information.</p>
+<p>The VALJOGen annotationprocessor may be used with any standard-complient JDK1.8+ based tool like javac, eclipse, maven etc. Refer to the <a href="getstarted.html">getting started document</a> for more information.</p>
 
 <h2 id="how-to-extend-valjogen-and-contribute-your-changes">3. HOW TO EXTEND VALJOGen AND CONTRIBUTE YOUR CHANGES:</h2>
 
@@ -125,8 +125,8 @@
 <ul>
   <li>Maven does not always detect correctly when to rebuild after changes in templates. Do a <code>"mvn clean"</code> if this happens.</li>
   <li>Generated code only get the correct method parameter names if you add the “-parameters” option to javac.</li>
-  <li>No support for non-default base class constructors.</li>
   <li>Support for XML/JSON serialization should be easier.</li>
+  <li>“-processorpath” path option for javac not currently supported. Use “-cp” option instead.</li>
 </ul>
 
 <h2 id="relevant-litterature-about-java-value-objects">5. RELEVANT LITTERATURE ABOUT JAVA VALUE OBJECTS:</h2>
@@ -167,6 +167,7 @@
 <ul>
   <li><a href="https://www.ruby-lang.org/en/">Ruby</a></li>
   <li><a href="http://nanoc.ws/">nanoc</a></li>
+  <li><a href="http://getbootstrap.com">bootstrap</a></li>
   <li><a href="http://kramdown.gettalong.org/">kramdown</a> with <a href="http://coderay.rubychan.de/">coderay</a></li>
   <li><a href="https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/">Eclipse GitHub Flavored Markdown viewer</a></li>
   <li><a href="http://www.winterwell.com/software/updatesite/">Eclipse Markdown editor</a></li>
@@ -178,7 +179,7 @@
 
 		<hr />
 		
-		<p><div class="footer">Author: Morten M. Christensen, <a href="http://www.41concepts.com">41concepts</a></div></p>
+		<p><div class="footer">Author: <a href="http://www.linkedin.com/in/mortench">Morten M. Christensen</a>, <a href="http://www.41concepts.com">41concepts</a></div></p>
 
     </div> <!-- /container -->
 
@@ -190,6 +191,15 @@
     <script src="js/bootstrap.min.js?v=0.1"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="js/ie10-viewport-bug-workaround.js?v=0.1"></script>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-4042029-6', 'auto');
+	  ga('send', 'pageview');
+	</script>
   </body>
 </html>
 
