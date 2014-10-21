@@ -8,4 +8,4 @@ Refer to the [collection of examples along with their generated output](http://v
 
 <a name="jumbotron-end"/>
 
-/ Morten M. Christensen, [41concepts](http://www.41concepts.com)
+/ [Morten M. Christensen](http://www.linkedin.com/in/mortench), [41concepts](http://www.41concepts.com)

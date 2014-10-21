@@ -5,18 +5,20 @@ Build website
 cd site
 ./build_site.sh
 
-Sign:
+Sign only:
 mvn mvn verify -Dgpg.passphrase=thephrase
 
 Change version (example)
 mvn versions:set -DnewVersion=1.0.0-RC2
 
-Deply:
-mvn deploy -Dgpg.passphrase=xy
+Deploy locally:
+mvn install
+
+Build sign and deply to maven central (!!):
+mvn clean deploy -Dgpg.passphrase=xy
 ( the shell may require some passphrases with special characters to have those characters escaped with \)
 
 SETUP:
-
 Configure SonaType account in ~/.m2/settings.xml:
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,12 +33,8 @@ Configure SonaType account in ~/.m2/settings.xml:
 </settings>
 
 INFO:
-groupID: com.41concepts
-
-"Configuration has been prepared, now you can:
-Deploy snapshot artifacts into repository https://oss.sonatype.org/content/repositories/snapshots
-Deploy release artifacts into the staging repository https://oss.sonatype.org/service/local/staging/deploy/maven2
+Snapshot artifacts repository: https://oss.sonatype.org/content/repositories/snapshots
+Release artifacts staging repository: https://oss.sonatype.org/service/local/staging/deploy/maven2
 Promote staged artifacts into repository 'Releases'
-Download snapshot and release artifacts from group https://oss.sonatype.org/content/groups/public
-Download snapshot, release and staged artifacts from staging group https://oss.sonatype.org/content/groups/staging
-please comment on this ticket when you promoted your first release, thanks"
+Download snapshot and release artifacts from group: https://oss.sonatype.org/content/groups/public
+Download snapshot, release and staged artifacts from staging group: https://oss.sonatype.org/content/groups/staging

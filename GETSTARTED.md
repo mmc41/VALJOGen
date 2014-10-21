@@ -4,7 +4,7 @@
 
 VALJOGen annotations are source-level and needed by compiler only. There are no-runtime dependencies and no libraries that you need to add to your classpath at runtime (unless you explicitly add references yourself to 3rd party code). You do need to add the VALJOGen annotationprocessor jar to your compile path though. Files are available at maven central or can be downloaded manually as noted [here](DOWNLOADS.md)
 
-VALJOGen uses standard Java annotation processors (`JSR 269`) and should work any Java tool running `JDK 1.8+`. Below are listed some ways of using VALJOGen with popular tools (do replace *XXX* with latest version)
+VALJOGen uses standard Java annotation processors (`JSR 269`) and should work any Java tool running `JDK 1.8+` with a target of `JDK 1.7` or later. Below are listed some ways of using VALJOGen with popular tools.
 
 **Simple example:**
 
@@ -40,7 +40,9 @@ Refer to the [collection of examples along with their generated output](http://v
 javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
-Notably, the example above makes the annotation processor available on the class path, uses the JDK1.8+ -parameter option to enable parameter names processing by the annotation processor and the -Akey[=value] option to let the processor know the source path.
+The example above makes the annotation processor available on the normal class path, uses the JDK1.8+ <code>-parameter</code> option to enable parameter names processing by the annotation processor and the <code>-Akey[=value]</code> option to let the processor know the source path.
+
+Note that the current version of does *not* support the <code>-processorpath</code> path for javac!
 
 ## 2. Using VALJOGen with Maven:
 
@@ -65,12 +67,14 @@ In addition you should configure the following for the maven-compiler-plugin:
    ...
    <configuration>
      <compilerArgs>
-       <arg>-parameters</arg>                                                         <!-- Ensure parameter meta data is available for best code generation -->
-       <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java</arg> <!-- Specify where to locate sources (just an example )-->
+       <arg>-parameters</arg>   <!-- Ensure parameter meta data is available for best code generation -->
+       <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java</arg> <!-- Specify where to locate sources -->
      </compilerArgs>
    </configuration>
 </plugin>
 ```
+
+See also [here](https://github.com/41concepts/VALJOGen/blob/master/valjogen-examples/standalone.xml) for a complete example of a maven pom file.
 
 ## 3. Using VALJOGen with Eclipse *(CURRENTLY UNTESTED)*:
 
@@ -84,7 +88,20 @@ In Eclipse open project Properties/Java Compiler/Annoation Processing and enable
 2. Install Eclipse plugin m2e (from eclipses build-in "Luna" update site)
 3. Install jbosstools's m2e-apt plugin from (from update site "http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt")
 
-## 4. Customizing generated value classes
+## 4. Using VALJOGen with ANT *(CURRENTLY UNTESTED)*:
+
+```Xml
+<javac srcdir="${basedir}/src/main/java"
+       destdir="build/classes"
+       classpath="valjogen-annotationprocessor-1.0.0-RC3.jar">
+       <compilerarg value="-parameters" />
+       <compilerarg value="-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java"/>
+</javac>
+```
+
+Where basedir is a defined property pointing to the absolute file path of the project.
+
+## 5. Customizing generated value classes
 
 VALJOGen output can be customized in a number of ways as listed below (in a order of preference):
 
@@ -95,12 +112,12 @@ VALJOGen output can be customized in a number of ways as listed below (in a orde
 5. Override the regions defined in the build-in templates. Do this in a custom template group file specified in your VALJOConfigure annotation.
 6. Override existing template methods. Do this in a custom template group file specified in your VALJOConfigure annotation
 
-## 5. Support
+## 6. Support
 - [Main website](http://valjogen.41concepts.com)
 - Free [Google group discussions](http://groups.google.com/group/valjogen)
 - Paid email support : valjogen (AT) 41concepts (dot) com
 
-## 6. About VALJOGen project internals
+## 7. About VALJOGen project internals
 
 See [readme in annotaton processor project](valjogen-processor/README.md) for some implementation details or look at the source.
 

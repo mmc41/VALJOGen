@@ -13,7 +13,7 @@ VALJOGen is a **VALue Java Objects Generator** that can be used to generate mode
 + Support for synchronized/unsynchronized **mutable value objects**.
 + Full support for overriding **custom base classes** with both default and non-default base constructors, for overriding base class methods, implementing abstract properties etc.
 + Support for guards (checks) against null arguments, custom getter/setter prefixes, injection of extra interfaces into implementation etc.
-+ The annotation processor **runs on any standard Java developer tool** running ** JDK1.8+**. **Works nicely with IDE's** without plugins (as long as they offer the usual standard annotation processor support).
++ The annotation processor **runs on any standard Java developer tool** running **JDK1.8+**. **Should work nicely with IDE's** without plugins (as long as they offer the usual standard annotation processor support).
 + Outputs **modern and nicely formatted Java 1.7+ source code** as if written by hand - without reflection and without any overhead.
 + Generated code has **no runtime dependencies** on VALJOGen!
 + Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.
@@ -35,7 +35,7 @@ The VALJOGen project consist of the following modules:
 
 ## 2. HOW TO USE VALJOGen IN YOUR PROJECTS:
 
-The VALJOGen annotationprocessor is standard since Java 6 and may be used with any standard-complient JDK1.8+ based tool like javac, eclipse, maven etc. Refer to the [getting started document](GETSTARTED.md) for more information.
+The VALJOGen annotationprocessor may be used with any standard-complient JDK1.8+ based tool like javac, eclipse, maven etc. Refer to the [getting started document](GETSTARTED.md) for more information.
 
 ## 3. HOW TO EXTEND VALJOGen AND CONTRIBUTE YOUR CHANGES:
 
@@ -44,8 +44,8 @@ Contributors and contributions are welcome. [Refer to the contribution guide](CO
 ## 4. KNOWN ISSUES:
 - Maven does not always detect correctly when to rebuild after changes in templates. Do a `"mvn clean"` if this happens.
 - Generated code only get the correct method parameter names if you add the "-parameters" option to javac.
-- No support for non-default base class constructors.
 - Support for XML/JSON serialization should be easier.
+- "-processorpath" path option for javac not currently supported. Use "-cp" option instead.
 
 ## 5. RELEVANT LITTERATURE ABOUT JAVA VALUE OBJECTS:
 - <http://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html>
@@ -76,10 +76,11 @@ The website uses the following great open-source libraries and tools:
 
 - [Ruby](https://www.ruby-lang.org/en/)
 - [nanoc](http://nanoc.ws/)
+- [bootstrap](http://getbootstrap.com)
 - [kramdown](http://kramdown.gettalong.org/) with [coderay](http://coderay.rubychan.de/)
 - [Eclipse GitHub Flavored Markdown viewer](https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/)
 - [Eclipse Markdown editor](http://www.winterwell.com/software/updatesite/)
 
 VALJOGen development is supported by [41concepts](http://www.41concepts.com) a Danish software R&D and consulting company.
 
-/ Morten M. Christensen, [41concepts](http://www.41concepts.com)
+/ [Morten M. Christensen](http://www.linkedin.com/in/mortench), [41concepts](http://www.41concepts.com)

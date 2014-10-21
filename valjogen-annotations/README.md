@@ -8,4 +8,4 @@ Refer to the [JavaDoc Api](http://valjogen.41concepts.com/apidocs/com/fortyoneco
 
 <a name="jumbotron-end"/>
 
-/ Morten M. Christensen, [41concepts](http://www.41concepts.com))
+/ [Morten M. Christensen](http://www.linkedin.com/in/mortench), [41concepts](http://www.41concepts.com)

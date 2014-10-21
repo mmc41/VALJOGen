@@ -35,4 +35,4 @@ Execute a `"mvn package"` on command line to compile project and run tests.
 - [StringTemplate](http://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation) - For maintaining template group files.
 - [Debugging Annotation Processors if debuging junit tests is not enough](http://www.pingtimeout.fr/2012/10/debugging-annotation-processor-in-every.html)
 
-/ Morten M. Christensen, [41concepts](http://www.41concepts.com)
+/ [Morten M. Christensen](http://www.linkedin.com/in/mortench), [41concepts](http://www.41concepts.com)

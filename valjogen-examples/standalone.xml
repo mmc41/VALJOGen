@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <prerequisites>
+        <maven>3.1.0</maven>
+    </prerequisites>
+    <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+        <maven.compiler.verbose>false</maven.compiler.verbose>
+        <maven.compiler.debug>true</maven.compiler.debug>
+        <maven.compiler.failOnError>true</maven.compiler.failOnError>
+        <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <license.url>http://valjogen.41concepts.com/license.html</license.url>
+    </properties>
+
+    <groupId>com.41concepts</groupId>
+    <artifactId>valjogen-examples</artifactId>
+    <version>1.0.0-RC3</version>
+    <packaging>jar</packaging>
+
+    <name>ValjoGen-Examples (in standalone example pom)</name>
+    <description>Example usage of ValjoGen generator (in standalone example pom)</description>
+    <url>http://valjogen.41concepts.com</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.41concepts</groupId>
+            <artifactId>valjogen-annotationprocessor</artifactId>
+            <version>1.0.0-RC3</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                  <compilerArgs>
+                      <arg>-Xlint</arg>
+                      <arg>-Xlint:-processing</arg>
+                      <arg>-parameters</arg>                                                         <!-- Make sure parameter meta data is available for best code generation -->
+                      <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java</arg> <!-- Specify where to locate sources -->
+                      <arg>-Acom.fortyoneconcepts.valjogen.headerFileName=Header.txt</arg>           <!-- Specify header to insert at top of generated files -->
+                  </compilerArgs>
+                  <enableAssertions>true</enableAssertions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
