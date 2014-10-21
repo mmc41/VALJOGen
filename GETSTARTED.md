@@ -37,7 +37,7 @@ Refer to the [collection of examples along with their generated output](http://v
 ## 1. Using VALJOGen with JavaC compiler:
 
 ```Bash
-javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC2.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
 Notably, the example above makes the annotation processor available on the class path, uses the JDK1.8+ -parameter option to enable parameter names processing by the annotation processor and the -Akey[=value] option to let the processor know the source path.
@@ -50,9 +50,11 @@ Use `Maven 3.2.0` or later and add the dependency:
 <dependency>
   <groupId>com.41concepts</groupId>
   <artifactId>valjogen-annotationprocessor</artifactId>
-  <version>1.0.0-RC2</version>
+  <version>1.0.0-RC3</version>
 </dependency>
 ```
+
+The dependency on the anntation processor is compile-time only. Unfortunately, there is no good way to specify this with maven but you might get succes marking the dependency as optional.
 
 In addition you should configure the following for the maven-compiler-plugin:
 

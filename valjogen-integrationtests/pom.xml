@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.41concepts</groupId>
 		<artifactId>valjogen-projectsmaster</artifactId>
-		<version>1.0.0-RC2</version>
+		<version>1.0.0-RC3</version>
 	</parent>
 
 	<groupId>com.41concepts</groupId>
@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>com.41concepts</groupId>
 			<artifactId>valjogen-annotations</artifactId>
-			<version>1.0.0-RC2</version>
+			<version>1.0.0-RC3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.41concepts</groupId>
 			<artifactId>valjogen-annotationprocessor</artifactId>
-			<version>1.0.0-RC2</version>
+			<version>1.0.0-RC3</version>
 		</dependency>
 		<dependency>
 			<groupId>nl.jqno.equalsverifier</groupId>
@@ -56,6 +56,27 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>process-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/test-classes</outputDirectory>
+                            <resources>
+						        <resource>
+							        <directory>${basedir}/src/test/resources</directory>
+							        <excludes>
+							            <exclude>*</exclude>
+							        </excludes>
+							        <filtering>true</filtering>
+						        </resource>
+						    </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <!-- Try to disable jar generation - not working unfortunately -->
@@ -78,6 +99,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                  <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
                   <skip>true</skip>
                 </configuration>

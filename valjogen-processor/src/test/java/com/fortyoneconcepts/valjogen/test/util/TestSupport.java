@@ -34,7 +34,12 @@ public final class TestSupport
 {
 	// TODO: Move thesethis build tool cfg:
 
-	private static String classPathSourceCopyRelPath ="source"; // Source files copied to this dir in test output.
+	private static String classPathSourceCopyRelPath = "source"; // Source files copied to this dir in test output.
+
+	private static String getSrcPath(String relpath)
+	{
+		return classPathSourceCopyRelPath+"/"+relpath;
+	}
 
 	public static Path getProjectRootPath() throws URISyntaxException
 	{
@@ -52,7 +57,7 @@ public final class TestSupport
 
 	public static URL getTestSourceFileResourcePath(String relPath) throws FileNotFoundException
 	{
-		String absPath = classPathSourceCopyRelPath+"/"+relPath;
+		String absPath = getSrcPath(relPath);
 		URL url = TestSupport.class.getClassLoader().getResource(absPath);
 		if (url==null)
 			throw new FileNotFoundException(absPath);
@@ -61,7 +66,7 @@ public final class TestSupport
 
 	public static URL getJavaSourceResourcePath(String className) throws FileNotFoundException
 	{
-		String absPath = classPathSourceCopyRelPath+"/"+className.replace(".", "/").concat(".java");
+		String absPath = getSrcPath(className.replace(".", "/").concat(".java"));
 		URL url = GeneratedOutputCanCompileTest.class.getClassLoader().getResource(absPath);
 		if (url==null)
 			throw new FileNotFoundException(absPath);
