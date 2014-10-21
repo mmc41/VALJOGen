@@ -82,9 +82,9 @@
 
 <div><div class="CodeRay">
   <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;dependency&gt;</span>
-  <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.fortyoneconcepts.valjogen.annotationprocessor<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.41concepts<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotationprocessor<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
-  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC1<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC3<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
@@ -93,17 +93,19 @@
 <p>or you can download the following distribution files manually:</p>
 
 <ul>
-  <li><a href="..">valjogen-annotationprocessor-1.0.0-RC1.jar</a></li>
-  <li><a href="..">valjogen-annotationprocessor-1.0.0-RC1-without-dependencies-sources.jar</a></li>
-  <li><a href="..">valjogen-annotationprocessor-1.0.0-RC1-without-dependencies-javadoc.jar</a></li>
-  <li><a href="..">valjogen-annotations-1.0.0-RC1.jar</a></li>
-  <li><a href="..">valjogen-annotations-1.0.0-RC1-javadoc.jar</a></li>
-  <li><a href="..">valjogen-annotations-1.0.0-RC1-sources.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC3/valjogen-annotationprocessor-1.0.0-RC3.jar">valjogen-annotationprocessor-1.0.0-RC3.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC3/valjogen-annotationprocessor-1.0.0-RC3-javadoc.jar">valjogen-annotationprocessor-1.0.0-RC3-javadoc.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC3/valjogen-annotationprocessor-1.0.0-RC3-sources.jar">valjogen-annotationprocessor-1.0.0-RC3-sources.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC3/valjogen-annotations-1.0.0-RC3.jar">valjogen-annotations-1.0.0-RC3.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC3/valjogen-annotations-1.0.0-RC3-javadoc.jar">valjogen-annotations-1.0.0-RC3-javadoc.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC3/valjogen-annotations-1.0.0-RC3-javadoc.jar">valjogen-annotations-1.0.0-RC3-sources.jar</a></li>
 </ul>
 
 </div>
 
-<p>The single jar for the annotation processor to use in your projects is <strong>valjogen-annotationprocessor-1.0.0-RC1.jar</strong>. Alternatively you may use the valjogen-annotations-1.0.0-RC1.jar if you want to compile your project with the VALJOGen annotations but without the annotation processor.</p>
+<p>The dependency on the anntation processor is compile-time only. Unfortunately, there is no good way to specify this with maven but you might get succes marking the dependency as optional.</p>
+
+<p>The single jar for the annotation processor to use in your projects is <strong>valjogen-annotationprocessor-1.0.0-RC3.jar</strong>. Alternatively you may use the valjogen-annotations-1.0.0-RC3.jar if you want to compile your project with the VALJOGen annotations but without the annotation processor.</p>
 
 
 

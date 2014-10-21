@@ -117,7 +117,7 @@
 <h2 id="using-valjogen-with-javac-compiler">1. Using VALJOGen with JavaC compiler:</h2>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC1.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+  <div class="code"><pre>javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 </pre></div>
 </div>
 </div>
@@ -130,13 +130,15 @@
 
 <div><div class="CodeRay">
   <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;dependency&gt;</span>
-  <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.fortyoneconcepts.valjogen.annotationprocessor<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.41concepts<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotationprocessor<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
-  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC1<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC3<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/dependency&gt;</span>
 </pre></div>
 </div>
 </div>
+
+<p>The dependency on the anntation processor is compile-time only. Unfortunately, there is no good way to specify this with maven but you might get succes marking the dependency as optional.</p>
 
 <p>In addition you should configure the following for the maven-compiler-plugin:</p>
 
@@ -150,14 +152,13 @@
        <span style="color:#070;font-weight:bold">&lt;arg&gt;</span>-parameters<span style="color:#070;font-weight:bold">&lt;/arg&gt;</span>                                                         <span style="color:#777">&lt;!-- Ensure parameter meta data is available for best code generation --&gt;</span>
        <span style="color:#070;font-weight:bold">&lt;arg&gt;</span>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java<span style="color:#070;font-weight:bold">&lt;/arg&gt;</span> <span style="color:#777">&lt;!-- Specify where to locate sources (just an example )--&gt;</span>
      <span style="color:#070;font-weight:bold">&lt;/compilerArgs&gt;</span>
-     <span style="color:#070;font-weight:bold">&lt;enableAssertions&gt;</span>true<span style="color:#070;font-weight:bold">&lt;/enableAssertions&gt;</span>
    <span style="color:#070;font-weight:bold">&lt;/configuration&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/plugin&gt;</span>
 </pre></div>
 </div>
 </div>
 
-<h2 id="using-valjogen-with-eclipse">3. Using VALJOGen with Eclipse:</h2>
+<h2 id="using-valjogen-with-eclipse-currently-untested">3. Using VALJOGen with Eclipse <em>(CURRENTLY UNTESTED)</em>:</h2>
 
 <pre><code>In Eclipse open project Properties/Java Compiler/Annoation Processing and enable Annotation processing. Then add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directories for your project.
 </code></pre>
