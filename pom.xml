@@ -37,6 +37,8 @@
 		<encoding>UTF-8</encoding>
 		<license.url>http://valjogen.41concepts.com/license.html</license.url>
 		<gpg.keyname>FCE61EA7</gpg.keyname>
+		<annotationprocessor_dependency_token>&lt;dependency&gt;(\s*)&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;(\s*)&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;(\s*)&lt;version&gt;[^&lt;]*&lt;/version&gt;(\s*)(?:&lt;optional&gt;\w*&lt;/optional&gt;(\s*))?&lt;/dependency&gt;</annotationprocessor_dependency_token>
+        <annotationprocessor_dependency_value>&lt;dependency&gt;$1&lt;groupId&gt;com.41concepts&lt;/groupId&gt;$2&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;$3&lt;version&gt;${project.version}&lt;/version&gt;$4&lt;optional&gt;true&lt;/optional&gt;$5&lt;/dependency&gt;</annotationprocessor_dependency_value>
 	</properties>
 	<groupId>com.41concepts</groupId>
 	<artifactId>valjogen-projectsmaster</artifactId>
@@ -303,43 +305,46 @@
             </plugin>
 			<plugin>
 			    <!-- Update documentation files with project version number -->
+                <!-- Be carefull with reformatting here - do not introduce line breaks etc. inside token or value elements. -->
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
 				<version>1.5.3</version>
 				<inherited>false</inherited>
 				<executions>
 					<execution>
+					    <id>markdown-docs-update-version</id>
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>replace</goal>
 						</goals>
+						<configuration>
+		                    <includes>
+		                        <include>${basedir}/**/*.md</include>
+                                <include>${basedir}/**/*.sh</include>
+                                <include>${basedir}/**/standalone.xml</include>
+		                    </includes>
+		                    <encoding>UTF-8</encoding>
+		                    <regex>true</regex>
+		                    <regexFlags>
+		                      <regexFlag>MULTILINE</regexFlag>
+		                    </regexFlags>
+		                    <replacements>
+		                        <replacement>
+                                    <token>&lt;dependency&gt;(\s*)&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;(\s*)&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;(\s*)&lt;version&gt;[^&lt;]*&lt;/version&gt;(\s*)(?:&lt;optional&gt;\w*&lt;/optional&gt;(\s*))?&lt;/dependency&gt;</token>
+                                    <value>&lt;dependency&gt;$1&lt;groupId&gt;com.41concepts&lt;/groupId&gt;$2&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;$3&lt;version&gt;${project.version}&lt;/version&gt;$4&lt;optional&gt;true&lt;/optional&gt;$5&lt;/dependency&gt;</value>
+                                </replacement>
+		                        <replacement>
+		                            <token>valjogen-annotationprocessor-[A-Z0-9.-]+?([a-z\-]*).jar</token>
+		                            <value>valjogen-annotationprocessor-${project.version}$1.jar</value>
+		                        </replacement>
+		                        <replacement>
+		                            <token>valjogen-annotations-[A-Z0-9.-]+?([a-z\-]*).jar</token>
+		                            <value>valjogen-annotations-${project.version}$1.jar</value>
+		                        </replacement>
+		                    </replacements>
+                        </configuration>
 					</execution>
 				</executions>
-				<configuration>
-	                <includes>
-	                    <include>${basedir}/**/*.md</include>
-	                </includes>
-					<encoding>UTF-8</encoding>
-					<regex>true</regex>
-					<regexFlags>
-                      <regexFlag>MULTILINE</regexFlag>
-                    </regexFlags>
-					<replacements>
-					    <!-- Be carefull with reformatting here - do not introduce line breaks etc. inside token or value elements. -->
-						<replacement>
-							<token>&lt;dependency&gt;\s*&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;\s*&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;\s*&lt;version&gt;[^&lt;]*&lt;/version&gt;\s*&lt;/dependency&gt;</token>
-							<value>&lt;dependency&gt;${line.separator}  &lt;groupId&gt;com.41concepts&lt;/groupId&gt;${line.separator}  &lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;${line.separator}  &lt;version&gt;${project.version}&lt;/version&gt;${line.separator}&lt;/dependency&gt;</value>
-						</replacement>
-						<replacement>
-						    <token>valjogen-annotationprocessor-[A-Z0-9.-]+?([a-z\-]*).jar</token>
-						    <value>valjogen-annotationprocessor-${project.version}$1.jar</value>
-						</replacement>
-						<replacement>
-						    <token>valjogen-annotations-[A-Z0-9.-]+?([a-z\-]*).jar</token>
-						    <value>valjogen-annotations-${project.version}$1.jar</value>
-						</replacement>
-					</replacements>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

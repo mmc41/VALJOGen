@@ -45,7 +45,9 @@ Contributors and contributions are welcome. [Refer to the contribution guide](CO
 - Maven does not always detect correctly when to rebuild after changes in templates. Do a `"mvn clean"` if this happens.
 - Generated code only get the correct method parameter names if you add the "-parameters" option to javac.
 - Support for XML/JSON serialization should be easier.
-- "-processorpath" path option for javac not currently supported. Use "-cp" option instead.
+- Very rarely javac will fail compiling the integration tests with "java.lang.IllegalStateException: endPosTable already set". I suspect this is an error in the JDK but I do not know. If it happens rebuild at it should succed.
+- Generator does not account for bounded generic type arguments when deciding if something is serializable or comparable.
+- Tests on major IDE's, other JDKs then Oracle, ANT builds and other OS's then Mac OS missing.
 
 ## 5. RELEVANT LITTERATURE ABOUT JAVA VALUE OBJECTS:
 - <http://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html>

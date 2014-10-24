@@ -21,11 +21,13 @@
 			<groupId>com.41concepts</groupId>
 			<artifactId>valjogen-annotations</artifactId>
 			<version>1.0.0-RC3</version>
+			<optional>true</optional> <!-- included in jar so not necessary for clients -->
 		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>ST4</artifactId>
 			<version>4.0.8</version>
+			<optional>true</optional> <!-- included in jar so not necessary for clients -->
 		</dependency>
 		<dependency>
 			<groupId>com.google.testing.compile</groupId>

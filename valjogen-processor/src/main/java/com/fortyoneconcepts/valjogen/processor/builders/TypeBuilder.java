@@ -26,9 +26,9 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
+import com.fortyoneconcepts.valjogen.annotations.internal.ThisReference;
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
-import com.fortyoneconcepts.valjogen.model.util.ThisReference;
 import com.fortyoneconcepts.valjogen.processor.DiagnosticMessageConsumer;
 import com.fortyoneconcepts.valjogen.processor.ProcessorMessages;
 import com.fortyoneconcepts.valjogen.processor.TemplateKind;

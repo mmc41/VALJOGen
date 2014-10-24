@@ -28,10 +28,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.41concepts</groupId>
-            <artifactId>valjogen-annotationprocessor</artifactId>
-            <version>1.0.0-RC3</version>
-            <optional>true</optional>
+         <groupId>com.41concepts</groupId>
+         <artifactId>valjogen-annotationprocessor</artifactId>
+         <version>1.0.0-RC3</version>
+         <optional>true</optional>
         </dependency>
     </dependencies>
 

@@ -8,6 +8,11 @@
 		<version>1.0.0-RC3</version>
 	</parent>
 
+	<properties>
+	    <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+
 	<groupId>com.41concepts</groupId>
 	<artifactId>valjogen-annotations</artifactId>
 	<packaging>jar</packaging>
@@ -25,6 +30,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+				    <excludePackageNames>com.fortyoneconcepts.valjogen.annotations.internal</excludePackageNames>
+				</configuration>
 			</plugin>
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>

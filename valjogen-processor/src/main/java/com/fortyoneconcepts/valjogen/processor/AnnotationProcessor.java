@@ -3,6 +3,7 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -124,7 +125,7 @@ public class AnnotationProcessor extends AbstractProcessor
 					LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR CONFIGURATION "+System.lineSeparator()+configuration);
 
 					PackageElement packageElement = (PackageElement)(e.getEnclosingElement());
-					String sourcePackageElementPath = packageElement.toString().replace('.', '/');
+					String sourcePackageElementPath = packageElement.toString().replace(".", File.separator);
 					ResourceLoader resourceLoader = new ResourceLoader(path, sourcePackageElementPath);
 
 				    generate((TypeElement)e, configuration, resourceLoader);

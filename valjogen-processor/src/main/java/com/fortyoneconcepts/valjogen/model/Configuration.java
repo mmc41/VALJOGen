@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
+import com.fortyoneconcepts.valjogen.annotations.internal.ThisReference;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
-import com.fortyoneconcepts.valjogen.model.util.ThisReference;
 
 /**
  * Contains methods that return the effective configuration taking processor options and annotated elements into account.

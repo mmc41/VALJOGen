@@ -9,6 +9,7 @@ The VALJOGen distribution can be used with maven by using the following dependen
   <groupId>com.41concepts</groupId>
   <artifactId>valjogen-annotationprocessor</artifactId>
   <version>1.0.0-RC3</version>
+  <optional>true</optional>
 </dependency>
 ```
 

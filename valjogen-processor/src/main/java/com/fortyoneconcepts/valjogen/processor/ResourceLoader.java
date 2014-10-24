@@ -133,8 +133,6 @@ public final class ResourceLoader
 
 		List<Path> targetPaths = configuredSourcePaths.stream().map(p -> p.resolve(fileName)).collect(Collectors.toList());
 
-				//concat(configuredSourcePaths.stream().map(p -> p.resolve(defaultRelPackagePath).resolve(fileName)), configuredSourcePaths.stream().map(p -> p.resolve(fileName))).collect(Collectors.toList());
-
 		for (Path targetPath: targetPaths)
 		{
 			if (Files.exists(targetPath) && Files.isRegularFile(targetPath) && Files.isReadable(targetPath))
