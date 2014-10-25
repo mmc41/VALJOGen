@@ -322,6 +322,7 @@
 		                        <include>${basedir}/**/*.md</include>
                                 <include>${basedir}/**/*.sh</include>
                                 <include>${basedir}/**/standalone.xml</include>
+                                <include>${basedir}/site/nanoc.yaml</include>
 		                    </includes>
 		                    <encoding>UTF-8</encoding>
 		                    <regex>true</regex>
@@ -333,6 +334,10 @@
                                     <token>&lt;dependency&gt;(\s*)&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;(\s*)&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;(\s*)&lt;version&gt;[^&lt;]*&lt;/version&gt;(\s*)(?:&lt;optional&gt;\w*&lt;/optional&gt;(\s*))?&lt;/dependency&gt;</token>
                                     <value>&lt;dependency&gt;$1&lt;groupId&gt;com.41concepts&lt;/groupId&gt;$2&lt;artifactId&gt;valjogen-annotationprocessor&lt;/artifactId&gt;$3&lt;version&gt;${project.version}&lt;/version&gt;$4&lt;optional&gt;true&lt;/optional&gt;$5&lt;/dependency&gt;</value>
                                 </replacement>
+                                <replacement>
+                                    <token>&lt;dependency&gt;(\s*)&lt;groupId&gt;com\.41concepts&lt;/groupId&gt;(\s*)&lt;artifactId&gt;valjogen-annotations&lt;/artifactId&gt;(\s*)&lt;version&gt;[^&lt;]*&lt;/version&gt;(\s*)(?:&lt;optional&gt;\w*&lt;/optional&gt;(\s*))?&lt;/dependency&gt;</token>
+                                    <value>&lt;dependency&gt;$1&lt;groupId&gt;com.41concepts&lt;/groupId&gt;$2&lt;artifactId&gt;valjogen-annotations&lt;/artifactId&gt;$3&lt;version&gt;${project.version}&lt;/version&gt;$4&lt;optional&gt;true&lt;/optional&gt;$5&lt;/dependency&gt;</value>
+                                </replacement>
 		                        <replacement>
 		                            <token>valjogen-annotationprocessor-[A-Z0-9.-]+?([a-z\-]*).jar</token>
 		                            <value>valjogen-annotationprocessor-${project.version}$1.jar</value>
@@ -341,6 +346,10 @@
 		                            <token>valjogen-annotations-[A-Z0-9.-]+?([a-z\-]*).jar</token>
 		                            <value>valjogen-annotations-${project.version}$1.jar</value>
 		                        </replacement>
+                                <replacement>
+                                    <token>valjogen_version_number:\s*([\w\.-]*)$</token>
+                                    <value>valjogen_version_number: ${project.version}</value>
+                                </replacement>
 		                    </replacements>
                         </configuration>
 					</execution>

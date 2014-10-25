@@ -1,0 +1,15 @@
+---
+kind: article
+created_at: 25 October 2014
+created_by: mmc
+title: First public release
+tags: [Release]
+---
+
+This week the first release candidate of VALJOGen was uploaded in maven central for public use.
+
+This version is fully functionally but not tested in the wild.
+
+Already fixed a few things today and updated the website but awaiting validated usage from users on various OS's and java tools before a proper v1.0.0 can be released.
+
+

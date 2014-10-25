@@ -1,0 +1,19 @@
+<div class="blog-header">
+    <h1 class="blog-title"><%= news_title %></h1>
+</div>
+
+<% sorted_articles.each_with_index do |post, i| %>
+  <div class="<%= post[:tags].map(&:downcase).unshift("blog-post").join(" ") %>">
+    <h2 id="post<%= i %>" class="blog-post-title label-fg-color"><%= post[:title] %></h2>
+    <p class="blog-post-meta"><%= post[:created_at] %> by <a href="<%= @config[("user_"+post[:created_by]).to_sym] %>"><%= post[:created_by] %></a></p>
+    <%= post.compiled_content %>
+  </div>
+
+  <div>Tags: <% post[:tags].each do | tag | %><span class="badge"><%= tag %><% end %></div>
+  <br/>
+<% end %>
+
+<% if (sorted_articles.length>max_articles) %>
+    <hr/>
+    <a href="news-archive.html"><strong>More news</strong></a>
+<% end %>

@@ -99,6 +99,8 @@ public class AnnotationProcessor extends AbstractProcessor
 		Messager messager = processingEnv.getMessager();
 		Locale optLocale = processingEnv.getLocale();
 
+		boolean claimed = true;
+
 		for (TypeElement te: annotationElements)
 		{
 			for (Element e : roundEnv.getElementsAnnotatedWith(te)) {
@@ -129,6 +131,8 @@ public class AnnotationProcessor extends AbstractProcessor
 					ResourceLoader resourceLoader = new ResourceLoader(path, sourcePackageElementPath);
 
 				    generate((TypeElement)e, configuration, resourceLoader);
+
+				    claimed=true;
 				  }
 				  catch(STException ex)
 				  {
@@ -144,7 +148,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			}
 		}
 
-		return true;
+		return claimed;
 	}
 
 	private void generate(TypeElement element, Configuration configuration, ResourceLoader resourceLoader) throws Exception

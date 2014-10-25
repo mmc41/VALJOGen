@@ -34,23 +34,9 @@ Refer to the [collection of examples along with their generated output](http://v
 
 <a name="jumbotron-end"/>
 
-## 1. Using VALJOGen with JavaC compiler:
+## 1. Using VALJOGen processor with Maven:
 
-```Bash
-javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
-```
-
-The example above makes the annotation processor available on the normal class path, uses the JDK1.8+ <code>-parameter</code> option to enable parameter names processing by the annotation processor and the <code>-Akey[=value]</code> option to let the processor know the source path.
-
-Alternatively, it is possible to compile using the -processorpath option. In this case the classes in the annotation processor is not seen on the classoath so do add the jar file with the VALJOGen annotations on the classpath seperately as shown below.
-
-```Bash
-javac -parameters -cp valjogen-annotations/target/valjogen-annotations-1.0.0-RC3.jar -processorpath ../valjogen-processor/target/valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
-```
-
-## 2. Using VALJOGen with Maven:
-
-Use `Maven 3.2.0` or later and add the dependency:
+Use `Maven 3.2.0` or later and add the dependency which will add the annotation processor and it's included annotations to your classpath:
 
 ```Xml
 <dependency>
@@ -61,7 +47,18 @@ Use `Maven 3.2.0` or later and add the dependency:
 </dependency>
 ```
 
-The dependency on the anntation processor is compile-time only. Unfortunately, there is no good way to specify this with maven but you might get succes marking the dependency as optional as stated above.
+If you are compiling without the annotation processor or using the <code>-processorpath</code> option you may want to add just the annotations:
+
+```Xml
+<dependency>
+  <groupId>com.41concepts</groupId>
+  <artifactId>valjogen-annotations</artifactId>
+  <version>1.0.0-RC3</version>
+  <optional>true</optional>
+</dependency>
+```
+
+In both cases the dependency is compile-time only. Unfortunately, there is no good way to specify this with maven but you might get succes marking the dependency as optional as stated above.
 
 In addition you should configure the following for the maven-compiler-plugin:
 
@@ -80,6 +77,26 @@ In addition you should configure the following for the maven-compiler-plugin:
 ```
 
 See also [here](https://github.com/41concepts/VALJOGen/blob/master/valjogen-examples/standalone.xml) for a complete example of a maven pom file.
+
+If you are debugging custom templates you may also want to add an extra compilerArgs argument like this:
+
+```Xml
+       <arg>-Acom.fortyoneconcepts.valjogen.logLevel=INFO</arg>
+```
+
+## 2. Using VALJOGen with JavaC compiler:
+
+```Bash
+javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+```
+
+The example above makes the annotation processor available on the normal class path, uses the JDK1.8+ <code>-parameter</code> option to enable parameter names processing by the annotation processor and the <code>-Akey[=value]</code> option to let the processor know the source path.
+
+Alternatively, it is possible to compile using the -processorpath option. In this case the classes in the annotation processor is not seen on the classoath so do add the jar file with the VALJOGen annotations on the classpath seperately as shown below.
+
+```Bash
+javac -parameters -cp valjogen-annotations/target/valjogen-annotations-1.0.0-RC3.jar -processorpath ../valjogen-processor/target/valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+```
 
 ## 3. Using VALJOGen with Eclipse *(CURRENTLY UNTESTED)*:
 

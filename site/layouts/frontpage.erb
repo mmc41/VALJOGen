@@ -1,0 +1,30 @@
+<%= render '_top' %>
+
+        <div class="row">
+            <div class="col-sm-9">
+                <%= yield %>
+
+        		<hr />
+
+        		<p><div class="footer">Author: <a href="<%= @config[:user_mmc] %>">Morten M. Christensen</a>, <a href="http://www.41concepts.com">41concepts</a></div></p>
+            </div>
+
+    		<div class="col-sm-3 blog-main">
+    		   <div class="sidebar-module">
+    		    <div class="alert alert-info">
+    		      <p><strong>Latest version is: <%= @config[:valjogen_version_number] %> <a style="float: right;" href="downloads.html"><span class="glyphicon glyphicon-download-alt"></span></a></strong></p>
+    		      <p style="font-size: 87%;">Latest website update: <%= Time.new.strftime("%d %B %Y") %></p>
+    		    </div>
+               </div>
+
+               <div class="sidebar-module">
+
+                <%= render '_news', {:max_articles => 3, :news_title => "News"} %>
+
+               </div>
+    		</div>
+
+        </div>
+
+<%= render '_bottom' %>
+

@@ -23,13 +23,13 @@ preprocess do
 
   relExampleOutputPath = '../valjogen-examples/target/generated-sources/annotations'
   exampleOutputsPath = File.absolute_path(File.join(currentPath, relExampleOutputPath))
-  
-  raise "Could not file source folder with examples '"+exampleSourcesPath+"'" if !File.exist?(exampleSourcesPath) 
-  raise "Could not file target folder with generated output '"+exampleOutputsPath+"' (forgot to build example project?)" if !File.exist?(exampleOutputsPath) 
-    
+
+  raise "Could not file source folder with examples '"+exampleSourcesPath+"'" if !File.exist?(exampleSourcesPath)
+  raise "Could not file target folder with generated output '"+exampleOutputsPath+"' (forgot to build example project?)" if !File.exist?(exampleOutputsPath)
+
   exampleSourcesHash = ExamplesHelper::get_example_files(exampleSourcesPath)
   exampleOutputsHash = ExamplesHelper::get_example_files(exampleOutputsPath)
-    
+
   items << Nanoc::Item.new(
     ExamplesHelper::generate_example_markdown(exampleSourcesHash, exampleOutputsHash),
     { :extension => "md", :title => "Examples" },
@@ -40,6 +40,28 @@ end
 passthrough '/images/*/'
 passthrough '/css/*/'
 passthrough '/js/*/'
+
+compile '/blog/\d+/*' do
+  if item[:extension] == 'md'
+    filter :kramdown, :input => :GFM, :coderay_line_numbers => nil
+    snapshot :body
+  else
+      # don’t filter anything else
+  end
+end
+
+compile '/INDEX' do
+  if item[:extension] == 'md'
+    filter :footer_remove
+    filter :kramdown, :input => :GFM, :coderay_line_numbers => nil
+    filter :jumbotron
+    filter :fixlinks
+    filter :insert_javadocapi_links
+    layout 'frontpage'
+  else
+      # don’t filter anything else
+  end
+end
 
 compile '*' do
   if item[:extension] == 'md'
@@ -59,7 +81,7 @@ compile '*' do
   else
     filter :erb
     layout 'default'
-    filter :relativize_paths, :type => :html
+    #filter :relativize_paths, :type => :html
   end
 end
 
@@ -69,8 +91,12 @@ route '/fonts/*/' do
 end
 
 # Write main readme item as index page
-route 'README' do
-  '/index.html'
+#route 'README' do
+#  '/index.html'
+#end
+
+route '/blog/\d+/*' do
+  nil
 end
 
 route '*' do

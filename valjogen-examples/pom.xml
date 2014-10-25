@@ -17,15 +17,17 @@
 	<url>http://valjogen.41concepts.com</url>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.41concepts</groupId>
-			<artifactId>valjogen-annotations</artifactId>
-			<version>1.0.0-RC3</version>
-		</dependency>
+	    <dependency>
+            <groupId>com.41concepts</groupId>
+            <artifactId>valjogen-annotations</artifactId>
+            <version>1.0.0-RC3</version>
+            <optional>true</optional>
+        </dependency>
 		<dependency>
 			<groupId>com.41concepts</groupId>
 			<artifactId>valjogen-annotationprocessor</artifactId>
 			<version>1.0.0-RC3</version>
+            <optional>true</optional>
 		</dependency>
 	</dependencies>
 

@@ -1,5 +1,9 @@
-css_version: 0.1
-js_version: 0.1
+valjogen_version_number: 1.0.0-RC3
+
+css_version: 1.0
+js_version: 1.0
+
+user_mmc: http://www.linkedin.com/in/mortench
 
 # A list of file extensions that nanoc will consider to be textual rather than
 # binary. If an item with an extension not in this list is found,  the file
