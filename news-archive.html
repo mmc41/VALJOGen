@@ -75,56 +75,88 @@
 
     <div class="container">
 
-        <div class="jumbotron">
+         <div class="row">
 
-<h1 id="contributing-to-valjogen">Contributing to VALJOGen</h1>
+    <div class="col-sm-8 blog-main">
 
-<p>Contributors and contributions are welcome. Here is a quick guide <em>(DOCUMENT IS WORK IN PROGRESS)</em>.
-<br /></p>
-
+    <div class="blog-header">
+    <h1 class="blog-title">News archive</h1>
 </div>
 
-<h2 id="implementation-details-for-the-project">1. Implementation details for the project.</h2>
-<p>See <a href="processor-readme.html">readme in annotaton processor project</a> for implementation details.</p>
 
-<p>In addition these two 2 eclipse plugins may be useful to update readme pages in GitHub Flavored Markdown (<code>.md</code>):</p>
+  <div class="blog-post release">
+    <h2 id="post0" class="blog-post-title label-fg-color">RC4 and a bug in Eclipse</h2>
+    <p class="blog-post-meta">26 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
+    
+<p>New release candidate 4 of VALJOGen uploaded to maven central with following changes:</p>
 
 <ul>
-  <li>GitHub Flavored Markdown viewer: https://raw.github.com/satyagraha/gfm_viewer/master/p2-composite/</li>
-  <li>Markdown editor: http://www.winterwell.com/software/updatesite/</li>
+  <li>Made processor run inside Eclipse - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590" title="Eclipse bug 382590">found 1 bug in eclipse though</a>.</li>
+  <li>Windows file bugfix.</li>
+  <li>Support for javac’s <code>-processorpath</code></li>
+  <li>New processor option <code>com.fortyoneconcepts.valjogen.LOGFILE</code></li>
+  <li>Dependencies to annotations/processors now optional in pom’s.</li>
+  <li>Updated documentation and website.</li>
 </ul>
 
-<h2 id="cloning-and-change-procedure">2. Cloning and change procedure.</h2>
-<p>Here is a quick guide.</p>
+<hr />
 
-<p>Fork, then clone the repo:</p>
+<h3 id="eclipse-bug-382590">Eclipse bug 382590</h3>
 
-<pre><code>git clone git@github.com:41concepts/VALJOGen.git
-</code></pre>
+<p>Eclipse is not using Javac’s backend so it has it’s own implementation of <code>javax.lang.model</code> which is different and buggy.</p>
 
-<p>Make sure ALL the tests pass:</p>
+<p>Consequently, I made a few changes in the annotation processor to fit eclipse’s implementation but ultimately VALJOGen was hit by <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590" title="Eclipse bug 382590">Eclipse bug 382590</a> which happens when subclasssing a generic interface.</p>
 
-<pre><code>mvn test
-</code></pre>
+<p>So for some generic use cases, users will now see an error message refering to <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590" title="Eclipse bug 382590">Eclipse bug 382590</a>. For other use cases the processor works inside eclipse without problems.</p>
 
-<p>Make your change. Add documentation and tests for your change. Make ALL the tests pass:</p>
+<p>For now, if you need generic subclasses and you are using Eclipse you should pre-generate VALJOGen classes with maven, ant, javac or a script. This should be easy if you use a multi-stage build with code generation from interfaces in firste stage (recommended and not only as a workaround).</p>
 
-<pre><code>mvn test
-</code></pre>
-
-<h2 id="getting-your-changes-accepted">3. Getting your changes accepted.</h2>
-
-<p>Push to your fork and submit a <a href="https://help.github.com/articles/using-pull-requests">pull request</a>. I will then look at your changes<br />
-and promote them if I agree. If your work is good and we agree on the overall goal, design and code conventions, then you can also<br />
-subsequently become a contributor with push rights.</p>
-
-<pre><code>Finally, agree/sign a Contributor License Agreement.
-</code></pre>
-
-<p>It might be necessary for you to sign/agree to a contributor License Agreement. I haven’t ironed that out yet - let me know if you<br />
-have any ideas at &lt;valjogen(at)41concepts(dot)com&gt;. Otherwise I will find out when necessary.</p>
+<p><strong>This particular bug in Eclipse was reported in 2012 and has not been fixed yet. If you want VALJOGen and other annotation processors to work perfectly in eclipse then <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590" title="Eclipse bug 382590">please cast your vote for the bug at Eclipse’s bugzilla</a>.</strong></p>
 
 
+  </div>
+
+  <div>Tags: <span class="badge">Release</div>
+  <br/>
+
+  <div class="blog-post release">
+    <h2 id="post1" class="blog-post-title label-fg-color">First public release</h2>
+    <p class="blog-post-meta">20 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
+    
+<p>First release candidate of VALJOGen was uploaded to maven central for public use.</p>
+
+<p>This version is fully functionally but not tested in the wild.</p>
+
+<p>Already fixed a few things today and updated the website but awaiting validated usage from users on various OS’s and java tools before a proper v1.0.0 can be released.</p>
+
+
+  </div>
+
+  <div>Tags: <span class="badge">Release</div>
+  <br/>
+
+
+
+
+    </div>
+
+    <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+        <div class="hidden-print hidden-xs hidden-sm" role="complementary">
+              <div class="sidebar-module">
+                <h4>Index</h4>
+                <ul class="list-unstyled">
+                 
+                    <li><a href="#post0">RC4 and a bug in Eclipse</a></li>
+                
+                    <li><a href="#post1">First public release</a></li>
+                
+                </ul>
+              </div>
+           </ul>
+        </div>
+    </div>
+
+</div>
 
 		<hr />
 
