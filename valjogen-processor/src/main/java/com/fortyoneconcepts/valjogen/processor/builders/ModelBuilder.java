@@ -465,15 +465,12 @@ public final class ModelBuilder
 
 		try {
 		  executableMethodMirrorType = (ExecutableType)types.asMemberOf(interfaceOrClassMirrorType, m);
-	      errorConsumer.message(masterInterfaceElement, Kind.NOTE, "success with createMethod interfaceOrClassMirrorType="+interfaceOrClassMirrorType.toString()+", method="+m.toString()+", enclosing element="+m.getEnclosingElement().toString()+ ", type arguments="+interfaceOrClassMirrorType.getTypeArguments().stream().map(t -> t.getKind()+":"+t.toString()).collect(Collectors.joining(", ")));
 		} catch (IllegalArgumentException e) // Workaround for eclipse not liking asMemberOf for generic protypical types (Bug 382590)
 		{
 			// Eclipse not liking asMemberOf on subtypes (Bug 382590)
-			// Hmm. Consider doing a workaround with interfaceOrClassMirrorType.getTypeArguments().
-
+			// Lets hope eclipse will fix it otherwise consider doing a workaround with interfaceOrClassMirrorType.getTypeArguments().
 	       errorConsumer.message(masterInterfaceElement, Kind.ERROR, "Ran into eclipse bug 382590 - Could not generate correct code for generic subclassing due to this eclipse bug 'https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590'. Please vote on it.");
-
-	       executableMethodMirrorType = (ExecutableType)m.asType();
+	       executableMethodMirrorType = (ExecutableType)m.asType(); // Fallback - will produce incorrect code.
 		}
 
 		Type declaringType = typeBuilder.createType(clazz, interfaceOrClassMirrorType, DetailLevel.Low);

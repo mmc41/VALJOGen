@@ -1,12 +1,12 @@
 ---
 kind: article
-created_at: 25 October 2014
+created_at: 20 October 2014
 created_by: mmc
 title: First public release
 tags: [Release]
 ---
 
-This week the first release candidate of VALJOGen was uploaded in maven central for public use.
+First release candidate of VALJOGen was uploaded in maven central for public use.
 
 This version is fully functionally but not tested in the wild.
 

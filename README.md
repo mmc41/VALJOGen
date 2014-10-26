@@ -2,7 +2,7 @@
 
 # About VALJOGen
 
-VALJOGen is a **VALue Java Objects Generator** that can be used to generate modern Java 7/8+ value classes from annotated Java interfaces.
+<abbr title="Value Java Object Generator">VALJOGen</abbr> can be used to generate modern Java 7/8+ value classes from annotated Java interfaces.
 
 **FEATURES:**
 
@@ -14,13 +14,19 @@ VALJOGen is a **VALue Java Objects Generator** that can be used to generate mode
 + Full support for overriding **custom base classes** with both default and non-default base constructors, for overriding base class methods, implementing abstract properties etc.
 + Support for guards (checks) against null arguments, custom getter/setter prefixes, injection of extra interfaces into implementation etc.
 + The annotation processor **runs on any standard Java developer tool** running **JDK1.8+**. **Should work nicely with IDE's** without plugins (as long as they offer the usual standard annotation processor support).
++ Use standard Java API's (no hacks or virtual "language extensions") so less risk of problems when a new JDK or IDE is released compared to some alternatives.
 + Outputs **modern and nicely formatted Java 1.7+ source code** as if written by hand - without reflection and without any overhead.
 + Generated code has **no runtime dependencies** on VALJOGen!
 + Sensible defaults and auto-detection makes tool work out-of-the-box with very little work.
 
+<blockquote>One of the strong benefits of VALJOGen is extreme customization facilities. With all other tools I have run into limitations like: Can not add my own custom methods, can not subclass or add a base class constructor with X arguments, can not make class abstract or change the way hash codes are calculated etc.
+<br/><br/>With VALJOGen everything is poosible. Many options can be configured easily by annotations and if that is not enough one can use a supply a custom string template where you can extend or modify EVERYTHING you want in the generated output.</blockquote>
+
+<a name="important-start"/>
+
 => For a quick introduction see the [getting started document](GETSTARTED.md) or look at some of the [examples](http://valjogen.41concepts.com/examples.html).
 
-<sub>Why VALJOGen?: *Compared to other tools like for example [projectlombok](http://projectlombok.org/) or [Joda Beans](http://www.joda.org/joda-beans/) VALJOGen is much more customizable, more powerfull, less intrusive, offer less integration problems and generated code has no performance overhead (no use of reflection). VALJOGen does not move/mess around with your code or hide the generated code from you and your debugger. VALJOGen does not require you to write your code in a new way (or subclass anything other then your own plain Java interfaces), does not introduce new runtime dependencies into your codebase and just works with any standard Java tools including IDE's. Finally, unlike some alternatives, it use standard API's (no hacks or virtual "language extensions") so there is much less risk of problems when a new JDK or IDE is released.*</sub>
+<a name="important-end"/>
 
 <a name="jumbotron-end"/>
 

@@ -7,13 +7,16 @@ class FooterRemoveMarkdownFilter < Nanoc::Filter
   end
 end
 
-# Enclose jumbotron named anchors with correct bootstrap markup for an jumbotron area.
-class JumbotronEmbraceHtmlFilter < Nanoc::Filter
-  identifier :jumbotron
+# Enclose named anchors with correct bootstrap markup
+class BootstrapHtmlFilter < Nanoc::Filter
+  identifier :bootstrap
 
   def run(content, params={})
     content=content.sub('<p><a name="jumbotron-start"></a></p>', '<div class="jumbotron">')
     content=content.sub('<p><a name="jumbotron-end"></a></p>', '</div>')
+
+    content=content.sub('<p><a name="important-start"></a></p>', '<div class="alert alert-info">')
+    content=content.sub('<p><a name="important-end"></a></p>', '</div>')
     content
   end
 end

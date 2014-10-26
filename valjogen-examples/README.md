@@ -2,7 +2,7 @@
 
 # VALJOGen - Examples
 
-The example module contains various examples that show how to use the VALJOGen annotation processor.
+The example module contains various examples that show how to use the <abbr title="Value Java Object Generator">VALJOGen</abbr> annotation processor.
 
 Refer to the [collection of examples along with their generated output](http://valjogen.41concepts.com/examples.html) for details. See also [here in the source code](src/main/java/com/fortyoneconcepts/valjogen/examples).
 

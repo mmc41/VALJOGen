@@ -2,7 +2,7 @@
 
 # Get started using VALJOGen
 
-VALJOGen annotations are source-level and needed by compiler only. There are no-runtime dependencies and no libraries that you need to add to your classpath at runtime (unless you explicitly add references yourself to 3rd party code). You do need to add the VALJOGen annotationprocessor jar to your compile path though. Files are available at maven central or can be downloaded manually as noted [here](DOWNLOADS.md)
+<abbr title="Value Java Object Generator">VALJOGen</abbr> annotations are source-level and needed by compiler only. There are no-runtime dependencies and no libraries that you need to add to your classpath at runtime (unless you explicitly add references yourself to 3rd party code). You do need to add the VALJOGen annotationprocessor jar to your compile path though. Files are available at maven central or can be downloaded manually as noted [here](DOWNLOADS.md)
 
 VALJOGen uses standard Java annotation processors (`JSR 269`) and should work any Java tool running `JDK 1.8+` with a target of `JDK 1.7` or later. Below are listed some ways of using VALJOGen with popular tools.
 
@@ -78,11 +78,14 @@ In addition you should configure the following for the maven-compiler-plugin:
 
 See also [here](https://github.com/41concepts/VALJOGen/blob/master/valjogen-examples/standalone.xml) for a complete example of a maven pom file.
 
-If you are debugging custom templates you may also want to add an extra compilerArgs argument like this:
+If you are debugging custom templates you may also want to add extra compilerArgs argument like this:
 
 ```Xml
        <arg>-Acom.fortyoneconcepts.valjogen.logLevel=INFO</arg>
+       <arg>-Acom.fortyoneconcepts.valjogen.LOGFILE=${basedir}/target/valjogen.log</arg>
 ```
+
+Inside the generated logfile you will then find useful (but a bit complex) dumps of the configuration and models etc.
 
 ## 2. Using VALJOGen with JavaC compiler:
 
@@ -98,11 +101,17 @@ Alternatively, it is possible to compile using the -processorpath option. In thi
 javac -parameters -cp valjogen-annotations/target/valjogen-annotations-1.0.0-RC3.jar -processorpath ../valjogen-processor/target/valjogen-annotationprocessor-1.0.0-RC3.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
-## 3. Using VALJOGen with Eclipse *(CURRENTLY UNTESTED)*:
+## 3. Using VALJOGen with Eclipse:
 
-```
-In Eclipse open project Properties/Java Compiler/Annoation Processing and enable Annotation processing. Then add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directories for your project.
-```
+Due to [Eclipse bug 382590][eclipsebug] VALJOGen can not generated correct code when subclassing a generic interface. Apart from this use case the annotation processor works inside Eclipse if you do the following:
+
+1. In Eclipse first add valjogen-annotations-1.0.0-RC3.jar to the class path.
+2. Open project Properties/Java Compiler/Annoation Processing, enable Annotation processing and add valjogen-annotationprocessor-1.0.0-RC3.jar as processor.
+3. Add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directories for your project.
+
+*Bug 382590 in Eclipse was reported in 2012 and has not been fixed yet. If you want VALJOGen and other annotation processors to work perfectly in eclipse then [please cast your vote for the bug at Eclipse's bugzilla][eclipsebug].*
+
+[eclipsebug]: https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590  "Eclipse bug 382590"
 
 ### Using VALJOGen with Eclipse and Maven *(CURRENTLY UNTESTED)*:
 
@@ -129,10 +138,12 @@ VALJOGen output can be customized in a number of ways as listed below (in a orde
 
 1. Use existing options in VALJOGenerate and VALJOConfigure annotations.
 2. Specify a BaseClass with your custom code in your VALJOConfigure annotation.
-3. SubClass the generates class(es) and out your custom stuff there (use VALJOConfigure modifier option to make generated class abstract or non final)
+3. Subclass the generates class(es) and out your custom stuff there (use VALJOConfigure modifier option to make generated class abstract or non final)
 4. Add custom method(s) in a custom template group file specified in your VALJOConfigure annotation.
 5. Override the regions defined in the build-in templates. Do this in a custom template group file specified in your VALJOConfigure annotation.
 6. Override existing template methods. Do this in a custom template group file specified in your VALJOConfigure annotation
+
+See [VALJOConfigure JavaDocs](apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html#customJavaTemplateFileName) and the [examples](http://valjogen.41concepts.com/examples.html) for details about custom templates. See also the [StringTemplate 4 cheat sheet](https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+cheat+sheet) for syntax and general tips.
 
 ## 6. Support
 - [Main website](http://valjogen.41concepts.com)

@@ -54,7 +54,7 @@ compile '/INDEX' do
   if item[:extension] == 'md'
     filter :footer_remove
     filter :kramdown, :input => :GFM, :coderay_line_numbers => nil
-    filter :jumbotron
+    filter :bootstrap
     filter :fixlinks
     filter :insert_javadocapi_links
     layout 'frontpage'
@@ -67,7 +67,7 @@ compile '*' do
   if item[:extension] == 'md'
     filter :footer_remove
     filter :kramdown, :input => :GFM, :coderay_line_numbers => nil
-    filter :jumbotron
+    filter :bootstrap
     filter :fixlinks
     filter :insert_javadocapi_links
     layout 'default'
