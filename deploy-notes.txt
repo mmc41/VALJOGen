@@ -6,7 +6,7 @@ cd site
 ./build_site.sh
 
 Sign only:
-mvn mvn verify -Dgpg.passphrase=thephrase
+mvn verify -Dgpg.passphrase=thephrase
 
 Change version (example)
 mvn versions:set -DnewVersion=1.0.0-RC2

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.41concepts</groupId>
 		<artifactId>valjogen-projectsmaster</artifactId>
-		<version>1.0.0-RC3</version>
+		<version>1.0.0-RC4</version>
 	</parent>
 
 	<groupId>com.41concepts</groupId>
@@ -20,13 +20,13 @@
 	    <dependency>
             <groupId>com.41concepts</groupId>
             <artifactId>valjogen-annotations</artifactId>
-            <version>1.0.0-RC3</version>
+            <version>1.0.0-RC4</version>
             <optional>true</optional>
         </dependency>
 		<dependency>
 			<groupId>com.41concepts</groupId>
 			<artifactId>valjogen-annotationprocessor</artifactId>
-			<version>1.0.0-RC3</version>
+			<version>1.0.0-RC4</version>
             <optional>true</optional>
 		</dependency>
 		<dependency>
