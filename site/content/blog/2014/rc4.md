@@ -6,7 +6,7 @@ title: RC4 and a bug in Eclipse
 tags: [Release]
 ---
 
-New release candidate 4 of VALJOGen uploaded in maven central with following changes:
+New release candidate 4 of VALJOGen uploaded to maven central with following changes:
 
 + Made processor run inside Eclipse - [found 1 bug in eclipse though][eclipsebug].
 + Windows file bugfix.

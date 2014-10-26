@@ -6,7 +6,7 @@ title: First public release
 tags: [Release]
 ---
 
-First release candidate of VALJOGen was uploaded in maven central for public use.
+First release candidate of VALJOGen was uploaded to maven central for public use.
 
 This version is fully functionally but not tested in the wild.
 
