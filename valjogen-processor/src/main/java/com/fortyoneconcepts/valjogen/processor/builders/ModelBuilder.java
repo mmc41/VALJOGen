@@ -5,6 +5,7 @@ package com.fortyoneconcepts.valjogen.processor.builders;
 
 import java.beans.Introspector;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +27,7 @@ import com.fortyoneconcepts.valjogen.processor.STTemplates;
 import com.fortyoneconcepts.valjogen.processor.TemplateKind;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
+import static com.fortyoneconcepts.valjogen.processor.builders.BuilderUtil.*;
 
 /***
  * This class is responsible for transforming data in the javax.lang.model.* format to our own valjogen models.
@@ -41,7 +43,8 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
  */
 public final class ModelBuilder
 {
-	// private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
+	@SuppressWarnings("unused")
+	private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
 
 	private static final String compareToOverloadName = "compareTo(T)";
 
@@ -139,7 +142,7 @@ public final class ModelBuilder
 
 		PackageElement sourcePackageElement = elements.getPackageOf(masterInterfaceElement);
 
-		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.toString();
+		String sourceInterfacePackageName = sourcePackageElement.isUnnamed() ? "" : sourcePackageElement.getQualifiedName().toString();
 		String className = createQualifiedClassName(masterInterfaceElement.asType().toString(), sourceInterfacePackageName);
 		String classPackage = NamesUtil.getPackageFromQualifiedName(className);
 
@@ -228,7 +231,7 @@ public final class ModelBuilder
 		}
 
 		if (statusHolder.encountedSynthesisedMembers && configuration.isWarningAboutSynthesisedNamesEnabled())
-			errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
+			errorConsumer.message(masterInterfaceElement, Kind.MANDATORY_WARNING, String.format(ProcessorMessages.ParameterNamesUnavailable, masterInterfaceElement.toString()));
 
 		List<Type> importTypes = createImportTypes(clazz, baseClazzDeclaredMirrorType, interfaceDeclaredMirrorTypes);
 
@@ -267,7 +270,7 @@ public final class ModelBuilder
 		return clazz;
 	}
 
-	private void claimAndVerifyMethods(List<Method> nonPropertyMethods, List<Property> propertyMethods, Set<String> applicableTemplateImplementedMethodNames) throws Exception
+	private void claimAndVerifyMethods(List<Method> nonPropertyMethods, List<Property> propertyMethods, Set<String> applicableTemplateImplementedMethodNames)
 	{
 		Set<String> unusedMethodNames = new HashSet<String>(applicableTemplateImplementedMethodNames);
 
@@ -360,7 +363,7 @@ public final class ModelBuilder
 
 	}
 
-	private List<Method> createMagicSerializationMethods(BasicClazz clazz) throws Exception
+	private List<Method> createMagicSerializationMethods(BasicClazz clazz)
 	{
 		List<Method> newMethods = new ArrayList<>();
 
@@ -406,7 +409,7 @@ public final class ModelBuilder
 		return newMethods;
 	}
 
-	private List<Member> getSelectedComparableMembers(Map<String, Member> membersByName, Map<String, Member> baseMembersByName, Method comparableMethodToImplement) throws Exception
+	private List<Member> getSelectedComparableMembers(Map<String, Member> membersByName, Map<String, Member> baseMembersByName, Method comparableMethodToImplement)
 	{
 		// TODO: Check if type of comparable argument suits our purpose and give warning/error otherwise if members are not accessible for type.
 		// Type comparableArgType = comparableMethodToImplement.getParameters().get(0).getType();
@@ -419,7 +422,7 @@ public final class ModelBuilder
 			comparableMembers=membersByName.values().stream().filter(m -> m.getType().isComparable()).collect(Collectors.toList());
 			if (comparableMembers.size()!=membersByName.size())
 			{
-				errorConsumer.message(masterInterfaceElement, Kind.WARNING, String.format(ProcessorMessages.NotAllMembersAreComparable, masterInterfaceElement.toString()));
+				errorConsumer.message(masterInterfaceElement, Kind.MANDATORY_WARNING, String.format(ProcessorMessages.NotAllMembersAreComparable, masterInterfaceElement.toString()));
 			}
 		} else {
 			comparableMembers=new ArrayList<Member>();
@@ -449,15 +452,29 @@ public final class ModelBuilder
 		return elements.map(e -> new ExecutableElementInfo(interfaceOrClasMirrorType, e));
 	}
 
-	private Method createMethod(BasicClazz clazz, Map<String, Member> membersByName, final StatusHolder statusHolder, ExecutableElement m, ExecutableElement mOverriddenBy, DeclaredType interfaceOrClassMirrorType) throws Exception
+	private Method createMethod(BasicClazz clazz, Map<String, Member> membersByName, final StatusHolder statusHolder, ExecutableElement m, ExecutableElement mOverriddenBy, DeclaredType interfaceOrClassMirrorType)
 	{
 	    Method newMethod = null;
 
 		String javaDoc = elements.getDocComment(m);
+
 		if (javaDoc==null) // hmmm - seems to be null always (api not working?)
 			javaDoc="";
 
-		ExecutableType executableMethodMirrorType = (ExecutableType)types.asMemberOf(interfaceOrClassMirrorType, m);
+		ExecutableType executableMethodMirrorType;
+
+		try {
+		  executableMethodMirrorType = (ExecutableType)types.asMemberOf(interfaceOrClassMirrorType, m);
+	      errorConsumer.message(masterInterfaceElement, Kind.NOTE, "success with createMethod interfaceOrClassMirrorType="+interfaceOrClassMirrorType.toString()+", method="+m.toString()+", enclosing element="+m.getEnclosingElement().toString()+ ", type arguments="+interfaceOrClassMirrorType.getTypeArguments().stream().map(t -> t.getKind()+":"+t.toString()).collect(Collectors.joining(", ")));
+		} catch (IllegalArgumentException e) // Workaround for eclipse not liking asMemberOf for generic protypical types (Bug 382590)
+		{
+			// Eclipse not liking asMemberOf on subtypes (Bug 382590)
+			// Hmm. Consider doing a workaround with interfaceOrClassMirrorType.getTypeArguments().
+
+	       errorConsumer.message(masterInterfaceElement, Kind.ERROR, "Ran into eclipse bug 382590 - Could not generate correct code for generic subclassing due to this eclipse bug 'https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590'. Please vote on it.");
+
+	       executableMethodMirrorType = (ExecutableType)m.asType();
+		}
 
 		Type declaringType = typeBuilder.createType(clazz, interfaceOrClassMirrorType, DetailLevel.Low);
 
@@ -470,7 +487,7 @@ public final class ModelBuilder
 		List<? extends TypeMirror> paramTypes = executableMethodMirrorType.getParameterTypes();
 
 		if (params.size()!=paramTypes.size())
-			throw new Exception("Internal error - Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
+			throw new RuntimeException("Internal error - Numbers of method parameters "+params.size()+" and method parameter types "+paramTypes.size()+" does not match");
 
 		List<? extends TypeMirror> thrownTypeMirrors = executableMethodMirrorType.getThrownTypes();
 		List<Type> thrownTypes = thrownTypeMirrors.stream().map(ie -> typeBuilder.createType(clazz, ie, DetailLevel.Low)).collect(Collectors.toList());
@@ -527,7 +544,7 @@ public final class ModelBuilder
 				implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
 			else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;
 
-		    if (BuilderUtil.isConstructor(methodName))
+		    if (isConstructor(methodName))
 		    	newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo);
 		    else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.TYPED);
 		}
@@ -535,7 +552,7 @@ public final class ModelBuilder
 		return newMethod;
 	}
 
-	private List<Type> createImportTypes(BasicClazz clazz, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes) throws Exception
+	private List<Type> createImportTypes(BasicClazz clazz, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes)
 	{
 		List<Type> importTypes = new ArrayList<Type>();
 		for (DeclaredType implementedInterfaceDeclaredType : implementedDecalredInterfaceTypes)
@@ -624,7 +641,7 @@ public final class ModelBuilder
 
 	private Member createPropertyMemberIfValidProperty(BasicClazz clazz, DeclaredType interfaceOrClassMirrorType,
 			                                           TypeMirror returnTypeMirror, List<? extends VariableElement> setterParams, List<? extends TypeMirror> setterParamTypes,
-			                                           ExecutableElement methodElement, PropertyKind kind) throws Exception
+			                                           ExecutableElement methodElement, PropertyKind kind)
 	{
 		TypeMirror propertyTypeMirror;
 

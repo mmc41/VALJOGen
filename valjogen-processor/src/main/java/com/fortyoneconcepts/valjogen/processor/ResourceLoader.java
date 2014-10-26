@@ -4,7 +4,6 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 
 /**
@@ -29,12 +29,12 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
  */
 public final class ResourceLoader
 {
-	private List<Path> configuredSourcePaths;
-	private String defaultRelPackagePath;
+	private final List<Path> configuredSourcePaths;
+	private final String defaultRelPackagePath;
 
 	public ResourceLoader(String sourcePathOption, String defaultRelPackagePath) throws ConfigurationException
 	{
-		this.configuredSourcePaths=getConfiguredSourcePaths(Objects.requireNonNull(sourcePathOption), Objects.requireNonNull(defaultRelPackagePath));
+		this.configuredSourcePaths=getConfiguredSourcePaths(sourcePathOption, Objects.requireNonNull(defaultRelPackagePath));
 		this.defaultRelPackagePath=Objects.requireNonNull(defaultRelPackagePath);
 	}
 
@@ -129,7 +129,7 @@ public final class ResourceLoader
 			throw new IllegalArgumentException("filename may not be null");
 
 		if (!hasSourcePaths())
-			throw new Exception(ConfigurationOptionKeys.SOURCEPATH+" not configured (forgot to specify in annotation processor options?).");
+			throw new ConfigurationException("Processor option '"+ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.SOURCEPATH+"' not configured (required for looking up "+fileName+").");
 
 		List<Path> targetPaths = configuredSourcePaths.stream().map(p -> p.resolve(fileName)).collect(Collectors.toList());
 
@@ -143,7 +143,7 @@ public final class ResourceLoader
 		}
 
 		String allTargetPaths = targetPaths.stream().map(p -> "\""+p.toString()+"\"").collect(Collectors.joining(", "));
-		throw new FileNotFoundException("Could not find file \""+fileName+"\" in any specified source path(s): "+allTargetPaths);
+		throw new ConfigurationException("Could not find file \""+fileName+"\" in any specified source path(s): "+allTargetPaths);
 	}
 
 	@Override

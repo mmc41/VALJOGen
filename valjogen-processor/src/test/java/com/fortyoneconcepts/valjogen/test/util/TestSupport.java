@@ -41,6 +41,14 @@ public final class TestSupport
 		return classPathSourceCopyRelPath+"/"+relpath;
 	}
 
+	public static Path getTargetPath() throws URISyntaxException
+	{
+		URL url = ClassLoader.getSystemResource(".");
+		if (!"file".equalsIgnoreCase(url.getProtocol()))
+			throw new IllegalStateException("Could not find file location of this class used as reference for finding all other files");
+		return Paths.get(url.toURI()).getParent();
+	}
+
 	public static Path getProjectRootPath() throws URISyntaxException
 	{
 		URL url = ClassLoader.getSystemResource(".");

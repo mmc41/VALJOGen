@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +44,8 @@ import com.fortyoneconcepts.valjogen.processor.TypePool;
  */
 final class TypeBuilder
 {
-	// private final static Logger LOGGER = Logger.getLogger(TypeBuilder.class.getName());
+	@SuppressWarnings("unused")
+	private final static Logger LOGGER = Logger.getLogger(TypeBuilder.class.getName());
 
 	private final TypePool typePool;
 	private final Types types;
@@ -81,7 +83,7 @@ final class TypeBuilder
 		Type existingType = null;
 		Type newType=null;
 
-		try {
+		// try {
 			String typeName = mirrorType.toString();
 
 			// If using self-stand-in, replace with name of generated class and if identical with generate class return clazz itself as type
@@ -118,17 +120,19 @@ final class TypeBuilder
 			}
 
 			assert upgrade || existingType==null : "Should not overwrite existing type in pool for type "+existingType.getQualifiedName()+" (unless in case of detail upgrade)";
-		} catch (Exception e)
+		/*} catch (Exception e)
 		{
-			throw new RuntimeException(e);
-		}
+			throw new RuntimeException("createType failed for type "+mirrorType.toString(), e);
+		}*/
 
 		return newType;
 	}
 
 	private void doInitObjectType(BasicClazz clazz, TypeMirror mirrorType, DetailLevel detailLevel, ObjectType newObjectType)
 	{
-	   List<DeclaredType> directSuperTypeMirrors = types.directSupertypes(mirrorType).stream().map(t -> (DeclaredType)t).collect(Collectors.toList());
+	   List<DeclaredType> directSuperTypeMirrors = (mirrorType.getKind()==TypeKind.DECLARED)
+			                                       ? types.directSupertypes(mirrorType).stream().map(t -> (DeclaredType)t).collect(Collectors.toList())
+			                                       : Collections.emptyList() ;
 
 	   DeclaredType baseClazzTypeMirror;
 	   List<DeclaredType> interfaceSuperTypeMirrors;
@@ -274,7 +278,7 @@ final class TypeBuilder
 		return Stream.concat(superTypes.stream(), superTypes.stream().flatMap(type -> getSuperTypesWithAncestors(types.directSupertypes(type).stream().map(t -> (DeclaredType)t).collect(Collectors.toList()))));
 	}
 
-	HelperTypes createHelperTypes(BasicClazz clazz) throws Exception
+	HelperTypes createHelperTypes(BasicClazz clazz)
 	{
 		Type voidType = new com.fortyoneconcepts.valjogen.model.PrimitiveType(clazz, "void");
 		typePool.putIfAbsent("void", voidType);
@@ -309,7 +313,7 @@ final class TypeBuilder
 		return new HelperTypes(noType, javaLangObjectType, voidType, serializableInterfaceType, externalizableInterfaceType, comparableInterfaceType, javaUtilArraysType, javaUtilObjectsType, generatedAnnotationInterfaceType, inputStreamType, objectOutputStreamType);
 	}
 
-	DeclaredType createBaseClazzDeclaredType(String clazzPackage) throws Exception
+	DeclaredType createBaseClazzDeclaredType(String clazzPackage)
 	{
 		String baseClazzName = configuration.getBaseClazzName();
 		if (baseClazzName==null || baseClazzName.isEmpty())
@@ -323,7 +327,7 @@ final class TypeBuilder
 		return result;
 	}
 
-	TypeMirror createTypeFromString(String qualifiedName) throws Exception
+	TypeMirror createTypeFromString(String qualifiedName)
 	{
 		TypeElement element = elements.getTypeElement(qualifiedName);
 		if (element==null) {
@@ -334,7 +338,7 @@ final class TypeBuilder
 		return element.asType();
 	}
 
-	DeclaredType createDeclaredTypeFromString(String name, String defaultPackageForUnqualifiedNames) throws Exception
+	DeclaredType createDeclaredTypeFromString(String name, String defaultPackageForUnqualifiedNames)
 	{
 		String nameWithoutGenerics = NamesUtil.stripGenericQualifier(name);
 		nameWithoutGenerics = defaultPackageForUnqualifiedNames!=null ? NamesUtil.ensureQualifedName(nameWithoutGenerics, defaultPackageForUnqualifiedNames) : null;
@@ -372,7 +376,7 @@ final class TypeBuilder
 		}
 	}
 
-	List<DeclaredType> createInterfaceDeclaredTypes(DeclaredType masterInterfaceType, String[] ekstraInterfaceNames, String clazzPackage) throws Exception
+	List<DeclaredType> createInterfaceDeclaredTypes(DeclaredType masterInterfaceType, String[] ekstraInterfaceNames, String clazzPackage)
 	{
 		List<DeclaredType> interfaceElements = new ArrayList<DeclaredType>();
 		interfaceElements.add(masterInterfaceType);

@@ -4,12 +4,16 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.*;
@@ -39,9 +43,18 @@ public class AnnotationProcessor extends AbstractProcessor
 	private final Class<VALJOConfigure> annotationConfigurationClass = VALJOConfigure.class;
 
 	private String processingEnvClassName;
-	private String optCtrDefaultSourcePath;
+	private final String optCtrDefaultSourcePath;
 
 	private final Logger parentLogger;
+
+	// Our own FileHandler class so we can recognize it from other FileHandlers.
+	private final class InternalFileHandler extends FileHandler
+	{
+		public InternalFileHandler(String pattern, boolean append) throws IOException, SecurityException
+		{
+			super(pattern, append);
+		}
+	}
 
 	/**
 	 * Constructor called automatically by javac compiler.
@@ -60,7 +73,6 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		// Set a tempoary default log level until configuration has been read.
 		parentLogger.setLevel(Level.INFO);
-
 	}
 
 	@Override
@@ -79,7 +91,7 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		Field[] fields = optionClass.getFields();
 
-		return Arrays.stream(fields).map(f -> {
+		Set<String> stdOptions = Arrays.stream(fields).map(f -> {
 			try {
 				String value=(String)f.get(null);
 				return ConfigurationDefaults.OPTION_QUALIFIER+value;
@@ -88,6 +100,8 @@ public class AnnotationProcessor extends AbstractProcessor
 				throw new RuntimeException("Could not access field "+optionClass.getName()+"."+f.getName());
 			}
 		}).collect(Collectors.toSet());
+
+		return stdOptions;
 	}
 
 	/**
@@ -113,6 +127,26 @@ public class AnnotationProcessor extends AbstractProcessor
 					if (options==null)
 						options=Collections.emptyMap();
 
+					String logFileString = processingEnv.getOptions().getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.LOGFILE, null);
+					try {
+						// Only add a filehandler if it is not there already.
+						Handler[] handlers = parentLogger.getHandlers();
+						boolean alreadyAddedLogger = false;
+					    for (Handler handler : handlers)
+						    if (handler instanceof InternalFileHandler)
+						    		alreadyAddedLogger=true;
+
+						if (!alreadyAddedLogger && logFileString!=null) {
+							FileHandler logFile = new InternalFileHandler(logFileString, true);
+							logFile.setFormatter(new SimpleFormatter());
+							logFile.setLevel(Level.FINEST);
+							parentLogger.addHandler(logFile);
+						}
+					} catch(Throwable ex)
+					{
+						throw new ConfigurationException("Could not setup log file at "+logFileString, ex);
+					}
+
 					String masterInterfaceName = e.asType().toString();
 					Configuration configuration = optConfigureConfiguration!=null
 							                      ? new Configuration(masterInterfaceName, annotationGenerate, optConfigureConfiguration, optLocale, options)
@@ -127,18 +161,20 @@ public class AnnotationProcessor extends AbstractProcessor
 					LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR CONFIGURATION "+System.lineSeparator()+configuration);
 
 					PackageElement packageElement = (PackageElement)(e.getEnclosingElement());
-					String sourcePackageElementPath = packageElement.toString().replace(".", File.separator);
+					String sourcePackageElementPath = packageElement.getQualifiedName().toString().replace(".", File.separator);
 					ResourceLoader resourceLoader = new ResourceLoader(path, sourcePackageElementPath);
 
 				    generate((TypeElement)e, configuration, resourceLoader);
 
 				    claimed=true;
-				  }
-				  catch(STException ex)
+				  } catch (ConfigurationException ex)  {
+					  if (LOGGER.isLoggable(Level.INFO))
+						  messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage(), e);
+					  else messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
+				  } catch(STException ex)
 				  {
 					 messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.StringTemplateExceptionFailure, e.toString(), ex.toString()), e);
-				  }
-				  catch(Exception ex)
+				  } catch(Exception ex)
 				  {
 					 messager.printMessage(Diagnostic.Kind.ERROR, String.format(ProcessorMessages.ExceptionFailure, e.toString(), LOGGER.isLoggable(Level.INFO) ? trace(ex) : ex), e);
 				  }
@@ -161,7 +197,7 @@ public class AnnotationProcessor extends AbstractProcessor
 		Elements elements = processingEnv.getElementUtils();
 
 		if (!resourceLoader.hasSourcePaths())
-			messager.printMessage(Kind.WARNING, "VALJOGen annotion processor option "+ConfigurationOptionKeys.SOURCEPATH+" not specified. Code generation may fail in some cases.");
+			messager.printMessage(Kind.MANDATORY_WARNING, ProcessorMessages.SourcePathNotSet);
 		else {
 			LOGGER.fine(() -> "Using resourceloader: "+resourceLoader);
 		}
@@ -180,22 +216,21 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR GENERATED CLAZZ MODEL INSTANCE "+System.lineSeparator()+clazz.toString());
 
-		String fileName=stripGenericQualifier(clazz.getQualifiedName());
-
-		JavaFileObject target = filer.createSourceFile(fileName, element);
-
 		STCodeWriter writer = new STCodeWriter(clazz, configuration, templates);
-
-		try (PrintWriter targetWriter = new PrintWriter(target.openWriter()))
+		String output = writer.outputClass();
+		if (output!=null)
 		{
-			String output = writer.outputClass();
-			if (output!=null)
+			String fileName=stripGenericQualifier(clazz.getQualifiedName());
+
+			JavaFileObject target = filer.createSourceFile(fileName, element);
+
+			try (PrintWriter targetWriter = new PrintWriter(target.openWriter()))
 			{
 			  targetWriter.write(output);
-			  messager.printMessage(Kind.NOTE, "VALJOGen Annotation Processor successfully generated file "+target.getName());
-
   			  LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR GENERATED TARGET FILE "+fileName+" WITH CONTENT: "+System.lineSeparator()+output);
 			}
+
+		    messager.printMessage(Kind.NOTE, "VALJOGen Annotation Processor successfully generated file "+target.getName());
 		}
 	}
 

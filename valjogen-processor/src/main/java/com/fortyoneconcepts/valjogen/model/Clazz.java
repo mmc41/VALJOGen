@@ -4,10 +4,10 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
-import com.fortyoneconcepts.valjogen.model.util.ThrowingFunction;
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /**
@@ -37,9 +37,8 @@ public final class Clazz extends BasicClazz implements Model
 	 * @param javaDoc JavaDoc if any.
 	 * @param fileHeaderText Text to output as header for file(s).
 	 * @param helperFactoryMethod Method that can generate helper types for this class.
-	 * @throws Exception Exception if could not construct clazz.
 	 */
-	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception
+	public Clazz(Configuration configuration, String qualifiedClassName, String qualifiedMaster, String javaDoc, String fileHeaderText, Function<BasicClazz, HelperTypes> helperFactoryMethod)
 	{
 		super(null, configuration, qualifiedClassName, helperFactoryMethod);
 		super.clazzUsingType=this;

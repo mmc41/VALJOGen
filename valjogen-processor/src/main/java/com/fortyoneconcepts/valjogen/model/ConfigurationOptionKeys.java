@@ -3,9 +3,11 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
+
 /**
  * Option keys for configuration. Values are exactly the same as the method names of VALJOConfigure or VALJOGenerate annotation.
- * When specified as annotation processor options, they must be qualified with {@link ConfigurationDefaults#OPTION_QUALIFIER} package prefix.
+ * When specified as annotation processor options and looked up they must be qualified with {@link ConfigurationDefaults#OPTION_QUALIFIER} package prefix!
  *
  * See the descriptions on the annotations for details.
  *
@@ -188,16 +190,22 @@ public interface ConfigurationOptionKeys
 	 */
 	 public static String debugStringTemplates = "debugStringTemplates";
 
-	 /**
-	 * Java source path to where source code is stored. Required option for some other options to work. Differently from all other options, this is an annotation
-	 * processor option only (no annotation exist for this). Mutiple path entries may be specified seperated by a platform dependent "path.separator" (";" or ":").
-	 * Path entries must be absolute and point to existing readable directories.
-	 */
-	 public static String SOURCEPATH = "SOURCEPATH";
-
      /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#comment
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOGenerate#comment
 	 */
      public static String comment = "comment";
+
+	 /**
+	 * Java source path to where source code is stored. Required option for some other options to work. Differently from most other options, this is an annotation
+	 * processor option only (no annotation exist for this). Mutiple path entries may be specified seperated by a platform dependent "path.separator" (";" or ":").
+	 * Path entries must be absolute and point to existing readable directories.
+	 */
+	 public static String SOURCEPATH = "SOURCEPATH";
+
+	 /**
+	 * Path to where log file is stored. Differently from most other options, this is an annotation processor option only (no annotation exist for this).
+	 * Path must be absolute and writeable.
+	 */
+	 public static String LOGFILE = "LOGFILE";
 }

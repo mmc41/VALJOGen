@@ -4,14 +4,20 @@
 package com.fortyoneconcepts.valjogen.test.util;
 
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -22,6 +28,7 @@ import javax.tools.Diagnostic.Kind;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.rules.TestName;
 
 import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
@@ -30,6 +37,7 @@ import com.fortyoneconcepts.valjogen.model.Configuration;
 import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
+import com.fortyoneconcepts.valjogen.processor.ConfigurationException;
 import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
 import com.fortyoneconcepts.valjogen.processor.STTemplates;
@@ -53,6 +61,9 @@ public abstract class TemplateTestBase
 
 	@Rule
 	public CompilationRule compilationRule = new CompilationRule();
+
+	@Rule
+	public TestName nameRule = new TestName();
 
 	private Types types;
 	private Elements elements;
@@ -128,8 +139,39 @@ public abstract class TemplateTestBase
 	{
 		Configuration configuration = new Configuration(sourceClass.getCanonicalName(), generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
-		 // Know that we know what proper log level to set, do set it correctly.
+	    // Now that we know what to do with logging, do set it correctly.
+
+		String testName = this.getClass().getSimpleName()+"-"+nameRule.getMethodName();
+		String logFileString = "";
+
+		try {
+			Path logDir = TestSupport.getTargetPath().resolve("logs");
+			if (!Files.exists(logDir))
+			  logDir=Files.createDirectory(logDir);
+
+			logFileString = configurationOptions.getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.LOGFILE, logDir.resolve("valjogen-"+testName+".log").toString());
+
+			if (logFileString!=null) {
+				FileHandler logFile = new FileHandler(logFileString, true);
+				logFile.setFormatter(new SimpleFormatter());
+				logFile.setLevel(Level.FINEST);
+				parentLogger.addHandler(logFile);
+			}
+		} catch(Throwable ex)
+		{
+			Assert.fail("Could not setup log file at "+logFileString);
+		}
+
 	    parentLogger.setLevel(configuration.getLogLevel());
+
+	    // Make sure console logs what we ask for:
+	    Logger rootLogger = Logger.getGlobal();
+	    Handler[] handlers = rootLogger.getHandlers();
+	    for (Handler handler : handlers)
+		    if (handler instanceof ConsoleHandler) {
+		      if (handler.getLevel().intValue()>configuration.getLogLevel().intValue())
+		    	    handler.setLevel(configuration.getLogLevel());
+	    }
 
 		LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR CONFIGURATION "+System.lineSeparator()+configuration);
 

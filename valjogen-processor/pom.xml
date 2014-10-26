@@ -55,12 +55,6 @@
                         <arg>-parameters</arg> <!-- Make sure parameter meta data is available for best code generation -->
                     </compilerArgs>
                     <enableAssertions>true</enableAssertions>
-                    <systemProperties>
-	                    <systemProperty>
-	                        <key>com.fortyoneconcepts.valjogen.SOURCEPATH</key>
-	                        <value>${basedir}/src/test/java</value>
-	                    </systemProperty>
-                    </systemProperties>
                 </configuration>
 			</plugin>
 			<plugin>

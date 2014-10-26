@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.fortyoneconcepts.valjogen.model.util.ThrowingFunction;
 import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /**
@@ -32,12 +32,12 @@ public class BasicClazz extends ObjectType implements Definition {
 
 	private boolean initializedContent;
 
-	public BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod) throws Exception
+	public BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, Function<BasicClazz, HelperTypes> helperFactoryMethod)
 	{
 		this(optClazzUsingType, configuration, qualifiedProtoTypicalTypeName, helperFactoryMethod, new ArrayList<Member>(), new ArrayList<Method>(), EnumSet.noneOf(Modifier.class));
 	}
 
-	private BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, ThrowingFunction<BasicClazz, HelperTypes> helperFactoryMethod, List<Member> members, List<Method> methods, EnumSet<Modifier> declaredModifiers) throws Exception {
+	private BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, Function<BasicClazz, HelperTypes> helperFactoryMethod, List<Member> members, List<Method> methods, EnumSet<Modifier> declaredModifiers) {
 		super(optClazzUsingType, qualifiedProtoTypicalTypeName);
 		this.configuration = Objects.requireNonNull(configuration);
 		this.packageName = getPackageFromQualifiedName(qualifiedProtoTypicalTypeName);

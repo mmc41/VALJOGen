@@ -21,7 +21,6 @@ public interface DiagnosticMessageConsumer
      * @param messageKind the type of message (error, warning etc).
      * @param message the message).
      *
-     * @throws Exception The consumer might in rare cases throw in case of a fatal error that should caurse processing to stop.
      */
-    public void message(Element element, Kind messageKind, String message) throws Exception;
+    public void message(Element element, Kind messageKind, String message);
 }

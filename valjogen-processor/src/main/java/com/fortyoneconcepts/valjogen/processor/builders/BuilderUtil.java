@@ -6,6 +6,8 @@ package com.fortyoneconcepts.valjogen.processor.builders;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 
+import com.fortyoneconcepts.valjogen.annotations.internal.ThisReference;
+
 /**
  * Various low level type mirror utilities used by builders.
  *
@@ -37,5 +39,11 @@ class BuilderUtil
 	public static boolean isConstructor(String methodName)
 	{
 		return methodName.equals("<init>");
+	}
+
+	public static boolean isThisReference(TypeMirror typeMirror)
+	{
+		String name = typeMirror.toString();
+		return name.equals(ThisReference.class.getName());
 	}
 }

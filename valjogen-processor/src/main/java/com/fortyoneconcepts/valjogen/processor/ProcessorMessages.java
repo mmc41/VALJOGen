@@ -3,6 +3,10 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
+import javax.tools.Diagnostic.Kind;
+
+import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
+
 /**
  * Contains information and error/warning messages output to the user.
  *
@@ -10,6 +14,7 @@ package com.fortyoneconcepts.valjogen.processor;
  */
 public interface ProcessorMessages
 {
+  public static final String SourcePathNotSet="VALJOGen annotion processor option "+ConfigurationOptionKeys.SOURCEPATH+" not specified. Code generation may fail in some cases.";
   public static final String ClassNotFound="Could not find class/interface %s";
   public static final String InterfaceNotFound="Could not find interface %s";
   public static final String MemberNotFound="Could not find member %s";
