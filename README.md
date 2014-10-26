@@ -53,7 +53,9 @@ Contributors and contributions are welcome. [Refer to the contribution guide](CO
 - Support for XML/JSON serialization should be easier.
 - Very rarely javac will fail compiling the integration tests with "java.lang.IllegalStateException: endPosTable already set". I suspect this is an error in the JDK but I do not know. If it happens clean(!) and rebuild and it should succed.
 - Generator does not account for bounded generic type arguments when deciding if something is serializable or comparable.
-- Tests on major IDE's, other JDKs then Oracle, ANT builds and other OS's then Mac OS missing.
+- Due to [Eclipse bug 382590][eclipsebug] VALJOGen can not generated correct code when subclassing a generic interface. Please [vote for the bug in bugzilla][eclipsebug] to help get it fixed.
+
+[eclipsebug]: https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590  "Eclipse bug 382590"
 
 ## 5. RELEVANT LITTERATURE ABOUT JAVA VALUE OBJECTS:
 - <http://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html>
