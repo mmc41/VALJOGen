@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
 /**
@@ -148,6 +149,31 @@ public abstract class Type extends ModelBase
     	return false;
     }
 
+    public boolean isPrimitiveByte()
+	{
+		return false;
+	}
+
+	public boolean isPrimitiveBoolean()
+	{
+		return false;
+	}
+
+	public boolean isPrimitiveShort()
+	{
+		return false;
+	}
+
+	public boolean isPrimitiveInt()
+	{
+		return false;
+	}
+
+	public boolean isPrimitiveLong()
+	{
+		return false;
+	}
+
     public boolean isPrimitiveFloat()
     {
     	return false;
@@ -179,6 +205,16 @@ public abstract class Type extends ModelBase
 	}
 
 	public boolean isComparable()
+	{
+		return false;
+	}
+
+	public boolean isCollection()
+	{
+		return false;
+	}
+
+	public boolean isIterable()
 	{
 		return false;
 	}

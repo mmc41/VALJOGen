@@ -200,6 +200,30 @@ public class ObjectType extends Type
     }
 
 	@Override
+	public boolean isCollection()
+	{
+		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
+
+		if (this.getQualifiedName().equals("java.util.Collection"))
+			return true;
+
+		boolean collection = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.util.Collection"));
+		return collection;
+	}
+
+	@Override
+	public boolean isIterable()
+	{
+		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
+
+		if (this.getQualifiedName().equals("java.lang.Iterable"))
+			return true;
+
+		boolean iterable = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.lang.Iterable"));
+		return iterable;
+	}
+
+	@Override
 	public boolean isSerializable()
 	{
 		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;

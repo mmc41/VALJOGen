@@ -48,10 +48,10 @@ The VALJOGen annotationprocessor may be used with any standard-complient JDK1.8+
 Contributors and contributions are welcome. [Refer to the contribution guide](CONTRIBUTING.md).
 
 ## 4. KNOWN ISSUES:
+- Sometimes javac will fail with "java.lang.IllegalStateException: endPosTable already set" - in particular if the output directory is not empty. I suspect this is an error in the JDK but I do not know. If it happens clean(!) to remove existing ouputs, rebuild and it should succed.
 - Maven does not always detect correctly when to rebuild after changes in templates. Do a `"mvn clean"` if this happens.
 - Generated code only get the correct method parameter names if you add the "-parameters" option to javac.
 - Support for XML/JSON serialization should be easier.
-- Very rarely javac will fail compiling the integration tests with "java.lang.IllegalStateException: endPosTable already set". I suspect this is an error in the JDK but I do not know. If it happens clean(!) and rebuild and it should succed.
 - Generator does not account for bounded generic type arguments when deciding if something is serializable or comparable.
 - Due to [Eclipse bug 382590][eclipsebug] VALJOGen can not generated correct code when subclassing a generic interface. Please [vote for the bug in bugzilla][eclipsebug] to help get it fixed.
 

@@ -26,11 +26,17 @@ public interface SimpleInterfaceWithNamedOutput
 
 Refer to the [collection of examples along with their generated output](http://valjogen.41concepts.com/examples.html) for output and the full list of examples.
 
+<a name="important-start"/>
+
 **Advice:**
 
 - It is generally a good idea if you structure your project in multiple modules with your interfaces in a module by itself. You can then use the VALJOGen annotation processor to produce output in the first stage only of a multistage build. Thus you will not have to re-generate the implementation objects unless needed. This saves time and makes it easier to work with generated code.
 - Do **not** change the code of the generated classes manually. Instead update the interface, customize and rebuild using the annotation processor to regenerated output with changes.
 - Do **not** (normally) check-in generated code in your source repository. If you use git you can configure the .gitignore file for this.
+
+<br/>*In addtion, make sure output directory is empty when running the annotation processor. Some javac versions are fragile and might give an exception <code>java.lang.IllegalStateException: endPosTable already set</code> if you forgot to clean output directories before running the processor.*
+
+<a name="important-end"/>
 
 <a name="jumbotron-end"/>
 

@@ -1,0 +1,62 @@
+/*
+* Copyright (C) 2014 41concepts Aps
+*/
+/**
+* This custom template shows how to implement a non-trivial custom method declared in the interface that iterate through all members of the class.
+*
+* The custom template for the new custom method must have a specific name of "method_"+specifier and the template must be configured by
+* the VALJOConfigure annotation. See javadoc on VALJOConfigure#customJavaTemplateFileName for details about this. Also refer to
+* javadocs in the com.fortyoneconcepts.valjogen.model packakge for template arguments clazz of type Clazz and method of type Method.
+*
+* The digest implementation iterates though all class members (fields) and calls update methods on a digester before returning the digest. Note,
+* how the abstract base class in this example supplies helper methods to get byte arrays from member values.
+*/
+
+@class.imports() ::= <<
+<! Add our log class manually - could also have been done easier with VALJOConfigure's importClasses option !>
+<@super.imports()>
+import java.security.MessageDigest;
+>>
+
+method_calculateDigest_String(clazz, method) ::= <<
+/**
+* Returnes the message digest of the members in the class.
+*/
+<declare_method(clazz, method)>
+{
+  <! Construct a digest using first algorithm specified in first argument of method (we could hardcode this but in the example we use the model to tell us the name of the argument) !>
+  MessageDigest digester = MessageDigest.getInstance(<first(method.parameters).name>);
+
+  <! Iterate through all members of the class and call one of the template methods below depending on the overall type of the member !>
+  <clazz.members:{m | <(toByteTemplateNamesByTypeCategory.(m.type.typeCategory))(m.name, m.type)> }; wrap, anchor, separator="\n">
+
+  return digester.digest();
+}
+>>
+
+/* A static ST map that works as a switch so types can be handled by different templates depending on category */
+toByteTemplateNamesByTypeCategory ::= [ "PRIMITIVE": "toByte_primitive", "ARRAY": "toByte_array", default: "toByte_object"]
+
+/* Primitive members are handled here. Note how bytes are easier dealth with then other primitives */
+toByte_primitive(var, type) ::= <%
+<if(type.primitiveByte)>
+digester.update(<var>);
+<else>
+digester.update(getBytes(<var>));
+<endif>
+%>
+
+/* Arrays are handled here. Note how primitive arrays of bytes are easier dealth with then other arrays */
+toByte_array(var, type) ::= <<
+<if(type.arrayComponentType.primitiveByte)>
+digester.update(<var>);<\\>
+<else><\\>
+for (int i=0; i\<<var>.length; ++i)
+  digester.update(getBytes(<var>[i]));<\\>
+<endif>
+>>
+
+/* All object types need help from our base class in this implementation. */
+toByte_object(var, type) ::= <%
+digester.update(getBytes(<var>));
+%>

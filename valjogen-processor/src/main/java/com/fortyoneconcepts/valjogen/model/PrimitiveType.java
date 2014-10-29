@@ -39,6 +39,36 @@ public final class PrimitiveType extends Type
     }
 
 	@Override
+	public boolean isPrimitiveByte()
+	{
+		return (qualifiedProtoTypicalTypeName.equals("byte"));
+	}
+
+	@Override
+	public boolean isPrimitiveBoolean()
+	{
+		return (qualifiedProtoTypicalTypeName.equals("boolean"));
+	}
+
+	@Override
+	public boolean isPrimitiveShort()
+	{
+		return (qualifiedProtoTypicalTypeName.equals("short"));
+	}
+
+	@Override
+	public boolean isPrimitiveInt()
+	{
+		return (qualifiedProtoTypicalTypeName.equals("int"));
+	}
+
+	@Override
+	public boolean isPrimitiveLong()
+	{
+		return (qualifiedProtoTypicalTypeName.equals("long"));
+	}
+
+	@Override
 	public boolean isPrimitiveFloat() {
 		return (qualifiedProtoTypicalTypeName.equals("float"));
 	}

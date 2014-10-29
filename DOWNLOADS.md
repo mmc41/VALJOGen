@@ -2,12 +2,23 @@
 
 # Downloads
 
-The <abbr title="Value Java Object Generator">VALJOGen</abbr> distribution can be used with maven by using the following dependency
+The <abbr title="Value Java Object Generator">VALJOGen</abbr> distribution can be used with maven by using the following dependency:
 
 ```Xml
 <dependency>
   <groupId>com.41concepts</groupId>
   <artifactId>valjogen-annotationprocessor</artifactId>
+  <version>1.0.0-RC4</version>
+  <optional>true</optional>
+</dependency>
+```
+
+and/or the dependency:
+
+```Xml
+<dependency>
+  <groupId>com.41concepts</groupId>
+  <artifactId>valjogen-annotations</artifactId>
   <version>1.0.0-RC4</version>
   <optional>true</optional>
 </dependency>

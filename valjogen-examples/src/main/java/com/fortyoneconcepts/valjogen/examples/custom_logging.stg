@@ -13,7 +13,7 @@
 * NOTE 1: The import could also have been done easier with VALJOConfigure's importClasses option - this is just an alternative.
 */
 
-<@class.imports() ::= <<
+@class.imports() ::= <<
 <! Add our log class manually - Note 1 !>
 <@super.imports()>
 import java.util.logging.Logger;

@@ -12,7 +12,7 @@ optGenericQualifier(clazz, method) ::= <%
 %>
 
 guard(member, param) ::= <%
-<if(member.ensureNotNullEnabled && member.type.object)>
+<if(member.ensureNotNullEnabled && (member.type.object || member.type.array))>
 <clazz.helperTypes.javaUtilObjects.name>.requireNonNull(<param.name>)
 <else>
 <param.name>
