@@ -15,12 +15,12 @@ The <abbr title="Value Java Object Generator">VALJOGen</abbr> distribution can b
 
 or you can download the following distribution files manually:
 
-+ [valjogen-annotationprocessor-1.0.0-RC4.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC3/valjogen-annotationprocessor-1.0.0-RC4.jar)
-+ [valjogen-annotationprocessor-1.0.0-RC4-javadoc.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC3/valjogen-annotationprocessor-1.0.0-RC4-javadoc.jar)
-+ [valjogen-annotationprocessor-1.0.0-RC4-sources.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC3/valjogen-annotationprocessor-1.0.0-RC4-sources.jar)
-+ [valjogen-annotations-1.0.0-RC4.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC3/valjogen-annotations-1.0.0-RC4.jar)
-+ [valjogen-annotations-1.0.0-RC4-javadoc.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC3/valjogen-annotations-1.0.0-RC4-javadoc.jar)
-+ [valjogen-annotations-1.0.0-RC4-sources.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC3/valjogen-annotations-1.0.0-RC4-javadoc.jar)
++ [valjogen-annotationprocessor-1.0.0-RC4.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC4/valjogen-annotationprocessor-1.0.0-RC4.jar)
++ [valjogen-annotationprocessor-1.0.0-RC4-javadoc.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC4/valjogen-annotationprocessor-1.0.0-RC4-javadoc.jar)
++ [valjogen-annotationprocessor-1.0.0-RC4-sources.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC4/valjogen-annotationprocessor-1.0.0-RC4-sources.jar)
++ [valjogen-annotations-1.0.0-RC4.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC4/valjogen-annotations-1.0.0-RC4.jar)
++ [valjogen-annotations-1.0.0-RC4-javadoc.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC4/valjogen-annotations-1.0.0-RC4-javadoc.jar)
++ [valjogen-annotations-1.0.0-RC4-sources.jar](http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC4/valjogen-annotations-1.0.0-RC4-javadoc.jar)
 
 <a name="jumbotron-end"/>
 

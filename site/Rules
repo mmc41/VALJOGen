@@ -95,7 +95,7 @@ end
 #  '/index.html'
 #end
 
-route '/blog/\d+/*' do
+route '/blog/*/*' do
   nil
 end
 

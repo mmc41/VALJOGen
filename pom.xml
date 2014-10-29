@@ -346,6 +346,10 @@
 		                            <token>valjogen-annotations-[A-Z0-9.-]+?([a-z\-]*).jar</token>
 		                            <value>valjogen-annotations-${project.version}$1.jar</value>
 		                        </replacement>
+		                        <replacement>
+                                    <token>\/(?:[0-9]+\.){2}[0-9]+(?:\-[a-zA-Z]*[0-9]*)?\/</token>
+                                    <value>\/${project.version}\/</value>
+                                </replacement>
                                 <replacement>
                                     <token>valjogen_version_number:\s*([\w\.-]*)$</token>
                                     <value>valjogen_version_number: ${project.version}</value>
