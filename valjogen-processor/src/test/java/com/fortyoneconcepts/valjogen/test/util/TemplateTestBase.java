@@ -96,6 +96,7 @@ public abstract class TemplateTestBase
 		configurationOptions = new HashMap<String,String>();
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.warnAboutSynthesisedNames, "false");
 
+		// Setup a default of a different log file for each test using this base class.
 		String testName = this.getClass().getSimpleName()+"-"+nameRule.getMethodName();
 
 		Path logDir = TestSupport.getTargetPath().resolve("logs");

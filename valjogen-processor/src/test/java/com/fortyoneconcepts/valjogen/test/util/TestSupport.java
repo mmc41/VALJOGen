@@ -11,6 +11,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -125,11 +126,11 @@ public final class TestSupport
 		 .compilesWithoutError();
 	}
 
-	public static void assertCompileSuccess(JavaFileObject forResource) throws FileNotFoundException
+	public static void assertCompileSuccess(JavaFileObject forResource, Map<String,String> options) throws FileNotFoundException
 	{
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(forResource)
-		 .processedWith(new AnnotationProcessor())
+		 .processedWith(new AnnotationProcessor(options))
 		 .compilesWithoutError();
 	}
 }

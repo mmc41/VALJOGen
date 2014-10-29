@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -44,13 +45,22 @@ public class AnnotationProcessor extends AbstractProcessor
 
 	private String processingEnvClassName;
 	private final Logger parentLogger;
+	private final Map<String,String> ctrOptions;
 
 	// Our own FileHandler class so we can recognize it from other FileHandlers.
 	private final class InternalFileHandler extends FileHandler
 	{
+		private final String pattern;
+
 		public InternalFileHandler(String pattern, boolean append) throws IOException, SecurityException
 		{
 			super(pattern, append);
+			this.pattern=pattern;
+		}
+
+		public String getPattern()
+		{
+			return pattern;
 		}
 	}
 
@@ -59,7 +69,14 @@ public class AnnotationProcessor extends AbstractProcessor
 	 */
 	public AnnotationProcessor()
 	{
+		this(Collections.emptyMap());
+	}
+
+	public AnnotationProcessor(Map<String,String> ctrOptions)
+	{
 		super();
+
+		this.ctrOptions=ctrOptions;
 
 		parentLogger = Logger.getLogger(ConfigurationDefaults.TOP_PACKAGE_NAME);
 
@@ -115,9 +132,15 @@ public class AnnotationProcessor extends AbstractProcessor
 					VALJOGenerate annotationGenerate = e.getAnnotation(VALJOGenerate.class);
 					VALJOConfigure optConfigureConfiguration = getClosestConfiguration(e);
 
-					Map<String,String> options = processingEnv.getOptions();
-					if (options==null)
-						options=Collections.emptyMap();
+					Map<String,String> processorEnvOptions = processingEnv.getOptions();
+					if (processorEnvOptions==null)
+						processorEnvOptions=new HashMap<String,String>();
+
+					// Merge processor options with any options provided directly to constructor.
+					Map<String,String> options = new HashMap<String,String>(processorEnvOptions);
+					for(Entry<String, String> ctrOption : ctrOptions.entrySet()) {
+						   options.putIfAbsent(ctrOption.getKey(), ctrOption.getValue());
+					}
 
 					String masterInterfaceName = e.asType().toString();
 					Configuration configuration = optConfigureConfiguration!=null
@@ -229,9 +252,11 @@ public class AnnotationProcessor extends AbstractProcessor
 			// Only add a filehandler if it is not there already.
 			Handler[] handlers = parentLogger.getHandlers();
 			boolean alreadyAddedLogger = false;
-		    for (Handler handler : handlers)
-			    if (handler instanceof InternalFileHandler)
+		    for (Handler handler : handlers) {
+			    if (handler instanceof InternalFileHandler) {
 			    		alreadyAddedLogger=true;
+			    }
+		    }
 
 			if (!alreadyAddedLogger && logFileString!=null) {
 				FileHandler logFile = new InternalFileHandler(logFileString, true);
