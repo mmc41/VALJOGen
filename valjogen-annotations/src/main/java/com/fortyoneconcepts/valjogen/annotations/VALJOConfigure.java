@@ -24,11 +24,12 @@ import java.lang.annotation.*;
  * <p>
  * For advanced customization do refer to the customJavaTemplateFileName option. This is the ultimate <i>swiss army knife</i> that lets you change and extend <b>everything</b> you want. It is a bit more difficult to use then other features though so look at the other options first.
  * </p>
- *  * All string properties recognize the following macros:<p>
+ *  * All string properties expand system properties as macros when enclosed in $() as well as the following macros:<p>
  * <code>$(This)</code> which resolves to the fully qualified name of the generated class. The macro can be especially useful when implementing the Comparable interface using the extraInterfaceNames option.<p>
  * <code>$(IThis)</code> which resolves to the the fully qualified name of the interface that is used for generation.<p>
  * <code>$(ExecutionDate)</code> which resolves to the the time the annotation processes ran.<p>
  * <code>$(N/A)</code> which signifies the value is unspecified (internally represented as a 'null').
+ *
  * <p>
  * @author mmc
  */

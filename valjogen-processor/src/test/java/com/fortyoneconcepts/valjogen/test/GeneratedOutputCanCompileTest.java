@@ -6,7 +6,12 @@ package com.fortyoneconcepts.valjogen.test;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,7 +20,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
+import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
+import com.fortyoneconcepts.valjogen.model.Configuration;
+import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.test.input.*;
+import com.fortyoneconcepts.valjogen.test.util.TestSupport;
 import com.google.testing.compile.*;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
@@ -56,6 +66,20 @@ public class GeneratedOutputCanCompileTest
 	@Test // // Nb. Must be executed from test class - can not be run individually.
 	public void testInterface() throws FileNotFoundException,MalformedURLException, URISyntaxException
 	{
-		assertCompileSuccess(JavaFileObjects.forResource(getJavaSourceResourcePath(className)));
+		VALJOGenerate generate = new AnnotationProxyBuilder<VALJOGenerate>(VALJOGenerate.class).build();
+		VALJOConfigure configure = new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build();
+		Configuration configuration = new Configuration(null, generate, configure, Locale.ENGLISH, new HashMap<String,String>());
+
+		Path targetPath = TestSupport.getClassPath();
+		Path path = targetPath.resolve(configuration.getSourcePathOrDefault());
+		path = path.resolve(className.replace(".", "/")+".java");
+		path = path.toAbsolutePath().normalize();
+
+		URL url = path.toUri().toURL();
+
+		if (url==null)
+			throw new FileNotFoundException(path.toString());
+
+		assertCompileSuccess(JavaFileObjects.forResource(url));
 	}
 }

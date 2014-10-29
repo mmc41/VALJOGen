@@ -3,7 +3,10 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -29,10 +32,13 @@ public final class Configuration implements ConfigurationOptionKeys
 	 private final Map<String,String> options;
 	 private final Date processorExecutionDate;
 
+     /**
+     * This decl only shows the custom macros. In addition system properties will be added as macros too.
+     */
 	 @SuppressWarnings("serial")
 	 private final HashMap<String, Supplier<String>> macros = new HashMap<String, Supplier<String>>() {{
 		 put(ConfigurationMacros.NotApplicableMacro, () -> null);
-		 put(ConfigurationMacros.GeneratedClassNameMacro, () -> ThisReference.class.getName());
+		 put(ConfigurationMacros.GeneratedClassNameMacro, () -> ThisReference.class.getName()); // Will be replaced with real class name later.
 		 put(ConfigurationMacros.MasterInterfaceMacro, () -> getSourceElementName());
 		 put(ConfigurationMacros.ExecutionDateMacro, () -> String.format("%tFT%<tRZ", getExecutionDate()));
 	 }};
@@ -48,8 +54,39 @@ public final class Configuration implements ConfigurationOptionKeys
 		 this.generateAnnotation=Objects.requireNonNull(annotation);
 		 this.configureAnnotation=Objects.requireNonNull(configureAnnotation);
 		 this.optDefaultLocale=optDefaultLocale;
-		 this.options=Objects.requireNonNull(options);
+		 this.options=new HashMap<String,String>(Objects.requireNonNull(options));
 		 this.processorExecutionDate=new Date();
+
+		 // Merge user options with config file options if there are any (with user options taking precedence).
+		 Properties fileOptions = getConfigFileOptions();
+		 for(Entry<Object, Object> fileOption : fileOptions.entrySet()) {
+		   this.options.putIfAbsent((String)fileOption.getKey(), (String)fileOption.getValue());
+	     }
+
+		 // All system properties should work as macros too.
+		 for(Entry<Object, Object> systemProperty : System.getProperties().entrySet()) {
+			 final String propertyName = (String)systemProperty.getKey();
+			 final String macroName = ConfigurationMacros.MacroPrefix+propertyName+ConfigurationMacros.MacroSuffix;
+			 macros.putIfAbsent(macroName, () -> System.getProperty(propertyName) );
+		 }
+	 }
+
+	 /**
+	  * Return a property object with deserialized configuration file options (if the file exist).
+	  */
+	 private final Properties getConfigFileOptions()
+	 {
+		 Properties properties = new Properties();
+
+		 try (InputStream in = getClass().getResourceAsStream("/"+ConfigurationDefaults.SETTINGS_CONFIG_FILE)) {
+			 if (in!=null)
+			   properties.load(in);
+		 } catch (IOException e)
+		 {
+			// Ignore errors.
+		 };
+
+		 return properties;
 	 }
 
 	 public String getSourceElementName()
@@ -283,6 +320,16 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getStringValue(comment, generateAnnotation.comment(), configureAnnotation.comment());
 	 }
 
+	 public String getSourcePathOrDefault()
+	 {
+		 return getStringValue(SOURCEPATH);
+	 }
+
+	 public String getLogFileOrDefault()
+	 {
+		 return getStringValue(LOGFILE);
+	 }
+
 	 // ---- Internal helpers -----
 
 	 private String preformMagicReplacements(String rawValue)
@@ -399,7 +446,7 @@ public final class Configuration implements ConfigurationOptionKeys
 	{
 		// Create toString by calling all getters programatically so we do not have to maintain this method (which is for debugging only anyway):
 		java.lang.reflect.Method[] methods = this.getClass().getMethods();
-		String nameValues = Arrays.stream(methods).filter(m -> m.getParameterCount()==0 && m.getDeclaringClass()==this.getClass() && NamesUtil.isGetterMethod(m.getName(), new String[] { "is", "get"}) && !m.getName().equals("toString") && ((m.getModifiers() & java.lang.reflect.Modifier.PUBLIC)!=0)).map(m-> {
+		String nameValues = Arrays.stream(methods).filter(m -> m.getParameterCount()==0 && m.getDeclaringClass()==this.getClass() && NamesUtil.isGetterMethod(m.getName(), new String[] { "is", "get"}) && !m.getName().equals("toString")).map(m-> {
 			try {
 				String name = m.getName();
 				Object value = m.invoke(this);

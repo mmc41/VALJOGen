@@ -20,7 +20,6 @@ import javax.tools.JavaFileObject;
 import org.junit.Assert;
 
 import com.fortyoneconcepts.valjogen.processor.AnnotationProcessor;
-import com.fortyoneconcepts.valjogen.test.GeneratedOutputCanCompileTest;
 import com.google.testing.compile.JavaFileObjects;
 
 /**
@@ -32,53 +31,28 @@ import com.google.testing.compile.JavaFileObjects;
  */
 public final class TestSupport
 {
-	// TODO: Move thesethis build tool cfg:
-
-	private static String classPathSourceCopyRelPath = "source"; // Source files copied to this dir in test output.
-
-	private static String getSrcPath(String relpath)
+	public static Path getClassPath() throws URISyntaxException
 	{
-		return classPathSourceCopyRelPath+"/"+relpath;
+		URL url = ClassLoader.getSystemResource(".");
+		if (!"file".equalsIgnoreCase(url.getProtocol()))
+			throw new IllegalStateException("Could not find file location of this class used as reference for finding all other files");
+		return Paths.get(url.toURI());
 	}
 
 	public static Path getTargetPath() throws URISyntaxException
 	{
-		URL url = ClassLoader.getSystemResource(".");
-		if (!"file".equalsIgnoreCase(url.getProtocol()))
-			throw new IllegalStateException("Could not find file location of this class used as reference for finding all other files");
-		return Paths.get(url.toURI()).getParent();
+		return getClassPath().getParent();
 	}
 
 	public static Path getProjectRootPath() throws URISyntaxException
 	{
-		URL url = ClassLoader.getSystemResource(".");
-		if (!"file".equalsIgnoreCase(url.getProtocol()))
-			throw new IllegalStateException("Could not find file location of this class used as reference for finding all other files");
-		return Paths.get(url.toURI()).getParent().getParent();
+		return getTargetPath().getParent();
 	}
 
 	public static String getFileContent(URL url) throws IOException
 	{
 		JavaFileObject fileObject = JavaFileObjects.forResource(url);
 		return fileObject.getCharContent(false).toString();
-	}
-
-	public static URL getTestSourceFileResourcePath(String relPath) throws FileNotFoundException
-	{
-		String absPath = getSrcPath(relPath);
-		URL url = TestSupport.class.getClassLoader().getResource(absPath);
-		if (url==null)
-			throw new FileNotFoundException(absPath);
-		return url;
-	}
-
-	public static URL getJavaSourceResourcePath(String className) throws FileNotFoundException
-	{
-		String absPath = getSrcPath(className.replace(".", "/").concat(".java"));
-		URL url = GeneratedOutputCanCompileTest.class.getClassLoader().getResource(absPath);
-		if (url==null)
-			throw new FileNotFoundException(absPath);
-		return url;
 	}
 
 	public static Stream<String> getClassNames(ClassLoader classLoader, String packageName) throws Throwable
@@ -136,7 +110,7 @@ public final class TestSupport
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor(TestClassConstants.relSourcePath))
+		 .processedWith(new AnnotationProcessor())
 		 .failsToCompile()
 		 .withErrorContaining(errorMsg).in(javaObject);
 	}
@@ -147,7 +121,7 @@ public final class TestSupport
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor(TestClassConstants.relSourcePath))
+		 .processedWith(new AnnotationProcessor())
 		 .compilesWithoutError();
 	}
 
@@ -155,7 +129,7 @@ public final class TestSupport
 	{
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(forResource)
-		 .processedWith(new AnnotationProcessor(TestClassConstants.relSourcePath))
+		 .processedWith(new AnnotationProcessor())
 		 .compilesWithoutError();
 	}
 }

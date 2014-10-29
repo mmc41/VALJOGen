@@ -59,29 +59,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>process-resources</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<!-- This copies test sources to dest - do we need it anymore since of SRC option for the processor ? -->
-						<configuration>
-							<outputDirectory>target/test-classes/source</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/test/java</directory>
-									<filtering>false</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<configuration>
                     <!-- Would like annotations to be included too but can not get include option to work -->

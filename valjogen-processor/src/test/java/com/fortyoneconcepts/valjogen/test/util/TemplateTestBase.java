@@ -3,6 +3,7 @@
 */
 package com.fortyoneconcepts.valjogen.test.util;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +38,6 @@ import com.fortyoneconcepts.valjogen.model.Configuration;
 import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
-import com.fortyoneconcepts.valjogen.processor.ConfigurationException;
 import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
 import com.fortyoneconcepts.valjogen.processor.STTemplates;
@@ -85,7 +85,8 @@ public abstract class TemplateTestBase
 	}
 
 	@Before
-	public void init() throws URISyntaxException {
+	public void init() throws URISyntaxException, IOException
+	{
 		types = Objects.requireNonNull(compilationRule.getTypes());
 		elements = Objects.requireNonNull(compilationRule.getElements());
 
@@ -94,6 +95,16 @@ public abstract class TemplateTestBase
 
 		configurationOptions = new HashMap<String,String>();
 		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.warnAboutSynthesisedNames, "false");
+
+		String testName = this.getClass().getSimpleName()+"-"+nameRule.getMethodName();
+
+		Path logDir = TestSupport.getTargetPath().resolve("logs");
+		if (!Files.exists(logDir))
+		  logDir=Files.createDirectory(logDir);
+
+		String defaultLogFile = logDir.resolve("valjogen-"+testName+".log").toString();
+
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.LOGFILE, defaultLogFile);
 	}
 
 	/**
@@ -140,16 +151,10 @@ public abstract class TemplateTestBase
 		Configuration configuration = new Configuration(sourceClass.getCanonicalName(), generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
 	    // Now that we know what to do with logging, do set it correctly.
-
-		String testName = this.getClass().getSimpleName()+"-"+nameRule.getMethodName();
 		String logFileString = "";
 
 		try {
-			Path logDir = TestSupport.getTargetPath().resolve("logs");
-			if (!Files.exists(logDir))
-			  logDir=Files.createDirectory(logDir);
-
-			logFileString = configurationOptions.getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.LOGFILE, logDir.resolve("valjogen-"+testName+".log").toString());
+			logFileString = configuration.getLogFileOrDefault();
 
 			if (logFileString!=null) {
 				FileHandler logFile = new FileHandler(logFileString, true);
@@ -179,7 +184,9 @@ public abstract class TemplateTestBase
 		PackageElement packageElement = (PackageElement)(interfaceElement.getEnclosingElement());
 
 		String sourcePackageElementPath = packageElement.toString().replace('.', '/');
-		ResourceLoader resourceLoader = new ResourceLoader(TestClassConstants.relSourcePath, sourcePackageElementPath);
+
+		String srcPath = configuration.getSourcePathOrDefault();
+		ResourceLoader resourceLoader = new ResourceLoader(srcPath, sourcePackageElementPath);
 
 		STTemplates templates = new STTemplates(resourceLoader, configuration);
 

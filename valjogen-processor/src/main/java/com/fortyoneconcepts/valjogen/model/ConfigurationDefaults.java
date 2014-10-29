@@ -12,6 +12,8 @@ public interface ConfigurationDefaults
 {
   public static final String TOP_PACKAGE_NAME = "com.fortyoneconcepts.valjogen";
 
+  public static final String SETTINGS_CONFIG_FILE = "valjogen.properties";
+
   /**
   * Common qualifier for all options.
   */

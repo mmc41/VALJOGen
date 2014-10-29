@@ -43,8 +43,6 @@ public class AnnotationProcessor extends AbstractProcessor
 	private final Class<VALJOConfigure> annotationConfigurationClass = VALJOConfigure.class;
 
 	private String processingEnvClassName;
-	private final String optCtrDefaultSourcePath;
-
 	private final Logger parentLogger;
 
 	// Our own FileHandler class so we can recognize it from other FileHandlers.
@@ -61,13 +59,7 @@ public class AnnotationProcessor extends AbstractProcessor
 	 */
 	public AnnotationProcessor()
 	{
-		this(null);
-	}
-
-	public AnnotationProcessor(String defaultSourcePath)
-	{
 		super();
-		this.optCtrDefaultSourcePath=defaultSourcePath;
 
 		parentLogger = Logger.getLogger(ConfigurationDefaults.TOP_PACKAGE_NAME);
 
@@ -127,42 +119,21 @@ public class AnnotationProcessor extends AbstractProcessor
 					if (options==null)
 						options=Collections.emptyMap();
 
-					String logFileString = processingEnv.getOptions().getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.LOGFILE, null);
-					try {
-						// Only add a filehandler if it is not there already.
-						Handler[] handlers = parentLogger.getHandlers();
-						boolean alreadyAddedLogger = false;
-					    for (Handler handler : handlers)
-						    if (handler instanceof InternalFileHandler)
-						    		alreadyAddedLogger=true;
-
-						if (!alreadyAddedLogger && logFileString!=null) {
-							FileHandler logFile = new InternalFileHandler(logFileString, true);
-							logFile.setFormatter(new SimpleFormatter());
-							logFile.setLevel(Level.FINEST);
-							parentLogger.addHandler(logFile);
-						}
-					} catch(Throwable ex)
-					{
-						throw new ConfigurationException("Could not setup log file at "+logFileString, ex);
-					}
-
 					String masterInterfaceName = e.asType().toString();
 					Configuration configuration = optConfigureConfiguration!=null
 							                      ? new Configuration(masterInterfaceName, annotationGenerate, optConfigureConfiguration, optLocale, options)
 					                              :  new Configuration(masterInterfaceName, annotationGenerate, optLocale, options);
 
-			        // Know that we know what proper log level to set, do set it correctly.
-				    parentLogger.setLevel(configuration.getLogLevel());
+					setUpLogging(configuration);
 
-					String path = processingEnv.getOptions().getOrDefault(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.SOURCEPATH, optCtrDefaultSourcePath);
-					LOGGER.fine(() -> "GOT SOURCEPATH: "+path);
+					String srcPath = configuration.getSourcePathOrDefault();
+					LOGGER.fine(() -> "GOT SOURCEPATH: "+srcPath);
 
 					LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR CONFIGURATION "+System.lineSeparator()+configuration);
 
 					PackageElement packageElement = (PackageElement)(e.getEnclosingElement());
 					String sourcePackageElementPath = packageElement.getQualifiedName().toString().replace(".", File.separator);
-					ResourceLoader resourceLoader = new ResourceLoader(path, sourcePackageElementPath);
+					ResourceLoader resourceLoader = new ResourceLoader(srcPath, sourcePackageElementPath);
 
 				    generate((TypeElement)e, configuration, resourceLoader);
 
@@ -248,6 +219,33 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		Element enlosingElement = annotatedInterfaceElement.getEnclosingElement();
 		return (enlosingElement!=null) ? getClosestConfiguration(enlosingElement) : null;
+	}
+
+	private void setUpLogging(Configuration configuration)	throws ConfigurationException
+	{
+		String logFileString = configuration.getLogFileOrDefault();
+
+		try {
+			// Only add a filehandler if it is not there already.
+			Handler[] handlers = parentLogger.getHandlers();
+			boolean alreadyAddedLogger = false;
+		    for (Handler handler : handlers)
+			    if (handler instanceof InternalFileHandler)
+			    		alreadyAddedLogger=true;
+
+			if (!alreadyAddedLogger && logFileString!=null) {
+				FileHandler logFile = new InternalFileHandler(logFileString, true);
+				logFile.setFormatter(new SimpleFormatter());
+				logFile.setLevel(Level.FINEST);
+				parentLogger.addHandler(logFile);
+			}
+		} catch(Throwable ex)
+		{
+			throw new ConfigurationException("Could not setup log file at "+logFileString, ex);
+		}
+
+        // Know that we know what proper log level to set, do set it correctly.
+	    parentLogger.setLevel(configuration.getLogLevel());
 	}
 
 	@Override

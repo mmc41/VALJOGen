@@ -3,8 +3,6 @@
 */
 package com.fortyoneconcepts.valjogen.processor;
 
-import javax.tools.Diagnostic.Kind;
-
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 
 /**

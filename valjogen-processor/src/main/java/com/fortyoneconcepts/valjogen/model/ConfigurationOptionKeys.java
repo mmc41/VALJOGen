@@ -3,8 +3,6 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
-import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
-
 /**
  * Option keys for configuration. Values are exactly the same as the method names of VALJOConfigure or VALJOGenerate annotation.
  * When specified as annotation processor options and looked up they must be qualified with {@link ConfigurationDefaults#OPTION_QUALIFIER} package prefix!
@@ -199,7 +197,7 @@ public interface ConfigurationOptionKeys
 	 /**
 	 * Java source path to where source code is stored. Required option for some other options to work. Differently from most other options, this is an annotation
 	 * processor option only (no annotation exist for this). Mutiple path entries may be specified seperated by a platform dependent "path.separator" (";" or ":").
-	 * Path entries must be absolute and point to existing readable directories.
+	 * Path entries must be absolute or relative to classpath and must point to existing readable directories.
 	 */
 	 public static String SOURCEPATH = "SOURCEPATH";
 
