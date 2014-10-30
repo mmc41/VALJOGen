@@ -214,6 +214,11 @@ public abstract class Type extends ModelBase
 		return false;
 	}
 
+	public boolean isMap()
+	{
+		return false;
+	}
+
 	public boolean isIterable()
 	{
 		return false;

@@ -43,7 +43,7 @@ public class NamesUtil
 							"return", "short", "static", "strictfp", "super", "switch",
 							"synchronized", "this", "throw", "throws", "transient", "true",
 							"try", "void", "volatile", "while",
-							"string", "object", "hashCode", "equals", "clone", "toString", "notify",
+							"hashCode", "equals", "clone", "toString", "notify",
 							"notifyAll", "wait", "finalize", "java"));
 
 	private NamesUtil() {}

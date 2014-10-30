@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -146,6 +147,21 @@ public class BasicClazz extends ObjectType implements Definition {
 
 	public String getGenericQualifierText() {
 		return getGenericQualifier(qualifiedProtoTypicalTypeName);
+	}
+
+	public Member tryGetMember(String name)
+	{
+		return getMembers().stream().filter(m -> m.getName().equals(name)).findFirst().orElse(null);
+	}
+
+	public Member tryGetMemberIncludingInherited(String name)
+	{
+		return getMembersIncludingInherited().stream().filter(m -> m.getName().equals(name)).findFirst().orElse(null);
+	}
+
+	public Method tryGetMethod(String name)
+	{
+		return getMethods().stream().filter(m -> m.getName().equals(name)).findFirst().orElse(null);
 	}
 
 	@Override

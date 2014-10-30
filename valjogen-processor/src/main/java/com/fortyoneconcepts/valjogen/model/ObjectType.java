@@ -212,6 +212,18 @@ public class ObjectType extends Type
 	}
 
 	@Override
+	public boolean isMap()
+	{
+		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
+
+		if (this.getQualifiedName().equals("java.util.Map"))
+			return true;
+
+		boolean map = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.util.Map"));
+		return map;
+	}
+
+	@Override
 	public boolean isIterable()
 	{
 		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
@@ -271,7 +283,7 @@ public class ObjectType extends Type
 		sb.append("ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this)));
 
 		if (level<MAX_RECURSIVE_LEVEL)
-		  sb.append("initialized="+initialized()+
+		  sb.append(", initialized="+initialized()+
 				    ", qualifiedProtoTypicalTypeName = "+
 				    qualifiedProtoTypicalTypeName+ ", name="+
 				    getName()+", genericTypeArguments="+

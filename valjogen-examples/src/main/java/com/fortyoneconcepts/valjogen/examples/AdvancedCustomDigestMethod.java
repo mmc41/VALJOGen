@@ -3,6 +3,8 @@
 */
 package com.fortyoneconcepts.valjogen.examples;
 
+import java.util.List;
+
 import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 
@@ -23,6 +25,9 @@ public interface AdvancedCustomDigestMethod
 
 	public String[] getAddress();
 	public void setAddress(String[] address);
+
+	public List<String> getAltAddress();
+	public void setAltAddress(List<String> altAddress);
 
 	public boolean isVerified();
 	public void setVerified(boolean verified);

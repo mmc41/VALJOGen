@@ -10,9 +10,9 @@ package com.fortyoneconcepts.valjogen.examples;
 *
 * Used by the "AdvancedCustomDigestMethod.java" example and its assoicated template "advanced_custom_method.stg".
 *
-* Note that the current set of getBytes methods only handle a subset of types such as bytes, integers,
-* strings and arrays of those types. For a real implementation, one should overload with additional
-* getBytes methods.
+* Note that the current set of getBytes methods only handle a subset of types such as bytes, integers
+* and strings (arrays and collections of thoses are handled by the custom template). For a real implementation,
+* one should overload with additional getBytes methods.
 */
 public abstract class DigestBaseClass
 {

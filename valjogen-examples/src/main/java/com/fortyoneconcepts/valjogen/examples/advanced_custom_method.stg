@@ -56,7 +56,12 @@ for (int i=0; i\<<var>.length; ++i)
 <endif>
 >>
 
-/* All object types need help from our base class in this implementation. */
-toByte_object(var, type) ::= <%
+/* Handle iterables but refer all other types to our base class in this implementation. */
+toByte_object(var, type) ::= <<
+<if(type.iterable)><\\>
+for (<first(type.genericTypeArguments).name> i : <var>)
+  digester.update(getBytes(i));<\\>
+<else><\\>
 digester.update(getBytes(<var>));
-%>
+<endif>
+>>

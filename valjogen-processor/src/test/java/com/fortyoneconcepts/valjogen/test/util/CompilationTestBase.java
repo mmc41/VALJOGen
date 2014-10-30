@@ -22,6 +22,11 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 
+/**
+ * Common superclass for compilation-based tests.
+ *
+ * @author mmc
+ */
 public class CompilationTestBase
 {
 	@Rule
