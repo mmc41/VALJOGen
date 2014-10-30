@@ -142,12 +142,12 @@ Where basedir is a defined property pointing to the absolute file path of the pr
 
 VALJOGen output can be customized in a number of ways as listed below (in a order of preference):
 
-1. Use existing options in VALJOGenerate and VALJOConfigure annotations.
-2. Specify a BaseClass with your custom code in your VALJOConfigure annotation.
-3. Subclass the generates class(es) and out your custom stuff there (use VALJOConfigure modifier option to make generated class abstract or non final)
-4. Add custom method(s) in a custom template group file specified in your VALJOConfigure annotation.
-5. Override the regions defined in the build-in templates. Do this in a custom template group file specified in your VALJOConfigure annotation.
-6. Override existing template methods. Do this in a custom template group file specified in your VALJOConfigure annotation
+1. Use existing options in VALJOGenerate and VALJOConfigure annotations. Alternatively, specify same options in qualified form as -A options to the annotation processor or in a "valjogen.properties" file located at the root of your classpath.
+2. Customization by inheritance A: Specify a BaseClass with your custom code in your VALJOConfigure annotation.
+3. Customization by inheritance B: Subclass the generates class(es) and put your custom stuff there (use VALJOConfigure modifier option to make generated class abstract or non final)
+4. Add custom method(s) in a custom template group file specified in your VALJOConfigure annotation. Do this if you need to create dynamic code depending on how the class looks like (exact members, properties, methods etc).
+5. Override the regions defined in the build-in templates. Also using a custom template group file specified in your VALJOConfigure annotation. Do this if you want to make small changes to existing functionality or if you want to insert something special like an innner class etc.
+6. Override existing template methods. Also using a custom template group file specified in your VALJOConfigure annotation. Do this if you want to completely change an existing generated method and it's regions are not flexible enough.
 
 See [VALJOConfigure JavaDocs](apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html#customJavaTemplateFileName) and the [examples](http://valjogen.41concepts.com/examples.html) for details about custom templates. See also the [StringTemplate 4 cheat sheet](https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+cheat+sheet) for syntax and general tips.
 
