@@ -29,6 +29,10 @@ Execute a `"mvn package"` on command line to compile project and run tests.
     defined by ConfigurationOptionKeys.
 - A templates folder which contains StringTemplate (v4) template group files. These are responsible for generating the actual output.
 
+## Logging
+
+Individual log files for all tests are put into target/logs directory. For debugging you may want to increase the logging level in src/test/resources/valjogen.properties
+
 ## Useful links
 
 - [com.google.testing.compile library](https://github.com/google/compile-testing) - For Testing of annotations processors and access to javax.lang.model.*

@@ -3,15 +3,16 @@
 */
 package com.fortyoneconcepts.valjogen.test;
 
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.junit.Test;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.processor.ProcessorMessages;
+import com.fortyoneconcepts.valjogen.test.util.CompilationTestBase;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -20,7 +21,7 @@ import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
  *
  * @author mmc
  */
-public class ProcessingFailureReportingTest
+public class ProcessingFailureReportingTest extends CompilationTestBase
 {
 	private String buildAnnotatedInterfaceSource(String interfaceName, String body, String configureString)
 	{
@@ -37,60 +38,68 @@ public class ProcessingFailureReportingTest
 	}
 
 	@Test
-	public void testUnknownBaseClass() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testUnknownBaseClass() throws URISyntaxException, IOException
 	{
 		String unknownBaseClass = "unknownBaseClass";
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue();", ConfigurationOptionKeys.baseClazzName+"=\""+unknownBaseClass+"\"");
-		assertCompileFailure("ITest", source, String.format(ProcessorMessages.ClassNotFound, unknownBaseClass));
+		Map<String,String> options = getOptions("ITest");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.ClassNotFound, unknownBaseClass), options);
 	}
 
 	@Test
-	public void testUnknownImportClass() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testUnknownImportClass() throws URISyntaxException, IOException
 	{
 		String unknownImportClass = "unknownImportClass";
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue();", ConfigurationOptionKeys.importClasses+"={\""+unknownImportClass+"\"}");
-		assertCompileFailure("ITest", source, String.format(ProcessorMessages.ImportTypeNotFound, unknownImportClass));
+		Map<String,String> options = getOptions("ITest");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.ImportTypeNotFound, unknownImportClass), options);
 	}
 
 	@Test
-	public void testMalformedSetterDueToExtraArgumentNotIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testMalformedSetterDueToExtraArgumentNotIgnored() throws URISyntaxException, IOException
 	{
 		String source = buildAnnotatedInterfaceSource("ITest", "public void setIntValue(int value, int other);", ConfigurationOptionKeys.ignoreMalformedProperties+"=false");
-		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MalFormedSetter, "setIntValue(int,int)"));
+		Map<String,String> options = getOptions("ITest");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MalFormedSetter, "setIntValue(int,int)"), options);
 	}
 
 	@Test
-	public void testMalformedSetterDueToReturnValueNotIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testMalformedSetterDueToReturnValueNotIgnored() throws URISyntaxException, IOException
 	{
 		String source = buildAnnotatedInterfaceSource("ITest", "public Object setIntValue(int value);", ConfigurationOptionKeys.ignoreMalformedProperties+"=false");
-		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MalFormedSetter, "setIntValue(int)"));
+		Map<String,String> options = getOptions("ITest");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MalFormedSetter, "setIntValue(int)"), options);
 	}
 
 	@Test
-	public void testMalformedSetterDueToWrongTypeNotIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testMalformedSetterDueToWrongTypeNotIgnored() throws URISyntaxException, IOException
 	{
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue(); public void setIntValue(double value);", ConfigurationOptionKeys.ignoreMalformedProperties+"=false");
-		assertCompileFailure("ITest", source, String.format(ProcessorMessages.InconsistentProperty, "getIntValue, intValue"));
+		Map<String,String> options = getOptions("ITest");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.InconsistentProperty, "getIntValue, intValue"), options);
 	}
 
 	@Test
-	public void testMalformedGetterNotIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testMalformedGetterNotIgnored() throws URISyntaxException, IOException
 	{
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue(int other);", ConfigurationOptionKeys.ignoreMalformedProperties+"=false");
-		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MalFormedGetter, "getIntValue(int)"));
+		Map<String,String> options = getOptions("ITest");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MalFormedGetter, "getIntValue(int)"), options);
 	}
 
 	@Test
-	public void testMalformedSetterIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testMalformedSetterIgnored() throws URISyntaxException, IOException
 	{
 		String source = buildAnnotatedInterfaceSource("ITest", "public void setIntValue(int value, int other);", ConfigurationOptionKeys.ignoreMalformedProperties+"=true");
-		assertCompileSuccess("ITest", source);
+		Map<String,String> options = getOptions("ITest");
+		assertCompileSuccess("ITest", source, options);
 	}
 
 	@Test
-	public void testMalformedGetterIgnored() throws FileNotFoundException, MalformedURLException, URISyntaxException
+	public void testMalformedGetterIgnored() throws URISyntaxException, IOException
 	{
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue(int other);", ConfigurationOptionKeys.ignoreMalformedProperties+"=true");
-		assertCompileSuccess("ITest", source);
+		Map<String,String> options = getOptions("ITest");
+		assertCompileSuccess("ITest", source, options);
 	}
 }

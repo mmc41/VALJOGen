@@ -4,17 +4,13 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.*;
@@ -46,23 +42,6 @@ public class AnnotationProcessor extends AbstractProcessor
 	private String processingEnvClassName;
 	private final Logger parentLogger;
 	private final Map<String,String> ctrOptions;
-
-	// Our own FileHandler class so we can recognize it from other FileHandlers.
-	private final class InternalFileHandler extends FileHandler
-	{
-		private final String pattern;
-
-		public InternalFileHandler(String pattern, boolean append) throws IOException, SecurityException
-		{
-			super(pattern, append);
-			this.pattern=pattern;
-		}
-
-		public String getPattern()
-		{
-			return pattern;
-		}
-	}
 
 	/**
 	 * Constructor called automatically by javac compiler.
@@ -147,9 +126,9 @@ public class AnnotationProcessor extends AbstractProcessor
 							                      ? new Configuration(masterInterfaceName, annotationGenerate, optConfigureConfiguration, optLocale, options)
 					                              :  new Configuration(masterInterfaceName, annotationGenerate, optLocale, options);
 
-					setUpLogging(configuration);
+			        KnownFileHandler.setUpLogging(parentLogger, configuration);
 
-					String srcPath = configuration.getSourcePathOrDefault();
+					String srcPath = configuration.getSourcePath();
 					LOGGER.fine(() -> "GOT SOURCEPATH: "+srcPath);
 
 					LOGGER.info(() -> "VALJOGen ANNOTATION PROCESSOR CONFIGURATION "+System.lineSeparator()+configuration);
@@ -242,35 +221,6 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		Element enlosingElement = annotatedInterfaceElement.getEnclosingElement();
 		return (enlosingElement!=null) ? getClosestConfiguration(enlosingElement) : null;
-	}
-
-	private void setUpLogging(Configuration configuration)	throws ConfigurationException
-	{
-		String logFileString = configuration.getLogFileOrDefault();
-
-		try {
-			// Only add a filehandler if it is not there already.
-			Handler[] handlers = parentLogger.getHandlers();
-			boolean alreadyAddedLogger = false;
-		    for (Handler handler : handlers) {
-			    if (handler instanceof InternalFileHandler) {
-			    		alreadyAddedLogger=true;
-			    }
-		    }
-
-			if (!alreadyAddedLogger && logFileString!=null) {
-				FileHandler logFile = new InternalFileHandler(logFileString, true);
-				logFile.setFormatter(new SimpleFormatter());
-				logFile.setLevel(Level.FINEST);
-				parentLogger.addHandler(logFile);
-			}
-		} catch(Throwable ex)
-		{
-			throw new ConfigurationException("Could not setup log file at "+logFileString, ex);
-		}
-
-        // Know that we know what proper log level to set, do set it correctly.
-	    parentLogger.setLevel(configuration.getLogLevel());
 	}
 
 	@Override

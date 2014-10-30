@@ -320,12 +320,12 @@ public final class Configuration implements ConfigurationOptionKeys
 		 return getStringValue(comment, generateAnnotation.comment(), configureAnnotation.comment());
 	 }
 
-	 public String getSourcePathOrDefault()
+	 public String getSourcePath()
 	 {
 		 return getStringValue(SOURCEPATH);
 	 }
 
-	 public String getLogFileOrDefault()
+	 public String getLogFile()
 	 {
 		 return getStringValue(LOGFILE);
 	 }

@@ -105,24 +105,24 @@ public final class TestSupport
 		Assert.assertFalse("String '"+string+"' does contain the unexpected substring '"+expectedSubstring+"'", string.contains(expectedSubstring));
 	}
 
-	public static void assertCompileFailure(String qualifiedClassName, String source, String errorMsg)
+	public static void assertCompileFailure(String qualifiedClassName, String source, String errorMsg, Map<String,String> options)
 	{
 		JavaFileObject javaObject = JavaFileObjects.forSourceString(qualifiedClassName, source);
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor())
+		 .processedWith(new AnnotationProcessor(options))
 		 .failsToCompile()
 		 .withErrorContaining(errorMsg).in(javaObject);
 	}
 
-	public static void assertCompileSuccess(String qualifiedClassName, String source)
+	public static void assertCompileSuccess(String qualifiedClassName, String source, Map<String,String> options)
 	{
 		JavaFileObject javaObject = JavaFileObjects.forSourceString(qualifiedClassName, source);
 
 		org.truth0.Truth.ASSERT.about(com.google.testing.compile.JavaSourceSubjectFactory.javaSource())
 		 .that(javaObject)
-		 .processedWith(new AnnotationProcessor())
+		 .processedWith(new AnnotationProcessor(options))
 		 .compilesWithoutError();
 	}
 

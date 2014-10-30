@@ -14,11 +14,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -38,6 +36,7 @@ import com.fortyoneconcepts.valjogen.model.Configuration;
 import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
+import com.fortyoneconcepts.valjogen.processor.KnownFileHandler;
 import com.fortyoneconcepts.valjogen.processor.ResourceLoader;
 import com.fortyoneconcepts.valjogen.processor.STCodeWriter;
 import com.fortyoneconcepts.valjogen.processor.STTemplates;
@@ -152,23 +151,7 @@ public abstract class TemplateTestBase
 		Configuration configuration = new Configuration(sourceClass.getCanonicalName(), generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
 	    // Now that we know what to do with logging, do set it correctly.
-		String logFileString = "";
-
-		try {
-			logFileString = configuration.getLogFileOrDefault();
-
-			if (logFileString!=null) {
-				FileHandler logFile = new FileHandler(logFileString, true);
-				logFile.setFormatter(new SimpleFormatter());
-				logFile.setLevel(Level.FINEST);
-				parentLogger.addHandler(logFile);
-			}
-		} catch(Throwable ex)
-		{
-			Assert.fail("Could not setup log file at "+logFileString);
-		}
-
-	    parentLogger.setLevel(configuration.getLogLevel());
+        KnownFileHandler.setUpLogging(parentLogger, configuration);
 
 	    // Make sure console logs what we ask for:
 	    Logger rootLogger = Logger.getGlobal();
@@ -186,7 +169,7 @@ public abstract class TemplateTestBase
 
 		String sourcePackageElementPath = packageElement.toString().replace('.', '/');
 
-		String srcPath = configuration.getSourcePathOrDefault();
+		String srcPath = configuration.getSourcePath();
 		ResourceLoader resourceLoader = new ResourceLoader(srcPath, sourcePackageElementPath);
 
 		STTemplates templates = new STTemplates(resourceLoader, configuration);
