@@ -79,13 +79,26 @@
 
 <h1 id="downloads">Downloads</h1>
 
-<p>The <abbr title="Value Java Object Generator">VALJOGen</abbr> distribution can be used with maven by using the following dependency</p>
+<p>The <abbr title="Value Java Object Generator">VALJOGen</abbr> distribution can be used with maven by using the following dependency:</p>
 
 <div><div class="CodeRay">
   <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;dependency&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.41concepts<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotationprocessor<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
-  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC4<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;optional&gt;</span>true<span style="color:#070;font-weight:bold">&lt;/optional&gt;</span>
+<span style="color:#070;font-weight:bold">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+</div>
+
+<p>and/or the dependency:</p>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;dependency&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.41concepts<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotations<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;optional&gt;</span>true<span style="color:#070;font-weight:bold">&lt;/optional&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/dependency&gt;</span>
 </pre></div>
@@ -95,19 +108,19 @@
 <p>or you can download the following distribution files manually:</p>
 
 <ul>
-  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC4/valjogen-annotationprocessor-1.0.0-RC4.jar">valjogen-annotationprocessor-1.0.0-RC4.jar</a></li>
-  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC4/valjogen-annotationprocessor-1.0.0-RC4-javadoc.jar">valjogen-annotationprocessor-1.0.0-RC4-javadoc.jar</a></li>
-  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0-RC4/valjogen-annotationprocessor-1.0.0-RC4-sources.jar">valjogen-annotationprocessor-1.0.0-RC4-sources.jar</a></li>
-  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC4/valjogen-annotations-1.0.0-RC4.jar">valjogen-annotations-1.0.0-RC4.jar</a></li>
-  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC4/valjogen-annotations-1.0.0-RC4-javadoc.jar">valjogen-annotations-1.0.0-RC4-javadoc.jar</a></li>
-  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0-RC4/valjogen-annotations-1.0.0-RC4-javadoc.jar">valjogen-annotations-1.0.0-RC4-sources.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0/valjogen-annotationprocessor-1.0.0.jar">valjogen-annotationprocessor-1.0.0.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0/valjogen-annotationprocessor-1.0.0-javadoc.jar">valjogen-annotationprocessor-1.0.0-javadoc.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotationprocessor/1.0.0/valjogen-annotationprocessor-1.0.0-sources.jar">valjogen-annotationprocessor-1.0.0-sources.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0/valjogen-annotations-1.0.0.jar">valjogen-annotations-1.0.0.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0/valjogen-annotations-1.0.0-javadoc.jar">valjogen-annotations-1.0.0-javadoc.jar</a></li>
+  <li><a href="http://search.maven.org/remotecontent?filepath=com/41concepts/valjogen-annotations/1.0.0/valjogen-annotations-1.0.0-javadoc.jar">valjogen-annotations-1.0.0-sources.jar</a></li>
 </ul>
 
 </div>
 
 <p>The dependency on the anntation processor is compile-time only. Unfortunately, there is no good way to specify this with maven but you might get succes marking the dependency as optional.</p>
 
-<p>The single jar for the annotation processor to use in your projects is <strong>valjogen-annotationprocessor-1.0.0-RC4.jar</strong>. Alternatively you may use the valjogen-annotations-1.0.0-RC4.jar if you want to compile your project with the VALJOGen annotations but without the annotation processor.</p>
+<p>The single jar for the annotation processor to use in your projects is <strong>valjogen-annotationprocessor-1.0.0.jar</strong>. Alternatively you may use the valjogen-annotations-1.0.0.jar if you want to compile your project with the VALJOGen annotations but without the annotation processor.</p>
 
 
 

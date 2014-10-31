@@ -132,10 +132,10 @@
 
 <h2 id="known-issues">4. KNOWN ISSUES:</h2>
 <ul>
+  <li>Sometimes javac will fail with “java.lang.IllegalStateException: endPosTable already set” - in particular if the output directory is not empty. I suspect this is an error in the JDK but I do not know. If it happens clean(!) to remove existing ouputs, rebuild and it should succed.</li>
   <li>Maven does not always detect correctly when to rebuild after changes in templates. Do a <code>"mvn clean"</code> if this happens.</li>
   <li>Generated code only get the correct method parameter names if you add the “-parameters” option to javac.</li>
   <li>Support for XML/JSON serialization should be easier.</li>
-  <li>Very rarely javac will fail compiling the integration tests with “java.lang.IllegalStateException: endPosTable already set”. I suspect this is an error in the JDK but I do not know. If it happens clean(!) and rebuild and it should succed.</li>
   <li>Generator does not account for bounded generic type arguments when deciding if something is serializable or comparable.</li>
   <li>Due to <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590" title="Eclipse bug 382590">Eclipse bug 382590</a> VALJOGen can not generated correct code when subclassing a generic interface. Please <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590" title="Eclipse bug 382590">vote for the bug in bugzilla</a> to help get it fixed.</li>
 </ul>
@@ -196,8 +196,8 @@
     		<div class="col-sm-4 blog-main">
     		   <div class="sidebar-module">
     		    <div class="alert alert-info">
-    		      <p><strong>Latest version is: 1.0.0-RC4 <a style="float: right;" href="downloads.html"><span class="glyphicon glyphicon-download-alt"></span></a></strong></p>
-    		      <p>Latest website update: 29 October 2014</p>
+    		      <p><strong>Latest version is: 1.0.0 <a style="float: right;" href="downloads.html"><span class="glyphicon glyphicon-download-alt"></span></a></strong></p>
+    		      <p>Latest website update: 31 October 2014</p>
     		    </div>
                </div>
 
@@ -209,7 +209,24 @@
 
 
   <div class="blog-post release">
-    <h2 id="post0" class="blog-post-title label-fg-color">RC4 and a bug in Eclipse</h2>
+    <h2 id="post0" class="blog-post-title label-fg-color">V1.0.0 released</h2>
+    <p class="blog-post-meta">31 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
+    
+<p>Final v1.0.0 of VALJOGen uploaded to maven central with following changes:</p>
+
+<ul>
+  <li>Support for configuration file named “valjogen.properties” as an alternative to specifying processor options with -A.</li>
+  <li>More examples. For advanced usage note AdvancedCustomDigestMethod that generates a method calculating a digest of all member values in the class.</li>
+  <li>Various small internal changes such as more stable build and better logging.</li>
+</ul>
+
+  </div>
+
+  <div>Tags: <span class="badge">Release</div>
+  <br/>
+
+  <div class="blog-post release">
+    <h2 id="post1" class="blog-post-title label-fg-color">RC4 and a bug in Eclipse</h2>
     <p class="blog-post-meta">26 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>New release candidate 4 of VALJOGen uploaded to maven central with following changes:</p>
@@ -244,7 +261,7 @@
   <br/>
 
   <div class="blog-post release">
-    <h2 id="post1" class="blog-post-title label-fg-color">First public release</h2>
+    <h2 id="post2" class="blog-post-title label-fg-color">First public release</h2>
     <p class="blog-post-meta">20 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>First release candidate of VALJOGen was uploaded to maven central for public use.</p>

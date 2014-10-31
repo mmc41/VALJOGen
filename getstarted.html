@@ -105,6 +105,8 @@
 
 <p>Refer to the <a href="http://valjogen.41concepts.com/examples.html">collection of examples along with their generated output</a> for output and the full list of examples.</p>
 
+<div class="alert alert-info">
+
 <p><strong>Advice:</strong></p>
 
 <ul>
@@ -112,6 +114,10 @@
   <li>Do <strong>not</strong> change the code of the generated classes manually. Instead update the interface, customize and rebuild using the annotation processor to regenerated output with changes.</li>
   <li>Do <strong>not</strong> (normally) check-in generated code in your source repository. If you use git you can configure the .gitignore file for this.</li>
 </ul>
+
+<p><br /><em>In addtion, make sure output directory is empty when running the annotation processor. Some javac versions are fragile and might give an exception <code>java.lang.IllegalStateException: endPosTable already set</code> if you forgot to clean output directories before running the processor.</em></p>
+
+</div>
 
 </div>
 
@@ -123,7 +129,7 @@
   <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;dependency&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.41concepts<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotationprocessor<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
-  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC4<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;optional&gt;</span>true<span style="color:#070;font-weight:bold">&lt;/optional&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/dependency&gt;</span>
 </pre></div>
@@ -136,7 +142,7 @@
   <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;dependency&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;groupId&gt;</span>com.41concepts<span style="color:#070;font-weight:bold">&lt;/groupId&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;artifactId&gt;</span>valjogen-annotations<span style="color:#070;font-weight:bold">&lt;/artifactId&gt;</span>
-  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0-RC4<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
+  <span style="color:#070;font-weight:bold">&lt;version&gt;</span>1.0.0<span style="color:#070;font-weight:bold">&lt;/version&gt;</span>
   <span style="color:#070;font-weight:bold">&lt;optional&gt;</span>true<span style="color:#070;font-weight:bold">&lt;/optional&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/dependency&gt;</span>
 </pre></div>
@@ -179,7 +185,7 @@
 <h2 id="using-valjogen-with-javac-compiler">2. Using VALJOGen with JavaC compiler:</h2>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>javac -parameters -cp valjogen-annotationprocessor-1.0.0-RC4.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+  <div class="code"><pre>javac -parameters -cp valjogen-annotationprocessor-1.0.0.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 </pre></div>
 </div>
 </div>
@@ -189,7 +195,7 @@
 <p>Alternatively, it is possible to compile using the -processorpath option. In this case the classes in the annotation processor is not seen on the classoath so do add the jar file with the VALJOGen annotations on the classpath seperately as shown below.</p>
 
 <div><div class="CodeRay">
-  <div class="code"><pre>javac -parameters -cp valjogen-annotations/target/valjogen-annotations-1.0.0-RC4.jar -processorpath ../valjogen-processor/target/valjogen-annotationprocessor-1.0.0-RC4.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+  <div class="code"><pre>javac -parameters -cp valjogen-annotations/target/valjogen-annotations-1.0.0.jar -processorpath ../valjogen-processor/target/valjogen-annotationprocessor-1.0.0.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 </pre></div>
 </div>
 </div>
@@ -199,8 +205,8 @@
 <p>Due to <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590" title="Eclipse bug 382590">Eclipse bug 382590</a> VALJOGen can not generated correct code when subclassing a generic interface. Apart from this use case the annotation processor works inside Eclipse if you do the following:</p>
 
 <ol>
-  <li>In Eclipse first add valjogen-annotations-1.0.0-RC4.jar to the class path.</li>
-  <li>Open project Properties/Java Compiler/Annoation Processing, enable Annotation processing and add valjogen-annotationprocessor-1.0.0-RC4.jar as processor.</li>
+  <li>In Eclipse first add valjogen-annotations-1.0.0.jar to the class path.</li>
+  <li>Open project Properties/Java Compiler/Annoation Processing, enable Annotation processing and add valjogen-annotationprocessor-1.0.0.jar as processor.</li>
   <li>Add a key “com.fortyoneconcepts.valjogen.SOURCEPATH” pointing to the source directories for your project.</li>
 </ol>
 
@@ -219,7 +225,7 @@
 <div><div class="CodeRay">
   <div class="code"><pre><span style="color:#070;font-weight:bold">&lt;javac</span> <span style="color:#b48">srcdir</span>=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">${basedir}/src/main/java</span><span style="color:#710">&quot;</span></span>
        <span style="color:#b48">destdir</span>=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">build/classes</span><span style="color:#710">&quot;</span></span>
-       <span style="color:#b48">classpath</span>=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">valjogen-annotationprocessor-1.0.0-RC4.jar</span><span style="color:#710">&quot;</span></span><span style="color:#070;font-weight:bold">&gt;</span>
+       <span style="color:#b48">classpath</span>=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">valjogen-annotationprocessor-1.0.0.jar</span><span style="color:#710">&quot;</span></span><span style="color:#070;font-weight:bold">&gt;</span>
        <span style="color:#070;font-weight:bold">&lt;compilerarg</span> <span style="color:#b48">value</span>=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">-parameters</span><span style="color:#710">&quot;</span></span> <span style="color:#070;font-weight:bold">/&gt;</span>
        <span style="color:#070;font-weight:bold">&lt;compilerarg</span> <span style="color:#b48">value</span>=<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java</span><span style="color:#710">&quot;</span></span><span style="color:#070;font-weight:bold">/&gt;</span>
 <span style="color:#070;font-weight:bold">&lt;/javac&gt;</span>
@@ -234,12 +240,12 @@
 <p>VALJOGen output can be customized in a number of ways as listed below (in a order of preference):</p>
 
 <ol>
-  <li>Use existing options in VALJOGenerate and VALJOConfigure annotations.</li>
-  <li>Specify a BaseClass with your custom code in your VALJOConfigure annotation.</li>
-  <li>Subclass the generates class(es) and out your custom stuff there (use VALJOConfigure modifier option to make generated class abstract or non final)</li>
-  <li>Add custom method(s) in a custom template group file specified in your VALJOConfigure annotation.</li>
-  <li>Override the regions defined in the build-in templates. Do this in a custom template group file specified in your VALJOConfigure annotation.</li>
-  <li>Override existing template methods. Do this in a custom template group file specified in your VALJOConfigure annotation</li>
+  <li>Use existing options in VALJOGenerate and VALJOConfigure annotations. Alternatively, specify same options in qualified form as -A options to the annotation processor or in a “valjogen.properties” file located at the root of your classpath.</li>
+  <li>Customization by inheritance A: Specify a BaseClass with your custom code in your VALJOConfigure annotation.</li>
+  <li>Customization by inheritance B: Subclass the generates class(es) and put your custom stuff there (use VALJOConfigure modifier option to make generated class abstract or non final)</li>
+  <li>Add custom method(s) in a custom template group file specified in your VALJOConfigure annotation. Do this if you need to create dynamic code depending on how the class looks like (exact members, properties, methods etc).</li>
+  <li>Override the regions defined in the build-in templates. Also using a custom template group file specified in your VALJOConfigure annotation. Do this if you want to make small changes to existing functionality or if you want to insert something special like an innner class etc.</li>
+  <li>Override existing template methods. Also using a custom template group file specified in your VALJOConfigure annotation. Do this if you want to completely change an existing generated method and it’s regions are not flexible enough.</li>
 </ol>
 
 <p>See <a href="apidocs/com/fortyoneconcepts/valjogen/annotations/VALJOConfigure.html#customJavaTemplateFileName">VALJOConfigure JavaDocs</a> and the <a href="http://valjogen.41concepts.com/examples.html">examples</a> for details about custom templates. See also the <a href="https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+cheat+sheet">StringTemplate 4 cheat sheet</a> for syntax and general tips.</p>
