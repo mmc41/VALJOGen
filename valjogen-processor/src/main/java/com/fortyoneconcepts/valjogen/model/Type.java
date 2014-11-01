@@ -38,12 +38,6 @@ public abstract class Type extends ModelBase
 	}
 
 	@Override
-	public HelperTypes getHelperTypes()
-	{
-		return clazzUsingType.getHelperTypes();
-	}
-
-	@Override
 	public BasicClazz getClazz()
 	{
 		return clazzUsingType;

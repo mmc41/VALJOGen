@@ -31,12 +31,6 @@ abstract class DefinitionBase extends ModelBase implements Definition
 	}
 
 	@Override
-	public HelperTypes getHelperTypes()
-	{
-		return clazz.getHelperTypes();
-	}
-
-	@Override
 	public BasicClazz getClazz()
 	{
 		return clazz;

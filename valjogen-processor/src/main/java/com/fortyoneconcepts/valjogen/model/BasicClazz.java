@@ -67,7 +67,6 @@ public class BasicClazz extends ObjectType implements Definition {
 		{
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	@Override
@@ -106,7 +105,6 @@ public class BasicClazz extends ObjectType implements Definition {
 		return packageName;
 	}
 
-	@Override
 	public HelperTypes getHelperTypes() {
 		return helperTypes;
 	}
