@@ -482,7 +482,7 @@ public final class ModelBuilder
 		String methodName = m.getSimpleName().toString();
 
 		TypeMirror returnTypeMirror = executableMethodMirrorType.getReturnType();
-		Type returnType = typeBuilder.createType(clazz, returnTypeMirror, DetailLevel.Low);
+		Type returnType = typeBuilder.createType(clazz, returnTypeMirror, DetailLevel.High);
 
 		List<? extends VariableElement> params =  m.getParameters();
 		List<? extends TypeMirror> paramTypes = executableMethodMirrorType.getParameterTypes();
@@ -496,7 +496,7 @@ public final class ModelBuilder
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		for (int i=0; i<params.size(); ++i)
 		{
-			Parameter param = typeBuilder.createParameter(clazz, params.get(i), paramTypes.get(i));
+			Parameter param = typeBuilder.createParameter(clazz, params.get(i), paramTypes.get(i), DetailLevel.High);
 			parameters.add(param);
 		}
 
@@ -656,7 +656,7 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror = returnTypeMirror;
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement), modifiers);
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement), modifiers);
 		} else if (kind==PropertyKind.SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -674,7 +674,7 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror=setterParamTypes.get(0);
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.Low), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement), modifiers);
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement), modifiers);
 		} else {
 			return null; // Not a property.
 		}

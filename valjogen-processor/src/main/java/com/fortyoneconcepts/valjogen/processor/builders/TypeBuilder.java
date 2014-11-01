@@ -83,47 +83,42 @@ final class TypeBuilder
 		Type existingType = null;
 		Type newType=null;
 
-		// try {
-			String typeName = mirrorType.toString();
+		String typeName = mirrorType.toString();
 
-			// If using self-stand-in, replace with name of generated class and if identical with generate class return clazz itself as type
-			typeName=typeName.replace(ThisReference.class.getName(), clazz.getGeneratedClazz().getPrototypicalQualifiedName());
-			if (typeName.equals(clazz.getPrototypicalQualifiedName()))
-				return clazz;
+		// If using self-stand-in, replace with name of generated class and if identical with generate class return clazz itself as type
+		typeName=typeName.replace(ThisReference.class.getName(), clazz.getGeneratedClazz().getPrototypicalQualifiedName());
+		if (typeName.equals(clazz.getPrototypicalQualifiedName()))
+			return clazz;
 
-			existingType = typePool.get(clazz, typeName);
-			boolean upgrade = existingType!=null && existingType.getDetailLevel().hasLowerDetailThen(detailLevel) && existingType.canBeMoreDetailed();
-			if (existingType!=null && !upgrade) {
-				assert(existingType.getClazz()==clazz);
-				return existingType;
+		existingType = typePool.get(clazz, typeName);
+		boolean upgrade = existingType!=null && existingType.getDetailLevel().hasLowerDetailThen(detailLevel) && existingType.canBeMoreDetailed();
+		if (existingType!=null && !upgrade) {
+		    assert(existingType.getClazz()==clazz);
+			return existingType;
+		}
+
+		if (mirrorType instanceof javax.lang.model.type.PrimitiveType) {
+			newType=new com.fortyoneconcepts.valjogen.model.PrimitiveType(clazz, typeName);
+			existingType=typePool.put(typeName, newType);
+		} else if (mirrorType.getKind()==TypeKind.ARRAY) {
+		   ArrayType arrayType = (ArrayType)mirrorType;
+		   TypeMirror componentTypeMirror = arrayType.getComponentType();
+	       Type componentType = createType(clazz, componentTypeMirror, detailLevel);
+	       newType=new com.fortyoneconcepts.valjogen.model.ArrayType(clazz, typeName, componentType);
+	       existingType=typePool.put(typeName, newType);
+		} else {
+  	        ObjectType newObjectType;
+  	        if (detailLevel==DetailLevel.High && (mirrorType instanceof DeclaredType)) {
+		  	   newType=newObjectType=new com.fortyoneconcepts.valjogen.model.BasicClazz(clazz, configuration, typeName, (c) -> clazz.getHelperTypes());
+		    } else {
+		       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
 			}
 
-			if (mirrorType instanceof javax.lang.model.type.PrimitiveType) {
-				newType=new com.fortyoneconcepts.valjogen.model.PrimitiveType(clazz, typeName);
-				existingType=typePool.put(typeName, newType);
-			} else if (mirrorType.getKind()==TypeKind.ARRAY) {
-			   ArrayType arrayType = (ArrayType)mirrorType;
-			   TypeMirror componentTypeMirror = arrayType.getComponentType();
-		       Type componentType = createType(clazz, componentTypeMirror, detailLevel);
-		       newType=new com.fortyoneconcepts.valjogen.model.ArrayType(clazz, typeName, componentType);
-		       existingType=typePool.put(typeName, newType);
-			} else {
- 	  	        ObjectType newObjectType;
- 	  	        if (detailLevel==DetailLevel.High && (mirrorType instanceof DeclaredType)) {
-			  	   newType=newObjectType=new com.fortyoneconcepts.valjogen.model.BasicClazz(clazz, configuration, typeName, (c) -> clazz.getHelperTypes());
-			    } else {
-			       newType=newObjectType=new com.fortyoneconcepts.valjogen.model.ObjectType(clazz, typeName);
-				}
+		    existingType=typePool.put(typeName, newType);
+		    doInitObjectType(clazz, mirrorType, detailLevel, newObjectType);
+		}
 
-			    existingType=typePool.put(typeName, newType);
-			    doInitObjectType(clazz, mirrorType, detailLevel, newObjectType);
-			}
-
-			assert upgrade || existingType==null : "Should not overwrite existing type in pool for type "+existingType.getQualifiedName()+" (unless in case of detail upgrade)";
-		/*} catch (Exception e)
-		{
-			throw new RuntimeException("createType failed for type "+mirrorType.toString(), e);
-		}*/
+		assert upgrade || existingType==null : "Should not overwrite existing type in pool for type "+existingType.getQualifiedName()+" (unless in case of detail upgrade)";
 
 		return newType;
 	}
@@ -227,7 +222,7 @@ final class TypeBuilder
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		for (int i=0; i<params.size(); ++i)
 		{
-			Parameter param = createParameter(clazz, params.get(i), paramTypes.get(i));
+			Parameter param = createParameter(clazz, params.get(i), paramTypes.get(i), DetailLevel.Low);
 			parameters.add(param);
 		}
 
@@ -264,13 +259,13 @@ final class TypeBuilder
 		return EnumSet.copyOf(dstSet);
 	}
 
-	Parameter createParameter(BasicClazz clazz, VariableElement param, TypeMirror paramType)
+	Parameter createParameter(BasicClazz clazz, VariableElement param, TypeMirror paramType, DetailLevel detailLevel)
 	{
 		String name = param.getSimpleName().toString();
 
 		EnumSet<Modifier> modifiers = createModifierSet(param.getModifiers());
 
-		return new Parameter(clazz, createType(clazz, paramType, DetailLevel.Low), createType(clazz, param.asType(), DetailLevel.Low), name, modifiers);
+		return new Parameter(clazz, createType(clazz, paramType, DetailLevel.Low), createType(clazz, param.asType(), detailLevel), name, modifiers);
 	}
 
 	private Stream<DeclaredType> getSuperTypesWithAncestors(List<DeclaredType> superTypes)

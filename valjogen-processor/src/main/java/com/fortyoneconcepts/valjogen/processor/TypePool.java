@@ -30,7 +30,7 @@ public final class TypePool
 
 	private static final String getKey(BasicClazz clazz, String typeName)
 	{
-		return clazz.getQualifiedName()+":"+typeName;
+		return clazz.getPrototypicalQualifiedName()+":"+typeName;
 	}
 
 	public Type get(BasicClazz clazz, String typeName)
