@@ -46,10 +46,49 @@ public class NamesUtil
 							"hashCode", "equals", "clone", "toString", "notify",
 							"notifyAll", "wait", "finalize", "java"));
 
+	private static final Set<String> javaLangClasses = new HashSet<String>(Arrays.asList(
+			"Appendable", "AutoCloseable", "CharSequence", "Cloneable", "Comparable", "Iterable", "Readable", "Runnable",
+			"Boolean", "Byte", "Character" ,"Class", "ClassLoader", "ClassValue", "Compiler", "Double", "Enum", "Float", "InheritableThreadLocal",
+			"Integer", "Long", "Math", "Number", "Object", "Process", "ProcessBuilder", "Runtime", "RuntimePermission", "SecurityManager", "Short",
+			"StackTraceElement", "StrictMath", "String", "StringBuffer", "StringBuilder", "System", "Thread", "ThreadGroup", "ThreadLocal", "Throwable", "Void"
+	));
+
+	private static final Set<String> javaUtilClasses = new HashSet<String>(
+			Arrays.asList("Collection", "Comparator", "Deque", "Enumeration", "EventListener", "Formattable", "Iterator", "List",
+					"ListIterator", "Map", "Map.Entry", "NavigableMap",	"NavigableSet", "Observer", "PrimitiveIterator", "Queue",
+					"RandomAccess", "Set", "SortedMap", "SortedSet", "Spliterator", "AbstractCollection", "AbstractList","AbstractMap",
+					"AbstractQueue", "AbstractSequentialList", "AbstractSet", "ArrayDeque", "ArrayList", "Arrays", "Base64", "BitSet",
+					"Calendar", "Collections", "Currency", "Date", "Dictionary", "DoubleSummaryStatistics", "EnumMap",
+					"EnumSet", "EventListenerProxy", "EventObject",	"FormattableFlags", "Formatter", "GregorianCalendar",
+					"HashMap", "HashSet", "Hashtable", "IdentityHashMap", "IntSummaryStatistics", "LinkedHashMap", "LinkedHashSet",
+					"LinkedList", "ListResourceBundle", "Locale", "LongSummaryStatistics", "Objects","Observable",
+					"Optional", "OptionalDouble", "OptionalInt", "OptionalLong", "PriorityQueue", "Properties",
+					"PropertyPermission", "PropertyResourceBundle", "Random", "ResourceBundle", "Scanner",
+					"ServiceLoader", "SimpleTimeZone", "Spliterators", "SplittableRandom", "Stack", "StringJoiner",
+					"StringTokenizer", "Timer", "TimerTask", "TimeZone", "TreeMap", "TreeSet", "UUID", "Vector", "WeakHashMap",
+					"ConcurrentModificationException", "DuplicateFormatFlagsException", "EmptyStackException",
+					"FormatFlagsConversionMismatchException", "FormatterClosedException", "IllegalFormatCodePointException",
+					"IllegalFormatConversionException",	"IllegalFormatException", "IllegalFormatFlagsException",
+					"IllegalFormatPrecisionException", "IllegalFormatWidthException", "IllformedLocaleException",
+					"InputMismatchException", "InvalidPropertiesFormatException", "MissingFormatArgumentException",
+					"MissingFormatWidthException", "MissingResourceException","NoSuchElementException", "TooManyListenersException",
+					"UnknownFormatConversionException",	"UnknownFormatFlagsException", "ErrorSummaryErrorDescription"
+	));
+
 	private NamesUtil() {}
 
 	private static boolean isReserved(String identifier) {
 		return reservedWordsSet.contains(identifier);
+	}
+
+	public static boolean isJavaLangClassName(String identifier)
+	{
+		return javaLangClasses.contains(identifier);
+	}
+
+	public static boolean isJavaUtilClassName(String identifier)
+	{
+		return javaUtilClasses.contains(identifier);
 	}
 
 	public static String makeSafeJavaIdentifier(String identifier) {
@@ -120,6 +159,13 @@ public class NamesUtil
 		else return className.substring(0, genericQualifierPos);
 	}
 
+	public static String stripArrrayQualifier(String className)
+	{
+		int genericQualifierPos = className.indexOf("[");
+		if (genericQualifierPos<0)
+			return className;
+		else return className.substring(0, genericQualifierPos);
+	}
 
 	public static String ensureQualifedName(String name, String defaultPackage)
 	{
@@ -128,7 +174,7 @@ public class NamesUtil
 		else return name;
 	}
 
-	public static boolean isQualified(String name)
+	public static boolean isQualifiedName(String name)
 	{
 		return stripGenericQualifier(name).indexOf(".")>=0;
 	}

@@ -16,7 +16,7 @@ import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
  *
  * @author mmc
  */
-public final class Clazz extends BasicClazz implements Model
+public class Clazz extends BasicClazz implements Model
 {
 	private final String qualifiedMaster;
 	private final String javaDoc;

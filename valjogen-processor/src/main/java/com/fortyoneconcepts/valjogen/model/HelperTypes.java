@@ -11,7 +11,7 @@ package com.fortyoneconcepts.valjogen.model;
  *
  * @author mmc
  */
-public final class HelperTypes
+public class HelperTypes
 {
 	private final NoType noType;
 	private final ObjectType javaLangObjectType;

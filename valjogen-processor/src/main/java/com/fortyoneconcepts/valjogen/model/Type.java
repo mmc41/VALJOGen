@@ -4,6 +4,11 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
+import com.fortyoneconcepts.valjogen.processor.STCustomModelAdaptor;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 
@@ -199,31 +204,6 @@ public abstract class Type extends ModelBase
 		return false;
 	}
 
-	public boolean isSerializable()
-	{
-		return false;
-	}
-
-	public boolean isComparable()
-	{
-		return false;
-	}
-
-	public boolean isCollection()
-	{
-		return false;
-	}
-
-	public boolean isMap()
-	{
-		return false;
-	}
-
-	public boolean isIterable()
-	{
-		return false;
-	}
-
 	public DetailLevel getDetailLevel()
 	{
 		return DetailLevel.Low;
@@ -260,6 +240,219 @@ public abstract class Type extends ModelBase
 	* @return The type category.
 	*/
     public abstract TypeCategory getTypeCategory();
+
+    /**
+     * Returns if type is equal to or implements/inherites from specified class/interface. Unqualified names
+     * are checked against java.lang or java.util packages. If not a match the unqualified name is assumed
+     * to belong to the same package as the generated class.
+     *
+     * Nb. {@link STCustomModelAdaptor}  recoginze this method under the magic name ofType_xxx.
+     *
+     * @param classOrInterfaceName The name (qualified or unqualified) of the class/interface.
+     *
+     * @return True if type is equal to or implements/inherites from specified class/interface
+     */
+	public final boolean isOfType(String classOrInterfaceName)
+	{
+		String qualifiedClassOrInterfaceName;
+
+		if (!isQualifiedName(classOrInterfaceName)) {
+			if (NamesUtil.isJavaLangClassName(classOrInterfaceName))
+				qualifiedClassOrInterfaceName=ensureQualifedName(classOrInterfaceName, "java.lang");
+			else if (NamesUtil.isJavaUtilClassName(classOrInterfaceName))
+				qualifiedClassOrInterfaceName=ensureQualifedName(classOrInterfaceName, "java.util");
+			else qualifiedClassOrInterfaceName=ensureQualifedName(classOrInterfaceName, this.getGeneratedClazz().getPackageName());
+		} else qualifiedClassOrInterfaceName=classOrInterfaceName;
+
+		return isOfQualifiedType(qualifiedClassOrInterfaceName);
+	}
+
+    /**
+     * Returns if type is equal to or implements/inherites from specified qualified class/interface. Called by isOfType with the qualified name (possibly expanded).
+     *
+     * @param qualifiedClassOrInterfaceName The qualified name of the class/interface.
+     *
+     * @return True if type is equal to or implements/inherites from specified class/interface
+     */
+	public boolean isOfQualifiedType(String qualifiedClassOrInterfaceName)
+	{
+		if (getQualifiedName().equals(qualifiedClassOrInterfaceName))
+			return true;
+
+		// The default implementation just use reflection for a known classes. Other implementations can deal with new classes also.
+		Class<?> clazz = tryGetReflectionClass();
+		if (clazz==null)
+			throw new RuntimeException("No detailed information available about "+getQualifiedName());
+
+		Stream<Class<?>> clazzAndSuperClazzes = getReflectionSuperTypesWithAscendants(clazz);
+
+		clazzAndSuperClazzes = getReflectionSuperTypesWithAscendants(clazz);
+
+		boolean match = clazzAndSuperClazzes.anyMatch( c -> c.getName().equals(qualifiedClassOrInterfaceName));
+		return match;
+	}
+
+	/**
+	 * Returns if type has a static non-private method with the specified overload name.
+	 *
+	 * Nb. {@link STCustomModelAdaptor} recoginze this method under the magic name staticMethod_xxx.
+	 *
+	 * Note that because of type erasure the type of argument may be a plain Object when using reflection for lookup as used in default implementation
+	 * When this method is overidden erasure is not used so this should not be an issue for overriding subclasses.
+	 *
+	 * @param overloadName overload name of form <code> &lt;methodName&gt; "(" &lt;unqualifed parameter type name&gt; { "," &lt;unqualifed parameter type name&gt; } ")"</code>
+	 *
+	 * @return True if method exist.
+	 */
+	public boolean hasStaticMethod(String overloadName)
+	{
+		// The default implementation just use reflection for a known classes. Other implementations can deal with new classes also.
+		Class<?> clazz = tryGetReflectionClass();
+		if (clazz==null)
+			throw new RuntimeException("No detailed information available about "+getQualifiedName());
+
+		final int reqModifierFlags = java.lang.reflect.Modifier.STATIC;
+		final int reqNotModifierFlags = java.lang.reflect.Modifier.PRIVATE;
+		return Arrays.stream(clazz.getMethods()).anyMatch(m -> matchingOverloads(getReflectionOverloadName(m, true), overloadName, false) && ((m.getModifiers() & reqModifierFlags)==reqModifierFlags) && ((m.getModifiers() & reqNotModifierFlags)==0));
+	}
+
+	/**
+	 * Returns if type has a non-private instance method with the specified overload name.
+	 *
+	 * Note that because of type erasure the type of argument may be a plain Object when using reflection for lookup as used in default implementation
+	 * When this method is overidden erasure is not used so this should not be an issue for overriding subclasses.
+	 *
+	 * Nb. {@link STCustomModelAdaptor} recoginze this method under the magic name instanceMethod_xxx.
+	 *
+	 * @param overloadName overload name of form <code> &lt;methodName&gt; "(" &lt;unqualifed parameter type name&gt; { "," &lt;unqualifed parameter type name&gt; } ")"</code>
+	 *
+	 * @return True if method exist.
+	 */
+	public boolean hasInstanceMethod(String overloadName)
+	{
+		// The default implementation just use reflection for a known classes. Other implementations can deal with new classes also.
+		Class<?> clazz = tryGetReflectionClass();
+		if (clazz==null)
+			throw new RuntimeException("No detailed information available about "+getQualifiedName());
+
+		final int reqNotModifierFlags = java.lang.reflect.Modifier.STATIC | java.lang.reflect.Modifier.PRIVATE;
+		return Arrays.stream(clazz.getMethods()).anyMatch(m -> matchingOverloads(getReflectionOverloadName(m, true), overloadName, false) && ((m.getModifiers() & reqNotModifierFlags)==0));
+	}
+
+	/**
+	 * Returns if type has a static non-private field with the specified name.
+	 *
+	 * Nb. {@link STCustomModelAdaptor} recoginze this method under the magic name staticMember_xxx.
+	 *
+	 * @param name name of field.
+	 *
+	 * @return True if field exist.
+	 */
+	public boolean hasStaticMember(String name)
+	{
+		// The default implementation just use reflection for a known classes. Other implementations can deal with new classes also.
+		Class<?> clazz = tryGetReflectionClass();
+		if (clazz==null)
+			throw new RuntimeException("No detailed information available about "+getQualifiedName());
+
+		final int reqModifierFlags = java.lang.reflect.Modifier.STATIC;
+		final int reqNotModifierFlags = java.lang.reflect.Modifier.PRIVATE;
+		return Arrays.stream(clazz.getFields()).anyMatch(f -> f.getName().equals(name) && ((f.getModifiers() & reqModifierFlags)==reqModifierFlags) && ((f.getModifiers() & reqNotModifierFlags)==0));
+	}
+
+	/**
+	 * Returns if type has a non-private instance member field with the specified name.
+	 *
+	 * Nb. {@link STCustomModelAdaptor} recoginze this method under the magic name instanceMember_xxx.
+	 *
+	 * @param name name of field.
+	 *
+	 * @return True if field exist.
+	 */
+	public boolean hasInstanceMember(String name)
+	{
+		// The default implementation just use reflection for a known classes. Other implementations can deal with new classes also.
+		Class<?> clazz = tryGetReflectionClass();
+		if (clazz==null)
+			throw new RuntimeException("No detailed information available about "+getQualifiedName());
+
+		final int reqNotModifierFlags = java.lang.reflect.Modifier.STATIC | java.lang.reflect.Modifier.PRIVATE;
+		return Arrays.stream(clazz.getFields()).anyMatch(f -> f.getName().equals(name) && ((f.getModifiers() & reqNotModifierFlags)==0));
+	}
+
+	private final Stream<Class<?>> getReflectionSuperTypesWithAscendants(Class<?> clazz)
+	{
+		Class<?> superClazz = clazz.getSuperclass();
+		Stream<Class<?>> interfaces = Arrays.stream(clazz.getInterfaces());
+
+		Stream<Class<?>> all;
+		if (superClazz!=null)
+			all=Stream.concat(Stream.of(superClazz), interfaces);
+		else all=interfaces;
+
+		return Stream.concat(Stream.of(clazz), all.flatMap(c -> getReflectionSuperTypesWithAscendants(c)));
+	}
+
+	/**
+	 * Only supported for existing classes on classpath. Other implementations that deal with generated/new classes should not use reflection anyway.
+	 *
+	 * @return The class or null if unsupported.
+	 */
+	private final Class<?> tryGetReflectionClass()
+	{
+		try {
+	      String qName = getQualifiedName();
+		  boolean isArray = qName.endsWith("[]");
+		  String lookupName = stripArrrayQualifier(qName);
+		  if (isArray) {
+			  switch (lookupName)
+			  {
+			   case "boolean": return boolean[].class;
+			   case "char": return char[].class;
+			   case "byte": return byte[].class;
+			   case "short": return short[].class;
+			   case "int": return int[].class;
+			   case "long": return long[].class;
+			   case "float": return float[].class;
+			   case "double": return double[].class;
+			   default: return Class.forName("[L"+lookupName+";");
+			  }
+		  } else {
+			  switch (lookupName)
+			  {
+			   case "boolean": return boolean.class;
+			   case "char": return char.class;
+			   case "byte": return byte.class;
+			   case "short": return short.class;
+			   case "int": return int.class;
+			   case "long": return long.class;
+			   case "float": return float.class;
+			   case "double": return double.class;
+			   default: return Class.forName(lookupName);
+			  }
+		  }
+		} catch(Exception e)
+		{
+			return null; // Return null if failed.
+		}
+	}
+
+	private final String getReflectionOverloadName(java.lang.reflect.Method m, boolean includeMethodName)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		if (includeMethodName)
+			sb.append(m.getName());
+
+		sb.append("(");
+		sb.append(Arrays.stream(m.getParameters()).map(p -> {
+		  return p.getType().getSimpleName();
+		}).collect(Collectors.joining(",")));
+
+		sb.append(")");
+
+		return sb.toString();
+	}
 
 	@Override
 	public int hashCode()

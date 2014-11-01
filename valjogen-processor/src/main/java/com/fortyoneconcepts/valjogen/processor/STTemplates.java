@@ -73,7 +73,7 @@ public final class STTemplates
 
 		Set<String> templateNames = getAllTemplateNames(group);
 
-		templateMethodNames = Collections.unmodifiableSet(Collections.unmodifiableSet(templateNames.stream().filter(n -> n.startsWith(method_prefix)).map(n -> templateNameToMethodName(n)).collect(Collectors.toSet())));
+		templateMethodNames = Collections.unmodifiableSet(Collections.unmodifiableSet(templateNames.stream().filter(n -> n.startsWith(method_prefix)).map(n -> STUtil.templateNameToMethodName(n.substring(method_prefix.length()))).collect(Collectors.toSet())));
 
         if (LOGGER.isLoggable(Level.FINE))
           for (String templateName : templateMethodNames)
@@ -110,6 +110,7 @@ public final class STTemplates
 		return stExceptions;
 	}
 
+	/*
 	private static String templateNameToMethodName(String templateName)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -132,7 +133,7 @@ public final class STTemplates
 		sb.append(')');
 
 		return sb.toString();
-	}
+	}*/
 
 	private static Set<String> getAllTemplateNames(STGroup group)
 	{

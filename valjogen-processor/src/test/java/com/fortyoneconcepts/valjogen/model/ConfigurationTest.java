@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.test;
+package com.fortyoneconcepts.valjogen.model;
 
 import java.lang.reflect.*;
 import java.net.URISyntaxException;
@@ -92,7 +92,7 @@ public class ConfigurationTest
 		{
 			Field f = fields[i];
 
-			Assert.assertEquals("All field of "+optionClass.getName()+" should be static and public", Modifier.STATIC, f.getModifiers() & Modifier.STATIC);
+			Assert.assertEquals("All field of "+optionClass.getName()+" should be static and public",  java.lang.reflect.Modifier.STATIC, f.getModifiers() & java.lang.reflect.Modifier.STATIC);
 
 			String key = f.getName();
 			String value = (String) f.get(null);

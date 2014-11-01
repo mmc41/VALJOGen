@@ -200,79 +200,15 @@ public class ObjectType extends Type
     }
 
 	@Override
-	public boolean isCollection()
+	public boolean isOfQualifiedType(String qualifiedClassOrInterfaceName)
 	{
 		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
 
-		if (this.getQualifiedName().equals("java.util.Collection"))
+		if (getQualifiedName().equals(qualifiedClassOrInterfaceName))
 			return true;
 
-		boolean collection = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.util.Collection"));
-		return collection;
-	}
-
-	@Override
-	public boolean isMap()
-	{
-		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
-
-		if (this.getQualifiedName().equals("java.util.Map"))
-			return true;
-
-		boolean map = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.util.Map"));
-		return map;
-	}
-
-	@Override
-	public boolean isIterable()
-	{
-		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
-
-		if (this.getQualifiedName().equals("java.lang.Iterable"))
-			return true;
-
-		boolean iterable = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.lang.Iterable"));
-		return iterable;
-	}
-
-	@Override
-	public boolean isSerializable()
-	{
-		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
-
-	    /*
-		Type serializableType = getHelperTypes().getSerializableInterfaceType();
-		if (this.equals(serializableType))
-			return true;
-		else return getSuperTypesWithAscendants().contains(serializableType);
-		*/
-
-	    // Hmm: Above does not work - workaround.
-		if (this.getQualifiedName().equals("java.io.Serializable"))
-			return true;
-
-		boolean serializable = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.io.Serializable"));
-		return serializable;
-	}
-
-	@Override
-	public boolean isComparable()
-	{
-		assert initializedType : "Type initialization missing for type "+qualifiedProtoTypicalTypeName;
-
-	    /*
-	    Type comparableType = getHelperTypes().getComparableInterfaceType();
-	    if (this.equals(comparableType))
-			return true;
-		else return getSuperTypesWithAscendants().contains(comparableType);
-        */
-
-        //  Hmm: Generic qualified gets in the way - workaround.
-		if (this.getQualifiedName().equals("java.lang.Comparable"))
-			return true;
-
-		boolean comparable = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals("java.lang.Comparable"));
-		return comparable;
+		boolean match = getSuperTypesWithAscendants().stream().anyMatch(t -> t.getQualifiedName().equals(qualifiedClassOrInterfaceName));
+		return match;
 	}
 
 	@Override

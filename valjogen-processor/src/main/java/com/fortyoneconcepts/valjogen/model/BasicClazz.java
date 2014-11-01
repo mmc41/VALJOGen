@@ -5,12 +5,12 @@ package com.fortyoneconcepts.valjogen.model;
 
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.getGenericQualifier;
 import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.getPackageFromQualifiedName;
+import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.matchingOverloads;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -182,6 +182,31 @@ public class BasicClazz extends ObjectType implements Definition {
 		allMembers.addAll(getBaseClazzType().getMembers());
 		allMembers.addAll(getMembers());
 		return allMembers;
+	}
+
+	@Override
+	public boolean hasStaticMethod(String overloadName)
+	{
+		return getMethods().stream().anyMatch(m -> matchingOverloads(m.getOverloadName(), overloadName, false) && m.getModifiers().contains(Modifier.STATIC) && !m.getModifiers().contains(Modifier.PRIVATE));
+	}
+
+	@Override
+	public boolean hasInstanceMethod(String overloadName)
+	{
+		return getMethods().stream().anyMatch(m -> matchingOverloads(m.getOverloadName(), overloadName, false) && m.getModifiers().contains(Modifier.PUBLIC) && !m.getModifiers().contains(Modifier.STATIC) && !m.getModifiers().contains(Modifier.PRIVATE));
+	}
+
+	@Override
+	public boolean hasStaticMember(String name)
+	{
+		return getMembers().stream().anyMatch(m -> m.getName().equals(name) && m.getModifiers().contains(Modifier.STATIC) && !m.getModifiers().contains(Modifier.PRIVATE));
+
+	}
+
+	@Override
+	public boolean hasInstanceMember(String name)
+	{
+		return getMembers().stream().anyMatch(m -> m.getName().equals(name) && !m.getModifiers().contains(Modifier.STATIC) && !m.getModifiers().contains(Modifier.PRIVATE));
 	}
 
 	@Override

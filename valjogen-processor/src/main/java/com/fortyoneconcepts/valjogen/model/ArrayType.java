@@ -10,7 +10,7 @@ import java.util.Objects;
  *
  * @author mmc
  */
-public final class ArrayType extends Type
+public class ArrayType extends Type
 {
 	private final Type componentType;
 

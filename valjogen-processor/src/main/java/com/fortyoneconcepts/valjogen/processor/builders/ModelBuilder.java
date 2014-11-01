@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.processor.builders;
 
 import java.beans.Introspector;
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -45,6 +46,9 @@ public final class ModelBuilder
 {
 	@SuppressWarnings("unused")
 	private final static Logger LOGGER = Logger.getLogger(ModelBuilder.class.getName());
+
+	private static final String comparableClass = Comparable.class.getName();
+	private static final String serializbleClass = Serializable.class.getName();
 
 	private static final String compareToOverloadName = "compareTo(T)";
 
@@ -237,7 +241,7 @@ public final class ModelBuilder
 
 		List<Member> members = new ArrayList<Member>(membersByName.values());
 
-		if (clazz.isSerializable()) {
+		if (clazz.isOfType(serializbleClass)) {
 			nonPropertyMethods.addAll(createMagicSerializationMethods(clazz));
 		}
 
@@ -419,7 +423,7 @@ public final class ModelBuilder
 		String[] comparableMemberNames = configuration.getComparableMembers();
 		if (comparableMemberNames.length==0)
 		{
-			comparableMembers=membersByName.values().stream().filter(m -> m.getType().isComparable()).collect(Collectors.toList());
+			comparableMembers=membersByName.values().stream().filter(m -> m.getType().isPrimitive() || m.getType().isOfType(comparableClass)).collect(Collectors.toList());
 			if (comparableMembers.size()!=membersByName.size())
 			{
 				errorConsumer.message(masterInterfaceElement, Kind.MANDATORY_WARNING, String.format(ProcessorMessages.NotAllMembersAreComparable, masterInterfaceElement.toString()));
@@ -435,7 +439,7 @@ public final class ModelBuilder
 
 				if (member!=null) {
 					comparableMembers.add(member);
-					if (!member.getType().isComparable()) {
+					if (!member.getType().isPrimitive() && !member.getType().isOfType(comparableClass)) {
 						errorConsumer.message(masterInterfaceElement, Kind.ERROR, String.format(ProcessorMessages.MemberNotComparable, comparableMemberName));
 					}
 				} else {
@@ -623,7 +627,7 @@ public final class ModelBuilder
 		if (className==null || className.isEmpty())
 			className = NamesUtil.createNewClassNameFromInterfaceName(qualifedInterfaceName);
 
-		if (!NamesUtil.isQualified(className))
+		if (!NamesUtil.isQualifiedName(className))
 		{
 			String packageName = configuration.getPackage();
 			if (packageName==null)
@@ -699,7 +703,7 @@ public final class ModelBuilder
 
 	private static boolean mustImplementComparable(Clazz clazz,  List<Method> methods)
 	{
-		return clazz.isComparable() && !instanceImplementationExists(clazz, "compareTo", methods);
+		return clazz.isOfType(comparableClass) && !instanceImplementationExists(clazz, "compareTo", methods);
 	}
 
 

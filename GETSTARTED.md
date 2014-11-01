@@ -48,7 +48,7 @@ Use `Maven 3.2.0` or later and add the dependency which will add the annotation 
 <dependency>
   <groupId>com.41concepts</groupId>
   <artifactId>valjogen-annotationprocessor</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <optional>true</optional>
 </dependency>
 ```
@@ -59,7 +59,7 @@ If you are compiling without the annotation processor or using the <code>-proces
 <dependency>
   <groupId>com.41concepts</groupId>
   <artifactId>valjogen-annotations</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <optional>true</optional>
 </dependency>
 ```
@@ -96,7 +96,7 @@ Inside the generated logfile you will then find useful (but a bit complex) dumps
 ## 2. Using VALJOGen with JavaC compiler:
 
 ```Bash
-javac -parameters -cp valjogen-annotationprocessor-1.0.0.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+javac -parameters -cp valjogen-annotationprocessor-1.0.1.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
 The example above makes the annotation processor available on the normal class path, uses the JDK1.8+ <code>-parameter</code> option to enable parameter names processing by the annotation processor and the <code>-Akey[=value]</code> option to let the processor know the source path.
@@ -104,15 +104,15 @@ The example above makes the annotation processor available on the normal class p
 Alternatively, it is possible to compile using the -processorpath option. In this case the classes in the annotation processor is not seen on the classoath so do add the jar file with the VALJOGen annotations on the classpath seperately as shown below.
 
 ```Bash
-javac -parameters -cp valjogen-annotations/target/valjogen-annotations-1.0.0.jar -processorpath ../valjogen-processor/target/valjogen-annotationprocessor-1.0.0.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
+javac -parameters -cp valjogen-annotations/target/valjogen-annotations-1.0.1.jar -processorpath ../valjogen-processor/target/valjogen-annotationprocessor-1.0.1.jar -Acom.fortyoneconcepts.valjogen.SOURCEPATH=SourceDirForYourCode -s DestinationDirForGeneratedSources -d DestinationDirForOutputClasses SourceDirForYourCodeUsingTheAnnotationProcessor.java
 ```
 
 ## 3. Using VALJOGen with Eclipse:
 
 Due to [Eclipse bug 382590][eclipsebug] VALJOGen can not generated correct code when subclassing a generic interface. Apart from this use case the annotation processor works inside Eclipse if you do the following:
 
-1. In Eclipse first add valjogen-annotations-1.0.0.jar to the class path.
-2. Open project Properties/Java Compiler/Annoation Processing, enable Annotation processing and add valjogen-annotationprocessor-1.0.0.jar as processor.
+1. In Eclipse first add valjogen-annotations-1.0.1.jar to the class path.
+2. Open project Properties/Java Compiler/Annoation Processing, enable Annotation processing and add valjogen-annotationprocessor-1.0.1.jar as processor.
 3. Add a key "com.fortyoneconcepts.valjogen.SOURCEPATH" pointing to the source directories for your project.
 
 *Bug 382590 in Eclipse was reported in 2012 and has not been fixed yet. If you want VALJOGen and other annotation processors to work perfectly in eclipse then [please cast your vote for the bug at Eclipse's bugzilla][eclipsebug].*
@@ -130,7 +130,7 @@ Due to [Eclipse bug 382590][eclipsebug] VALJOGen can not generated correct code 
 ```Xml
 <javac srcdir="${basedir}/src/main/java"
        destdir="build/classes"
-       classpath="valjogen-annotationprocessor-1.0.0.jar">
+       classpath="valjogen-annotationprocessor-1.0.1.jar">
        <compilerarg value="-parameters" />
        <compilerarg value="-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java"/>
 </javac>

@@ -8,7 +8,7 @@ package com.fortyoneconcepts.valjogen.model;
  *
  * @author mmc
  */
-public final class PrimitiveType extends Type
+public class PrimitiveType extends Type
 {
 	public PrimitiveType(BasicClazz clazzUsingType, String qualifiedProtoTypicalTypeName)
 	{
@@ -25,13 +25,13 @@ public final class PrimitiveType extends Type
 	public boolean isPrimitive() {
 		return true;
 	}
-
+/*
 	@Override
 	public boolean isComparable()
 	{
 		return true;
 	}
-
+*/
 	@Override
     public boolean isVoid()
     {

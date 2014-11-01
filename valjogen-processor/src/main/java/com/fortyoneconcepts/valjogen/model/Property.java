@@ -14,7 +14,7 @@ import com.fortyoneconcepts.valjogen.processor.TemplateKind;
  * @author mmc
  *
  */
-public final class Property extends Method
+public class Property extends Method
 {
 	private final Member member;
 	private final Type overriddenReturnType;

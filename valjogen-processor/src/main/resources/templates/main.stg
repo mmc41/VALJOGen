@@ -35,7 +35,7 @@ package <clazz.packageName>;
 {
   <! Static class members: !>
   <@before_class_members><@end>
-  <if(clazz.serializable && clazz.configuration.serialVersionUIDSpecified)>
+  <if(clazz.ofType_java_io_Serializable && clazz.configuration.serialVersionUIDSpecified)>
   private static final long serialVersionUID = <clazz.configuration.serialVersionUID>;
 
   <endif>

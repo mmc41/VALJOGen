@@ -53,4 +53,28 @@ public final class STUtil
 	{
 		return "property";
 	}
+
+	public static String templateNameToMethodName(String templateName)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		boolean first_underscore=true;
+		for (int i=0; i<templateName.length(); ++i)
+		{
+			char ch = templateName.charAt(i);
+			if (ch=='_')
+			{
+				if (first_underscore) {
+					sb.append('(');
+					first_underscore=false;
+				} else sb.append(',');
+			} else sb.append(ch);
+		}
+
+		if (first_underscore)
+			sb.append('(');
+		sb.append(')');
+
+		return sb.toString();
+	}
 }

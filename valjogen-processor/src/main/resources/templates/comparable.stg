@@ -30,7 +30,7 @@ comparable_array(clazz, param, var, type) ::= <<
 >>
 
 comparable_object(clazz, other, member, type) ::= <<
-<if(type.comparable && (other.type.thisType || member.getter))><\\>
+<if(type.ofType_Comparable && (other.type.thisType || member.getter))><\\>
 if ((<uniqueVariableName(clazz,"result")>=<member.name>.compareTo(<other_instance_get_member_value(other, member)>))!=0)
  return <@returnvalue><uniqueVariableName(clazz,"result")><@end>;<\\>
 <else>

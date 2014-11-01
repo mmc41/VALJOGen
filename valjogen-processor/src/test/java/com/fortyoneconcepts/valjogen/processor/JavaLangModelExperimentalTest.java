@@ -1,4 +1,4 @@
-package com.fortyoneconcepts.valjogen.test;
+package com.fortyoneconcepts.valjogen.processor;
 
 import java.net.URISyntaxException;
 import java.util.Objects;

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author mmc
  */
-public final class Member extends DefinitionBase implements TypedModel
+public class Member extends DefinitionBase implements TypedModel
 {
 	private final Type type;
 	private List<Property> properties;

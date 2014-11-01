@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.test;
+package com.fortyoneconcepts.valjogen.integrationtest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

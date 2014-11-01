@@ -1,8 +1,9 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.test;
+package com.fortyoneconcepts.valjogen.integrationtest;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Assert;
@@ -19,6 +20,9 @@ import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
  */
 public class ModelSpecialTypesTest extends TemplateTestBase
 {
+	private static final String comparableClass = Comparable.class.getName();
+	private static final String collectionClass = Collection.class.getName();
+	private static final String iterableClass = Iterable.class.getName();
 
 	@Test
 	public void testModelForStringList() throws Exception
@@ -32,16 +36,14 @@ public class ModelSpecialTypesTest extends TemplateTestBase
 		ObjectType stringListType = (ObjectType)stringListMember.getType();
 		Assert.assertEquals("java.util.List<String>", stringListType.getPrototypicalName()); // hmm. should be shortened
 
-		Assert.assertTrue(stringListType.isIterable());
-		Assert.assertTrue(stringListType.isCollection());
+		Assert.assertTrue(stringListType.isOfType(iterableClass));
+		Assert.assertTrue(stringListType.isOfType(collectionClass));
 
 		List<Type> stringListTypeTypeArguments = stringListType.getGenericTypeArguments();
 		Assert.assertEquals(1, stringListTypeTypeArguments.size());
 		ObjectType stringArgType = (ObjectType)stringListTypeTypeArguments.get(0);
 
 		Assert.assertEquals("String", stringArgType.getName());
-
-		System.out.println(stringListType);
 	}
 
 	@Test
@@ -56,8 +58,8 @@ public class ModelSpecialTypesTest extends TemplateTestBase
 		ArrayType stringArrayType = (ArrayType)stringArrayMember.getType();
 		Assert.assertEquals("String[]", stringArrayType.getName());
 
-		Assert.assertTrue(!stringArrayType.isIterable());
-		Assert.assertTrue(!stringArrayType.isCollection());
+		Assert.assertTrue(!stringArrayType.isOfType(iterableClass));
+		Assert.assertTrue(!stringArrayType.isOfType(collectionClass));
 
 		ObjectType stringComponentType = (ObjectType)stringArrayType.getArrayComponentType();
 
@@ -76,9 +78,9 @@ public class ModelSpecialTypesTest extends TemplateTestBase
 		ObjectType comparableType = (ObjectType)comparableMember.getType();
 		Assert.assertEquals("Comparable<ContainsSpecialTypesInterface>", comparableType.getPrototypicalName());
 
-		Assert.assertTrue(comparableType.isComparable());
-		Assert.assertTrue(!comparableType.isIterable());
-		Assert.assertTrue(!comparableType.isCollection());
+		Assert.assertTrue(comparableType.isOfType(comparableClass));
+		Assert.assertTrue(!comparableType.isOfType(iterableClass));
+		Assert.assertTrue(!comparableType.isOfType(collectionClass));
 
 		List<Type> comparableTypeArguments = comparableType.getGenericTypeArguments();
 		Assert.assertEquals(1, comparableTypeArguments.size());

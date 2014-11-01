@@ -23,7 +23,7 @@ import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
  *
  * @author mmc
  */
-public final class Configuration implements ConfigurationOptionKeys
+public class Configuration implements ConfigurationOptionKeys
 {
 	 private final String sourceElementName;
 	 private final VALJOGenerate generateAnnotation;
@@ -73,6 +73,8 @@ public final class Configuration implements ConfigurationOptionKeys
 
 	 /**
 	  * Return a property object with deserialized configuration file options (if the file exist).
+	  *
+	  * @return The properties from the configuration file or empty object otherwise.
 	  */
 	 private final Properties getConfigFileOptions()
 	 {

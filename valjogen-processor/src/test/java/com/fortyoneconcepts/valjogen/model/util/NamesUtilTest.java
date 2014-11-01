@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.test;
+package com.fortyoneconcepts.valjogen.model.util;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,21 +81,21 @@ public class NamesUtilTest
 	@Test
 	public void testIsQualifiedForQualifiedName()
 	{
-		boolean isQualified = NamesUtil.isQualified("java.lang.Comparable");
+		boolean isQualified = NamesUtil.isQualifiedName("java.lang.Comparable");
 		Assert.assertTrue("Class name not constructed correctly", isQualified);
 	}
 
 	@Test
 	public void testIsQualifiedForUnQualifiedName()
 	{
-		boolean isQualified = NamesUtil.isQualified("Comparable");
+		boolean isQualified = NamesUtil.isQualifiedName("Comparable");
 		Assert.assertFalse("Class name not constructed correctly", isQualified);
 	}
 
 	@Test
 	public void testIsQualifiedForUnQualifiedGenericName()
 	{
-		boolean isQualified = NamesUtil.isQualified("Comparable<java.lang.String>");
+		boolean isQualified = NamesUtil.isQualifiedName("Comparable<java.lang.String>");
 		Assert.assertFalse("Class name not constructed correctly", isQualified);
 	}
 

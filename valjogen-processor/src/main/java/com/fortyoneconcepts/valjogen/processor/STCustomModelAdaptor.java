@@ -32,42 +32,33 @@
 package com.fortyoneconcepts.valjogen.processor;
 
 import org.stringtemplate.v4.Interpreter;
-import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.misc.STNoSuchPropertyException;
+import org.stringtemplate.v4.misc.ObjectModelAdaptor;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import com.fortyoneconcepts.valjogen.model.Type;
 
 /**
- * Custom model adapter copied from ST4 source that allows a few more prefixes for methods.
+ * ST model adapter that handles normal ST properies AND do the following magic conversions:
+ *
+ *  Type.ofType_xxx -&gt; {@link Type#isOfType}, with argument consisting og xxx with underscores replaced by dot.
+ *  Type.instanceMethod_xxx -&gt; {@link Type#hasInstanceMethod},with argument consisting of the overload name format of xxx (i.e. underscores replaced by dot + paranthesis).
+ *  Type.staticMethod_xxx -&gt; {@link Type#hasStaticMethod}, with argument consisting of the overload name format of xxx (i.e. underscores replaced by dot + paranthesis).
+ *  Type.instanceMember_xxx -&gt; {@link Type#hasInstanceMember}, where xxx is used as argument.
+ *  Type.staticMember_xxx -&gt; {@link Type#hasStaticMember}, where xxx is used as argument.
  *
  * @author mmc
+ *
  */
-public class STCustomModelAdaptor implements ModelAdaptor {
-	protected static final Member INVALID_MEMBER;
-	static {
-		Member invalidMember;
-		try {
-			invalidMember = STCustomModelAdaptor.class.getDeclaredField("INVALID_MEMBER");
-		} catch (NoSuchFieldException ex) {
-			invalidMember = null;
-		} catch (SecurityException ex) {
-			invalidMember = null;
-		}
-
-		INVALID_MEMBER = invalidMember;
-	}
-
-	protected static final Map<Class<?>, Map<String, Member>> membersCache =
-		new HashMap<Class<?>, Map<String, Member>>();
+public class STCustomModelAdaptor extends ObjectModelAdaptor
+{
+	public static final String magicImplementsMethodPrefix="ofType";
+	public static final String magicHasInstanceMethodMethodPrefix="instanceMethod";
+	public static final String magicHasStaticMethodMethodPrefix="staticMethod";
+	public static final String magicHasInstanceMemberMethodPrefix="instanceMember";
+	public static final String magicHasStaticMemberMethodPrefix="staticMember";
 
 	@Override
-	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
-		throws STNoSuchPropertyException
+	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 	{
 		if (o == null) {
 			throw new NullPointerException("o");
@@ -79,105 +70,42 @@ public class STCustomModelAdaptor implements ModelAdaptor {
 			return throwNoSuchProperty(c, propertyName, null);
 		}
 
-		Member member = findMember(c, propertyName);
-		if ( member!=null ) {
-			try {
-				if (member instanceof Method) {
-					return ((Method)member).invoke(o);
-				}
-				else if (member instanceof Field) {
-					return ((Field)member).get(o);
-				}
-			}
-			catch (Exception e) {
-				throwNoSuchProperty(c, propertyName, e);
+		// Check for magic property references
+		if (com.fortyoneconcepts.valjogen.model.Type.class.isAssignableFrom(c))
+		{
+			com.fortyoneconcepts.valjogen.model.Type ot = (com.fortyoneconcepts.valjogen.model.Type)o;
+			if (propertyName.startsWith(magicImplementsMethodPrefix)) {
+				String interfaceName = propertyName.substring(magicImplementsMethodPrefix.length());
+				if (interfaceName.startsWith("_"))
+					interfaceName=interfaceName.substring(1);
+				interfaceName=interfaceName.replace('_', '.');
+				return ot.isOfType(interfaceName);
+			} else if (propertyName.startsWith(magicHasInstanceMethodMethodPrefix)) {
+				String methodName = propertyName.substring(magicHasInstanceMethodMethodPrefix.length());
+				if (methodName.startsWith("_"))
+					methodName=methodName.substring(1);
+				methodName=STUtil.templateNameToMethodName(methodName);
+				return ot.hasInstanceMethod(methodName);
+			} else if (propertyName.startsWith(magicHasStaticMethodMethodPrefix)) {
+				String methodName = propertyName.substring(magicHasStaticMethodMethodPrefix.length());
+				if (methodName.startsWith("_"))
+					methodName=methodName.substring(1);
+				methodName=STUtil.templateNameToMethodName(methodName);
+				return ot.hasStaticMethod(methodName);
+			} else if (propertyName.startsWith(magicHasInstanceMemberMethodPrefix)) {
+				String memberName = propertyName.substring(magicHasInstanceMemberMethodPrefix.length());
+				if (memberName.startsWith("_"))
+					memberName=memberName.substring(1);
+				return ot.hasInstanceMember(memberName);
+			} else if (propertyName.startsWith(magicHasStaticMemberMethodPrefix)) {
+				String memberName = propertyName.substring(magicHasStaticMemberMethodPrefix.length());
+				if (memberName.startsWith("_"))
+					memberName=memberName.substring(1);
+				return ot.hasStaticMember(memberName);
 			}
 		}
 
-		return throwNoSuchProperty(c, propertyName, null);
-	}
-
-	protected static Member findMember(Class<?> clazz, String memberName) {
-		if (clazz == null) {
-			throw new NullPointerException("clazz");
-		}
-		if (memberName == null) {
-			throw new NullPointerException("memberName");
-		}
-
-		synchronized (membersCache) {
-			Map<String, Member> members = membersCache.get(clazz);
-			Member member = null;
-			if (members != null) {
-				member = members.get(memberName);
-				if (member != null) {
-					return member != INVALID_MEMBER ? member : null;
-				}
-			}
-			else {
-				members = new HashMap<String, Member>();
-				membersCache.put(clazz, members);
-			}
-
-			// try getXXX and isXXX properties, look up using reflection
-			String methodSuffix = Character.toUpperCase(memberName.charAt(0)) +
-				memberName.substring(1, memberName.length());
-
-			member = tryGetMethod(clazz, "get" + methodSuffix);
-			if (member == null) {
-				member = tryGetMethod(clazz, "is" + methodSuffix);
-				if (member == null) {
-					member = tryGetMethod(clazz, "has" + methodSuffix);
-					if (member == null) {
-						member = tryGetMethod(clazz, "enable" + methodSuffix);
-						if (member == null) {
-							member = tryGetMethod(clazz, "disable" + methodSuffix);
-						}
-					}
-				}
-			}
-
-			if (member == null) {
-				// try for a visible field
-				member = tryGetField(clazz, memberName);
-			}
-
-			members.put(memberName, member != null ? member : INVALID_MEMBER);
-			return member;
-		}
-	}
-
-	protected static Method tryGetMethod(Class<?> clazz, String methodName) {
-		try {
-			Method method = clazz.getMethod(methodName);
-			if (method != null) {
-				method.setAccessible(true);
-			}
-
-			return method;
-		} catch (NoSuchMethodException ex) {
-		} catch (SecurityException ex) {
-		}
-
-		return null;
-	}
-
-	protected static Field tryGetField(Class<?> clazz, String fieldName) {
-		try {
-			Field field = clazz.getField(fieldName);
-			if (field != null) {
-				field.setAccessible(true);
-			}
-
-			return field;
-		} catch (NoSuchFieldException ex) {
-		} catch (SecurityException ex) {
-		}
-
-		return null;
-	}
-
-	protected Object throwNoSuchProperty(Class<?> clazz, String propertyName, Exception cause) {
-		throw new STNoSuchPropertyException(cause, null, clazz.getName() + "." + propertyName);
+		// Fall back on default behavior for non-magic properties.
+		return super.getProperty(interp, self, o, property, propertyName);
 	}
 }

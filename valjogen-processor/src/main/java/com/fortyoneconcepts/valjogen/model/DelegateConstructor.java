@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  *
  * @author mmc
  */
-public final class DelegateConstructor extends Constructor
+public class DelegateConstructor extends Constructor
 {
 	private final Constructor delegateConstructor;
 
