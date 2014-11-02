@@ -6,6 +6,8 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.EnumSet;
 import java.util.Objects;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Meta-information about a formal parameter with a value that should be forwarded to another method call.
  *
@@ -53,7 +55,14 @@ public class DelegateParameter extends Parameter
 	}
 
 	@Override
-	public String toString(int level) {
-		return "DelegateParameter [name=" + name + ", type=" + type.getPrototypicalQualifiedName() + ", erasedType=" + erasedParamType.getPrototypicalQualifiedName() +", delegateMethod="+delegateMethod.getQualifiedName()+", delegateParameter="+delegateParameter.getName()+" declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+"]";
+	protected void printExtraTop(IndentedPrintWriter writer, int detailLevel)
+	{
+		writer.print(", delegateMethod="+delegateMethod.getQualifiedName()+", delegateParameter="+delegateParameter.getName());
+	}
+
+	@Override
+	protected void printExtraBottom(IndentedPrintWriter writer, int detailLevel)
+	{
+
 	}
 }

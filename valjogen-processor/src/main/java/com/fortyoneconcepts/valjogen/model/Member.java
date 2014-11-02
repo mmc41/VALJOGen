@@ -6,6 +6,8 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /***
  * Meta-data about a membervariable that backs a property getter and/or setter method.
  *
@@ -122,17 +124,27 @@ public class Member extends DefinitionBase implements TypedModel
 	}
 
 	@Override
-	public String toString(int level)
+	public void print(IndentedPrintWriter writer, int detailLevel)
 	{
-		StringBuilder sb = new StringBuilder();
+		if (detailLevel>=MAX_RECURSIVE_LEVEL) {
+			writer.print(name+" ");
+			return;
+		}
 
-		sb.append("Member [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+		if (detailLevel>0)
+			writer.increaseIndent();
 
-		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", name=" + name + ", type=" + type.getPrototypicalName() + ", declaringType="+clazz.getName()+", properties=["+properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+"], declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+", mutable="+isMutable()+"]");
+		writer.ensureNewLine();
 
-		sb.append("]");
+		writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", name="+ name+", properties ["+ properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+"], declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+", mutable="+isMutable());
 
-		return sb.toString();
+		printExtraTop(writer, detailLevel);
+
+		printExtraBottom(writer, detailLevel);
+
+		writer.println(")");
+
+		if (detailLevel>0)
+			writer.decreaseIndent();
 	}
 }

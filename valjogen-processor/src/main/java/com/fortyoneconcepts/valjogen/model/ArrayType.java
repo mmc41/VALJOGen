@@ -5,6 +5,8 @@ package com.fortyoneconcepts.valjogen.model;
 
 import java.util.Objects;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Represents a java array data type.
  *
@@ -82,17 +84,28 @@ public class ArrayType extends Type
 	}
 
 	@Override
-	public String toString(int level)
+	public void print(IndentedPrintWriter writer, int detailLevel)
 	{
-		StringBuilder sb = new StringBuilder();
+		if (detailLevel>=MAX_RECURSIVE_LEVEL) {
+			writer.print(qualifiedProtoTypicalTypeName+" ");
+			return;
+		}
 
-		sb.append("ArrayType [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+		if (detailLevel>0)
+			writer.increaseIndent();
 
-		if (level<MAX_RECURSIVE_LEVEL)
-		  sb.append(", typeName = "+qualifiedProtoTypicalTypeName+ ", componentType="+componentType.toString(level+1));
+		writer.ensureNewLine();
 
-		sb.append("]");
+		writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", qualifiedProtoTypicalTypeName="+ qualifiedProtoTypicalTypeName);
+		writer.increaseIndent();
 
-		return sb.toString();
+		writer.print("componentType= ");
+		componentType.print(writer, detailLevel+1);
+
+		writer.decreaseIndent();
+		writer.println(")");
+
+		if (detailLevel>0)
+			writer.decreaseIndent();
 	}
 }

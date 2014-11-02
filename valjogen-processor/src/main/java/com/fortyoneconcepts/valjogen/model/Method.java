@@ -8,6 +8,7 @@ import static com.fortyoneconcepts.valjogen.model.util.NamesUtil.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
 import com.fortyoneconcepts.valjogen.processor.STUtil;
 import com.fortyoneconcepts.valjogen.processor.TemplateKind;
 
@@ -203,26 +204,40 @@ public class Method extends DefinitionBase
 	}
 
 	@Override
-	public String toString(int level)
+	public void print(IndentedPrintWriter writer, int detailLevel)
 	{
-		StringBuilder sb = new StringBuilder();
+		if (detailLevel>=MAX_RECURSIVE_LEVEL) {
+			writer.print(name+" ");
+			return;
+		}
 
-		String name = isConstructor() ? "Constructor" : "Method";
+		if (detailLevel>0)
+			writer.increaseIndent();
 
-		sb.append(name+" [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+		writer.ensureNewLine();
 
-		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", declaringType="+declaringType.getName()+", methodName=" + getName() +
-					  ", parameters=["+parameters.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
-					  ", returnType="+returnType.getPrototypicalName() +
-					  ", thrownTypes=["+thrownTypes.stream().map(t -> t.getPrototypicalName()).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
-					  ", overridden="+this.isOverridden()+
-					  ", declaredModifiers="+declaredModifiers+
-					  ", modifiers="+modifiers+
-					  ", implementationInfo="+implementationInfo+"]");
+		writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", name="+ getName()+" declaringType="+declaringType.getPrototypicalName()
+				     +", returnType="+returnType.getPrototypicalName()+", thrownTypes=["+thrownTypes.stream().map(t -> t.getPrototypicalName()).collect(Collectors.joining(","))+"]"
+				     +", overridden="+this.isOverridden()+", declaredModifiers="+declaredModifiers+", modifiers="+modifiers+", implementationInfo="+implementationInfo
+				     +")");
 
-		sb.append("]");
+		printExtraTop(writer, detailLevel);
 
-		return sb.toString();
+		writer.increaseIndent();
+
+		if (parameters.size()>0) {
+		  writer.ensureNewLine();
+		  writer.print("parameters= [");
+		  parameters.stream().forEach(p -> p.print(writer, detailLevel+1));
+		  writer.println("]");
+		}
+
+		printExtraBottom(writer, detailLevel);
+
+		writer.decreaseIndent();
+		writer.println(")");
+
+		if (detailLevel>0)
+			writer.decreaseIndent();
 	}
 }

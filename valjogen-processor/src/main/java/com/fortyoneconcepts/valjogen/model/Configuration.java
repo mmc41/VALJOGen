@@ -465,6 +465,6 @@ public class Configuration implements ConfigurationOptionKeys
 			}
 		}).collect(Collectors.joining(", "));
 
-		return "Configuration [this=@"+ Integer.toHexString(System.identityHashCode(this))+", "+nameValues+"]";
+		return this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", "+nameValues+")";
 	}
 }

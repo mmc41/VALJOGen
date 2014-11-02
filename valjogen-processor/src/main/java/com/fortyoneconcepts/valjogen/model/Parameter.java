@@ -6,6 +6,8 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.EnumSet;
 import java.util.Objects;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Meta-information about a formal parameter for a method/property.
  *
@@ -75,7 +77,27 @@ public class Parameter extends DefinitionBase implements TypedModel
 	}
 
 	@Override
-	public String toString(int level) {
-		return "Parameter [name=" + name + ", type=" + type.getPrototypicalQualifiedName() + ", erasedType=" + erasedParamType.getPrototypicalQualifiedName() +", declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+"]";
+	public void print(IndentedPrintWriter writer, int detailLevel)
+	{
+		if (detailLevel>=MAX_RECURSIVE_LEVEL) {
+			writer.print(name+" ");
+			return;
+		}
+
+		if (detailLevel>0)
+			writer.increaseIndent();
+
+		writer.ensureNewLine();
+
+		writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", name="+ getName()+", type="+type.getPrototypicalName()+", erasedType=" + erasedParamType.getPrototypicalName() +", declaredModifiers="+declaredModifiers+", modifiers="+getModifiers());
+
+		printExtraTop(writer, detailLevel);
+
+		printExtraBottom(writer, detailLevel);
+
+		writer.println(")");
+
+		if (detailLevel>0)
+			writer.decreaseIndent();
 	}
 }

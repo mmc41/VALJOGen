@@ -3,6 +3,8 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Represents a primitive java data type.
  *
@@ -25,13 +27,7 @@ public class PrimitiveType extends Type
 	public boolean isPrimitive() {
 		return true;
 	}
-/*
-	@Override
-	public boolean isComparable()
-	{
-		return true;
-	}
-*/
+
 	@Override
     public boolean isVoid()
     {
@@ -91,7 +87,25 @@ public class PrimitiveType extends Type
 	}
 
 	@Override
-	public String toString(int level) {
-		return "PrimitiveType [this=@"+ Integer.toHexString(System.identityHashCode(this))+", typeName = "+qualifiedProtoTypicalTypeName+ "]";
+	public void print(IndentedPrintWriter writer, int detailLevel)
+	{
+		if (detailLevel>=MAX_RECURSIVE_LEVEL) {
+			writer.print(qualifiedProtoTypicalTypeName+" ");
+			return;
+		}
+
+		if (detailLevel>0)
+			writer.increaseIndent();
+
+		writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", typeName="+ qualifiedProtoTypicalTypeName);
+
+		printExtraTop(writer, detailLevel);
+
+		printExtraBottom(writer, detailLevel);
+
+		writer.println(")");
+
+		if (detailLevel>0)
+			writer.decreaseIndent();
 	}
 }

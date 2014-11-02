@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
 
 /**
  * Represents a java true object data type (which is not an array and not a primitive data type).
@@ -212,23 +212,49 @@ public class ObjectType extends Type
 	}
 
 	@Override
-	public String toString(int level)
+	public void print(IndentedPrintWriter writer, int detailLevel)
 	{
-		StringBuilder sb = new StringBuilder();
+		if (detailLevel>=MAX_RECURSIVE_LEVEL) {
+			writer.print(qualifiedProtoTypicalTypeName+" ");
+			return;
+		}
 
-		sb.append("ObjectType [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+		if (detailLevel>0)
+			writer.increaseIndent();
 
-		if (level<MAX_RECURSIVE_LEVEL)
-		  sb.append(", initialized="+initialized()+
-				    ", qualifiedProtoTypicalTypeName = "+
-				    qualifiedProtoTypicalTypeName+ ", name="+
-				    getName()+", genericTypeArguments="+
-				    ToStringUtil.toString(genericTypeArguments, ", ", level+1)+System.lineSeparator()+
-				    ", baseClass="+baseClazzType.toString(level+1)+
-				    ", interfaceTypes="+ToStringUtil.toString(interfaceTypes, System.lineSeparator(), level+1));
+		writer.ensureNewLine();
 
-		sb.append("]");
+		writer.println(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", initialized="+initialized()+", qualifiedProtoTypicalTypeName="+ qualifiedProtoTypicalTypeName);
+		writer.increaseIndent();
 
-		return sb.toString();
+		if (baseClazzType!=null && baseClazzType.getTypeCategory()!=TypeCategory.NONE) {
+		  writer.ensureNewLine();
+		  writer.print("base type= ");
+		  baseClazzType.print(writer, detailLevel+1);
+		}
+
+		if (genericTypeArguments.size()>0) {
+  	      writer.ensureNewLine();
+		  writer.print("genericTypeArguments= [");
+		  genericTypeArguments.stream().forEach(t -> t.print(writer, detailLevel+1));
+		  writer.println("]");
+		}
+
+		if (interfaceTypes.size()>0) {
+	      writer.ensureNewLine();
+		  writer.print("interfaceTypes= [");
+		  interfaceTypes.stream().forEach(t -> t.print(writer, detailLevel+1));
+		  writer.println("]");
+		}
+
+		if (superTypesWithAscendants.size()>0) {
+		  writer.println("superTypesWithAscendants=["+superTypesWithAscendants.stream().map(t -> t.getQualifiedName()).collect(Collectors.joining(", "))+"]");
+		}
+
+		writer.decreaseIndent();
+		writer.println(") // end of "+qualifiedProtoTypicalTypeName);
+
+		if (detailLevel>0)
+			writer.decreaseIndent();
 	}
 }

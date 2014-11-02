@@ -6,6 +6,8 @@ package com.fortyoneconcepts.valjogen.model;
 import java.util.EnumSet;
 import java.util.Objects;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Meta-information about a formal parameter with a value that is associated with a member
  *
@@ -45,7 +47,14 @@ public class MemberParameter extends Parameter
 	}
 
 	@Override
-	public String toString(int level) {
-		return "MemberParameter [name=" + name + ", type=" + type.getPrototypicalQualifiedName() + ", erasedType=" + erasedParamType.getPrototypicalQualifiedName() +", assoicated member="+associatedMember.getName()+", declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+"]";
+	protected void printExtraTop(IndentedPrintWriter writer, int detailLevel)
+	{
+		writer.print(", assoicated member="+associatedMember.getName());
+	}
+
+	@Override
+	protected void printExtraBottom(IndentedPrintWriter writer, int detailLevel)
+	{
+
 	}
 }

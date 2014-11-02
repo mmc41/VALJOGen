@@ -4,8 +4,8 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
 import com.fortyoneconcepts.valjogen.processor.TemplateKind;
 
 /***
@@ -78,24 +78,15 @@ public class Property extends Method
 	}
 
 	@Override
-	public String toString(int level)
+	protected void printExtraTop(IndentedPrintWriter writer, int detailLevel)
 	{
-		StringBuilder sb = new StringBuilder();
+		writer.print(", member="+member.getName() + ", propertyKind="+kind+", overriddenReturnType="+overriddenReturnType.getPrototypicalName());
+	}
 
-		sb.append("Property [this=@"+ Integer.toHexString(System.identityHashCode(this)));
+	@Override
+	protected void printExtraBottom(IndentedPrintWriter writer, int detailLevel)
+	{
 
-		if (level<MAX_RECURSIVE_LEVEL)
-			sb.append(", member=" + member.getName() +
-					  ", propertyKind="+kind+
-					  ", overriddenReturnType="+overriddenReturnType.toString(NO_DETAILS_LEVEL)+
-  					  ", thrownTypes=["+thrownTypes.stream().map(t -> t.getPrototypicalName()).collect(Collectors.joining(","+System.lineSeparator()))+"]"+
-					  ", declaredModifiers="+declaredModifiers+
-					  ", modifiers="+modifiers+
-					  ", implementationInfo="+implementationInfo+"]");
-
-		sb.append("]");
-
-		return sb.toString();
 	}
 }
 

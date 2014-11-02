@@ -3,6 +3,8 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Common interface for all model elements.
  *
@@ -62,13 +64,10 @@ public interface Model
 	}
 
 	/**
-	 * Special (safe) version of toString that guards against infinite loops.
-	 * Called by default toString() method so there is no need to call this
-	 * directly by clients.
+	 * Helper method for printing out the model nicely without getting into problems with its circular references.
 	 *
-	 * @param level The internal recursion level.
-	 *
-	 * @return String representation of model.
+	 * @param writer The writer to print to
+	 * @param level The curren recursion level. Call with 0 initially.
 	 */
-	String toString(int level);
+	public void print(IndentedPrintWriter writer, int level);
 }

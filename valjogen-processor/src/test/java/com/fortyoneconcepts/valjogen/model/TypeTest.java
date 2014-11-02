@@ -2,6 +2,8 @@ package com.fortyoneconcepts.valjogen.model;
 
 import org.junit.*;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -96,11 +98,6 @@ public class TypeTest
 		}
 
 		@Override
-		public String toString(int level) {
-			return this.getQualifiedName();
-		}
-
-		@Override
 		public Type copy(BasicClazz optClazzUsingType) {
 			throw new java.lang.UnsupportedOperationException();
 		}
@@ -113,6 +110,12 @@ public class TypeTest
 		@Override
 		public TypeCategory getTypeCategory() {
 			return TypeCategory.OBJECT;
+		}
+
+		@Override
+		public void print(IndentedPrintWriter writer, int level)
+		{
+			writer.print("TestType");
 		}
 	}
 }

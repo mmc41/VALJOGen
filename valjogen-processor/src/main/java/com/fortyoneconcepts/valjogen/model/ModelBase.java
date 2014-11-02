@@ -3,6 +3,10 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import java.io.StringWriter;
+
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Common base class for models
  *
@@ -19,6 +23,18 @@ public abstract class ModelBase implements Model
 	 */
 	public final String toString()
 	{
-		return toString(0);
+	   StringWriter result = new StringWriter();
+
+	   IndentedPrintWriter p = new IndentedPrintWriter(result);
+	   this.print(p, 0);
+       p.flush();
+
+	   return result.toString(); // toString(0);
 	}
+
+
+	public abstract void print(IndentedPrintWriter writer, int level);
+
+	protected void printExtraTop(IndentedPrintWriter writer, int detailLevel) {}
+	protected void printExtraBottom(IndentedPrintWriter writer, int detailLevel) {}
 }

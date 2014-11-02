@@ -5,6 +5,8 @@ package com.fortyoneconcepts.valjogen.model;
 
 import java.util.Objects;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
+
 /**
  * Specifies a non-exisisting type. Type of nothing.
  *
@@ -36,14 +38,14 @@ public class NoType extends ObjectType
 	}
 
 	@Override
-	public String toString(int level)
-	{
-		return "<NONE>";
-	}
-
-	@Override
 	public boolean isInImportScope()
 	{
 		return true;
+	}
+
+	@Override
+	public void print(IndentedPrintWriter writer, int detailLevel)
+	{
+		writer.print("NoType ");
 	}
 }

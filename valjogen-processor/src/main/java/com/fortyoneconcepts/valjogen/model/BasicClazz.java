@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
 
 /**
  * Detailed information about a java "class" such as members and methods. Base class for Clazz which is the class type used for generation of code.
@@ -220,34 +220,68 @@ public class BasicClazz extends ObjectType implements Definition {
 	}
 
 	@Override
-	public String toString(int level)
+	public void print(IndentedPrintWriter writer, int detailLevel)
 	{
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("BasicClazz [this=@"+ Integer.toHexString(System.identityHashCode(this)));
-
-		if (level<MAX_RECURSIVE_LEVEL)
+		if (detailLevel<=1)
 		{
-			sb.append(", initialized="+initialized()+", qualifiedClassName="+ qualifiedProtoTypicalTypeName);
+			if (detailLevel>0)
+				writer.increaseIndent();
+
+			writer.ensureNewLine();
+
+			writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", initialized="+initialized()+", qualifiedClassName="+ qualifiedProtoTypicalTypeName+", packageName=" + packageName+", declaredModifiers="+declaredModifiers);
+			printExtraTop(writer, detailLevel);
+			writer.println();
+
+			writer.increaseIndent();
+
+			if (baseClazzType!=null && baseClazzType.getTypeCategory()!=TypeCategory.NONE) {
+			  writer.ensureNewLine();
+			  writer.print("base type= ");
+			  baseClazzType.print(writer, detailLevel+1);
+		    }
+
+			if (genericTypeArguments.size()>0) {
+			  writer.ensureNewLine();
+			  writer.print("genericTypeArguments= [");
+			  genericTypeArguments.stream().forEach(t -> t.print(writer, detailLevel+1));
+			  writer.println("]");
+			}
+
+			if (interfaceTypes.size()>0) {
+			  writer.ensureNewLine();
+			  writer.print("interfaceTypes= [");
+			  interfaceTypes.stream().forEach(t -> t.print(writer, detailLevel+1));
+			  writer.println("]");
+			}
+
+			if (superTypesWithAscendants.size()>0) {
+			  writer.println("superTypesWithAscendants=["+superTypesWithAscendants.stream().map(t -> t.getQualifiedName()).collect(Collectors.joining(", "))+"]");
+			}
+
+			if (members.size()>0) {
+			  writer.ensureNewLine();
+			  writer.print("members= [");
+			  members.stream().forEach(m -> m.print(writer, detailLevel+1));
+			  writer.println("]");
+			}
+
+			if (methods.size()>0) {
+			  writer.ensureNewLine();
+			  writer.print("methods= [");
+			  methods.stream().forEach(p -> p.print(writer, detailLevel+1));
+			  writer.println("]");
+			}
+
+			printExtraBottom(writer, detailLevel);
+
+			writer.decreaseIndent();
+			writer.println(") // end of "+qualifiedProtoTypicalTypeName);
+
+			if (detailLevel>0)
+				writer.decreaseIndent();
+		} else {
+			writer.print(qualifiedProtoTypicalTypeName+" ");
 		}
-
-		// Specific to basic class, most details are only printed as first two levels.
-		if (level<=0)
-		{
-			sb.append(" packageName=" + packageName + System.lineSeparator()
-					 +", base type=" + baseClazzType.toString(level+1)
-					 + System.lineSeparator() + ", interface interfaceTypes=["
-					 + interfaceTypes.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+ System.lineSeparator()+ ", interfaceTypesWithAscendants=["
-					 + superTypesWithAscendants.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator())) +"]"+ System.lineSeparator()
-					 + ", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, ", ", level+1)+System.lineSeparator()
-					 + ", members="+ToStringUtil.toString(members, System.lineSeparator(), level+1)+System.lineSeparator()
-					 + ", methods="+ToStringUtil.toString(methods, System.lineSeparator(), level+1)+System.lineSeparator()
-					 + ", declaredModifiers="+declaredModifiers
-                     );
-		}
-
-		sb.append("]");
-
-		return sb.toString();
 	}
 }

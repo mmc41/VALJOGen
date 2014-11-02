@@ -125,9 +125,7 @@ public class ClazzTest
 			Method instanceMethod = new Method(this, comparableClazz, "compareTo", new PrimitiveType(this, "int"), Arrays.asList(new Parameter(this, this, "other", EnumSet.of(Modifier.PUBLIC))), Collections.emptyList(), "", EnumSet.of(Modifier.PUBLIC), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
 			Method staticMethod = new Method(this, comparableClazz, "staticCompareTo", new PrimitiveType(this, "int"), Arrays.asList(new Parameter(this, this, "other", EnumSet.of(Modifier.PUBLIC))), Collections.emptyList(), "", EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
 
-			initContent(Arrays.asList(instanceMember, staticMember), Arrays.asList(instanceMethod, staticMethod), EnumSet.of(Modifier.PUBLIC));
-
-			System.out.println(this);
+			initContent(Arrays.asList(instanceMember, staticMember), Collections.emptyList(), Arrays.asList(instanceMethod, staticMethod), Collections.emptyList(), Collections.emptyList(), EnumSet.of(Modifier.PUBLIC));
 		}
 	}
 }

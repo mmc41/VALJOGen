@@ -7,8 +7,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
-import com.fortyoneconcepts.valjogen.model.util.ToStringUtil;
 
 /**
  * Information about the java "class" that need to be generated including additional information about methods that acts as properties.
@@ -50,6 +50,8 @@ public class Clazz extends BasicClazz implements Model
 		this.fileHeaderText = Objects.requireNonNull(fileHeaderText);
 
 		this.importTypes = new ArrayList<Type>();
+		this.properties = Collections.emptyList();
+		this.chosenComparableMembers = Collections.emptyList();
 		this.modifiers=EnumSet.noneOf(Modifier.class);
 	}
 
@@ -183,35 +185,26 @@ public class Clazz extends BasicClazz implements Model
 	}
 
 	@Override
-	public String toString(int level)
+	protected void printExtraTop(IndentedPrintWriter writer, int detailLevel)
 	{
-		StringBuilder sb = new StringBuilder();
+		writer.print(", modifiers="+modifiers);
+	}
 
-		sb.append("Clazz [this=@"+ Integer.toHexString(System.identityHashCode(this)));
-
-		if (level<MAX_RECURSIVE_LEVEL)
-		{
-			sb.append(", initialized="+initialized()+", qualifiedClassName="+ qualifiedProtoTypicalTypeName);
+	@Override
+	protected void printExtraBottom(IndentedPrintWriter writer, int detailLevel)
+	{
+		if (properties.size()>0) {
+		  writer.print("properties= [");
+		  properties.stream().forEach(p -> p.print(writer, detailLevel+1));
+		  writer.println("]");
 		}
 
-		// Specific to class, most details are only printed as top level:
-		if (level==0)
-		{
-			sb.append(" packageName=" + packageName + System.lineSeparator()
-					 +", base type=" + baseClazzType.toString(level)
-					 + System.lineSeparator() + ", interface interfaceTypes=["
-					 + interfaceTypes.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator()))+"]"+ System.lineSeparator()+ ", interfaceTypesWithAscendants=["
-					 + superTypesWithAscendants.stream().map(t -> t.toString(level+1)).collect(Collectors.joining(","+System.lineSeparator())) +"]"+ System.lineSeparator()
- 					 + ", importedTypes="+ToStringUtil.toString(importTypes, ", ", level+1)+System.lineSeparator()
-					 + ", genericTypeArguments="+ToStringUtil.toString(genericTypeArguments, ", ", level+1)+System.lineSeparator()
-					 + ", members="+ToStringUtil.toString(members, System.lineSeparator(), level+1)+System.lineSeparator()
-					 + ", properties=" + ToStringUtil.toString(properties,System.lineSeparator(), level+1)+System.lineSeparator()
-					 + ", methods="+ToStringUtil.toString(methods,System.lineSeparator(), level+1)+System.lineSeparator()
-					 );
+		if (importTypes.size()>0) {
+		  writer.println("importTypes=["+importTypes.stream().map(t -> t.getQualifiedName()).collect(Collectors.joining(", "))+"]");
 		}
 
-		sb.append("]");
-
-		return sb.toString();
+		if (chosenComparableMembers.size()>0) {
+		  writer.println("chosenComparableMembers=["+chosenComparableMembers.stream().map(m -> m.getName()).collect(Collectors.joining(", "))+"]");
+		}
 	}
 }
