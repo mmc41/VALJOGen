@@ -11,8 +11,11 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import javax.lang.model.SourceVersion;
+
 import com.fortyoneconcepts.valjogen.annotations.*;
-import com.fortyoneconcepts.valjogen.annotations.internal.ThisReference;
+import com.fortyoneconcepts.valjogen.annotations.internal.*;
+import com.fortyoneconcepts.valjogen.annotations.types.*;
 import com.fortyoneconcepts.valjogen.model.util.AnnotationProxyBuilder;
 import com.fortyoneconcepts.valjogen.model.util.NamesUtil;
 
@@ -31,6 +34,7 @@ public class Configuration implements ConfigurationOptionKeys
 	 private final Locale optDefaultLocale;
 	 private final Map<String,String> options;
 	 private final Date processorExecutionDate;
+	 private final SourceVersion targetSourceVersion;
 
      /**
      * This decl only shows the custom macros. In addition system properties will be added as macros too.
@@ -43,14 +47,15 @@ public class Configuration implements ConfigurationOptionKeys
 		 put(ConfigurationMacros.ExecutionDateMacro, () -> String.format("%tFT%<tRZ", getExecutionDate()));
 	 }};
 
-	 public Configuration(String sourceElementName, VALJOGenerate annotation, Locale optDefaultLocale, Map<String,String> options)
+	 public Configuration(String sourceElementName, SourceVersion targetSourceVersion, VALJOGenerate annotation, Locale optDefaultLocale, Map<String,String> options)
 	 {
-		 this(sourceElementName, annotation, new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build(), optDefaultLocale, options);
+		 this(sourceElementName, targetSourceVersion, annotation, new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build(), optDefaultLocale, options);
 	 }
 
-	 public Configuration(String sourceElementName, VALJOGenerate annotation, VALJOConfigure configureAnnotation, Locale optDefaultLocale, Map<String,String> options)
+	 public Configuration(String sourceElementName, SourceVersion targetSourceVersion, VALJOGenerate annotation, VALJOConfigure configureAnnotation, Locale optDefaultLocale, Map<String,String> options)
 	 {
 		 this.sourceElementName=sourceElementName;
+		 this.targetSourceVersion=targetSourceVersion;
 		 this.generateAnnotation=Objects.requireNonNull(annotation);
 		 this.configureAnnotation=Objects.requireNonNull(configureAnnotation);
 		 this.optDefaultLocale=optDefaultLocale;
@@ -69,6 +74,46 @@ public class Configuration implements ConfigurationOptionKeys
 			 final String macroName = ConfigurationMacros.MacroPrefix+propertyName+ConfigurationMacros.MacroSuffix;
 			 macros.putIfAbsent(macroName, () -> System.getProperty(propertyName) );
 		 }
+	 }
+
+	 /**
+	  * The java source target version that generated code must conform to.
+	  *
+	  * @return Required java source version of generated code.
+	  */
+	 public SourceVersion getTargetSourceVersion()
+	 {
+		 return targetSourceVersion;
+	 }
+
+	 /**
+	  * Return true if java source target version is 6.0 or higher.
+	  *
+	  * @return True if at least Java 6.0 version
+	  */
+	 public boolean isTargetSourceVersionJava6OrHigher()
+	 {
+		 return targetSourceVersion.compareTo(SourceVersion.RELEASE_6)>=0;
+	 }
+
+	 /**
+	  * Return true if java source target version is 7.0 or higher.
+	  *
+	  * @return True if at least Java 7.0 version
+	  */
+	 public boolean isTargetSourceVersionJava7OrHigher()
+	 {
+		 return targetSourceVersion.compareTo(SourceVersion.RELEASE_7)>=0;
+	 }
+
+	 /**
+	  * Return true if java source target version is 8.0 or higher.
+	  *
+	  * @return True if at least Java 8.0 version
+	  */
+	 public boolean isTargetSourceVersionJava8OrHigher()
+	 {
+		 return targetSourceVersion.compareTo(SourceVersion.RELEASE_8)>=0;
 	 }
 
 	 /**
@@ -152,6 +197,11 @@ public class Configuration implements ConfigurationOptionKeys
 		 }
 
 		 return modifers.size()>0 ? EnumSet.copyOf(modifers) : EnumSet.noneOf(Modifier.class);
+	 }
+
+	 public Mutability getMutability()
+	 {
+		 return getEnumValue(mutability, Mutability.class, configureAnnotation.mutability());
 	 }
 
 	 public boolean isFinalMembersAndParametersEnabled()
@@ -401,6 +451,20 @@ public class Configuration implements ConfigurationOptionKeys
 
 		 return value.split(",");
 	 }
+
+	 private <T extends Enum<T>> T getEnumValue(String optionKey, Class<T> enumType, T defaultValue)
+	 {
+		 String value = options.get(ConfigurationDefaults.OPTION_QUALIFIER+optionKey);
+		 if (value==null || value.length() == 0 || value.trim().length() == 0 || value.equals(ConfigurationMacros.NotApplicableMacro))
+		   return defaultValue;
+
+		 try {
+			 return Enum.valueOf(enumType, value);
+		 } catch (Throwable e)
+		 {
+			 throw new IllegalArgumentException("Option value "+value+" for key "+optionKey+" must be an enum value of type"+enumType.toString(), e);
+		 }
+	}
 
 	 private boolean getBooleanValue(String optionKey, boolean defaultValue)
 	 {

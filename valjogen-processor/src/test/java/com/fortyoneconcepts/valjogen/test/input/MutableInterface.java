@@ -3,9 +3,11 @@
 */
 package com.fortyoneconcepts.valjogen.test.input;
 
-import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
+import com.fortyoneconcepts.valjogen.annotations.*;
+import com.fortyoneconcepts.valjogen.annotations.types.*;
 
 @VALJOGenerate
+@VALJOConfigure(mutability=Mutability.Mutable)
 public interface MutableInterface
 {
 	public int getIntValue();

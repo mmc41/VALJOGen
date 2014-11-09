@@ -4,10 +4,13 @@
 package com.fortyoneconcepts.valjogen.model;
 
 /**
- * Describes if a property is a getter or a setter.
+ * Describes if a property is a getter or a mutable/immutable setter.
  *
  * @author mmc
  */
-public enum PropertyKind {
- SETTER, GETTER
+public enum PropertyKind
+{
+ GETTER,
+ MUTABLE_SETTER,
+ IMMUTABLE_SETTER
 }

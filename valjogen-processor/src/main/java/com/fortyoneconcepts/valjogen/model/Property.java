@@ -63,13 +63,17 @@ public class Property extends Method
 
 	public boolean isSetter()
 	{
-		return kind==PropertyKind.SETTER;
+		return kind==PropertyKind.IMMUTABLE_SETTER || kind==PropertyKind.MUTABLE_SETTER;
 	}
 
-	public boolean isMutating()
+	public boolean isMutableSetter()
 	{
-		boolean mutating = isSetter() && !isThisReturnType();
-		return mutating;
+		return kind==PropertyKind.MUTABLE_SETTER;
+	}
+
+	public boolean isImmutableSetter()
+	{
+		return kind==PropertyKind.IMMUTABLE_SETTER;
 	}
 
 	public boolean isEnsureNotNullEnabled()

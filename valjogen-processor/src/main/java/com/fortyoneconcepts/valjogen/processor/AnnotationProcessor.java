@@ -100,6 +100,7 @@ public class AnnotationProcessor extends AbstractProcessor
 	{
 		Messager messager = processingEnv.getMessager();
 		Locale optLocale = processingEnv.getLocale();
+		SourceVersion sourceVersion = processingEnv.getSourceVersion();
 
 		boolean claimed = true;
 
@@ -123,8 +124,8 @@ public class AnnotationProcessor extends AbstractProcessor
 
 					String masterInterfaceName = e.asType().toString();
 					Configuration configuration = optConfigureConfiguration!=null
-							                      ? new Configuration(masterInterfaceName, annotationGenerate, optConfigureConfiguration, optLocale, options)
-					                              :  new Configuration(masterInterfaceName, annotationGenerate, optLocale, options);
+							                      ? new Configuration(masterInterfaceName, sourceVersion, annotationGenerate, optConfigureConfiguration, optLocale, options)
+					                              :  new Configuration(masterInterfaceName, sourceVersion, annotationGenerate, optLocale, options);
 
 			        KnownFileHandler.setUpLogging(parentLogger, configuration);
 

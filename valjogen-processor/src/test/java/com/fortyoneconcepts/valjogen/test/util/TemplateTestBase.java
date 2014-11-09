@@ -18,6 +18,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -67,6 +68,8 @@ public abstract class TemplateTestBase
 	private Types types;
 	private Elements elements;
 
+	protected SourceVersion sourceVersion;
+
 	protected AnnotationProxyBuilder<VALJOGenerate> generateAnnotationBuilder;
 	protected AnnotationProxyBuilder<VALJOConfigure> configureAnnotationBuilder;
 	protected Map<String,String> configurationOptions;
@@ -86,6 +89,8 @@ public abstract class TemplateTestBase
 	@Before
 	public void init() throws URISyntaxException, IOException
 	{
+		sourceVersion=SourceVersion.RELEASE_7;
+
 		types = Objects.requireNonNull(compilationRule.getTypes());
 		elements = Objects.requireNonNull(compilationRule.getElements());
 
@@ -148,7 +153,7 @@ public abstract class TemplateTestBase
 
 	protected Output produceOutput(Class<?> sourceClass, VALJOGenerate generateAnnotation, VALJOConfigure configureAnnotation, boolean allowErrors, boolean suppressWarnings) throws Exception
 	{
-		Configuration configuration = new Configuration(sourceClass.getCanonicalName(), generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
+		Configuration configuration = new Configuration(sourceClass.getCanonicalName(), sourceVersion, generateAnnotation, configureAnnotation, Locale.ENGLISH, configurationOptions);
 
 	    // Now that we know what to do with logging, do set it correctly.
         KnownFileHandler.setUpLogging(parentLogger, configuration);

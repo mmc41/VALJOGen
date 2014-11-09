@@ -17,6 +17,7 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
+import com.fortyoneconcepts.valjogen.annotations.types.Mutability;
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.Modifier;
 import com.fortyoneconcepts.valjogen.model.NoType;
@@ -508,8 +509,12 @@ public final class ModelBuilder
 			PropertyKind propertyKind = null;
 		    if (NamesUtil.isGetterMethod(methodName, configuration.getGetterPrefixes()))
 		    	propertyKind=PropertyKind.GETTER;
-		    else if (NamesUtil.isSetterMethod(methodName, configuration.getSetterPrefixes()))
-		    	propertyKind=PropertyKind.SETTER;
+		    else if (NamesUtil.isSetterMethod(methodName, configuration.getSetterPrefixes())) {
+		    	String returnTypeName = returnTypeMirror.toString();
+				if (returnTypeName.equals("void"))
+				  propertyKind=PropertyKind.MUTABLE_SETTER;
+			    else propertyKind=PropertyKind.IMMUTABLE_SETTER;
+		    }
 
 			if (propertyKind!=null) {
 				Member propertyMember = createPropertyMemberIfValidProperty(clazz, interfaceOrClassMirrorType, returnTypeMirror, params, paramTypes, m, propertyKind);
@@ -580,7 +585,7 @@ public final class ModelBuilder
 
 		String propertyName = m.getSimpleName().toString();
 
-      	Type overriddenReturnType = (configuration.isThisAsImmutableSetterReturnTypeEnabled() && propertyKind==PropertyKind.SETTER && !returnType.isVoid()) ? clazz : returnType;
+      	Type overriddenReturnType = (configuration.isThisAsImmutableSetterReturnTypeEnabled() && propertyKind==PropertyKind.IMMUTABLE_SETTER) ? clazz : returnType;
 
 		if (parameters.size()==0) {
 			property=new Property(clazz, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, modifiers, implementationInfo);
@@ -657,11 +662,20 @@ public final class ModelBuilder
 
 			propertyTypeMirror = returnTypeMirror;
 			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement), modifiers);
-		} else if (kind==PropertyKind.SETTER) {
+		} else if (kind==PropertyKind.IMMUTABLE_SETTER || kind==PropertyKind.MUTABLE_SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
   				  errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MalFormedSetter, methodElement.toString()));
 				return null;
+			}
+
+			if (configuration.getMutability()==Mutability.Immutable && kind==PropertyKind.MUTABLE_SETTER)
+			{
+				errorConsumer.message(methodElement, Kind.ERROR, String.format(ProcessorMessages.MutableSetterNotAllowedForImmutableObject, methodElement.toString()));
+				return null;
+			} else if (configuration.getMutability()==Mutability.Mutable && kind==PropertyKind.IMMUTABLE_SETTER)
+			{
+				errorConsumer.message(methodElement, Kind.MANDATORY_WARNING, String.format(ProcessorMessages.ImmutableSetterNotExpectedForMutableObject, methodElement.toString()));
 			}
 
 			String returnTypeName = returnTypeMirror.toString();

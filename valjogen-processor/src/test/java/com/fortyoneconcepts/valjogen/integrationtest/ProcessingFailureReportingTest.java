@@ -10,6 +10,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
+import com.fortyoneconcepts.valjogen.annotations.types.Mutability;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.processor.ProcessorMessages;
 import com.fortyoneconcepts.valjogen.test.util.CompilationTestBase;
@@ -28,6 +29,7 @@ public class ProcessingFailureReportingTest extends CompilationTestBase
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("import "+VALJOGenerate.class.getPackage().getName()+".*; "+System.lineSeparator());
+		sb.append("import "+Mutability.class.getPackage().getName()+".*; "+System.lineSeparator());
 		sb.append("@"+VALJOGenerate.class.getSimpleName()+System.lineSeparator());
 		sb.append("@"+VALJOConfigure.class.getSimpleName()+"("+configureString+")"+System.lineSeparator());
 		sb.append("public interface "+interfaceName+" {"+System.lineSeparator());
@@ -85,6 +87,14 @@ public class ProcessingFailureReportingTest extends CompilationTestBase
 		String source = buildAnnotatedInterfaceSource("ITest", "public int getIntValue(int other);", ConfigurationOptionKeys.ignoreMalformedProperties+"=false");
 		Map<String,String> options = getOptions("ITest");
 		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MalFormedGetter, "getIntValue(int)"), options);
+	}
+
+	@Test
+	public void testMutableSetterForImmutableObjectNotIgnored() throws URISyntaxException, IOException
+	{
+		String source = buildAnnotatedInterfaceSource("ITest", "public void setIntValue(int o);", ConfigurationOptionKeys.mutability+"=Mutability."+Mutability.Immutable);
+		Map<String,String> options = getOptions("ITest");
+		assertCompileFailure("ITest", source, String.format(ProcessorMessages.MutableSetterNotAllowedForImmutableObject, "setIntValue(int)"), options);
 	}
 
 	@Test

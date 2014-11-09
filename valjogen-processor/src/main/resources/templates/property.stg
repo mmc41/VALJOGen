@@ -7,15 +7,13 @@
 property(clazz, property) ::= <%
 <if(property.getter)>
  <getter(clazz, property)>
-<elseif(property.setter)>
- <if(property.thisReturnType)>
-   <immutable_setter(clazz, property)>
- <else>
-  <mutable_setter(clazz, property)>
- <endif>
- <else>
-  <! Error - Should not occur !>
- <endif>
+<elseif(property.immutableSetter)>
+ <immutable_setter(clazz, property)>
+<elseif(property.mutableSetter)>
+ <mutable_setter(clazz, property)>
+<else>
+ <! Error - Should not occur !>
+<endif>
 %>
 
 getter(clazz, property) ::= <<

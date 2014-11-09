@@ -66,7 +66,7 @@ public class Member extends DefinitionBase implements TypedModel
 
 	public boolean isMutable()
 	{
-		boolean mutable = properties.stream().anyMatch(p -> p.isMutating());
+		boolean mutable = properties.stream().anyMatch(p -> p.isMutableSetter());
 		return mutable;
 	}
 

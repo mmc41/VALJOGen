@@ -5,6 +5,8 @@ package com.fortyoneconcepts.valjogen.annotations;
 
 import java.lang.annotation.*;
 
+import com.fortyoneconcepts.valjogen.annotations.types.Mutability;
+
 /**
  * Specifies details about the code that should be generated. May be specified on a package (package-info.java) or on a interface alongside
  * the {@link VALJOGenerate} annotation. If specified on both a package and an interface then the package specification is ignored. Has no effect
@@ -61,6 +63,15 @@ public @interface VALJOConfigure
 	* @return line width to use when generating output.
 	*/
     int lineWidth() default -1;
+
+    /**
+    * Specifies if generated object should be immutable or mutable. May be overruled by equivalent annotation processor key.
+    *
+    * Default value is undefined, which means that the annotation processor will guess what the desired mutability (look and see if there are mutable setters).
+    *
+    * @return The desired mutability of the generated object.
+    */
+    Mutability mutability() default Mutability.Undefined;
 
 	/**
 	* Specifies if generated members and method parameters should be final if possible. May be overruled by equivalent annotation processor key.
@@ -339,7 +350,7 @@ public @interface VALJOConfigure
 	*
 	* @return Log level
 	*/
-    String logLevel() default "WARNING"; // INFO
+    String logLevel() default "WARNING";
 
     /**
 	* Experimental debugging feature that specifies if the annotation processor should open the STViz GUI Inspector for debugging the internal stringtemplates. You should not need to enable this unless you are

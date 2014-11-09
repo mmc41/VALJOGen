@@ -1,6 +1,9 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.*;
+
+import javax.lang.model.SourceVersion;
+
 import org.junit.*;
 
 import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
@@ -22,7 +25,7 @@ public class ClazzTest
 
 	@Before
 	public void init() {
-		cfg = new Configuration(sourceElementName, new AnnotationProxyBuilder<VALJOGenerate>(VALJOGenerate.class).build(), Locale.ENGLISH, Collections.emptyMap());
+		cfg = new Configuration(sourceElementName, SourceVersion.latest(), new AnnotationProxyBuilder<VALJOGenerate>(VALJOGenerate.class).build(), Locale.ENGLISH, Collections.emptyMap());
 	}
 
 	@Test

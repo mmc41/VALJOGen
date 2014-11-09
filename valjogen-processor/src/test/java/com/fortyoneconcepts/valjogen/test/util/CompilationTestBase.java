@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.lang.model.SourceVersion;
+
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
@@ -47,7 +49,7 @@ public class CompilationTestBase
 		// Create a confogiration used for reading the source path - not used for anything else.
 		VALJOGenerate generate = new AnnotationProxyBuilder<VALJOGenerate>(VALJOGenerate.class).build();
 		VALJOConfigure configure = new AnnotationProxyBuilder<VALJOConfigure>(VALJOConfigure.class).build();
-		Configuration configuration = new Configuration(null, generate, configure, Locale.ENGLISH, new HashMap<String,String>());
+		Configuration configuration = new Configuration(null, SourceVersion.latest(), generate, configure, Locale.ENGLISH, new HashMap<String,String>());
 
 		// Setup url to source dir.
 		Path targetPath = TestSupport.getClassPath();

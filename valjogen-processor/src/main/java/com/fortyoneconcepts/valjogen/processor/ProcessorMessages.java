@@ -41,4 +41,8 @@ public interface ProcessorMessages
 
   public static final String NOT_A_CLASS = "%s is not a class type";
   public static final String NOT_AN_INTERFACE = "%s is not an interface type";
+
+  public static final String MutableSetterNotAllowedForImmutableObject = "Mutable setter %s not allowed when required mutability of generated object is set to Immutable";
+
+  public static final String ImmutableSetterNotExpectedForMutableObject = "Immutable setter %s not expected when required mutability of generated object is set to Mutable";
 }

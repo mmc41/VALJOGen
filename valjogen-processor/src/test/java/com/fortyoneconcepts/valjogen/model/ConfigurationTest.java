@@ -13,6 +13,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.lang.model.SourceVersion;
+
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
 
@@ -115,7 +117,7 @@ public class ConfigurationTest
 
 			configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.comment, valueWithSystemPropertyMacro);
 
-			Configuration configuration = new Configuration(sourceElementName, generate, configure, Locale.ENGLISH, configurationOptions);
+			Configuration configuration = new Configuration(sourceElementName, SourceVersion.latest(), generate, configure, Locale.ENGLISH, configurationOptions);
 
 			String actualExpandedValue = configuration.getComment();
 
@@ -135,7 +137,7 @@ public class ConfigurationTest
 		for (int i=0; i<macros.length; ++i) {
 			configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.comment, macros[i]);
 
-			Configuration configuration = new Configuration(sourceElementName, generate, configure, Locale.ENGLISH, configurationOptions);
+			Configuration configuration = new Configuration(sourceElementName, SourceVersion.latest(), generate, configure, Locale.ENGLISH, configurationOptions);
 
 			String[] values = { null, ThisReference.class.getName(), sourceElementName, String.format("%tFT%<tRZ", configuration.getExecutionDate()) };
 

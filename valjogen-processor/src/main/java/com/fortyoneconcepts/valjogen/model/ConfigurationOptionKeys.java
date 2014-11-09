@@ -29,6 +29,11 @@ public interface ConfigurationOptionKeys
 	 public static String clazzModifiers = "clazzModifiers";
 
 	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#mutability
+	 */
+	 public static String mutability = "mutability";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalMembersAndParametersEnabled
 	 */
 	 public static String finalMembersAndParametersEnabled = "finalMembersAndParametersEnabled";
