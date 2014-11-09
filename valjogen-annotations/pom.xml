@@ -30,7 +30,6 @@
                     <compilerArgs>
                         <arg>-Xlint</arg>
                         <arg>-Xlint:-options</arg>
-                        <arg>-parameters</arg>
                     </compilerArgs>
                     <enableAssertions>true</enableAssertions>
                 </configuration>
