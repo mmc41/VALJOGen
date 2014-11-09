@@ -37,6 +37,13 @@
     </properties>
 
 	<build>
+	   <resources>
+           <resource>
+               <directory>${basedir}/src/main/resources</directory>
+               <filtering>true</filtering>
+           </resource>
+       </resources>
+
 		<plugins>
 			<plugin>
 	            <groupId>org.apache.maven.plugins</groupId>
@@ -45,10 +52,7 @@
                   <compilerArgs>
                       <arg>-Xlint</arg>
                       <arg>-Xlint:-processing</arg>
-                      <arg>-parameters</arg>                                                            <!-- Make sure parameter meta data is available for best code generation -->
-                      <arg>-Acom.fortyoneconcepts.valjogen.LOGFILE=${basedir}/target/valjogen.log</arg> <!-- Specify where to put processor log -->
-                      <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/main/java</arg>    <!-- Specify where to locate sources -->
-                      <arg>-Acom.fortyoneconcepts.valjogen.headerFileName=Header.txt</arg>              <!-- Specify header to insert at top of generated files -->
+                      <arg>-parameters</arg>       <!-- Make sure parameter meta data is available for best code generation -->
                   </compilerArgs>
                   <enableAssertions>true</enableAssertions>
                 </configuration>

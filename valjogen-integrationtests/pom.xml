@@ -54,9 +54,10 @@
                     <compilerArgs>
                         <arg>-Xlint</arg>
                         <arg>-Xlint:-processing</arg>
-                        <arg>-parameters</arg>                                                        <!-- Make sure parameter meta data is available for best code generation -->
-                        <arg>-Acom.fortyoneconcepts.valjogen.LOGFILE=${basedir}/target/valjogen.log</arg> <!-- Specify where to put processor log -->
-                        <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}/src/test/java</arg><!-- Specify where to locate sources as abs dir -->
+                        <arg>-parameters</arg>       <!-- Make sure parameter meta data is available for best code generation -->
+                        <!-- We can't use a valjogen.properties since test resources are not copied to classpath in this particular test, so specify log and sources here -->
+                        <arg>-Acom.fortyoneconcepts.valjogen.LOGFILE=${basedir}${file.separator}target${file.separator}valjogen.log</arg>
+                        <arg>-Acom.fortyoneconcepts.valjogen.SOURCEPATH=${basedir}${file.separator}src${file.separator}test${file.separator}java</arg>
                     </compilerArgs>
                     <enableAssertions>true</enableAssertions>
                 </configuration>
