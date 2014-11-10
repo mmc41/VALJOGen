@@ -204,6 +204,11 @@ public class Configuration implements ConfigurationOptionKeys
 		 return getEnumValue(mutability, Mutability.class, configureAnnotation.mutability());
 	 }
 
+	 public DataConversion getDataConversion()
+	 {
+		 return getEnumValue(dataConversion, DataConversion.class, configureAnnotation.dataConversion());
+	 }
+
 	 public boolean isFinalMembersAndParametersEnabled()
 	 {
 		 return getBooleanValue(finalMembersAndParametersEnabled, configureAnnotation.finalMembersAndParametersEnabled());

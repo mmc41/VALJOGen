@@ -16,6 +16,11 @@ public class BaseClass implements java.io.Serializable
 		this.baseValue=baseValue;
 	}
 
+	public int getBaseValue() // Requires for jackson.
+	{
+		return baseValue;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

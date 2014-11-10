@@ -4,8 +4,7 @@
 package com.fortyoneconcepts.valjogen.annotations;
 
 import java.lang.annotation.*;
-
-import com.fortyoneconcepts.valjogen.annotations.types.Mutability;
+import com.fortyoneconcepts.valjogen.annotations.types.*;
 
 /**
  * Specifies details about the code that should be generated. May be specified on a package (package-info.java) or on a interface alongside
@@ -72,6 +71,13 @@ public @interface VALJOConfigure
     * @return The desired mutability of the generated object.
     */
     Mutability mutability() default Mutability.Undefined;
+
+    /**
+    * Specifies if generated object should be easily convertable to/from xml or json. May be overruled by equivalent annotation processor key.
+    *
+    * @return The desired conversion approach to use if any.
+    */
+    DataConversion dataConversion() default DataConversion.NONE;
 
 	/**
 	* Specifies if generated members and method parameters should be final if possible. May be overruled by equivalent annotation processor key.

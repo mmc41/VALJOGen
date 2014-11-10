@@ -17,9 +17,9 @@ public class DelegateConstructor extends Constructor
 {
 	private final Constructor delegateConstructor;
 
-	public DelegateConstructor(BasicClazz clazz, Type declaringType, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo, Constructor delegateMethod)
+	public DelegateConstructor(BasicClazz clazz, Type declaringType, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo, Constructor delegateMethod)
 	{
-	    super(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, modifiers, implementationInfo);
+	    super(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, primary, declaredModifiers, modifiers, implementationInfo);
 	    this.delegateConstructor=Objects.requireNonNull(delegateMethod);
 	}
 

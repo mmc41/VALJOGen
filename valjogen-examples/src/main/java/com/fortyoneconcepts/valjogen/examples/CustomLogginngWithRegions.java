@@ -9,7 +9,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 /**
 * Example that shows how to apply a simple custom template to provide constructor logging by overriding existing regions.
 */
-@VALJOGenerate(comment="Example 10")
+@VALJOGenerate(comment="Example 20")
 @VALJOConfigure(customJavaTemplateFileName="custom_logging.stg", synchronizedAccessEnabled=true)
 public interface CustomLogginngWithRegions
 {

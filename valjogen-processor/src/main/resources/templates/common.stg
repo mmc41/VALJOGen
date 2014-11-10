@@ -24,14 +24,14 @@ uniqueVariableName(model, str) ::= <%
 %>
 
 declare_method(clazz, method) ::= <%
-<method.modifiers:{m | <m>}; separator=" "> <if(!method.constructor)><optGenericQualifier(clazz, method)><method.returnType.prototypicalName> <endif><method.name>(<method.parameters:declare_parameter(); wrap, anchor, separator=", ">)
+<method.modifiers:{m | <m>}; separator=" "> <if(!method.constructor)><optGenericQualifier(clazz, method)><method.returnType.prototypicalName> <endif><method.name>(<method.parameters:{param | <declare_parameter(method, param)>}; wrap, anchor, separator=", ">)
 <if(method.thrownTypes)>
 <\ >throws <method.thrownTypes:{m | <m.name>}; wrap, anchor, separator=", ">
 <endif>
 %>
 
-declare_parameter(param) ::= <<
-<[param.modifiers:{m | <m>}, param.type.prototypicalName]; separator=" "> <param.name>
+declare_parameter(method, param) ::= <<
+<if (((method.constructor && !method.clazz.factoryMethods) || method.factoryMethod) && method.primary && clazz.configuration.dataConversion.jacksonDataBindAnnotations && !clazz.configuration.dataConversion.jacksonDataBindAnnotationWithJDK8ParamterNames)>@JsonProperty("<param.name>") <endif><[param.modifiers:{m | <m>}, param.type.prototypicalName]; separator=" "> <param.name>
 >>
 
 other_instance_get_member_value(other, member) ::= <%
@@ -46,4 +46,4 @@ other_instance_get_member_value(other, member) ::= <%
 <endif>
 %>
 
-annotation(a) ::= <% <a> %>
+annotationLine(a) ::= <%<a><\n>%>

@@ -230,7 +230,7 @@ final class TypeBuilder
 
 		Method newMethod;
 		if (BuilderUtil.isConstructor(methodName))
-		  newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+		  newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, false, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
 		else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
 
 		return newMethod;
@@ -305,7 +305,13 @@ final class TypeBuilder
 		TypeMirror objectOutputStreamMirrorType = createTypeFromString("java.io.ObjectOutputStream");
 		ObjectType objectOutputStreamType = (ObjectType)createType(clazz, objectOutputStreamMirrorType, DetailLevel.Low);
 
-		return new HelperTypes(noType, javaLangObjectType, voidType, serializableInterfaceType, externalizableInterfaceType, comparableInterfaceType, javaUtilArraysType, javaUtilObjectsType, generatedAnnotationInterfaceType, inputStreamType, objectOutputStreamType);
+		ObjectType jsonCreatorType = new ObjectType(clazz, "com.fasterxml.jackson.annotation.JsonCreator");
+		jsonCreatorType.initType(javaLangObjectType, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
+
+		ObjectType jsonPropertyType = new ObjectType(clazz, "com.fasterxml.jackson.annotation.JsonProperty");
+		jsonPropertyType.initType(javaLangObjectType, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
+
+		return new HelperTypes(noType, javaLangObjectType, voidType, serializableInterfaceType, externalizableInterfaceType, comparableInterfaceType, javaUtilArraysType, javaUtilObjectsType, generatedAnnotationInterfaceType, inputStreamType, objectOutputStreamType, jsonCreatorType, jsonPropertyType);
 	}
 
 	DeclaredType createBaseClazzDeclaredType(String clazzPackage)

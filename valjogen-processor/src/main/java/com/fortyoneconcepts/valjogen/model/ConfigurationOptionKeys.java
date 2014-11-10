@@ -34,6 +34,11 @@ public interface ConfigurationOptionKeys
 	 public static String mutability = "mutability";
 
 	 /**
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#dataConversion
+	 */
+	 public static String dataConversion = "dataConversion";
+
+	 /**
 	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#finalMembersAndParametersEnabled
 	 */
 	 public static String finalMembersAndParametersEnabled = "finalMembersAndParametersEnabled";

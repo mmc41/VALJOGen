@@ -322,10 +322,19 @@ public final class ModelBuilder
 
 		EnumSet<Modifier> factoryModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
 
+		// Find the first of the largest base constructor measured int paramter count.
+		Constructor largestBaseClassConstructor = null;
+		for (Constructor baseClassConstructor : baseClassConstructors)
+		{
+			if (largestBaseClassConstructor==null || baseClassConstructor.getParameters().size()>largestBaseClassConstructor.getParameters().size())
+				largestBaseClassConstructor=baseClassConstructor;
+		}
+
 		for (Constructor baseClassConstructor : baseClassConstructors)
 		{
 			String baseClassConstructorOverLoadName = baseClassConstructor.getOverloadName();
 			boolean enabled = Arrays.stream(baseClazzConstructors).anyMatch(b -> matchingOverloads(baseClassConstructorOverLoadName, b, true));
+			boolean primary = (baseClassConstructor==largestBaseClassConstructor);
 
 			if (enabled) {
 				// Add constructor:
@@ -334,7 +343,7 @@ public final class ModelBuilder
 
 				List<Parameter> parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
 
-				DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
+				DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
 				result.add(constructor);
 
 				if (includeFactoryMethod) {
@@ -343,7 +352,7 @@ public final class ModelBuilder
 					classParameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class)));
 					parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
 
-					Method factoryMethod = new Method(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+					Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
 					result.add(factoryMethod);
 				}
 			}
@@ -353,13 +362,13 @@ public final class ModelBuilder
 		if (result.isEmpty()) {
 			// Add constructor:
 			List<Parameter> parameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), m)).collect(Collectors.toList());
-			Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+			Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
 			result.add(constructor);
 
 			if (includeFactoryMethod) {
 				// Add factory method:
 				parameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class))).collect(Collectors.toList());
-				Method factoryMethod = new Method(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, Collections.emptyList(), "", EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+				Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
 				result.add(factoryMethod);
 			}
 		}
@@ -551,7 +560,7 @@ public final class ModelBuilder
 			else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;
 
 		    if (isConstructor(methodName))
-		    	newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo);
+		    	newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, false, declaredModifiers, implementationInfo);
 		    else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.TYPED);
 		}
 
@@ -566,6 +575,14 @@ public final class ModelBuilder
 
 		importTypes.add(typeBuilder.createType(clazz, baseClazzDeclaredType, DetailLevel.Low));
 
+		HelperTypes helperTypes = clazz.getHelperTypes();
+		if (configuration.getDataConversion().isJacksonDataBindAnnotations())
+		{
+			importTypes.add(helperTypes.getJsonCreator());
+			if (!configuration.getDataConversion().isJacksonDataBindAnnotationWithJDK8ParamterNames())
+				importTypes.add(helperTypes.getJsonProperty());
+		}
+
 		for (String importName : configuration.getImportClasses())
 		{
 			TypeElement importElement = elements.getTypeElement(importName);
@@ -576,6 +593,7 @@ public final class ModelBuilder
 			   importTypes.add(importElementType);
 			}
 		}
+
 		return importTypes;
 	}
 

@@ -13,7 +13,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * The generated class is set to inherit from a base class that provide both contract and helper methods.
 * The example also shows how to make the generated mutable class thread safe.
 */
-@VALJOGenerate(comment="Example 13")
+@VALJOGenerate(comment="Example 23")
 @VALJOConfigure(customJavaTemplateFileName="advanced_custom_method.stg", baseClazzName="DigestBaseClass", synchronizedAccessEnabled=true)
 public interface AdvancedCustomDigestMethod
 {

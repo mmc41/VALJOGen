@@ -10,7 +10,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * Example that shows how to apply a basic custom template implementing a simple custom method. A custom method that can tell when a property was last changed.
 * Example also shows how to make the generated mutable class thread safe.
 */
-@VALJOGenerate(comment="Example 11")
+@VALJOGenerate(comment="Example 21")
 @VALJOConfigure(customJavaTemplateFileName="simple_custom_method.stg", synchronizedAccessEnabled=true)
 public interface SimpleCustomMethod
 {

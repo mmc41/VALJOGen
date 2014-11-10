@@ -182,6 +182,11 @@ public class BasicClazz extends ObjectType implements Definition {
 		return allMembers;
 	}
 
+	public boolean hasFactoryMethods()
+	{
+		return getMethods().stream().anyMatch(m -> m.isFactoryMethod());
+	}
+
 	@Override
 	public boolean hasStaticMethod(String overloadName)
 	{

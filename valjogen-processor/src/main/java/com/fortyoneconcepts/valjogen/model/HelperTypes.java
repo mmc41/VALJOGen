@@ -23,13 +23,16 @@ public class HelperTypes
 	private final ObjectType javaUtilObjectsInterfaceType;
 	private final ObjectType inputStreamType;
 	private final ObjectType objectOutputStreamType;
+	private final ObjectType jsonCreator;
+	private final ObjectType jsonProperty;
 
 	private final Type generatedAnnotationType;
 
 	public HelperTypes(NoType noType, ObjectType javaLangObjectType, Type voidType,
 			           ObjectType serializableInterfaceType, ObjectType externalizableInterfaceType,
 			           ObjectType comparableInterfaceType, ObjectType javaUtilArraysType, ObjectType javaUtilObjectsInterfaceType,
-			           Type generatedAnnotationType, ObjectType inputStreamType, ObjectType objectOutputStreamType)
+			           Type generatedAnnotationType, ObjectType inputStreamType, ObjectType objectOutputStreamType,
+			           ObjectType jsonCreator, ObjectType jsonProperty)
 	{
 		this.noType=noType;
 		this.javaLangObjectType=javaLangObjectType;
@@ -42,6 +45,8 @@ public class HelperTypes
 		this.generatedAnnotationType=generatedAnnotationType;
 		this.inputStreamType=inputStreamType;
 		this.objectOutputStreamType=objectOutputStreamType;
+		this.jsonCreator=jsonCreator;
+		this.jsonProperty=jsonProperty;
 	}
 
 	/**
@@ -130,6 +135,22 @@ public class HelperTypes
 	public ObjectType getInputStreamType()
 	{
 		return inputStreamType;
+	}
+
+	/**
+	* @return The Type object for com.fasterxml.jackson.annotation.JsonCreator
+	*/
+	public ObjectType getJsonCreator()
+	{
+		return jsonCreator;
+	}
+
+	/**
+	* @return The Type object for com.fasterxml.jackson.annotation.JsonProperty
+	*/
+	public ObjectType getJsonProperty()
+	{
+		return jsonProperty;
 	}
 
 	@Override

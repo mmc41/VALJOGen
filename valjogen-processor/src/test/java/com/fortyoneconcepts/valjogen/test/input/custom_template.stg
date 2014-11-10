@@ -10,7 +10,7 @@ import javax.annotation.Generated;
 // Inserted import stuff here.
 %>
 @class.annotations() ::= <%
-// Inserted class annotation stuff here.
+// Inserted class annotation stuff here.<\n>
 %>
 @class.before_class_members() ::= <%
 // Inserted before static members stuff here.
@@ -43,32 +43,32 @@ import javax.annotation.Generated;
 %>
 
 @method_valueOf.annotations() ::= <%
-// Inserted factory annotation stuff here.
+// Inserted factory annotation stuff here.<\n>
 %>
 @method_this.annotations() ::= <%
-// Inserted constructor annotation stuff here.
+// Inserted constructor annotation stuff here.<\n>
 %>
 @method_equals_Object.annotations() ::= <%
-// Inserted equals annotation stuff here.
+// Inserted equals annotation stuff here.<\n>
 %>
 @method_hashCode.annotations() ::= <%
-// Inserted hashCode annotation stuff here.
+// Inserted hashCode annotation stuff here.<\n>
 %>
 @method_toString.annotations() ::= <%
-// Inserted toString annotation stuff here.
+// Inserted toString annotation stuff here.<\n>
 %>
 
 @method_compareTo_T.annotations() ::= <%
-// Inserted compareTo annotation stuff here.
+// Inserted compareTo annotation stuff here.<\n>
 %>
 @getter.annotations() ::= <%
-// Inserted getter <property.name> annotation stuff here.
+// Inserted getter <property.name> annotation stuff here.<\n>
 %>
 @mutable_setter.annotations() ::= <%
-// Inserted mutable setter <property.name> annotation stuff here.
+// Inserted mutable setter <property.name> annotation stuff here.<\n>
 %>
 @immutable_setter.annotations() ::= <%
-// Inserted immutable setter <property.name> annotation stuff here.
+// Inserted immutable setter <property.name> annotation stuff here.<\n>
 %>
 
 @getter.preamble() ::= <%

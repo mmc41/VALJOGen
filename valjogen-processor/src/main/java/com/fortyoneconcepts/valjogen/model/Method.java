@@ -114,7 +114,32 @@ public class Method extends DefinitionBase
 		return getOverriddenByMethod().isPresent();
 	}
 
+	/**
+	 * Checks if the method is a static factory method.
+	 *
+	 * @return True if the method is a factory method.
+	 */
+	public boolean isFactoryMethod()
+	{
+		return false;
+	}
+
+	/**
+	 * Checks if the method is a constructor method.
+	 *
+	 * @return True if the method is a factory method.
+	 */
 	public boolean isConstructor()
+	{
+		return false;
+	}
+
+	/**
+	 * Checks if the method is the most complete creation method and thus the one to use for construction .
+	 *
+	 * @return True if the method is a primary method to use for construction.
+	 */
+	public boolean isPrimary()
 	{
 		return false;
 	}

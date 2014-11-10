@@ -8,6 +8,8 @@
 *
 * @author mmc
 **/
-@VALJOConfigure(serialVersionUID=42, staticFactoryMethodEnabled=true)
+@VALJOConfigure(serialVersionUID=42, staticFactoryMethodEnabled=true, dataConversion=DataConversion.JACKSON_DATABIND_ANNOTATIONS)
 package com.fortyoneconcepts.valjogen.testsources;
 import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;
+import com.fortyoneconcepts.valjogen.annotations.types.*;
+
