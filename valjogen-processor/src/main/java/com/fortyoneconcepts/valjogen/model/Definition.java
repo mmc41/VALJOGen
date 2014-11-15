@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * A model that is also a definition of something like a member, parameter, method or class.
@@ -32,6 +33,16 @@ public interface Definition extends Model
 	 * @return The set of modifiers to use in generated code when defining something.
 	 */
 	public EnumSet<Modifier> getModifiers();
+
+	/**
+	 * Get annotations associated with this definition.
+	 *
+	 * Warning: While all definitions have associated annotations, builders and configuration does no currently
+	 * implement full support for them (in which case an empty list will be returned)
+	 *
+	 * @return The list of anntations to use in generated code when defining something.
+	 */
+	public List<Annotation> getAnnotations();
 
 	/**
 	 * Checkes if one of the modifiers used for code generation is STATIC.

@@ -31,14 +31,14 @@ public class Method extends DefinitionBase
 	protected Optional<Method> overriddenByMethod;
 	protected Optional<Method> overridesMethod;
 
-	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
+	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, ImplementationInfo implementationInfo, TemplateKind templateKind)
 	{
-	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), implementationInfo, templateKind);
+	    this(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, defaultModifiers(clazz.getConfiguration(), declaredModifiers), annotations, implementationInfo, templateKind);
 	}
 
-	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
+	public Method(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, List<Annotation> annotations, ImplementationInfo implementationInfo, TemplateKind templateKind)
 	{
-	    super(clazz, methodName, declaredModifiers);
+	    super(clazz, methodName, declaredModifiers, annotations);
 	    this.declaringType = Objects.requireNonNull(declaringType);
 		this.parameters = Objects.requireNonNull(parameters);
 		this.thrownTypes = Objects.requireNonNull(thrownTypes);
@@ -155,6 +155,11 @@ public class Method extends DefinitionBase
 		return returnType;
 	}
 
+	public boolean isDeclared()
+	{
+		return declaringType.getClass()!=NoType.class;
+	}
+
 	public Type getDeclaringType()
 	{
 		return declaringType;
@@ -178,15 +183,14 @@ public class Method extends DefinitionBase
 	 */
 	public String getOverloadName()
 	{
-		return getOverloadName(true);
+		return getOverloadName(name, parameters);
 	}
 
-	protected String getOverloadName(boolean includeMethodName)
+	public static final String getOverloadName(String methodName, List<Parameter> parameters)
 	{
 		StringBuilder sb = new StringBuilder();
 
-		if (includeMethodName)
-			sb.append(name);
+		sb.append(methodName);
 
 		sb.append("(");
 		sb.append(parameters.stream().map(p -> {
@@ -249,6 +253,13 @@ public class Method extends DefinitionBase
 		printExtraTop(writer, detailLevel);
 
 		writer.increaseIndent();
+
+		if (annotations.size()>0) {
+		  writer.ensureNewLine();
+		  writer.print("annotations= [");
+		  annotations.stream().forEach(p -> p.print(writer, detailLevel+1));
+		  writer.println("]");
+		}
 
 		if (parameters.size()>0) {
 		  writer.ensureNewLine();

@@ -31,7 +31,7 @@ declare_method(clazz, method) ::= <%
 %>
 
 declare_parameter(method, param) ::= <<
-<if (((method.constructor && !method.clazz.factoryMethods) || method.factoryMethod) && method.primary && clazz.configuration.dataConversion.jacksonDataBindAnnotations && !clazz.configuration.dataConversion.jacksonDataBindAnnotationWithJDK8ParamterNames)>@JsonProperty("<param.name>") <endif><[param.modifiers:{m | <m>}, param.type.prototypicalName]; separator=" "> <param.name>
+<[param.annotations:{a | <a.code>}, param.modifiers:{m | <m>}, param.type.prototypicalName]; separator=" "> <param.name>
 >>
 
 other_instance_get_member_value(other, member) ::= <%
@@ -46,4 +46,4 @@ other_instance_get_member_value(other, member) ::= <%
 <endif>
 %>
 
-annotationLine(a) ::= <%<a><\n>%>
+annotationLine(a) ::= <%<a.code><\n>%>

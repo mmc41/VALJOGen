@@ -129,6 +129,9 @@ final class TypeBuilder
 			                                       ? types.directSupertypes(mirrorType).stream().map(t -> (DeclaredType)t).collect(Collectors.toList())
 			                                       : Collections.emptyList() ;
 
+	   // List<? extends AnnotationMirror> mirrorAnnotations = mirrorType.getAnnotationMirrors();
+       List<Annotation> annotations =  Collections.emptyList(); // Not supported yet.
+
 	   DeclaredType baseClazzTypeMirror;
 	   List<DeclaredType> interfaceSuperTypeMirrors;
 	   List<DeclaredType> allSuperTypesWithAscendantsTypeMirrors;
@@ -183,7 +186,7 @@ final class TypeBuilder
 
    	      EnumSet<Modifier> modifiers = createModifierSet(newClazzElement.getModifiers());
 
-		  newClazzType.initContent(members,  methods, modifiers);
+		  newClazzType.initContent(members,  methods, modifiers, annotations);
 	   }
 	}
 
@@ -195,7 +198,9 @@ final class TypeBuilder
 		Type fieldType = createType(clazz, fieldMirrorType, DetailLevel.Low);
 		EnumSet<Modifier> modifiers = createModifierSet(fieldMirrorElement.getModifiers());
 
-		return new Member(clazz, fieldType, fieldName, modifiers);
+	    List<Annotation> annotations =  Collections.emptyList(); // Not supported yet.
+
+		return new Member(clazz, fieldType, fieldName, modifiers, annotations);
 	}
 
 	private Method createMethod(BasicClazz clazz, Type declaringType, DeclaredType clazzDeclaredType, ExecutableElement methodMirrorElement)
@@ -228,10 +233,12 @@ final class TypeBuilder
 
 		String javaDoc = "";
 
+	    List<Annotation> annotations =  Collections.emptyList(); // Not supported yet.
+
 		Method newMethod;
 		if (BuilderUtil.isConstructor(methodName))
-		  newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, false, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
-		else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
+		  newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, false, declaredModifiers, annotations, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+		else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, annotations, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
 
 		return newMethod;
 	}
@@ -265,7 +272,9 @@ final class TypeBuilder
 
 		EnumSet<Modifier> modifiers = createModifierSet(param.getModifiers());
 
-		return new Parameter(clazz, createType(clazz, paramType, DetailLevel.Low), createType(clazz, param.asType(), detailLevel), name, modifiers);
+		List<Annotation> annotations = Collections.emptyList(); // Not implemented yet.
+
+		return new Parameter(clazz, createType(clazz, paramType, DetailLevel.Low), createType(clazz, param.asType(), detailLevel), name, modifiers, annotations);
 	}
 
 	private Stream<DeclaredType> getSuperTypesWithAncestors(List<DeclaredType> superTypes)

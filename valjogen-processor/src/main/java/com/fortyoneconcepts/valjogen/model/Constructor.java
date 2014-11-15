@@ -21,15 +21,15 @@ public class Constructor extends Method
 	 */
 	private final boolean primary;
 
-	public Constructor(BasicClazz clazz, Type declaringType, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo)
+	public Constructor(BasicClazz clazz, Type declaringType, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, List<Annotation> annotations, ImplementationInfo implementationInfo)
 	{
-	    super(clazz, declaringType, clazz.getSimpleName(), returnType, parameters, thrownTypes, javaDoc, declaredModifiers, modifiers, implementationInfo, TemplateKind.CONSTRUCTOR);
+	    super(clazz, declaringType, clazz.getSimpleName(), returnType, parameters, thrownTypes, javaDoc, declaredModifiers, modifiers, annotations, implementationInfo, TemplateKind.CONSTRUCTOR);
 	    this.primary=primary;
 	}
 
-	public Constructor(BasicClazz clazz, Type declaringType, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
+	public Constructor(BasicClazz clazz, Type declaringType, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, ImplementationInfo implementationInfo)
 	{
-	    super(clazz, declaringType, clazz.getSimpleName(), returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.CONSTRUCTOR);
+	    super(clazz, declaringType, clazz.getSimpleName(), returnType, parameters, thrownTypes, javaDoc, declaredModifiers, annotations, implementationInfo, TemplateKind.CONSTRUCTOR);
 	    this.primary=primary;
 	}
 
@@ -48,7 +48,7 @@ public class Constructor extends Method
 	@Override
 	public String getOverloadName()
 	{
-		return getOverloadName(false);
+		return getOverloadName("", parameters);
 	}
 
 	public List<MemberParameter> getNonDelegateMemberParameters()

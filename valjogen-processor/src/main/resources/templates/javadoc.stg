@@ -3,8 +3,8 @@
 *
 * This is a helper template group file that is responsible for generating javadoc.
 **/
-JavaDocMethod(property) ::= <%
-<if(property.configuration.insertInheritDocOnMethodsEnabled)>
+JavaDocMethod(method) ::= <%
+<if(method.configuration.insertInheritDocOnMethodsEnabled && method.declared)>
 /**<\n>
  * {@inheritDoc}<\n>
  */<\n>

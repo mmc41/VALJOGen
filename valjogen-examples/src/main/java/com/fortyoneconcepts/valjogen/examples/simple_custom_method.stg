@@ -31,6 +31,7 @@ method_nanoLastUpdated(clazz, method) ::= <<
 /**
 * Returnes the last time this class was updated.
 */
+<method.annotations:annotationLine()><\\>
 <declare_method(clazz, method)>
 {
   return changeNanoTime;

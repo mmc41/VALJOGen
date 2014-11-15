@@ -119,14 +119,14 @@ public interface ConfigurationOptionKeys
 	 public static String clazzAnnotations = "clazzAnnotations";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#constructorAnnotations
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#methodAnnotations
 	 */
-	 public static String constructorAnnotations = "constructorAnnotations";
+	 public static String methodAnnotations = "methodAnnotations";
 
 	 /**
-	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#factoryMethodAnnotations
+	 * @see com.fortyoneconcepts.valjogen.annotations.VALJOConfigure#memberAnnotations
 	 */
-	 public static String factoryMethodAnnotations = "factoryMethodAnnotations";
+	 public static String memberAnnotations = "memberAnnotations";
 
 	 /**
 	 *

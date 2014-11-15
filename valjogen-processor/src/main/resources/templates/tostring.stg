@@ -4,7 +4,7 @@
 * This is a helper template group file that is responsible for generating code for the toString method.
 **/
 method_toString(clazz, method) ::= <<
-<@javadoc><JavaDocMethod(method)><@end><@annotations>@Override<\n><@end><\\>
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
   <@preamble><@end>

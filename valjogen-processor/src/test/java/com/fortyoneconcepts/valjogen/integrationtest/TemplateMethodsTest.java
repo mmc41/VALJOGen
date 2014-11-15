@@ -122,7 +122,7 @@ public class TemplateMethodsTest extends TemplateTestBase
 	public void testConstructorAnntations() throws Exception
 	{
 		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
-				                                                .add(ConfigurationOptionKeys.constructorAnnotations,  new String[] { "@Generated", "@javax.annotation.Resource"})
+				                                                .add(ConfigurationOptionKeys.methodAnnotations,  new String[] { "(**)=@Generated", "(**)=@javax.annotation.Resource"})
 				                                                .build());
 
 		assertContainsWithWildcards("@Generated @javax.annotation.Resource * TestImpl", output.code);
@@ -132,9 +132,29 @@ public class TemplateMethodsTest extends TemplateTestBase
 	public void testFactoryMethodAnntations() throws Exception
 	{
 		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
-				                                                .add(ConfigurationOptionKeys.factoryMethodAnnotations,  new String[] { "@Generated", "@javax.annotation.Resource"})
+				                                                .add(ConfigurationOptionKeys.methodAnnotations,  new String[] { "valueOf(**)=@Generated", "valueOf(**)=@javax.annotation.Resource"})
 				                                                .build());
 
 		assertContainsWithWildcards("@Generated @javax.annotation.Resource * static TestImpl valueOf", output.code);
+	}
+
+	@Test
+	public void testMethodAnntations() throws Exception
+	{
+		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
+				                                                .add(ConfigurationOptionKeys.methodAnnotations,  new String[] { "hashCode()=@Generated"})
+				                                                .build());
+
+		assertContainsWithWildcards("@Generated @Override public int hashCode()", output.code);
+	}
+
+	@Test
+	public void testPropertyAnntations() throws Exception
+	{
+		Output output = produceOutput(ImmutableInterface.class, configureAnnotationBuilder
+				                                                .add(ConfigurationOptionKeys.methodAnnotations,  new String[] { "getIntValue()=@Generated"})
+				                                                .build());
+
+		assertContainsWithWildcards("@Generated @Override public int getIntValue()", output.code);
 	}
 }

@@ -113,10 +113,11 @@ public class Clazz extends BasicClazz implements Model
 	 * @param importTypes Types to be imported for class.
 	 * @param chosenComparableMembers Members to be used for compareToOperation
 	 * @param modifiers The modifiers to use for code generation (NB: This is not declared modifiers for there are none for a class to be generated)
+	 * @param annotations Annotations to use for code generation.
 	 */
-	public void initContent(List<Member> members, List<Property> properties, List<Method> methods, List<Type> importTypes, List<Member> chosenComparableMembers, EnumSet<Modifier> modifiers)
+	public void initContent(List<Member> members, List<Property> properties, List<Method> methods, List<Type> importTypes, List<Member> chosenComparableMembers, EnumSet<Modifier> modifiers, List<Annotation> annotations)
 	{
-		super.initContent(members, methods, EnumSet.noneOf(Modifier.class));
+		super.initContent(members, methods, EnumSet.noneOf(Modifier.class), annotations);
 
         this.properties=Objects.requireNonNull(properties);
 		this.importTypes=Objects.requireNonNull(importTypes);

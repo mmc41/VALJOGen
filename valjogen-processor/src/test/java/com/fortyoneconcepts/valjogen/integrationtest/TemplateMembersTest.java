@@ -5,6 +5,7 @@ package com.fortyoneconcepts.valjogen.integrationtest;
 
 import org.junit.Test;
 
+import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
 
@@ -30,6 +31,16 @@ public class TemplateMembersTest extends TemplateTestBase
 	{
 		Output output = produceOutput(InterfaceWithNonPropertyMethods.class);
 		assertContainsWithWildcards("protected final int intValue;", output.code);
+	}
+
+	@Test
+	public void testMemberAnntations() throws Exception
+	{
+		Output output = produceOutput(InterfaceWithNonPropertyMethods.class, configureAnnotationBuilder
+				                                                .add(ConfigurationOptionKeys.memberAnnotations,  new String[] { "intValue=@javax.annotation.Resource"})
+				                                                .build());
+
+		assertContainsWithWildcards("@javax.annotation.Resource protected final int intValue", output.code);
 	}
 
 }

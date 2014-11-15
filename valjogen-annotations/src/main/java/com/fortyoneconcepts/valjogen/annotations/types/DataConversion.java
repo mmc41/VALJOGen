@@ -28,14 +28,4 @@ public enum DataConversion
 	* @see <a href="https://github.com/FasterXML/jackson-annotations">jackson-annotations</a>
 	*/
 	JACKSON_DATABIND_ANNOTATIONS_WITH_JDK8_PARAMETER_NAMES;
-
-	public boolean isJacksonDataBindAnnotations()
-	{
-		return this==JACKSON_DATABIND_ANNOTATIONS || this==JACKSON_DATABIND_ANNOTATIONS_WITH_JDK8_PARAMETER_NAMES;
-	}
-
-	public boolean isJacksonDataBindAnnotationWithJDK8ParamterNames()
-	{
-		return this==JACKSON_DATABIND_ANNOTATIONS_WITH_JDK8_PARAMETER_NAMES;
-	}
 }

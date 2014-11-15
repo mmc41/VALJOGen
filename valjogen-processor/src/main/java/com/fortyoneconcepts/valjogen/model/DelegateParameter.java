@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 
 import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
@@ -18,16 +19,16 @@ public class DelegateParameter extends Parameter
 	private final Method delegateMethod;
 	private final Parameter delegateParameter;
 
-	public DelegateParameter(BasicClazz clazz, Type paramType, String paramName, EnumSet<Modifier> declaredModifiers, Method delegateMethod, Parameter delegateParameter)
+	public DelegateParameter(BasicClazz clazz, Type paramType, String paramName, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, Method delegateMethod, Parameter delegateParameter)
 	{
-		super(clazz, paramType, paramName, declaredModifiers);
+		super(clazz, paramType, paramName, declaredModifiers, annotations);
 		this.delegateMethod=Objects.requireNonNull(delegateMethod);
 		this.delegateParameter=Objects.requireNonNull(delegateParameter);
 	}
 
-	public DelegateParameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers, Method delegateMethod, Parameter delegateParameter)
+	public DelegateParameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, Method delegateMethod, Parameter delegateParameter)
 	{
-		super(clazz, paramType, erasedParamType, paramName, declaredModifiers);
+		super(clazz, paramType, erasedParamType, paramName, declaredModifiers, annotations);
 		this.delegateMethod=Objects.requireNonNull(delegateMethod);
 		this.delegateParameter=Objects.requireNonNull(delegateParameter);
 	}
@@ -35,7 +36,7 @@ public class DelegateParameter extends Parameter
 	@Override
 	public DelegateParameter setName(String newParamName)
 	{
-		return new DelegateParameter(clazz, type, erasedParamType, newParamName, declaredModifiers, delegateMethod, delegateParameter);
+		return new DelegateParameter(clazz, type, erasedParamType, newParamName, declaredModifiers, annotations, delegateMethod, delegateParameter);
 	}
 
 	public Method getDelegateMethod()

@@ -17,7 +17,7 @@ property(clazz, property) ::= <%
 %>
 
 getter(clazz, property) ::= <<
-<@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<\n><@end><\\>
+<@javadoc><JavaDocMethod(property)><@end><@annotations><property.annotations:annotationLine()><@end><\\>
 <declare_property(clazz, property)>
 {
  <@preamble><@end>
@@ -27,7 +27,7 @@ getter(clazz, property) ::= <<
 >>
 
 mutable_setter(clazz, property) ::= <<
-<@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<\n><@end><\\>
+<@javadoc><JavaDocMethod(property)><@end><@annotations><property.annotations:annotationLine()><@end><\\>
 <declare_property(clazz, property)>
 {
  <@preamble><@end>
@@ -37,7 +37,7 @@ mutable_setter(clazz, property) ::= <<
 >>
 
 immutable_setter(clazz, property) ::= <<
-<@javadoc><JavaDocMethod(property)><@end><@annotations>@Override<\n><@end><\\>
+<@javadoc><JavaDocMethod(property)><@end><@annotations><property.annotations:annotationLine()><@end><\\>
 <declare_property(clazz, property)>
 {
  <@preamble><@end>

@@ -20,17 +20,17 @@ public class Property extends Method
 	private final Type overriddenReturnType;
 	private final PropertyKind kind;
 
-	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo)
+	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, ImplementationInfo implementationInfo)
 	{
-		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.PROPERTY);
+		super(clazz, declaringType, propertyName, returnType, Collections.emptyList(), thrownTypes, javaDoc, declaredModifiers, annotations, implementationInfo, TemplateKind.PROPERTY);
 		this.member=Objects.requireNonNull(member);
 		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;
 	}
 
-	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, Parameter parameter)
+	public Property(BasicClazz clazz, Type declaringType, String propertyName, Type returnType, Type overriddenReturnType, List<Type> thrownTypes, Member member, PropertyKind kind, String javaDoc, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, ImplementationInfo implementationInfo, Parameter parameter)
 	{
-		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.PROPERTY);
+		super(clazz, declaringType, propertyName, returnType, Arrays.asList(parameter), thrownTypes, javaDoc, declaredModifiers, annotations, implementationInfo, TemplateKind.PROPERTY);
 		this.member=Objects.requireNonNull(member);
 		this.overriddenReturnType=overriddenReturnType;
 		this.kind=kind;

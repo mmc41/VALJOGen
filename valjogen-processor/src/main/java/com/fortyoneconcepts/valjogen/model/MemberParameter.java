@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 
 import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
@@ -17,22 +18,22 @@ public class MemberParameter extends Parameter
 {
 	private final Member associatedMember;
 
-	public MemberParameter(BasicClazz clazz, Type paramType, String paramName, EnumSet<Modifier> declaredModifiers, Member associatedMember)
+	public MemberParameter(BasicClazz clazz, Type paramType, String paramName, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, Member associatedMember)
 	{
-		super(clazz, paramType, paramName, declaredModifiers);
+		super(clazz, paramType, paramName, declaredModifiers, annotations);
 		this.associatedMember=Objects.requireNonNull(associatedMember);
 	}
 
-	public MemberParameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers, Member associatedMember)
+	public MemberParameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, Member associatedMember)
 	{
-		super(clazz, paramType, erasedParamType, paramName, declaredModifiers);
+		super(clazz, paramType, erasedParamType, paramName, declaredModifiers, annotations);
 		this.associatedMember=Objects.requireNonNull(associatedMember);
 	}
 
 	@Override
 	public MemberParameter setName(String newParamName)
 	{
-		return new MemberParameter(clazz, type, erasedParamType, newParamName, declaredModifiers, associatedMember);
+		return new MemberParameter(clazz, type, erasedParamType, newParamName, declaredModifiers, annotations, associatedMember);
 	}
 
 	public Member getMember()

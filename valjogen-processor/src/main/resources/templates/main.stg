@@ -30,7 +30,7 @@ package <clazz.packageName>;
 <@imports><clazz.importTypes:importStatement(); separator="\n"><@end>
 
 <@javadoc><if(clazz.configuration.clazzJavaDoc)>/** <clazz.configuration.clazzJavaDoc> */<endif><@end>
-<@annotations><clazz.configuration.clazzAnnotations:annotationLine()><@end><\\>
+<@annotations><clazz.annotations:annotationLine()><@end><\\>
 <[clazz.modifiers:{m | <m>}, "class"]; separator=" "> <clazz.prototypicalName><optBaseClass(clazz)> implements <clazz.interfaceTypes:{ _i |<_i.prototypicalName>}; wrap, anchor, separator=", ">
 {
   <! Static class members: !>
@@ -69,13 +69,13 @@ import <type.qualifiedName>;
 
 /** Generate a class instance member **/
 member(member) ::= <<
-<@javadoc><@end><@annotations><@end><\\>
+<@javadoc><@end><@annotations><member.annotations:annotationLine()><@end><\\>
 <[member.modifiers:{m | <m>}, member.type.prototypicalName]; separator=" "> <member.name>;
 >>
 
 /** Generate constructor **/
 method_this(clazz, method) ::= <<
-<@javadoc><@end><@annotations><clazz.configuration.constructorAnnotations:annotationLine()><if (method.primary && clazz.configuration.dataConversion.jacksonDataBindAnnotations && !clazz.factoryMethods)>@JsonCreator<\n><endif><@end><\\>
+<@javadoc><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
   <if(method.delegating)>super(<method.delegateParameters:{p | <p.name>}; wrap, anchor, separator=", ">);<endif>
@@ -87,7 +87,7 @@ method_this(clazz, method) ::= <<
 
 /** Generate static factory method: **/
 method_valueOf(clazz, method) ::= <<
-<@javadoc><@end><@annotations><clazz.configuration.factoryMethodAnnotations:annotationLine()><if (method.primary && clazz.configuration.dataConversion.jacksonDataBindAnnotations)>@JsonCreator<\n><endif><@end><\\>
+<@javadoc><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
   <@preamble><@end>

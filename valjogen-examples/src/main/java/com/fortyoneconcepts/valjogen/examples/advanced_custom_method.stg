@@ -22,6 +22,7 @@ method_calculateDigest_String(clazz, method) ::= <<
 /**
 * Returnes the message digest of the members in the class.
 */
+<method.annotations:annotationLine()><\\>
 <declare_method(clazz, method)>
 {
   <! Construct a digest using first algorithm specified in first argument of method (we could hardcode this but in the example we use the model to tell us the name of the argument) !>

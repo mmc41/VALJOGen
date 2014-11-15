@@ -30,15 +30,16 @@ public class BasicClazz extends ObjectType implements Definition {
 	protected List<Member> members;
 	protected List<Method> methods;
 	protected EnumSet<Modifier> declaredModifiers;
+	protected List<Annotation> annotations;
 
 	private boolean initializedContent;
 
 	public BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, Function<BasicClazz, HelperTypes> helperFactoryMethod)
 	{
-		this(optClazzUsingType, configuration, qualifiedProtoTypicalTypeName, helperFactoryMethod, new ArrayList<Member>(), new ArrayList<Method>(), EnumSet.noneOf(Modifier.class));
+		this(optClazzUsingType, configuration, qualifiedProtoTypicalTypeName, helperFactoryMethod, new ArrayList<Member>(), new ArrayList<Method>(), EnumSet.noneOf(Modifier.class), new ArrayList<Annotation>());
 	}
 
-	private BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, Function<BasicClazz, HelperTypes> helperFactoryMethod, List<Member> members, List<Method> methods, EnumSet<Modifier> declaredModifiers) {
+	private BasicClazz(BasicClazz optClazzUsingType, Configuration configuration, String qualifiedProtoTypicalTypeName, Function<BasicClazz, HelperTypes> helperFactoryMethod, List<Member> members, List<Method> methods, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations) {
 		super(optClazzUsingType, qualifiedProtoTypicalTypeName);
 		this.configuration = Objects.requireNonNull(configuration);
 		this.packageName = getPackageFromQualifiedName(qualifiedProtoTypicalTypeName);
@@ -47,6 +48,7 @@ public class BasicClazz extends ObjectType implements Definition {
 		this.methods = methods;
 		this.members = members;
 		this.declaredModifiers = declaredModifiers;
+		this.annotations=annotations;
 
 		initializedContent=false;
 	}
@@ -55,7 +57,7 @@ public class BasicClazz extends ObjectType implements Definition {
 	public Type copy(BasicClazz clazzUsingType)
 	{
 		try {
-			BasicClazz result = new BasicClazz(clazzUsingType, configuration, qualifiedProtoTypicalTypeName, (c) -> helperTypes, members, methods, declaredModifiers);
+			BasicClazz result = new BasicClazz(clazzUsingType, configuration, qualifiedProtoTypicalTypeName, (c) -> helperTypes, members, methods, declaredModifiers, annotations);
 			result.baseClazzType=baseClazzType;
 			result.interfaceTypes=interfaceTypes;
 			result.superTypesWithAscendants=superTypesWithAscendants;
@@ -82,8 +84,9 @@ public class BasicClazz extends ObjectType implements Definition {
 	 * @param members Member variables for class.
 	 * @param methods Other methods for class.
 	 * @param declaredModifiers declared clazz modifiers (empty if a new Clazz)
+	 * @param annotations Annotations for the clazz.
 	 */
-	public void initContent(List<Member> members, List<Method> methods, EnumSet<Modifier> declaredModifiers)
+	public void initContent(List<Member> members, List<Method> methods, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations)
 	{
 		if (initializedContent)
 			throw new IllegalStateException("Clazz content already initialized");
@@ -91,6 +94,7 @@ public class BasicClazz extends ObjectType implements Definition {
         this.members=Objects.requireNonNull(members);
         this.methods=Objects.requireNonNull(methods);
         this.declaredModifiers=Objects.requireNonNull(declaredModifiers);
+        this.annotations=Objects.requireNonNull(annotations);
 
         initializedContent=true;
 	}
@@ -119,6 +123,12 @@ public class BasicClazz extends ObjectType implements Definition {
 	public EnumSet<Modifier> getModifiers()
 	{
 		return EnumSet.of(Modifier.PUBLIC);
+	}
+
+	@Override
+	public List<Annotation> getAnnotations()
+	{
+		return annotations;
 	}
 
 	@Override
@@ -239,6 +249,13 @@ public class BasicClazz extends ObjectType implements Definition {
 			writer.println();
 
 			writer.increaseIndent();
+
+			if (annotations.size()>0) {
+			  writer.ensureNewLine();
+			  writer.print("annotations= [");
+			  annotations.stream().forEach(p -> p.print(writer, detailLevel+1));
+			  writer.println("]");
+			}
 
 			if (baseClazzType!=null && baseClazzType.getTypeCategory()!=TypeCategory.NONE) {
 			  writer.ensureNewLine();

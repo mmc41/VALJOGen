@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.model;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 
 import com.fortyoneconcepts.valjogen.model.util.IndentedPrintWriter;
@@ -18,16 +19,16 @@ public class Parameter extends DefinitionBase implements TypedModel
 	protected final Type type;
 	protected final Type erasedParamType;
 
-	public Parameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers)
+	public Parameter(BasicClazz clazz, Type paramType, Type erasedParamType, String paramName, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations)
 	{
-		super(clazz, paramName, declaredModifiers);
+		super(clazz, paramName, declaredModifiers, annotations);
 		this.type=Objects.requireNonNull(paramType);
 		this.erasedParamType=Objects.requireNonNull(erasedParamType);
 	}
 
-	public Parameter(BasicClazz clazz, Type paramType, String paramName, EnumSet<Modifier> declaredModifiers)
+	public Parameter(BasicClazz clazz, Type paramType, String paramName, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations)
 	{
-		super(clazz, paramName, declaredModifiers);
+		super(clazz, paramName, declaredModifiers, annotations);
 		this.type=Objects.requireNonNull(paramType);
 		this.erasedParamType=Objects.requireNonNull(paramType);
 	}
@@ -62,7 +63,7 @@ public class Parameter extends DefinitionBase implements TypedModel
 	// TODO: Remove this setter.
 	public Parameter setName(String newParamName)
 	{
-		return new Parameter(clazz, type, erasedParamType, newParamName, declaredModifiers);
+		return new Parameter(clazz, type, erasedParamType, newParamName, declaredModifiers, annotations);
 	}
 
 	@Override
@@ -90,6 +91,13 @@ public class Parameter extends DefinitionBase implements TypedModel
 		writer.ensureNewLine();
 
 		writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", name="+ getName()+", type="+type.getPrototypicalName()+", erasedType=" + erasedParamType.getPrototypicalName() +", declaredModifiers="+declaredModifiers+", modifiers="+getModifiers());
+
+		if (annotations.size()>0) {
+		  writer.ensureNewLine();
+		  writer.print("annotations= [");
+		  annotations.stream().forEach(p -> p.print(writer, detailLevel+1));
+		  writer.println("]");
+		}
 
 		printExtraTop(writer, detailLevel);
 

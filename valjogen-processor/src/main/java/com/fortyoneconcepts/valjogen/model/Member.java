@@ -18,9 +18,9 @@ public class Member extends DefinitionBase implements TypedModel
 	private final Type type;
 	private List<Property> properties;
 
-	public Member(BasicClazz clazz, Type type, String name, EnumSet<Modifier> declaredModifiers)
+	public Member(BasicClazz clazz, Type type, String name, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations)
 	{
-		super(clazz, name, declaredModifiers);
+		super(clazz, name, declaredModifiers, annotations);
 		this.type=Objects.requireNonNull(type);
 		this.properties=new LinkedList<Property>();
 	}
@@ -137,6 +137,13 @@ public class Member extends DefinitionBase implements TypedModel
 		writer.ensureNewLine();
 
 		writer.print(this.getClass().getSimpleName()+"(this=@"+ Integer.toHexString(System.identityHashCode(this))+", name="+ name+", properties ["+ properties.stream().map(p -> p.name).collect(Collectors.joining(", "))+"], declaredModifiers="+declaredModifiers+", modifiers="+getModifiers()+", mutable="+isMutable());
+
+		if (annotations.size()>0) {
+		  writer.ensureNewLine();
+		  writer.print("annotations= [");
+		  annotations.stream().forEach(p -> p.print(writer, detailLevel+1));
+		  writer.println("]");
+		}
 
 		printExtraTop(writer, detailLevel);
 

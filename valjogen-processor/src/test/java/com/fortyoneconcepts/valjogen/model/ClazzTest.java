@@ -123,12 +123,12 @@ public class ClazzTest
 
 			initType(baseClazz, interfaceTypes, ancestorTypes, Collections.emptyList());
 
-			Member instanceMember = new Member(this, new PrimitiveType(this, "int"), "testInstanceMember", EnumSet.of(Modifier.PUBLIC));
-			Member staticMember = new Member(this, new PrimitiveType(this, "int"), "testStaticMember", EnumSet.of(Modifier.PUBLIC, Modifier.STATIC));
-			Method instanceMethod = new Method(this, comparableClazz, "compareTo", new PrimitiveType(this, "int"), Arrays.asList(new Parameter(this, this, "other", EnumSet.of(Modifier.PUBLIC))), Collections.emptyList(), "", EnumSet.of(Modifier.PUBLIC), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
-			Method staticMethod = new Method(this, comparableClazz, "staticCompareTo", new PrimitiveType(this, "int"), Arrays.asList(new Parameter(this, this, "other", EnumSet.of(Modifier.PUBLIC))), Collections.emptyList(), "", EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
+			Member instanceMember = new Member(this, new PrimitiveType(this, "int"), "testInstanceMember", EnumSet.of(Modifier.PUBLIC), Collections.emptyList());
+			Member staticMember = new Member(this, new PrimitiveType(this, "int"), "testStaticMember", EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), Collections.emptyList());
+			Method instanceMethod = new Method(this, comparableClazz, "compareTo", new PrimitiveType(this, "int"), Arrays.asList(new Parameter(this, this, "other", EnumSet.of(Modifier.PUBLIC), Collections.emptyList())), Collections.emptyList(), "", EnumSet.of(Modifier.PUBLIC), Collections.emptyList(), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
+			Method staticMethod = new Method(this, comparableClazz, "staticCompareTo", new PrimitiveType(this, "int"), Arrays.asList(new Parameter(this, this, "other", EnumSet.of(Modifier.PUBLIC), Collections.emptyList())), Collections.emptyList(), "", EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), Collections.emptyList(), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.TYPED);
 
-			initContent(Arrays.asList(instanceMember, staticMember), Collections.emptyList(), Arrays.asList(instanceMethod, staticMethod), Collections.emptyList(), Collections.emptyList(), EnumSet.of(Modifier.PUBLIC));
+			initContent(Arrays.asList(instanceMember, staticMember), Collections.emptyList(), Arrays.asList(instanceMethod, staticMethod), Collections.emptyList(), Collections.emptyList(), EnumSet.of(Modifier.PUBLIC), Collections.emptyList());
 		}
 	}
 }

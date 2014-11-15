@@ -17,6 +17,7 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.*;
 import javax.tools.Diagnostic.Kind;
 
+import com.fortyoneconcepts.valjogen.annotations.types.DataConversion;
 import com.fortyoneconcepts.valjogen.annotations.types.Mutability;
 import com.fortyoneconcepts.valjogen.model.*;
 import com.fortyoneconcepts.valjogen.model.Modifier;
@@ -270,7 +271,9 @@ public final class ModelBuilder
 
 	    nonPropertyMethods.addAll(createConstructorsAndFactoryMethods(clazz, baseClazzType, members, modifiers, configuration.getBaseClazzConstructors()));
 
-		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers, modifiers);
+	    List<Annotation> clazzAnnotations = Arrays.stream(configuration.getClazzAnnotations()).map(s -> new Annotation(clazz, s)).collect(Collectors.toList());
+
+		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers, modifiers, clazzAnnotations);
 
 		return clazz;
 	}
@@ -338,21 +341,21 @@ public final class ModelBuilder
 
 			if (enabled) {
 				// Add constructor:
-				Stream<Parameter> baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new DelegateParameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), baseClassConstructor, p));
-				Stream<Parameter> classParameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), m));
+				Stream<Parameter> baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new DelegateParameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), createConstructorParameterAnnotations(clazz, true, p.getName(), includeFactoryMethod), baseClassConstructor, p));
+				Stream<Parameter> classParameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createConstructorParameterAnnotations(clazz, true, m.getName(), includeFactoryMethod), m));
 
 				List<Parameter> parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
 
-				DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
+				DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, primary, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
 				result.add(constructor);
 
 				if (includeFactoryMethod) {
 					// Add factory method:
-					baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new Parameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers()));
-					classParameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class)));
+					baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new Parameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), createFactoryMethodParameterAnnotations(clazz, primary, p.getName())));
+					classParameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createFactoryMethodParameterAnnotations(clazz, primary, m.getName())));
 					parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
 
-					Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+					Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), factoryModifiers, createFactoryMethodAnnotations(clazz, parameters, primary), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
 					result.add(factoryMethod);
 				}
 			}
@@ -361,20 +364,74 @@ public final class ModelBuilder
 		// Just add our own if we did not find any that fitting to base constructors.
 		if (result.isEmpty()) {
 			// Add constructor:
-			List<Parameter> parameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), m)).collect(Collectors.toList());
-			Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), constructorModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+			List<Parameter> parameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createConstructorParameterAnnotations(clazz, true, m.getName(), includeFactoryMethod), m)).collect(Collectors.toList());
+			Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, true, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
 			result.add(constructor);
 
 			if (includeFactoryMethod) {
 				// Add factory method:
-				parameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class))).collect(Collectors.toList());
-				Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), factoryModifiers, ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+				parameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createFactoryMethodParameterAnnotations(clazz, true, m.getName()))).collect(Collectors.toList());
+				Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), factoryModifiers, createFactoryMethodAnnotations(clazz, parameters, true), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
 				result.add(factoryMethod);
 			}
 		}
 
 		return result;
 
+	}
+
+	private List<Annotation> createConstructorAnnotations(Clazz clazz, List<Parameter> parameters, boolean primaryConstructor, boolean includeFactoryMethod)
+	{
+		String overloadName = Method.getOverloadName("", parameters);
+ 	    List<Annotation> configuredConstructorAnnotations = configuration.getMethodAnnotations(m -> matchingOverloads(m, overloadName, true)).stream().map(pair -> new Annotation(clazz, pair.getValue())).collect(Collectors.toList());
+
+		List<Annotation> result;
+		if (primaryConstructor && (configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS || configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS_WITH_JDK8_PARAMETER_NAMES) && !includeFactoryMethod)
+		{
+			result=new ArrayList<Annotation>(configuredConstructorAnnotations);
+			result.add(new Annotation(clazz, "@JsonCreator"));
+		} else result=configuredConstructorAnnotations;
+
+		return result;
+	}
+
+	private List<Annotation> createFactoryMethodAnnotations(Clazz clazz, List<Parameter> parameters, boolean primaryFactoryMethod)
+	{
+		String overloadName = Method.getOverloadName(ConfigurationDefaults.factoryMethodName, parameters);
+		List<Annotation> configuredFactoryAnnotations = configuration.getMethodAnnotations(m -> matchingOverloads(m, overloadName, true)).stream().map(pair -> new Annotation(clazz, pair.getValue())).collect(Collectors.toList());
+
+		List<Annotation> result;
+		if (primaryFactoryMethod && (configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS || configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS_WITH_JDK8_PARAMETER_NAMES))
+		{
+			result=new ArrayList<Annotation>(configuredFactoryAnnotations);
+			result.add(new Annotation(clazz, "@JsonCreator"));
+		} else result=configuredFactoryAnnotations;
+
+		return result;
+	}
+
+	private List<Annotation> createConstructorParameterAnnotations(Clazz clazz, boolean primaryConstructor, String parameterName, boolean includeFactoryMethod)
+	{
+		List<Annotation> result = new ArrayList<Annotation>();
+
+		if (primaryConstructor && configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS && !includeFactoryMethod)
+		{
+			result.add(new Annotation(clazz, "@JsonProperty(\""+parameterName+"\")"));
+		}
+
+		return result;
+	}
+
+	private List<Annotation> createFactoryMethodParameterAnnotations(Clazz clazz, boolean primaryFactoryMethod, String parameterName)
+	{
+		List<Annotation> result = new ArrayList<Annotation>();
+
+		if (primaryFactoryMethod && configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS)
+		{
+			result.add(new Annotation(clazz, "@JsonProperty(\""+parameterName+"\")"));
+		}
+
+		return result;
 	}
 
 	private List<Method> createMagicSerializationMethods(BasicClazz clazz)
@@ -398,26 +455,28 @@ public final class ModelBuilder
 
 		EnumSet<Modifier> declaredParamModifiers = EnumSet.noneOf(Modifier.class);
 
+		List<Annotation> paramterAnnotations = Collections.emptyList();
+
 		// Add : private Object readResolve() throws ObjectStreamException :
-		Method readResolve = new Method(clazz, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
+		Method readResolve = new Method(clazz, noType, "readResolve", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, paramterAnnotations, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
 		newMethods.add(readResolve);
 
 		// Add private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException :
-		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, inputStreamType, inputStreamType, "in", declaredParamModifiers));
-		Method readObject = new Method(clazz, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { (ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low), (ObjectType)typeBuilder.createType(clazz, classNotFoundExceptionMirrorType, DetailLevel.Low) }), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
+		List<Parameter> readObjectParameters = Collections.singletonList(new Parameter(clazz, inputStreamType, inputStreamType, "in", declaredParamModifiers, paramterAnnotations));
+		Method readObject = new Method(clazz, noType, "readObject", clazz.getHelperTypes().getVoidType(), readObjectParameters, Arrays.asList(new ObjectType[] { (ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low), (ObjectType)typeBuilder.createType(clazz, classNotFoundExceptionMirrorType, DetailLevel.Low) }), "", declaredMethodModifiers, methodModifiers, paramterAnnotations, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
 		newMethods.add(readObject);
 
 		// Add private void readObjectNoData() throws InvalidObjectException
-		Method readObjectNoData = new Method(clazz, noType, "readObjectNoData", clazz.getHelperTypes().getVoidType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
+		Method readObjectNoData = new Method(clazz, noType, "readObjectNoData", clazz.getHelperTypes().getVoidType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, paramterAnnotations, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
 		newMethods.add(readObjectNoData);
 
 		// Add : private void writeObject (ObjectOutputStream out) throws IOException :
-		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, objectOutputStreamType, objectOutputStreamType, "out", declaredParamModifiers));
-		Method writeObject = new Method(clazz, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList((ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
+		List<Parameter> writeObjectParameters = Collections.singletonList(new Parameter(clazz, objectOutputStreamType, objectOutputStreamType, "out", declaredParamModifiers, paramterAnnotations));
+		Method writeObject = new Method(clazz, noType, "writeObject", clazz.getHelperTypes().getVoidType(), writeObjectParameters, Collections.singletonList((ObjectType)typeBuilder.createType(clazz, ioExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, paramterAnnotations, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
 		newMethods.add(writeObject);
 
 		// Add : private Object writeReplace() throws ObjectStreamException :
-		Method writeReplace = new Method(clazz, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
+		Method writeReplace = new Method(clazz, noType, "writeReplace", clazz.getHelperTypes().getJavaLangObjectType(), Collections.emptyList(), Collections.singletonList((ObjectType)typeBuilder.createType(clazz, objectStreamExceptionMirrorType, DetailLevel.Low)), "", declaredMethodModifiers, methodModifiers, paramterAnnotations, ImplementationInfo.IMPLEMENTATION_MAGIC, TemplateKind.TYPED);
 		newMethods.add(writeReplace);
 
 		return newMethods;
@@ -559,12 +618,30 @@ public final class ModelBuilder
 				implementationInfo=ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_BASE_OBJECT;
 			else implementationInfo=ImplementationInfo.IMPLEMENTATION_MISSING;
 
-		    if (isConstructor(methodName))
-		    	newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, false, declaredModifiers, implementationInfo);
-		    else newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo, TemplateKind.TYPED);
+			List<Annotation> methodAnnotations = createMethodAnnotations(clazz, methodName, parameters, declaredModifiers);
+
+		    if (isConstructor(methodName)) {
+		    	newMethod=new Constructor(clazz, declaringType, returnType, parameters, thrownTypes, javaDoc, false, declaredModifiers, methodAnnotations, implementationInfo);
+		    } else {
+		    	newMethod = new Method(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, methodAnnotations, implementationInfo, TemplateKind.TYPED);
+		    }
 		}
 
 		return newMethod;
+	}
+
+	private List<Annotation> createMethodAnnotations(BasicClazz clazz, String methodName, List<Parameter> parameters, EnumSet<Modifier> modifiers)
+	{
+		String overloadName = Method.getOverloadName(methodName, parameters);
+		List<Annotation> configuredFactoryAnnotations = configuration.getMethodAnnotations(m -> matchingOverloads(m, overloadName, true)).stream().map(pair -> new Annotation(clazz, pair.getValue())).collect(Collectors.toList());
+
+		List<Annotation> result = new ArrayList<Annotation>(configuredFactoryAnnotations);
+
+		if (!isConstructor(methodName) && !modifiers.contains(Modifier.STATIC) && result.stream().noneMatch(a -> a.getCode().contains("@Override")) ) {
+			result.add(new Annotation(clazz, "@Override"));
+		}
+
+		return result;
 	}
 
 	private List<Type> createImportTypes(BasicClazz clazz, DeclaredType baseClazzDeclaredType, List<DeclaredType> implementedDecalredInterfaceTypes)
@@ -576,10 +653,12 @@ public final class ModelBuilder
 		importTypes.add(typeBuilder.createType(clazz, baseClazzDeclaredType, DetailLevel.Low));
 
 		HelperTypes helperTypes = clazz.getHelperTypes();
-		if (configuration.getDataConversion().isJacksonDataBindAnnotations())
+		if (configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS || configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS_WITH_JDK8_PARAMETER_NAMES)
 		{
 			importTypes.add(helperTypes.getJsonCreator());
-			if (!configuration.getDataConversion().isJacksonDataBindAnnotationWithJDK8ParamterNames())
+		}
+
+		if (configuration.getDataConversion()==DataConversion.JACKSON_DATABIND_ANNOTATIONS) {
 				importTypes.add(helperTypes.getJsonProperty());
 		}
 
@@ -605,8 +684,10 @@ public final class ModelBuilder
 
       	Type overriddenReturnType = (configuration.isThisAsImmutableSetterReturnTypeEnabled() && propertyKind==PropertyKind.IMMUTABLE_SETTER) ? clazz : returnType;
 
+		List<Annotation> methodAnnotations = createMethodAnnotations(clazz, propertyName, parameters, modifiers);
+
 		if (parameters.size()==0) {
-			property=new Property(clazz, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, modifiers, implementationInfo);
+			property=new Property(clazz, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, modifiers, methodAnnotations, implementationInfo);
 		} else if (parameters.size()==1) {
 			Parameter parameter = parameters.get(0);
 
@@ -617,7 +698,7 @@ public final class ModelBuilder
 				parameter=parameter.setName(propertyMember.getName());
 			}
 
-			property = new Property(clazz, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, modifiers, implementationInfo, parameter);
+			property = new Property(clazz, declaringType, propertyName, returnType, overriddenReturnType, thrownTypes, propertyMember, propertyKind, javaDoc, modifiers, methodAnnotations, implementationInfo, parameter);
 		} else throw new RuntimeException("Unexpected number of formal parameters for property "+m.toString()); // Should not happen for a valid propety unless validation above has a programming error.
 
 		return property;
@@ -679,7 +760,10 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror = returnTypeMirror;
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement), modifiers);
+
+			String name = syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement);
+
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), name, modifiers, createMemberAnnotations(clazz, name));
 		} else if (kind==PropertyKind.IMMUTABLE_SETTER || kind==PropertyKind.MUTABLE_SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -706,10 +790,18 @@ public final class ModelBuilder
 			}
 
 			propertyTypeMirror=setterParamTypes.get(0);
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement), modifiers);
+
+			String name = syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement);
+
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), name, modifiers, createMemberAnnotations(clazz, name));
 		} else {
 			return null; // Not a property.
 		}
+	}
+
+	private List<Annotation> createMemberAnnotations(BasicClazz clazz, String memberName)
+	{
+		return configuration.getMemberAnnotations(m -> m.equals(memberName)).stream().map(pair -> new Annotation(clazz, pair.getValue())).collect(Collectors.toList());
 	}
 
 	private String syntesisePropertyMemberName(String[] propertyPrefixes, ExecutableElement method)

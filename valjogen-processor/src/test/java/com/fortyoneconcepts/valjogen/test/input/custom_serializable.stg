@@ -5,7 +5,7 @@
 */
 
 method_validateObject(clazz, method) ::= <<
-@Override
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // Validate object stuff here
@@ -13,6 +13,7 @@ method_validateObject(clazz, method) ::= <<
 >>
 
 method_readResolve(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // readResolve stuff here
@@ -21,6 +22,7 @@ method_readResolve(clazz, method) ::= <<
 >>
 
 method_writeObject_ObjectOutputStream(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // writeObject stuff here
@@ -28,6 +30,7 @@ method_writeObject_ObjectOutputStream(clazz, method) ::= <<
 >>
 
 method_writeReplace(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // writeReplace stuff here
@@ -36,6 +39,7 @@ method_writeReplace(clazz, method) ::= <<
 >>
 
 method_readObject_ObjectInputStream(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // readObject stuff here
@@ -43,6 +47,7 @@ method_readObject_ObjectInputStream(clazz, method) ::= <<
 >>
 
 method_readObjectNoData(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // readObjectNoData stuff here
@@ -50,6 +55,7 @@ method_readObjectNoData(clazz, method) ::= <<
 >>
 
 method_clone(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // clone stuff here
@@ -58,6 +64,7 @@ method_clone(clazz, method) ::= <<
 >>
 
 method_finalize(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // finalize stuff here

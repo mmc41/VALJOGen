@@ -243,7 +243,7 @@ public class NamesUtil
 		String name1 = nameQualifierPos1>=0 ? overloadNamesSpecifier1.substring(0, nameQualifierPos1) : overloadNamesSpecifier1;
 		String name2 = nameQualifierPos2>=0 ? overloadNamesSpecifier2.substring(0, nameQualifierPos2) : overloadNamesSpecifier2;
 
-		if (!name1.equals("*") && !name2.equals("*") && !name1.endsWith(name2))
+		if (!name1.equals("*") && !name2.equals("*") && !name1.equals(name2))
 			return false;
 
 		String nameTypes1String=nameQualifierPos1>=0 ? overloadNamesSpecifier1.substring(nameQualifierPos1+1, overloadNamesSpecifier1.length()-1) : "";

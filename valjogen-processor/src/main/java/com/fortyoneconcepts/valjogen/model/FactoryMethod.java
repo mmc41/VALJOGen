@@ -20,15 +20,15 @@ public class FactoryMethod extends Method
 	 */
 	private final boolean primary;
 
-	public FactoryMethod(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
+	public FactoryMethod(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, List<Annotation> annotations, ImplementationInfo implementationInfo, TemplateKind templateKind)
 	{
-		super(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, implementationInfo, templateKind);
+		super(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, annotations, implementationInfo, templateKind);
 	    this.primary=primary;
 	}
 
-	public FactoryMethod(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, ImplementationInfo implementationInfo, TemplateKind templateKind)
+	public FactoryMethod(BasicClazz clazz, Type declaringType, String methodName, Type returnType, List<Parameter> parameters, List<Type> thrownTypes, String javaDoc, boolean primary, EnumSet<Modifier> declaredModifiers, EnumSet<Modifier> modifiers, List<Annotation> annotations, ImplementationInfo implementationInfo, TemplateKind templateKind)
 	{
-		super(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, modifiers, implementationInfo, templateKind);
+		super(clazz, declaringType, methodName, returnType, parameters, thrownTypes, javaDoc, declaredModifiers, modifiers, annotations, implementationInfo, templateKind);
 	    this.primary=primary;
 	}
 

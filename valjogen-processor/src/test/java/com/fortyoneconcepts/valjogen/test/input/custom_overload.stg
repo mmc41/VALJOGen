@@ -5,7 +5,7 @@
 */
 
 method_customMethod_int(clazz, method) ::= <<
-@Override
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // Impl
@@ -13,7 +13,7 @@ method_customMethod_int(clazz, method) ::= <<
 >>
 
 method_customMethod_String(clazz, method) ::= <<
-@Override
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  // Impl
@@ -21,7 +21,7 @@ method_customMethod_String(clazz, method) ::= <<
 >>
 
 method_customMethod_String_int(clazz, method) ::= <<
-@Override
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
 <declare_method(clazz, method)>
 {
  return this;
