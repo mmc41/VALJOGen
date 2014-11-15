@@ -507,12 +507,12 @@ public class Configuration implements ConfigurationOptionKeys {
 		}
 	}
 
-	private List<KeyValuePair<String, String>> pairsToMap(String[] pairs, Predicate<String> keyFilter)
+	private List<KeyValuePair<String, String>> pairsToMap(String[] keyValueStrings, Predicate<String> keyFilter)
 	{
 		List<KeyValuePair<String, String>> result = new ArrayList<KeyValuePair<String, String>>();
 
-		for (int i = 0; i < pairs.length; ++i) {
-			String keyValue = pairs[i];
+		for (int i = 0; i < keyValueStrings.length; ++i) {
+			String keyValue = keyValueStrings[i];
 			int sepIndex = keyValue.indexOf('=');
 
 			if (sepIndex == 0 || sepIndex + 1 >= keyValue.length())

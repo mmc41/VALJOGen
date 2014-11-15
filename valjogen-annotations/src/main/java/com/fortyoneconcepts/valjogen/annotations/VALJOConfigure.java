@@ -263,7 +263,7 @@ public @interface VALJOConfigure
 	*
 	* In addition the wildcard '*' may be used to match a single type name and the wildcard '**' may used to match all combinations of type name arguments.
 	*
-	* @return annotation string to add to the specified method(s) of the generated class class.
+	* @return annotation string to add to the specified method(s) of the generated class class formatted as key-value entries.
 	*/
     String[] methodAnnotations() default {};
 
@@ -272,7 +272,7 @@ public @interface VALJOConfigure
 	*
 	* Each entry is of form <code>&lt;member name&gt; "=" &lt;annotation string&gt;</code>. For example to annotate a member named "x" write <code>x=@MyAnnotation(...)</code>.
 	*
-	* @return annotation string to add to the specified member(s) of the generated class class.
+	* @return annotation string to add to the specified member(s) of the generated class class formatted as key-value entries.
 	*/
     String[] memberAnnotations() default {};
 

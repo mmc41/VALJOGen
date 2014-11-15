@@ -37,9 +37,6 @@ public interface Definition extends Model
 	/**
 	 * Get annotations associated with this definition.
 	 *
-	 * Warning: While all definitions have associated annotations, builders and configuration does no currently
-	 * implement full support for them (in which case an empty list will be returned)
-	 *
 	 * @return The list of anntations to use in generated code when defining something.
 	 */
 	public List<Annotation> getAnnotations();
