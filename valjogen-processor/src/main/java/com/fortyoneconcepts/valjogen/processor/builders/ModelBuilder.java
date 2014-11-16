@@ -333,6 +333,7 @@ public final class ModelBuilder
 				largestBaseClassConstructor=baseClassConstructor;
 		}
 
+		// Add our own constructors that delegate to base constructors.
 		for (Constructor baseClassConstructor : baseClassConstructors)
 		{
 			String baseClassConstructorOverLoadName = baseClassConstructor.getOverloadName();
@@ -366,7 +367,7 @@ public final class ModelBuilder
 			}
 		}
 
-		// Just add our own if we did not find any that fitting to base constructors.
+		// Just add our own if we did not find any base constructors.
 		if (result.isEmpty()) {
 			List<List<Parameter>> classConstructorsParameterLists = createConstuctorsParameterLists(clazz, members, true, includeFactoryMethod);
 			for (List<Parameter> parameters : classConstructorsParameterLists) {
