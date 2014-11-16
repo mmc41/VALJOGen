@@ -40,6 +40,7 @@ import com.fortyoneconcepts.valjogen.model.Type;
 /**
  * ST model adapter that handles normal ST properies AND do the following magic conversions:
  *
+ *  Type.exactType_xxx -&gt; {@link Type#isExactType}, with argument consisting og xxx with underscores replaced by dot.
  *  Type.ofType_xxx -&gt; {@link Type#isOfType}, with argument consisting og xxx with underscores replaced by dot.
  *  Type.instanceMethod_xxx -&gt; {@link Type#hasInstanceMethod},with argument consisting of the overload name format of xxx (i.e. underscores replaced by dot + paranthesis).
  *  Type.staticMethod_xxx -&gt; {@link Type#hasStaticMethod}, with argument consisting of the overload name format of xxx (i.e. underscores replaced by dot + paranthesis).
@@ -51,6 +52,7 @@ import com.fortyoneconcepts.valjogen.model.Type;
  */
 public class STCustomModelAdaptor extends ObjectModelAdaptor
 {
+	public static final String magicExactTypeMethodPrefix="exactType";
 	public static final String magicImplementsMethodPrefix="ofType";
 	public static final String magicHasInstanceMethodMethodPrefix="instanceMethod";
 	public static final String magicHasStaticMethodMethodPrefix="staticMethod";
@@ -74,7 +76,13 @@ public class STCustomModelAdaptor extends ObjectModelAdaptor
 		if (com.fortyoneconcepts.valjogen.model.Type.class.isAssignableFrom(c))
 		{
 			com.fortyoneconcepts.valjogen.model.Type ot = (com.fortyoneconcepts.valjogen.model.Type)o;
-			if (propertyName.startsWith(magicImplementsMethodPrefix)) {
+			if (propertyName.startsWith(magicExactTypeMethodPrefix)) {
+				String interfaceName = propertyName.substring(magicExactTypeMethodPrefix.length());
+				if (interfaceName.startsWith("_"))
+					interfaceName=interfaceName.substring(1);
+				interfaceName=interfaceName.replace('_', '.');
+				return ot.isExactType(interfaceName);
+			} else if (propertyName.startsWith(magicImplementsMethodPrefix)) {
 				String interfaceName = propertyName.substring(magicImplementsMethodPrefix.length());
 				if (interfaceName.startsWith("_"))
 					interfaceName=interfaceName.substring(1);

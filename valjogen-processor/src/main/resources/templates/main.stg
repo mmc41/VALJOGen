@@ -18,6 +18,7 @@ import "hash.stg"
 import "equals.stg"
 import "comparable.stg"
 import "tostring.stg"
+import "serialization.stg"
 import "javadoc.stg"
 
 /** Generate class (main entry point). Called with an instance of the Clazz model **/
@@ -54,7 +55,7 @@ package <clazz.packageName>;
   <@before_instance_methods><@end>
   <clazz.claimedImplementationConstructors:{m | <(m.templateName)(clazz, m)>}; separator="\n\n"><conditionalAddLine(clazz.claimedImplementationConstructors)><\\>
 
-  <clazz.propertyMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n"><conditionalAddLine(clazz.claimedImplementationClassMethods)>
+  <clazz.propertyMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n"><conditionalAddLine(clazz.claimedImplementationClassMethods)><\\>
 
   <! Call template methods corresponding to prefixed method names !>
   <clazz.claimedImplementationInstanceMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n">

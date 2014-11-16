@@ -106,4 +106,15 @@ public interface Definition extends Model
 	{
 		return getModifiers().contains(Modifier.PROTECTED);
 	}
+
+	/**
+	 * Checkes if one of the modifiers used for code generation is TRANSIENT.
+     *
+	 * @return True if a transient modifier present.
+	 *
+	 */
+	public default boolean isTransient()
+	{
+		return getModifiers().contains(Modifier.TRANSIENT);
+	}
 }

@@ -4,6 +4,7 @@
 package com.fortyoneconcepts.valjogen.processor.builders;
 
 import java.beans.Introspector;
+import java.io.Externalizable;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
@@ -51,6 +52,7 @@ public final class ModelBuilder
 
 	private static final String comparableClass = Comparable.class.getName();
 	private static final String serializbleClass = Serializable.class.getName();
+	private static final String externalizableClass = Externalizable.class.getName();
 
 	private static final String compareToOverloadName = "compareTo(T)";
 
@@ -63,8 +65,10 @@ public final class ModelBuilder
 		 put("equals(Object)", (cfg, clazz, methods, members) -> cfg.isEqualsEnabled());
 		 put("toString()", (cfg, clazz, methods, members) -> cfg.isToStringEnabled());
 		 put(compareToOverloadName, (cfg, clazz, methods, members) -> mustImplementComparable(clazz, methods));
+		 put("writeExternal(ObjectOutput)", (cfg, clazz, methods, members) -> clazz.isOfType(externalizableClass) && members.stream().allMatch(m -> m.isMutable())); // for now only supported for fully mutable classes
+		 put("readExternal(ObjectInput)", (cfg, clazz, methods, members) -> clazz.isOfType(externalizableClass) && members.stream().allMatch(m -> m.isMutable())); // for now only supported for fully mutable classes
 		 put("valueOf()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.
-		 put("this()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.*/
+		 put("this()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.
 	}};
 
 	private final TypeBuilder typeBuilder;
@@ -874,9 +878,8 @@ public final class ModelBuilder
 		return clazz.isOfType(comparableClass) && !instanceImplementationExists(clazz, "compareTo", methods);
 	}
 
-
 	private static boolean instanceImplementationExists(Clazz clazz, String methodName, List<Method> methods)
 	{
-      return methods.stream().anyMatch(m -> m.getDeclaringType()!=clazz && m.getName().equals("compareTo") && !m.getDeclaredModifiers().contains(Modifier.STATIC) && !m.getDeclaredModifiers().contains(Modifier.ABSTRACT));
+      return methods.stream().anyMatch(m -> m.getDeclaringType()!=clazz && m.getName().equals(methodName) && !m.getDeclaredModifiers().contains(Modifier.STATIC) && !m.getDeclaredModifiers().contains(Modifier.ABSTRACT));
 	}
 }

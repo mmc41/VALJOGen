@@ -1,0 +1,100 @@
+/**
+* Copyright (C) 2014 41concepts Aps
+*
+* This is a helper template group file that is responsible for generating serialization and externalization code.
+**/
+
+method_writeExternal_ObjectOutput(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
+<declare_method(clazz, method)>
+{
+  <@preamble><@end>
+  <if(!method.declaringType.exactType_java_io_Externalizable)>
+  super.writeExternal(<first(method.parameters).name>);
+
+  <endif><\\>
+  <clazz.members:{m|<if(!m.transient)><write_ObjectOutput(m.name, m.type, first(method.parameters).name)><endif>}><\\>
+  <@postamble><@end>
+}
+>>
+
+method_readExternal_ObjectInput(clazz, method) ::= <<
+<@javadoc><JavaDocMethod(method)><@end><@annotations><method.annotations:annotationLine()><@end><\\>
+<declare_method(clazz, method)>
+{
+  <@preamble><@end>
+  <if(!method.declaringType.exactType_java_io_Externalizable)>
+  super.readExternal(<first(method.parameters).name>);
+
+  <endif><\\>
+  <clazz.members:{m|<if(!m.transient)><read_ObjectInput(m.name, m.type, first(method.parameters).name)><endif>}><\\>
+  <@postamble><@end>
+}
+>>
+
+write_ObjectOutput(var, type, o) ::= <<
+<if(type.array)><if(type.arrayComponentType.primitiveByte)><\\>
+
+  <o>.writeInt(<var>.length);
+  <o>.write(<var>);<\\>
+<else>
+  <o>.writeInt(<var>.length);
+  for (int _i=0; _i\<<var>.length; ++_i)
+  <write_ObjectOutput(concat(var, "[_i]"), type.arrayComponentType, o)><\\>
+<endif><elseif(type.primitiveByte)>
+  <o>.writeByte(<var>);<\\>
+<elseif(type.primitiveBoolean)>
+  <o>.writeBoolean(<var>);<\\>
+<elseif(type.primitiveChar)>
+  <o>.writeChar((int)<var>);<\\>
+<elseif(type.primitiveShort)>
+  <o>.writeShort(<var>);<\\>
+<elseif(type.primitiveInt)>
+  <o>.writeInt(<var>);<\\>
+<elseif(type.primitiveLong)>
+  <o>.writeLong(<var>);<\\>
+<elseif(type.primitiveFloat)>
+  <o>.writeFloat(<var>);<\\>
+<elseif(type.primitiveDouble)>
+  <o>.writeDouble(<var>);<\\>
+<elseif(type.ofType_String)>
+  <o>.writeUTF(<var>);<\\>
+<else>
+  <o>.writeObject(<var>);<\\>
+<endif>
+>>
+
+read_ObjectInput(var, type, i) ::= <<
+<if(type.array)><if(type.arrayComponentType.primitiveByte)><\\>
+
+  <var>=new byte[<i>.readInt()];
+  <i>.readFully(<var>);<\\>
+<else><\\>
+
+  <var>=new <type.arrayComponentType.prototypicalName>[<i>.readInt()];
+  for (int _i=0; _i\<<var>.length; ++_i)
+  <read_ObjectInput(concat(var, "[_i]"), type.arrayComponentType, i)><\\>
+<endif><elseif(type.primitiveByte)>
+  <var>=<i>.readByte();<\\>
+<elseif(type.primitiveBoolean)>
+  <var>=<i>.readBoolean();<\\>
+<elseif(type.primitiveChar)>
+  <var>=<i>.readChar();<\\>
+<elseif(type.primitiveShort)>
+  <var>=<i>.readShort();<\\>
+<elseif(type.primitiveInt)>
+  <var>=<i>.readInt();<\\>
+<elseif(type.primitiveLong)>
+  <var>=<i>.readLong();<\\>
+<elseif(type.primitiveFloat)>
+  <var>=<i>.readFloat();<\\>
+<elseif(type.primitiveDouble)>
+  <var>=<i>.readDouble();<\\>
+<elseif(type.ofType_String)>
+  <var>=<i>.readUTF();<\\>
+<else>
+  <var>=(<type.prototypicalName>)<i>.readObject();<\\>
+ <endif>
+>>
+
+concat(a,b) ::= <%<a><b>%>

@@ -158,6 +158,11 @@ public abstract class Type extends ModelBase
 		return false;
 	}
 
+	public boolean isPrimitiveChar()
+	{
+		return false;
+	}
+
 	public boolean isPrimitiveShort()
 	{
 		return false;
@@ -208,6 +213,11 @@ public abstract class Type extends ModelBase
 		return false;
 	}
 
+	public boolean isCollection()
+	{
+		return isOfQualifiedType("java.util.Collection");
+	}
+
 	/**
 	* Returns if the type is a generated type (Clazz)
 	*
@@ -234,6 +244,44 @@ public abstract class Type extends ModelBase
 	* @return The type category.
 	*/
     public abstract TypeCategory getTypeCategory();
+
+    /**
+     * Returns if type exactly matches specified class/interface. Unqualified names
+     * are checked against java.lang or java.util packages. If not a match the unqualified name is assumed
+     * to belong to the same package as the generated class.
+     *
+     * Nb. {@link STCustomModelAdaptor} recognize this method under the magic name exactType_xxx.
+     *
+     * @param classOrInterfaceName The name (qualified or unqualified) of the class/interface.
+     *
+     * @return True if type is equal to specified class/interface
+     */
+	public final boolean isExactType(String classOrInterfaceName)
+	{
+		String qualifiedClassOrInterfaceName;
+
+		if (!isQualifiedName(classOrInterfaceName)) {
+			if (NamesUtil.isJavaLangClassName(classOrInterfaceName))
+				qualifiedClassOrInterfaceName=ensureQualifedName(classOrInterfaceName, "java.lang");
+			else if (NamesUtil.isJavaUtilClassName(classOrInterfaceName))
+				qualifiedClassOrInterfaceName=ensureQualifedName(classOrInterfaceName, "java.util");
+			else qualifiedClassOrInterfaceName=ensureQualifedName(classOrInterfaceName, this.getGeneratedClazz().getPackageName());
+		} else qualifiedClassOrInterfaceName=classOrInterfaceName;
+
+		return isExactQualifiedType(qualifiedClassOrInterfaceName);
+	}
+
+	/**
+     * Returns if type exactly matche specified qualified class/interface. Called by isExactType with the qualified name (possibly expanded).
+     *
+     * @param qualifiedClassOrInterfaceName The qualified name of the class/interface.
+     *
+     * @return True if type is equal from specified class/interface
+     */
+	public final boolean isExactQualifiedType(String qualifiedClassOrInterfaceName)
+	{
+		return (getQualifiedName().equals(qualifiedClassOrInterfaceName));
+	}
 
     /**
      * Returns if type is equal to or implements/inherites from specified class/interface. Unqualified names

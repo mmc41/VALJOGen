@@ -136,27 +136,38 @@ public class ObjectType extends Type
 		return genericTypeArguments==null ? Collections.emptyList() : genericTypeArguments;
 	}
 
-	public boolean hasPrimitiveMembers() {
+	public boolean hasPrimitiveMembers()
+	{
 		return getMembers().stream().anyMatch(m -> m.getType().isPrimitive());
 	}
 
-	public boolean hasArrayMembers() {
+	public boolean hasArrayMembers()
+	{
 		return getMembers().stream().anyMatch(m -> m.getType().isArray());
 	}
 
-	public boolean hasAnyMembers() {
+	public boolean hasCollectionMembers()
+	{
+		return getMembers().stream().anyMatch(m -> m.getType().isCollection());
+	}
+
+	public boolean hasAnyMembers()
+	{
 		return !getMembers().isEmpty();
 	}
 
-	public List<Member> getMembers() {
+	public List<Member> getMembers()
+	{
 		return Collections.emptyList();
 	}
 
-	public List<Method> getMethods() {
+	public List<Method> getMethods()
+	{
 		return Collections.emptyList();
 	}
 
-	public List<Constructor> getConstructors() {
+	public List<Constructor> getConstructors()
+	{
 		return getMethods().stream().filter(m -> m.isConstructor()).map(m -> (Constructor)m).collect(Collectors.toList());
 	}
 

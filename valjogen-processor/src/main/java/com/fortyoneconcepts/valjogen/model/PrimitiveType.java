@@ -40,6 +40,11 @@ public class PrimitiveType extends Type
 		return (qualifiedProtoTypicalTypeName.equals("byte"));
 	}
 
+	public boolean isPrimitiveChar()
+	{
+		return (qualifiedProtoTypicalTypeName.equals("char"));
+	}
+
 	@Override
 	public boolean isPrimitiveBoolean()
 	{
