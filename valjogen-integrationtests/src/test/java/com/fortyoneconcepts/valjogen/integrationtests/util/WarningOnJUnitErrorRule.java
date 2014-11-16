@@ -3,24 +3,26 @@
 */
 package com.fortyoneconcepts.valjogen.integrationtests.util;
 
+import java.util.function.Supplier;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 /**
- * Add message header to JUnit output in case of failure.
+ * Add dynamicly created message header to JUnit output in case of failure.
  *
  * @author mmc
  */
 public final class WarningOnJUnitErrorRule implements TestRule
 {
-	private String errorMsgHeader;
+	private Supplier<String> errorMsgHeaderSupplier;
 
 	public WarningOnJUnitErrorRule() {}
 
-	public void setErrorMsgHeader(String errorMsgHeader)
+	public void setErrorMsgHeader(Supplier<String> errorMsgHeaderSupplier)
 	{
-		this.errorMsgHeader=errorMsgHeader;
+		this.errorMsgHeaderSupplier=errorMsgHeaderSupplier;
 	}
 
 	@Override
@@ -34,8 +36,8 @@ public final class WarningOnJUnitErrorRule implements TestRule
 				try {
 					base.evaluate();
 				} catch (Throwable e) {
-				    if (errorMsgHeader!=null)
-				    	System.err.println(errorMsgHeader);
+				    if (errorMsgHeaderSupplier!=null)
+				    	System.err.println(errorMsgHeaderSupplier.get());
 
 					throw e;
 				}

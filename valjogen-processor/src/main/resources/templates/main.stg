@@ -42,19 +42,19 @@ package <clazz.packageName>;
   <@after_class_members><@end>
   <! Instance members: !>
   <@before_instance_members><@end>
-  <clazz.members:member(); separator="\n">
-  <@after_instance_members><@end>
+  <clazz.members:member(); separator="\n"><conditionalAddLine(clazz.members)><\\>
+  <@after_instance_members><@end><\\>
 
   <! Static methods incl. factory: !>
   <@before_class_methods><@end>
-  <clazz.claimedImplementationClassMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n">
+  <clazz.claimedImplementationClassMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n"><conditionalAddLine(clazz.claimedImplementationClassMethods)><\\>
 
   <@after_class_methods><@end>
   <! Instance methods and constructor: !>
   <@before_instance_methods><@end>
-  <clazz.claimedImplementationConstructors:{m | <(m.templateName)(clazz, m)>}; separator="\n">
+  <clazz.claimedImplementationConstructors:{m | <(m.templateName)(clazz, m)>}; separator="\n\n"><conditionalAddLine(clazz.claimedImplementationConstructors)><\\>
 
-  <clazz.propertyMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n">
+  <clazz.propertyMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n"><conditionalAddLine(clazz.claimedImplementationClassMethods)>
 
   <! Call template methods corresponding to prefixed method names !>
   <clazz.claimedImplementationInstanceMethods:{m | <(m.templateName)(clazz, m)>}; separator="\n\n">

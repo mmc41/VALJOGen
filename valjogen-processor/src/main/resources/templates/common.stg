@@ -31,7 +31,7 @@ declare_method(clazz, method) ::= <%
 %>
 
 declare_parameter(method, param) ::= <<
-<[param.annotations:{a | <a.code>}, param.modifiers:{m | <m>}, param.type.prototypicalName]; separator=" "> <param.name>
+<[param.annotations:{a | <annotation(a)>}, param.modifiers:{m | <m>}, param.type.prototypicalName]; separator=" "> <param.name>
 >>
 
 other_instance_get_member_value(other, member) ::= <%
@@ -45,5 +45,9 @@ other_instance_get_member_value(other, member) ::= <%
   ?
 <endif>
 %>
+
+conditionalAddLine(a) ::= <%<if(a)><\n><endif>%>
+
+annotation(a) ::= <%<a.code>%>
 
 annotationLine(a) ::= <%<a.code><\n>%>

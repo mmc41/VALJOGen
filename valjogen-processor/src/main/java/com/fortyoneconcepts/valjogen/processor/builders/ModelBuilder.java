@@ -337,47 +337,90 @@ public final class ModelBuilder
 		{
 			String baseClassConstructorOverLoadName = baseClassConstructor.getOverloadName();
 			boolean enabled = Arrays.stream(baseClazzConstructors).anyMatch(b -> matchingOverloads(baseClassConstructorOverLoadName, b, true));
-			boolean primary = (baseClassConstructor==largestBaseClassConstructor);
+			boolean primaryBase = (baseClassConstructor==largestBaseClassConstructor); // The base constructor with the most arguments ?
 
 			if (enabled) {
-				// Add constructor:
-				Stream<Parameter> baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new DelegateParameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), createConstructorParameterAnnotations(clazz, true, p.getName(), includeFactoryMethod), baseClassConstructor, p));
-				Stream<Parameter> classParameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createConstructorParameterAnnotations(clazz, true, m.getName(), includeFactoryMethod), m));
+				List<List<Parameter>> classConstructorsParameterLists = createConstuctorsParameterLists(clazz, members, primaryBase, includeFactoryMethod);
+				for (List<Parameter> classParameters : classConstructorsParameterLists) {
+					boolean primary = primaryBase && classParameters==classConstructorsParameterLists.get(0); // First one for primary base constructor is the one with most arguments.
 
-				List<Parameter> parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
+					Stream<Parameter> baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new DelegateParameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), createConstructorParameterAnnotations(clazz, true, p.getName(), includeFactoryMethod), baseClassConstructor, p));
+					List<Parameter> parameters = concat(baseClassParameters, classParameters.stream()).collect(Collectors.toList());
 
-				DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, primary, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
-				result.add(constructor);
+					DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, primary, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
+					result.add(constructor);
+				}
 
 				if (includeFactoryMethod) {
-					// Add factory method:
-					baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new Parameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), createFactoryMethodParameterAnnotations(clazz, primary, p.getName())));
-					classParameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createFactoryMethodParameterAnnotations(clazz, primary, m.getName())));
-					parameters = concat(baseClassParameters, classParameters).collect(Collectors.toList());
+					List<List<Parameter>> classFactoryMethodParameterLists = createFactoryMethodsParameterLists(clazz, members, primaryBase);
+					for (List<Parameter> classParameters : classFactoryMethodParameterLists) {
+						boolean primary = primaryBase && classParameters==classFactoryMethodParameterLists.get(0); // First one for primary base constructor is the one with most arguments.
 
-					Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), factoryModifiers, createFactoryMethodAnnotations(clazz, parameters, primary), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
-					result.add(factoryMethod);
+						Stream<Parameter> baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new Parameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), createFactoryMethodParameterAnnotations(clazz, primary, p.getName())));
+						List<Parameter> parameters = concat(baseClassParameters, classParameters.stream()).collect(Collectors.toList());
+
+						Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), factoryModifiers, createFactoryMethodAnnotations(clazz, parameters, primary), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+						result.add(factoryMethod);
+					}
 				}
 			}
 		}
 
 		// Just add our own if we did not find any that fitting to base constructors.
 		if (result.isEmpty()) {
-			// Add constructor:
-			List<Parameter> parameters = members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createConstructorParameterAnnotations(clazz, true, m.getName(), includeFactoryMethod), m)).collect(Collectors.toList());
-			Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, true, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
-			result.add(constructor);
+			List<List<Parameter>> classConstructorsParameterLists = createConstuctorsParameterLists(clazz, members, true, includeFactoryMethod);
+			for (List<Parameter> parameters : classConstructorsParameterLists) {
+				boolean primary = (parameters==classConstructorsParameterLists.get(0)); // First one is the one with most arguments.
+
+				Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, primary, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+				result.add(constructor);
+			}
 
 			if (includeFactoryMethod) {
-				// Add factory method:
-				parameters = members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createFactoryMethodParameterAnnotations(clazz, true, m.getName()))).collect(Collectors.toList());
-				Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, Collections.emptyList(), "", true, EnumSet.noneOf(Modifier.class), factoryModifiers, createFactoryMethodAnnotations(clazz, parameters, true), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
-				result.add(factoryMethod);
+				List<List<Parameter>> classFactoryMethodParameterLists = createFactoryMethodsParameterLists(clazz, members, true);
+				for (List<Parameter> parameters : classFactoryMethodParameterLists) {
+					boolean primary = (parameters==classFactoryMethodParameterLists.get(0)); // First one is the one with most arguments.
+
+					Method factoryMethod = new FactoryMethod(clazz, clazz, ConfigurationDefaults.factoryMethodName, clazz, parameters, Collections.emptyList(), "", primary, EnumSet.noneOf(Modifier.class), factoryModifiers, createFactoryMethodAnnotations(clazz, parameters, primary), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, TemplateKind.UNTYPED);
+					result.add(factoryMethod);
+				}
 			}
 		}
 
 		return result;
 
+	}
+
+	private List<List<Parameter>> createConstuctorsParameterLists(Clazz clazz, List<Member> members, boolean primary, boolean includeFactoryMethod)
+	{
+		List<List<Parameter>> result = new ArrayList<List<Parameter>>();
+
+		// Potential primary constructor (the one with most parameters) added first!
+		result.add(members.stream().map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createConstructorParameterAnnotations(clazz, primary, m.getName(), includeFactoryMethod), m)).collect(Collectors.toList()));
+
+		// Members that can be set with setters do not need to be set in constructor, so add one without these. If all members are mutable this will provide a default constructor.
+		boolean mutable = members.stream().anyMatch(m -> m.isMutable());
+		if (mutable) {
+			result.add(members.stream().filter(m -> !m.isMutable()).map(m -> new MemberParameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createConstructorParameterAnnotations(clazz, false, m.getName(), includeFactoryMethod), m)).collect(Collectors.toList()));
+		}
+
+		return result;
+	}
+
+	private List<List<Parameter>> createFactoryMethodsParameterLists(Clazz clazz, List<Member> members, boolean primary)
+	{
+		List<List<Parameter>> result = new ArrayList<List<Parameter>>();
+
+		// Potential primary factory method (the one with most parameters) added first!
+		result.add(members.stream().map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createFactoryMethodParameterAnnotations(clazz, primary, m.getName()))).collect(Collectors.toList()));
+
+		// Members that can be set with setters do not need to be set in factory method, so add one without these. If all members are mutable this will provide a no-arg factory method.
+		boolean mutable = members.stream().anyMatch(m -> m.isMutable());
+		if (mutable) {
+			result.add(members.stream().filter(m -> !m.isMutable()).map(m -> new Parameter(clazz, m.getType(), m.getName(), EnumSet.noneOf(Modifier.class), createFactoryMethodParameterAnnotations(clazz, false, m.getName()))).collect(Collectors.toList()));
+		}
+
+		return result;
 	}
 
 	private List<Annotation> createConstructorAnnotations(Clazz clazz, List<Parameter> parameters, boolean primaryConstructor, boolean includeFactoryMethod)

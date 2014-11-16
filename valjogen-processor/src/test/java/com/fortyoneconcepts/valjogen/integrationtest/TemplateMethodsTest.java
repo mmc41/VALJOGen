@@ -9,6 +9,7 @@ import com.fortyoneconcepts.valjogen.model.ConfigurationDefaults;
 import com.fortyoneconcepts.valjogen.model.ConfigurationOptionKeys;
 import com.fortyoneconcepts.valjogen.test.input.*;
 import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase;
+import com.fortyoneconcepts.valjogen.test.util.TemplateTestBase.Output;
 
 import static com.fortyoneconcepts.valjogen.test.util.TestSupport.*;
 
@@ -52,6 +53,28 @@ public class TemplateMethodsTest extends TemplateTestBase
 
 		assertNotContainsWithWildcards("TestImpl(final int myValue, final *List<Double> myDoubleList) { super();", output.code);
 		assertContainsWithWildcards("TestImpl(final int baseIntField, final String baseStrField, final int myValue, final *List<Double> myDoubleList) { super(baseIntField, baseStrField);", output.code);
+	}
+
+	@Test
+	public void testDefaultConstructorForCompletelyMutableClass() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.staticFactoryMethodEnabled, "false");
+
+		Output output = produceOutput(MutableInterface.class);
+
+		assertContainsWithWildcards("public TestImpl() {", output.code);
+	}
+
+	@Test
+	public void testNoArgsFactoryMethodForCompletelyMutableClass() throws Exception
+	{
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.ensureNotNullEnabled, "false");
+		configurationOptions.put(ConfigurationDefaults.OPTION_QUALIFIER+ConfigurationOptionKeys.staticFactoryMethodEnabled, "true");
+
+		Output output = produceOutput(MutableInterface.class);
+
+		assertContainsWithWildcards("public static TestImpl valueOf() {", output.code);
 	}
 
 	@Test

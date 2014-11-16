@@ -172,6 +172,12 @@ public class BasicClazz extends ObjectType implements Definition {
 		return getMethods().stream().filter(m -> m.getName().equals(name)).findFirst().orElse(null);
 	}
 
+	public boolean isMutable()
+	{
+		boolean mutable = getMembers().stream().anyMatch(m -> m.isMutable());
+		return mutable;
+	}
+
 	@Override
 	public List<Member> getMembers() {
 		assert initialized() : "Class initialization missing";

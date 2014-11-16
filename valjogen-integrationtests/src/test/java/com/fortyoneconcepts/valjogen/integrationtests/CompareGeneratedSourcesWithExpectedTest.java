@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.fortyoneconcepts.valjogen.integrationtests.util.WarningOnJUnitErrorRule;
 
+import difflib.*;
 import static com.fortyoneconcepts.valjogen.integrationtests.util.TestSupport.*;
 
 /**
@@ -45,7 +47,7 @@ public class CompareGeneratedSourcesWithExpectedTest
 	private final Path expectedJavaFilePath;
 	private final Path actualJavaFilePath;
 
-    @Rule
+	@Rule
     public WarningOnJUnitErrorRule rule = new WarningOnJUnitErrorRule();
 
 	public CompareGeneratedSourcesWithExpectedTest(String expectedDescription, String actualDescription, Path expectedJavaFilePath, Path actualJavaFilePath)
@@ -57,32 +59,34 @@ public class CompareGeneratedSourcesWithExpectedTest
 	@Test() // Nb. Must be executed from test class - can not be run individually.
 	public void compareSourcesTest() throws Exception
 	{
-		rule.setErrorMsgHeader("NOTE: This test stricly checks for regressions. Failure may happen if output has changed on purpose. If generated output is indeed correct please update expected file(s) stored at '"+expectedSourcePath.toString()+"' with result from generated file(s) at "+actualOutputPath+" to make this test pass."+System.lineSeparator());
+		rule.setErrorMsgHeader(() -> "NOTE: Set of file names in '"+expectedJavaFilePath.toString()+"' must match set of file names of generated output at '"+actualJavaFilePath.toString()+"'.");
 
 		// Check if filenames are identical:
 		String expectedFileName = getFileName(expectedJavaFilePath);
 		String actualFileName = getFileName(actualJavaFilePath);
-		Assert.assertEquals("Expected and actual filenames does not match", expectedFileName, actualFileName);
+		Assert.assertEquals("Expected and actual names of files does not match", expectedFileName, actualFileName);
 
-		// Check content identical:
-		List<String> expectedContent = Files.readAllLines(expectedJavaFilePath);
-		List<String> actualContent = Files.readAllLines(actualJavaFilePath);
+		rule.setErrorMsgHeader(() -> {
+	     return "NOTE: compareSourcesTest("+expectedFileName+") has detected a change which will trigger a failure even if output has changed on purpose." +
+	            " If new version of generated output is indeed correct please update expected file(s) stored at '"+expectedSourcePath.toString()+"' with result from generated file(s) at "+actualOutputPath+" to make this test pass."+System.lineSeparator() +
+                " To investigate in a *nx shell type 'diff "+expectedJavaFilePath.toString()+" "+actualJavaFilePath+"'.";
+		});
 
+		// Read expected and actual sources but remove dates:
+		List<String> expectedContent = Files.readAllLines(expectedJavaFilePath).stream().map(s -> removeDate(s)).collect(Collectors.toList());
+		List<String> actualContent = Files.readAllLines(actualJavaFilePath).stream().map(s -> removeDate(s)).collect(Collectors.toList());
 
-		Assert.assertEquals("Expected file "+expectedFileName+ " and actual file "+actualFileName+" has different sizes (#lines)", expectedContent.size(), actualContent.size());
+		// Compute diff. Get the Patch object. Patch is the container for computed deltas.
+        Patch patch = DiffUtils.diff(expectedContent, actualContent);
 
-		// Check content of individual lines in the files.
-		for (int j=0; j<expectedContent.size(); ++j)
-		{
-			String expectedLine = expectedContent.get(j);
-			String actualLine = actualContent.get(j);
+        List<Delta> deltas = patch.getDeltas();
 
-			// Do not use dates in comparisons:
-			expectedLine=expectedLine.replaceAll("date\\s?=\\s?\"[^\"]+\"", "date=\"\"");
-			actualLine=actualLine.replaceAll("date\\s?=\\s?\"[^\"]+\"", "date=\"\"");
+        Assert.assertTrue("Expected file "+expectedFileName+ " and actual file "+actualFileName+" has different content. Changes are: "+System.lineSeparator()+deltas.stream().map(Object::toString).collect(Collectors.joining(System.lineSeparator())), deltas.isEmpty());
+	}
 
-			Assert.assertEquals("Expected file "+expectedFileName+ " and actual file "+actualFileName+" differ in content from line #"+Integer.toString(j+1), expectedLine, actualLine);
-		}
-
+	private String removeDate(String txt)
+	{
+		String result=txt.replaceAll("date\\s?=\\s?\"[^\"]+\"", "date=\"\"");
+		return result;
 	}
 }
