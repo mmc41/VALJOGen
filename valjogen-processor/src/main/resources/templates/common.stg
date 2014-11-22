@@ -46,6 +46,8 @@ other_instance_get_member_value(other, member) ::= <%
 <endif>
 %>
 
+concat(a,b) ::= <%<a><b>%>
+
 conditionalAddLine(a) ::= <%<if(a)><\n><endif>%>
 
 annotation(a) ::= <%<a.code>%>

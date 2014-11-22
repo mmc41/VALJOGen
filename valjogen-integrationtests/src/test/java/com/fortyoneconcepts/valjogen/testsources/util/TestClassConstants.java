@@ -17,4 +17,5 @@ public interface TestClassConstants
 	public static String CustomTemplateClass = PackageName+".CustomTemplateClass";
 	public static String SerializableClass = PackageName+".SerializableClass";
 	public static String SerializableWithBaseClass = PackageName+".SerializableWithBaseClass";
+	public static String ExternalizableMutableWithBaseClass = PackageName+".ExternalizableMutableWithBaseClass";
 }

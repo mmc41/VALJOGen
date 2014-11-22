@@ -215,7 +215,7 @@ public abstract class Type extends ModelBase
 
 	public boolean isCollection()
 	{
-		return isOfQualifiedType("java.util.Collection");
+		return isOfType(java.util.Collection.class);
 	}
 
 	/**
@@ -271,6 +271,18 @@ public abstract class Type extends ModelBase
 		return isExactQualifiedType(qualifiedClassOrInterfaceName);
 	}
 
+    /**
+     * Returns if type exactly matches specified class/interfac
+     *
+     * @param _class The class/interface.
+     *
+     * @return True if type is equal to specified class/interface
+     */
+	public final boolean isExactType(Class<?> _class)
+	{
+		return isExactQualifiedType(_class.getName());
+	}
+
 	/**
      * Returns if type exactly matche specified qualified class/interface. Called by isExactType with the qualified name (possibly expanded).
      *
@@ -307,6 +319,18 @@ public abstract class Type extends ModelBase
 		} else qualifiedClassOrInterfaceName=classOrInterfaceName;
 
 		return isOfQualifiedType(qualifiedClassOrInterfaceName);
+	}
+
+    /**
+     * Returns if type is equal to or implements/inherites from specified qualified class/interface.
+     *
+     * @param _class The qualified class/interface.
+     *
+     * @return True if type is equal to or implements/inherites from specified class/interface
+     */
+	public final boolean isOfType(Class<?> _class)
+	{
+		return isOfQualifiedType(_class.getName());
 	}
 
     /**

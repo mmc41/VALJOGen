@@ -43,6 +43,9 @@ import static com.fortyoneconcepts.valjogen.processor.builders.BuilderUtil.*;
  *
  * Nb: Instances of this class is not multi-thread safe. Create a new for each thread.
  *
+ * Note that we build our class gradually, so be careful when calling method on class objects while they are constructed. Simple method are generally safe, while methods that depend on structure initialization
+ * should not be called unless the class is fully initialized.
+ *
  * @author mmc
  */
 public final class ModelBuilder
@@ -65,8 +68,8 @@ public final class ModelBuilder
 		 put("equals(Object)", (cfg, clazz, methods, members) -> cfg.isEqualsEnabled());
 		 put("toString()", (cfg, clazz, methods, members) -> cfg.isToStringEnabled());
 		 put(compareToOverloadName, (cfg, clazz, methods, members) -> mustImplementComparable(clazz, methods));
-		 put("writeExternal(ObjectOutput)", (cfg, clazz, methods, members) -> clazz.isOfType(externalizableClass) && members.stream().allMatch(m -> m.isMutable())); // for now only supported for fully mutable classes
-		 put("readExternal(ObjectInput)", (cfg, clazz, methods, members) -> clazz.isOfType(externalizableClass) && members.stream().allMatch(m -> m.isMutable())); // for now only supported for fully mutable classes
+		 put("writeExternal(ObjectOutput)", (cfg, clazz, methods, members) -> clazz.isOfType(externalizableClass) && members.stream().anyMatch(m -> m.isMutable()));
+		 put("readExternal(ObjectInput)", (cfg, clazz, methods, members) -> clazz.isOfType(externalizableClass) && members.stream().anyMatch(m -> m.isMutable()));
 		 put("valueOf()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.
 		 put("this()", (cfg, clazz, methods, members) -> false); // called internally in a special way by the templates.
 	}};
@@ -264,20 +267,20 @@ public final class ModelBuilder
 		Optional<Method> comparableMethodToImplement = implementsComparable ? nonPropertyMethods.stream().filter(m -> m.getOverloadName().equals(compareToOverloadName) && m.getDeclaredModifiers().contains(Modifier.ABSTRACT)).findFirst() : Optional.empty();
 		List<Member> selectedComparableMembers = implementsComparable ? getSelectedComparableMembers(membersByName, baseMembersByName, comparableMethodToImplement.orElse(null)) : Collections.emptyList();
 
-		EnumSet<Modifier> modifiers = configuration.getClazzModifiers();
-		boolean isAbstractClazz = nonPropertyMethods.stream().anyMatch(m -> m.getImplementationInfo()==ImplementationInfo.IMPLEMENTATION_MISSING) || (modifiers!=null && modifiers.contains(Modifier.ABSTRACT));
-        if (modifiers==null) {
+		EnumSet<Modifier> classModifiers = configuration.getClazzModifiers();
+		boolean isAbstractClazz = nonPropertyMethods.stream().anyMatch(m -> m.getImplementationInfo()==ImplementationInfo.IMPLEMENTATION_MISSING) || (classModifiers!=null && classModifiers.contains(Modifier.ABSTRACT));
+        if (classModifiers==null) {
         	if (isAbstractClazz)
-    			modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT);
+    			classModifiers=EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT);
     		else
-    			modifiers=EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
+    			classModifiers=EnumSet.of(Modifier.PUBLIC, Modifier.FINAL);
         }
 
-	    nonPropertyMethods.addAll(createConstructorsAndFactoryMethods(clazz, baseClazzType, members, modifiers, configuration.getBaseClazzConstructors()));
+	    nonPropertyMethods.addAll(createConstructorsAndFactoryMethods(clazz, baseClazzType, members, classModifiers, configuration.getBaseClazzConstructors()));
 
 	    List<Annotation> clazzAnnotations = Arrays.stream(configuration.getClazzAnnotations()).map(s -> new Annotation(clazz, s)).collect(Collectors.toList());
 
-		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers, modifiers, clazzAnnotations);
+		clazz.initContent(members, propertyMethods, nonPropertyMethods, filterImportTypes(clazz, importTypes), selectedComparableMembers, classModifiers, clazzAnnotations);
 
 		return clazz;
 	}
@@ -312,20 +315,14 @@ public final class ModelBuilder
 		}
 	}
 
-	private List<Method> createConstructorsAndFactoryMethods(Clazz clazz, ObjectType baseClazzType, List<Member> members, EnumSet<Modifier> modifiers, String[] baseClazzConstructors)
+	private List<Method> createConstructorsAndFactoryMethods(Clazz clazz, ObjectType baseClazzType, List<Member> members, EnumSet<Modifier> classModifiers, String[] baseClazzConstructors)
 	{
 		List<Constructor> baseClassConstructors = baseClazzType.getConstructors();
 
 		List<Method> result = new ArrayList<>();
 
-		boolean includeFactoryMethod = !modifiers.contains(Modifier.ABSTRACT) && configuration.isStaticFactoryMethodEnabled();
-
-		EnumSet<Modifier> constructorModifiers;
-		if (includeFactoryMethod) {
-			if (modifiers.contains(Modifier.FINAL))
-				constructorModifiers=EnumSet.of(Modifier.PRIVATE);
-			else constructorModifiers=EnumSet.of(Modifier.PROTECTED);
-		} else constructorModifiers=EnumSet.of(Modifier.PUBLIC);
+		boolean includeFactoryMethod = !classModifiers.contains(Modifier.ABSTRACT) && configuration.isStaticFactoryMethodEnabled();
+		boolean mustHaveDefaultPublicCtr = (clazz.isOfType(Externalizable.class));
 
 		EnumSet<Modifier> factoryModifiers = EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
 
@@ -336,6 +333,8 @@ public final class ModelBuilder
 			if (largestBaseClassConstructor==null || baseClassConstructor.getParameters().size()>largestBaseClassConstructor.getParameters().size())
 				largestBaseClassConstructor=baseClassConstructor;
 		}
+
+		boolean hasDefaultCtr = false;
 
 		// Add our own constructors that delegate to base constructors.
 		for (Constructor baseClassConstructor : baseClassConstructors)
@@ -352,8 +351,11 @@ public final class ModelBuilder
 					Stream<Parameter> baseClassParameters = baseClassConstructor.getParameters().stream().map(p -> new DelegateParameter(clazz, p.getType().copy(clazz), p.getName(), p.getDeclaredModifiers(), createConstructorParameterAnnotations(clazz, true, p.getName(), includeFactoryMethod), baseClassConstructor, p));
 					List<Parameter> parameters = concat(baseClassParameters, classParameters.stream()).collect(Collectors.toList());
 
+					EnumSet<Modifier> constructorModifiers = createConstructorModifiers(classModifiers, parameters, includeFactoryMethod, mustHaveDefaultPublicCtr);
+
 					DelegateConstructor constructor = new DelegateConstructor(clazz, clazz, noType, parameters, baseClassConstructor.getThrownTypes(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, primary, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT, baseClassConstructor);
 					result.add(constructor);
+					hasDefaultCtr|=(parameters.size()==0);
 				}
 
 				if (includeFactoryMethod) {
@@ -377,8 +379,11 @@ public final class ModelBuilder
 			for (List<Parameter> parameters : classConstructorsParameterLists) {
 				boolean primary = (parameters==classConstructorsParameterLists.get(0)); // First one is the one with most arguments.
 
+				EnumSet<Modifier> constructorModifiers = createConstructorModifiers(classModifiers, parameters, includeFactoryMethod, mustHaveDefaultPublicCtr);
+
 				Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, primary, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
 				result.add(constructor);
+				hasDefaultCtr|=(parameters.size()==0);
 			}
 
 			if (includeFactoryMethod) {
@@ -392,8 +397,34 @@ public final class ModelBuilder
 			}
 		}
 
+		// Add public default ctr if needed and we have not added it already.
+		if (mustHaveDefaultPublicCtr && !hasDefaultCtr)
+		{
+			boolean primary = false;
+			List<Parameter> parameters = Collections.emptyList();
+			EnumSet<Modifier> constructorModifiers = createConstructorModifiers(classModifiers, parameters, includeFactoryMethod, mustHaveDefaultPublicCtr);
+
+			Constructor constructor = new Constructor(clazz, clazz, noType, parameters, Collections.emptyList(), "", primary, EnumSet.noneOf(Modifier.class), constructorModifiers, createConstructorAnnotations(clazz, parameters, primary, includeFactoryMethod), ImplementationInfo.IMPLEMENTATION_PROVIDED_BY_THIS_OBJECT);
+			result.add(constructor);
+		}
+
 		return result;
 
+	}
+
+	private EnumSet<Modifier> createConstructorModifiers(EnumSet<Modifier> classModifiers, List<Parameter> parameters, boolean includeFactoryMethod, boolean mustHaveDefaultPublicCtr)
+	{
+		EnumSet<Modifier> constructorModifiers;
+
+		if (!includeFactoryMethod || (parameters.size()==0 && mustHaveDefaultPublicCtr)) {
+			constructorModifiers=EnumSet.of(Modifier.PUBLIC);
+		} else {
+			if (classModifiers.contains(Modifier.FINAL))
+				constructorModifiers=EnumSet.of(Modifier.PRIVATE);
+			else constructorModifiers=EnumSet.of(Modifier.PROTECTED);
+		}
+
+		return constructorModifiers;
 	}
 
 	private List<List<Parameter>> createConstuctorsParameterLists(Clazz clazz, List<Member> members, boolean primary, boolean includeFactoryMethod)
@@ -798,7 +829,7 @@ public final class ModelBuilder
 	{
 		TypeMirror propertyTypeMirror;
 
-		EnumSet<Modifier> modifiers = EnumSet.of(Modifier.PUBLIC);
+		EnumSet<Modifier> declaredModifiers = EnumSet.noneOf(Modifier.class);
 
 		if (kind==PropertyKind.GETTER) {
 			if (setterParams.size()!=0) {
@@ -811,7 +842,7 @@ public final class ModelBuilder
 
 			String name = syntesisePropertyMemberName(configuration.getGetterPrefixes(), methodElement);
 
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), name, modifiers, createMemberAnnotations(clazz, name));
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), name, declaredModifiers, createMemberAnnotations(clazz, name));
 		} else if (kind==PropertyKind.IMMUTABLE_SETTER || kind==PropertyKind.MUTABLE_SETTER) {
 			if (setterParams.size()!=1) {
 				if (!configuration.isMalformedPropertiesIgnored())
@@ -841,7 +872,7 @@ public final class ModelBuilder
 
 			String name = syntesisePropertyMemberName(configuration.getSetterPrefixes(), methodElement);
 
-			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), name, modifiers, createMemberAnnotations(clazz, name));
+			return new Member(clazz, typeBuilder.createType(clazz, propertyTypeMirror, DetailLevel.High), name, declaredModifiers, createMemberAnnotations(clazz, name));
 		} else {
 			return null; // Not a property.
 		}

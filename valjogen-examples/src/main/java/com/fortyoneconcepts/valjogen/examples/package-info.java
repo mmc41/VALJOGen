@@ -9,6 +9,6 @@
 *
 * @author mmc
 */
-@VALJOConfigure(headerFileName="Header.txt", comment="Example 8")
+@VALJOConfigure(headerFileName="Header.txt", comment="Example 9")
 package com.fortyoneconcepts.valjogen.examples;
 import com.fortyoneconcepts.valjogen.annotations.VALJOConfigure;

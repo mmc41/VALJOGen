@@ -73,4 +73,24 @@ public class SerializationTest
 
 		Assert.assertTrue(compareInstanceFields(o,deserialized));
 	}
+
+	/***
+	 * Test both that externalization with base classes work.
+	 *
+	 * @throws Throwable
+	 */
+	@Test
+	public void testExternalizableClassWithBaseClassCanSerialize() throws Throwable
+	{
+		@SuppressWarnings("unchecked")
+		Class<Serializable> clazz = (Class<Serializable>)TestUtil.getTestClass(TestClassConstants.ExternalizableMutableWithBaseClass);
+
+		Serializable o = createInstanceUsingFactory(clazz);
+
+		byte[] serializedData = write(o);
+
+		Serializable deserialized = read(serializedData);
+
+		Assert.assertTrue(compareInstanceFields(o,deserialized));
+	}
 }

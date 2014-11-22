@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.test.input;
+package com.fortyoneconcepts.valjogen.testsources;
 
 import java.io.Externalizable;
 import java.io.IOException;

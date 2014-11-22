@@ -3,6 +3,7 @@
 */
 package com.fortyoneconcepts.valjogen.model;
 
+import java.io.Externalizable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class Member extends DefinitionBase implements TypedModel
 
 		if (clazz.isFinal())
 		  modifiers.add(Modifier.PRIVATE);
-		else  modifiers.add(Modifier.PROTECTED);
+		else modifiers.add(Modifier.PROTECTED);
 
 		if (declaredModifiers.contains(Modifier.STATIC))
 			modifiers.add(Modifier.STATIC);
@@ -66,7 +67,7 @@ public class Member extends DefinitionBase implements TypedModel
 
 	public boolean isMutable()
 	{
-		boolean mutable = properties.stream().anyMatch(p -> p.isMutableSetter());
+		boolean mutable = properties.stream().anyMatch(p -> p.isMutableSetter()) || (clazz.isOfType(Externalizable.class));
 		return mutable;
 	}
 

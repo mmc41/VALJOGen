@@ -1,12 +1,13 @@
 /*
 * Copyright (C) 2014 41concepts Aps
 */
-package com.fortyoneconcepts.valjogen.test.input;
+package com.fortyoneconcepts.valjogen.testsources;
 
 import com.fortyoneconcepts.valjogen.annotations.*;
+import com.fortyoneconcepts.valjogen.testsources.util.TestClassConstants;
 
-@VALJOGenerate
-@VALJOConfigure(baseClazzName="com.fortyoneconcepts.valjogen.test.input.ExternalizableBaseClass")
+@VALJOGenerate(name=TestClassConstants.ExternalizableMutableWithBaseClass)
+@VALJOConfigure(baseClazzName="com.fortyoneconcepts.valjogen.testsources.ExternalizableBaseClass")
 public interface ExternalizableMutableInterfaceWithBaseClass
 {
 	public byte getByte();

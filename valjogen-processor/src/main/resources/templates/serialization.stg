@@ -96,5 +96,3 @@ read_ObjectInput(var, type, i) ::= <<
   <var>=(<type.prototypicalName>)<i>.readObject();<\\>
  <endif>
 >>
-
-concat(a,b) ::= <%<a><b>%>

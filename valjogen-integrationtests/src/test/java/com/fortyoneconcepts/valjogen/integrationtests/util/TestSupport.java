@@ -113,12 +113,12 @@ public final class TestSupport
 			return "testObject";
 		else if (clazz.equals(Integer.TYPE))
 			return (byte)1;
-		else if (clazz.equals(Byte.class))
-			return Byte.valueOf((byte)1);
-		else if (clazz.equals(Integer.TYPE))
+		else if (clazz.equals(Integer.class))
 			return 2;
-		if (clazz.equals(Integer.class))
-			return Integer.valueOf(2);
+		else if (clazz.equals(Byte.TYPE))
+			return (byte)3;
+		else if (clazz.equals(Byte.class))
+			return Byte.valueOf((byte)4);
 		else if (clazz.equals(Long.TYPE))
 			return 3L;
 		if (clazz.equals(Long.class))
@@ -135,8 +135,12 @@ public final class TestSupport
 			return 5.5d;
 		else if (clazz.equals(Double.class))
 			return Double.valueOf(5.5d);
+		else if (clazz.equals(Character.TYPE))
+			return 'B';
+		else if (clazz.equals(Character.class))
+			return Character.valueOf('C');
 
-		throw new IllegalArgumentException("Presently unsupported argument type "+clazz);
+		throw new IllegalArgumentException("Presently unsupported argument type '"+clazz+"'");
 	}
 
 	public static boolean compareInstanceFields(Object a, Object b) throws IllegalArgumentException, IllegalAccessException

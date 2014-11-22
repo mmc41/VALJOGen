@@ -44,10 +44,11 @@ public class TemplateSerializationTest extends TemplateTestBase
 	}
 
 	@Test
-	public void testExternalizableWithoutBaseClass() throws Exception
+	public void testExternalizableMutablrWithoutBaseClass() throws Exception
 	{
-		Output output = produceOutput(ExternalizableMutableInterface.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 42L).build());
+		Output output = produceOutput(ExternalizableMutableInterface.class, configureAnnotationBuilder.build());
 		assertContainsWithWildcards("class "+generatedClassName+" implements Externalizable", output.code);
+		assertContainsWithWildcards("public "+generatedClassName+"() {", output.code);
 		assertContainsWithWildcards("void writeExternal(*{*.write", output.code);
 		assertContainsWithWildcards("void readExternal(*{*.read", output.code);
 		assertNotContainsWithWildcards("super.writeExternal(", output.code);
@@ -55,12 +56,24 @@ public class TemplateSerializationTest extends TemplateTestBase
 	}
 
 	@Test
-	public void testExternalizableWithBaseClass() throws Exception
+	public void testExternalizableMutableWithBaseClass() throws Exception
 	{
-		Output output = produceOutput(ExternalizableMutableInterfaceWithBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.serialVersionUID, 42L)
-																												   .add(ConfigurationOptionKeys.baseClazzName, ExternalizableBaseClass.class.getName()).build());
+		Output output = produceOutput(ExternalizableMutableInterfaceWithBaseClass.class, configureAnnotationBuilder.add(ConfigurationOptionKeys.baseClazzName, ExternalizableBaseClass.class.getName()).build());
 		assertContainsWithWildcards("class "+generatedClassName, output.code);
+		assertContainsWithWildcards("public "+generatedClassName+"() {", output.code);
 		assertContainsWithWildcards("void writeExternal(*{ super.writeExternal(*.write", output.code);
 		assertContainsWithWildcards("void readExternal(*{ super.readExternal(*.read", output.code);
+	}
+
+	@Test
+	public void testExternalizableSemiMutableWithoutBaseClass() throws Exception
+	{
+		Output output = produceOutput(ExternalizableSemiMutableInterface.class, configureAnnotationBuilder.build());
+		assertContainsWithWildcards("class "+generatedClassName+" implements Externalizable", output.code);
+		assertContainsWithWildcards("public "+generatedClassName+"() {", output.code);
+		assertContainsWithWildcards("void writeExternal(*{*.write", output.code);
+		assertContainsWithWildcards("void readExternal(*{*.read", output.code);
+		assertNotContainsWithWildcards("super.writeExternal(", output.code);
+		assertNotContainsWithWildcards("super.readExternal(", output.code);
 	}
 }

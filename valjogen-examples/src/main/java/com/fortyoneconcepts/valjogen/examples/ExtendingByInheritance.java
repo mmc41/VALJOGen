@@ -10,7 +10,7 @@ import com.fortyoneconcepts.valjogen.annotations.VALJOGenerate;
 * Example that shows how use standard subclassing for customization. Generated output will inheriting from the specified base
 * class (see "BaseClass.java"). In addition the generated abstract class can be futher customized when subclassing it.
 */
-@VALJOGenerate(comment="Example 6")
+@VALJOGenerate(comment="Example 7")
 @VALJOConfigure(clazzModifiers= {"ABSTRACT"}, baseClazzName="com.fortyoneconcepts.valjogen.examples.BaseClass")
 public interface ExtendingByInheritance
 {
