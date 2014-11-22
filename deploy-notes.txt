@@ -18,6 +18,10 @@ Build sign and deply to maven central (!!):
 mvn clean deploy -Dgpg.passphrase=xy
 ( the shell may require some passphrases with special characters to have those characters escaped with \)
 
+TAG new version:
+git tag -a 2.0.0 -m "2.0.0"
+git push --tags
+
 SETUP:
 Configure SonaType account in ~/.m2/settings.xml:
 
