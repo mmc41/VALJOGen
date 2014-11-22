@@ -1,4 +1,5 @@
 com.fortyoneconcepts.valjogen.annotations
+com.fortyoneconcepts.valjogen.annotations.types
 com.fortyoneconcepts.valjogen.model
 com.fortyoneconcepts.valjogen.model.util
 com.fortyoneconcepts.valjogen.processor

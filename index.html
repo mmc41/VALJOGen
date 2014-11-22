@@ -87,9 +87,11 @@
 
 <ul>
   <li>Can generate <strong>value objects</strong> with <strong>auto-implemented getters and setters from your interfaces</strong>.</li>
-  <li>Support for auto-implementing factory methods, constructors, Object.<strong>hashCode</strong>, Object.<strong>equals</strong>, Object.<strong>toString</strong>, Comparable.<strong>compareTo</strong>, <strong>Serializable</strong> etc.</li>
+  <li>Support for auto-implementing factory methods, constructors, Object.<strong>hashCode</strong>, Object.<strong>equals</strong>, Object.<strong>toString</strong>, Comparable.<strong>compareTo</strong> etc.</li>
+  <li>Can insert <a href="https://github.com/FasterXML/jackson-annotations">jackson-annotations</a> as needed for conversions to/from JSON.</li>
+  <li>Support for auto-implementation of <strong>Serializable</strong> and <strong>Externalizable</strong> interfaces.</li>
   <li><strong>Extremely customizable</strong> code output. You can change every aspect for the generated class and even add your own code using <a href="http://www.stringtemplate.org">StringTemplate 4</a> based custom templates.</li>
-  <li>Great support for <strong>immutable value objects</strong>, including final fields and immutable <em>setters</em> that return new instances.</li>
+  <li>Great support for <strong>immutable value objects</strong>, including final fields and immutable <em>setters</em> (with-style-methods) that return new instances for each change.</li>
   <li>Support for synchronized/unsynchronized <strong>mutable value objects</strong>.</li>
   <li>Full support for overriding <strong>custom base classes</strong> with both default and non-default base constructors, for overriding base class methods, implementing abstract properties etc.</li>
   <li>Support for guards (checks) against null arguments, custom getter/setter prefixes, injection of extra interfaces into implementation etc.</li>
@@ -196,8 +198,8 @@
     		<div class="col-sm-4 blog-main">
     		   <div class="sidebar-module">
     		    <div class="alert alert-info">
-    		      <p><strong>Latest version is: 1.0.0 <a style="float: right;" href="downloads.html"><span class="glyphicon glyphicon-download-alt"></span></a></strong></p>
-    		      <p>Latest website update: 31 October 2014</p>
+    		      <p><strong>Latest version is: 2.0.0 <a style="float: right;" href="downloads.html"><span class="glyphicon glyphicon-download-alt"></span></a></strong></p>
+    		      <p>Latest website update: 22 November 2014</p>
     		    </div>
                </div>
 
@@ -209,7 +211,31 @@
 
 
   <div class="blog-post release">
-    <h2 id="post0" class="blog-post-title label-fg-color">V1.0.0 released</h2>
+    <h2 id="post0" class="blog-post-title label-fg-color">V2.0.0 released</h2>
+    <p class="blog-post-meta">22 November 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
+    
+<p>v2.0.0 of VALJOGen uploaded to maven central with following changes:</p>
+
+<ul>
+  <li>Support for <a href="https://github.com/FasterXML/jackson-annotations">jackson-annotations</a> to support conversions to/from JSON. Enable with VALJOConfigure.dataConversion.</li>
+  <li>Auto-implementation of Externalizable interface (readExternal and writeExternal + public default constructor).</li>
+  <li>Generic support for adding custom annotations to members, methods, properties (+ constructors and class itself).</li>
+  <li>Explicit specification of mutable/immutable output can now be enforced with VALJOConfigure.mutability.</li>
+  <li>Generation of additional constructors and factory methods for mutable objects that has setters.</li>
+  <li>Custom-templates can now check for type inheritance (typeOf), method existence, field existence and java target version which is handy for advanced code generation.</li>
+  <li>Pretty print of internal models which is useful for debugging custom-templates etc. (set logLevel to INFO to see them).</li>
+  <li>Various internal changes, updates to examples and small bug fixes.</li>
+</ul>
+
+<p>A few model and configuration changes are not 100% backwards-compatible, hence the major version increment. Let me know if you run into problems.</p>
+
+  </div>
+
+  <div>Tags: <span class="badge">Release</div>
+  <br/>
+
+  <div class="blog-post release">
+    <h2 id="post1" class="blog-post-title label-fg-color">V1.0.0 released</h2>
     <p class="blog-post-meta">31 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>Final v1.0.0 of VALJOGen uploaded to maven central with following changes:</p>
@@ -226,7 +252,7 @@
   <br/>
 
   <div class="blog-post release">
-    <h2 id="post1" class="blog-post-title label-fg-color">RC4 and a bug in Eclipse</h2>
+    <h2 id="post2" class="blog-post-title label-fg-color">RC4 and a bug in Eclipse</h2>
     <p class="blog-post-meta">26 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>New release candidate 4 of VALJOGen uploaded to maven central with following changes:</p>
@@ -261,7 +287,7 @@
   <br/>
 
   <div class="blog-post release">
-    <h2 id="post2" class="blog-post-title label-fg-color">First public release</h2>
+    <h2 id="post3" class="blog-post-title label-fg-color">First public release</h2>
     <p class="blog-post-meta">20 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>First release candidate of VALJOGen was uploaded to maven central for public use.</p>
@@ -277,6 +303,9 @@
   <br/>
 
 
+
+    <hr/>
+    <a href="news-archive.html"><strong>More news</strong></a>
 
 
                </div>

@@ -85,7 +85,31 @@
 
 
   <div class="blog-post release">
-    <h2 id="post0" class="blog-post-title label-fg-color">V1.0.0 released</h2>
+    <h2 id="post0" class="blog-post-title label-fg-color">V2.0.0 released</h2>
+    <p class="blog-post-meta">22 November 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
+    
+<p>v2.0.0 of VALJOGen uploaded to maven central with following changes:</p>
+
+<ul>
+  <li>Support for <a href="https://github.com/FasterXML/jackson-annotations">jackson-annotations</a> to support conversions to/from JSON. Enable with VALJOConfigure.dataConversion.</li>
+  <li>Auto-implementation of Externalizable interface (readExternal and writeExternal + public default constructor).</li>
+  <li>Generic support for adding custom annotations to members, methods, properties (+ constructors and class itself).</li>
+  <li>Explicit specification of mutable/immutable output can now be enforced with VALJOConfigure.mutability.</li>
+  <li>Generation of additional constructors and factory methods for mutable objects that has setters.</li>
+  <li>Custom-templates can now check for type inheritance (typeOf), method existence, field existence and java target version which is handy for advanced code generation.</li>
+  <li>Pretty print of internal models which is useful for debugging custom-templates etc. (set logLevel to INFO to see them).</li>
+  <li>Various internal changes, updates to examples and small bug fixes.</li>
+</ul>
+
+<p>A few model and configuration changes are not 100% backwards-compatible, hence the major version increment. Let me know if you run into problems.</p>
+
+  </div>
+
+  <div>Tags: <span class="badge">Release</div>
+  <br/>
+
+  <div class="blog-post release">
+    <h2 id="post1" class="blog-post-title label-fg-color">V1.0.0 released</h2>
     <p class="blog-post-meta">31 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>Final v1.0.0 of VALJOGen uploaded to maven central with following changes:</p>
@@ -102,7 +126,7 @@
   <br/>
 
   <div class="blog-post release">
-    <h2 id="post1" class="blog-post-title label-fg-color">RC4 and a bug in Eclipse</h2>
+    <h2 id="post2" class="blog-post-title label-fg-color">RC4 and a bug in Eclipse</h2>
     <p class="blog-post-meta">26 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>New release candidate 4 of VALJOGen uploaded to maven central with following changes:</p>
@@ -137,7 +161,7 @@
   <br/>
 
   <div class="blog-post release">
-    <h2 id="post2" class="blog-post-title label-fg-color">First public release</h2>
+    <h2 id="post3" class="blog-post-title label-fg-color">First public release</h2>
     <p class="blog-post-meta">20 October 2014 by <a href="http://www.linkedin.com/in/mortench">mmc</a></p>
     
 <p>First release candidate of VALJOGen was uploaded to maven central for public use.</p>
@@ -163,11 +187,13 @@
                 <h4>Index</h4>
                 <ul class="list-unstyled">
                  
-                    <li><a href="#post0">V1.0.0 released</a></li>
+                    <li><a href="#post0">V2.0.0 released</a></li>
                 
-                    <li><a href="#post1">RC4 and a bug in Eclipse</a></li>
+                    <li><a href="#post1">V1.0.0 released</a></li>
                 
-                    <li><a href="#post2">First public release</a></li>
+                    <li><a href="#post2">RC4 and a bug in Eclipse</a></li>
+                
+                    <li><a href="#post3">First public release</a></li>
                 
                 </ul>
               </div>
