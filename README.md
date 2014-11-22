@@ -7,9 +7,11 @@
 **FEATURES:**
 
 + Can generate **value objects** with **auto-implemented getters and setters from your interfaces**.
-+ Support for auto-implementing factory methods, constructors, Object.**hashCode**, Object.**equals**, Object.**toString**, Comparable.**compareTo**, **Serializable** etc.
++ Support for auto-implementing factory methods, constructors, Object.**hashCode**, Object.**equals**, Object.**toString**, Comparable.**compareTo** etc.
++ Can insert [jackson-annotations](https://github.com/FasterXML/jackson-annotations) as needed for conversions to/from JSON.
++ Support for auto-implementation of **Serializable** and **Externalizable** interfaces.
 + **Extremely customizable** code output. You can change every aspect for the generated class and even add your own code using [StringTemplate 4](http://www.stringtemplate.org) based custom templates.
-+ Great support for **immutable value objects**, including final fields and immutable *setters* that return new instances.
++ Great support for **immutable value objects**, including final fields and immutable *setters* (with-style-methods) that return new instances for each change.
 + Support for synchronized/unsynchronized **mutable value objects**.
 + Full support for overriding **custom base classes** with both default and non-default base constructors, for overriding base class methods, implementing abstract properties etc.
 + Support for guards (checks) against null arguments, custom getter/setter prefixes, injection of extra interfaces into implementation etc.
